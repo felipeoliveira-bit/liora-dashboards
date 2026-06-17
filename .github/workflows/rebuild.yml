@@ -1,0 +1,56 @@
+name: Rebuild dashboards (Metabase -> Netlify)
+
+# Roda na NUVEM (sempre-ligado), nao depende do app do Claude aberto.
+# Cadencia: a cada 2h em horario comercial BRT (seg-sex, 07h-21h).
+# Cron do GitHub e em UTC. BRT = UTC-3, entao:
+#   07,09,11,13,15,17,19 BRT -> 10,12,14,16,18,20,22 UTC (seg-sex)
+#   21 BRT                    -> 00 UTC do dia seguinte (ter-sab)
+on:
+  schedule:
+    - cron: '5 10,12,14,16,18,20,22 * * 1-5'
+    - cron: '5 0 * * 2-6'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rebuild-dashboards
+  cancel-in-progress: false
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Setup Node (para node --check da validacao)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build (export Metabase -> slice -> desktop+mobile)
+        env:
+          METABASE_URL: ${{ secrets.METABASE_URL }}
+          METABASE_API_KEY: ${{ secrets.METABASE_API_KEY }}
+        run: python3 build/ci_build.py
+
+      - name: Commit & push (Netlify republica via webhook)
+        run: |
+          git config user.name  "liora-rebuild-bot"
+          git config user.email "actions@github.com"
+          rm -rf build/_work
+          if [ -n "$(git status --porcelain desktop/index.html mobile/index.html)" ]; then
+            git add desktop/index.html mobile/index.html
+            git commit -m "Rebuild CI $(date -u +%Y-%m-%dT%H:%MZ)"
+            git push
+            echo "PUBLICADO."
+          else
+            echo "Sem mudanca nos HTMLs - nada a publicar."
+          fi
