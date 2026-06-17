@@ -1385,10 +1385,7 @@ function openTrocarResponsavel(dealId){
       </div>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px">
-        <button onclick="trocarRespCopiar('${dealId}')"
-          style="background:#F4F5FA;color:var(--ink);border:none;border-radius:10px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">
-          📋 Copiar
-        </button>
+        
         <button onclick="trocarRespWhatsApp('${dealId}')"
           style="background:#25D366;color:#fff;border:none;border-radius:10px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">
           💬 WhatsApp
@@ -4034,13 +4031,7 @@ function showCopyPropostaModal(msg, nomeCliente){
 
       <div style="background:#F4F5FA;border:1px solid #E5E7F0;border-radius:12px;padding:14px;margin:14px 0;font-family:'SF Mono','Monaco','Menlo',monospace;font-size:13px;line-height:1.7;color:var(--ink);white-space:pre-wrap;word-break:break-word">${escapeHtml(msg)}</div>
 
-      <button class="form-btn-pri" id="btn-copy-msg" onclick="copyPropostaMessage()" style="width:100%;padding:14px;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <rect x="9" y="9" width="13" height="13" rx="2"/>
-          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-        </svg>
-        Copiar mensagem
-      </button>
+      
 
       <a href="https://wa.me/${WHATSAPP_BOT_NUMBER}?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener" class="form-btn-sec" style="display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;margin-top:10px;padding:14px;font-size:13px">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="#25D366">
@@ -4137,13 +4128,7 @@ function openRelatarSituacao(dealId, nomeCliente){
           </svg>
           Abrir WhatsApp
         </a>
-        <button class="form-btn-pri" id="btn-copy-relatar" onclick="copyRelatarMessage()" style="flex:1;padding:14px;font-size:14px;display:flex;align-items:center;justify-content:center;gap:6px;background:#5B6FED">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <rect x="9" y="9" width="13" height="13" rx="2"/>
-            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-          </svg>
-          Copiar
-        </button>
+        
       </div>
 
       <div class="prop-disclaimer">
