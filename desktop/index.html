@@ -5119,7 +5119,7 @@ function render() {
         <div style=&quot;text-align:center&quot;><span class=&quot;cpill&quot; style=&quot;background:${scfg.bg};color:${scfg.text}&quot;>${scfg.label}</span></div>
         <div>
           <div class=&quot;acao-tag&quot; style=&quot;background:${acao.bg};border-color:${acao.border};color:${acao.text}&quot;>${acao.icon} ${acao.texto}</div>
-          ${x.lost_reason ? `<div style=&quot;font-size:10px;color:#A32D2D;margin-top:3px;padding:2px 6px;background:#FCEBEB;border-radius:4px;display:inline-block&quot;>Motivo: ${x.lost_reason}</div>` : ''}
+          ${(x.motivo &amp;&amp; x.motivo.trim()) || x.lost_reason ? `<div style=&quot;font-size:10px;color:#A32D2D;margin-top:3px;padding:2px 6px;background:#FCEBEB;border-radius:4px;display:inline-block&quot;>Motivo: ${(x.motivo &amp;&amp; x.motivo.trim()) ? x.motivo.trim() : x.lost_reason}</div>` : ''}
           <span class=&quot;prio-badge&quot; style=&quot;background:${prio.bg};color:${prio.text}&quot;>${prio.label}</span>
         </div>
       </div>`;
