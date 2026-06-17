@@ -781,7 +781,7 @@ function getStatusInfo(x){
 
 function getAcao(x){
   if(isAprovado(x)) return '✅ Processo concluído — acompanhar ativação';
-  if(isNegado(x))   return '🔍 Entender motivo da negativa e avaliar reativação';
+  if(isNegado(x))   return (x.motivo && x.motivo.trim()) ? ('🔍 Motivo da negativa: ' + x.motivo.trim()) : '🔍 Entender motivo da negativa e avaliar reativação';
   if(isAgDocs(x))   return '📄 Contatar cliente e solicitar os documentos pendentes';
   if(isBGC(x))      return '⏳ Aguardar retorno da análise de background check';
   return '📋 Verificar situação';
