@@ -1857,7 +1857,12 @@ function setPropMetric(m){ propMetric = m; renderPropostas(); }
 function setRankScope(s){ rankScope = s; renderPropostas(); }
 
 // Data dos dados: 2026-06-03 (última data no RAW_PROP) — usar como "hoje"
-const PROP_TODAY = '2026-06-16';
+const PROP_TODAY = (function(){
+  // Data REAL de hoje no fuso de Brasília (independe do fuso do aparelho e da data dos dados).
+  // Antes era fixa na data máxima dos dados, o que fazia D-1 apontar pro dia errado quando o dado estava atrasado.
+  try { return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date()); }
+  catch(e){ return new Date(Date.now()-3*3600000).toISOString().slice(0,10); }
+})();
 
 // v2.13.5 — WhatsApp do time de suporte (apenas dígitos, formato internacional)
 const SUPORTE_WHATSAPP = '5511952136036'; // +55 11 95213-6036
