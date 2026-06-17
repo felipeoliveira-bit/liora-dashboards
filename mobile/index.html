@@ -1893,6 +1893,10 @@ function filterPropByPeriod(data, period){
 
 function renderPropostas() {
   const el = document.getElementById('s4-content');
+  // v2.117 — garante que os leads (visitas/tarefas) estejam carregados; re-renderiza quando chegarem
+  if (!leadsLoaded) {
+    loadLeads().then(() => { const e = document.getElementById('s4-content'); if (e && e.offsetParent !== null) renderPropostas(); });
+  }
 
   // v2.104 — Ranking é sempre do time todo (não filtra pela identidade/seller-select).
   let data = RAW_PROP;
@@ -1930,13 +1934,14 @@ function renderPropostas() {
     sellers[r.seller].aprov += r.mwh;
   });
 
-  // v2.116 — Tarefas de Venda Hoje: leads criados hoje OU com próxima interação hoje
-  const todayStr = new Date().toISOString().slice(0,10);
+  // v2.117 — Tarefas de Venda Hoje (fuso Brasília): leads criados hoje OU com próxima interação hoje
+  const todayStr = PROP_TODAY;
+  const brDateMs = ms => { try { return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo'}).format(new Date(ms)); } catch(e){ return ''; } };
   (window.leads||[])
     .filter(l => String((l&&l.stage)||'').trim().toLowerCase() !== 'excluido')
     .forEach(l=>{
-      const createdToday = l.createdAt && new Date(l.createdAt).toISOString().slice(0,10) === todayStr;
-      const intToday     = l.proximaInteracao === todayStr;
+      const createdToday = l.createdAt && brDateMs(l.createdAt) === todayStr;
+      const intToday     = l.proximaInteracao && String(l.proximaInteracao).slice(0,10) === todayStr;
       if(createdToday || intToday){
         const v = canonicalVendedor(l.vendedor||'');
         // resolve para nome canônico via EMAIL_NAME reverso
