@@ -1161,7 +1161,7 @@ function renderCarteira(){
           <button onclick="event.stopPropagation(); openTrocarResponsavel('${x.deal_id}')"
             style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:6px;padding:9px 12px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;font-size:12px;font-weight:700;color:#C2410C;cursor:pointer;font-family:inherit">
             🔄 Solicitar troca de responsável
-          </button>
+          </button><button onclick="event.stopPropagation(); solicitarPerdido('${x.deal_id}')" style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:6px;padding:9px 12px;background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;font-size:12px;font-weight:700;color:#B91C1C;cursor:pointer;font-family:inherit">🚫 Solicitar perdido</button>
         ` : ''}
       </div>`;
   });
@@ -1421,7 +1421,7 @@ function trocarRespCopiar(dealId){
   });
 }
 
-function trocarRespWhatsApp(dealId){
+function solicitarPerdido(dealId){var x=rawData.find(function(r){return r.deal_id===dealId});if(!x)return;var nl=String.fromCharCode(10);var msg='Olá, tudo bem? Podem por favor dar perdido nesse lead no RD?'+nl+nl+'Cliente: '+(x.c||'-')+nl+'Deal ID: '+x.deal_id;window.open('https://wa.me/'+SUPORTE_WHATSAPP+'?text='+encodeURIComponent(msg),'_blank')}function trocarRespWhatsApp(dealId){
   const msg = trocarRespMensagem(dealId);
   const url = `https://wa.me/${SUPORTE_WHATSAPP}?text=${encodeURIComponent(msg)}`;
   window.open(url,'_blank');
