@@ -2101,9 +2101,12 @@ async function loadLeads() {
   }
 }
 
-function applyFilters() {
+function applyFilters(opts) {
+  // ignorePeriodo: a aba Proximas Interacoes e organizada por buckets de data
+  // (Atrasados/Hoje/Amanhã/Próx 7d); aplicar o filtro de período zeraria essas colunas.
+  const ignorePeriodo = !!(opts &amp;&amp; opts.ignorePeriodo);
   return leads.filter(l => {
-    if (filters.periodo !== 'all' &amp;&amp; !inPeriod(l, filters.periodo)) return false;
+    if (!ignorePeriodo &amp;&amp; filters.periodo !== 'all' &amp;&amp; !inPeriod(l, filters.periodo)) return false;
     if (filters.praca !== 'all' &amp;&amp; pracaOf(l) !== filters.praca) return false;
     if (filters.stage !== 'all' &amp;&amp; l.stage !== filters.stage) return false;
     if (filters.bucket !== 'all' &amp;&amp; agendaBucket(l.proximaInteracao) !== filters.bucket) return false;
@@ -2159,7 +2162,7 @@ function renderCurrent() {
   if (currentTab === 'overview') renderOverview(d);
   else if (currentTab === 'vendedores') renderVendedores(d);
   else if (currentTab === 'pracas') renderPracas(d);
-  else if (currentTab === 'agenda') renderAgenda(d);
+  else if (currentTab === 'agenda') renderAgenda(applyFilters({ignorePeriodo:true}));
   else if (currentTab === 'detalhe') renderDetalhe(d);
   else if (currentTab === 'perdidos') renderPerdidos(d);
   else if (currentTab === 'td') renderTD(d);
@@ -2842,7 +2845,7 @@ function renderPerdidos(d) {
 
 let perdExpanded = new Set();
 let agendaExpanded = new Set();
-function toggleAgendaPraca(praca){ if(agendaExpanded.has(praca)) agendaExpanded.delete(praca); else agendaExpanded.add(praca); renderAgenda(applyFilters()); }
+function toggleAgendaPraca(praca){ if(agendaExpanded.has(praca)) agendaExpanded.delete(praca); else agendaExpanded.add(praca); renderAgenda(applyFilters({ignorePeriodo:true})); }
 function togglePerdPraca(praca){ if(perdExpanded.has(praca)) perdExpanded.delete(praca); else perdExpanded.add(praca); renderPerdidos(applyFilters()); }
 function tarBackBtn(onclick){ return '<button onclick=&quot;'+onclick+'&quot; style=&quot;margin:0 0 14px;cursor:pointer;background:#eef0ff;color:#0201F3;border:1px solid #d8dcff;padding:6px 14px;border-radius:8px;font-size:13px;font-weight:600&quot;>\u2190 Voltar</button>'; }
 function tarPracaDrill(praca){
