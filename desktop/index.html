@@ -1974,6 +1974,25 @@ function agendaBucket(iso) {
   return 'future';
 }
 
+function dsInPeriodo(ds, periodo) {
+  // Igual ao inPeriod, mas para UMA data ISO (YYYY-MM-DD) já calculada.
+  if (!ds) return false;
+  if (periodo === 'all') return true;
+  const now = new Date();
+  const todayISO = localISO(now);
+  const yesterdayISO = localISO(new Date(now.getTime() - DAY));
+  const refBR = new Date(todayISO + 'T00:00:00');
+  const dow = refBR.getDay();
+  const offsetToMonday = (dow === 0 ? 6 : dow - 1);
+  const weekStartISO = localISO(new Date(refBR.getTime() - offsetToMonday*DAY));
+  const monthPrefix = todayISO.slice(0,7);
+  if (periodo === 'today') return ds === todayISO;
+  if (periodo === 'yesterday') return ds === yesterdayISO;
+  if (periodo === 'week') return ds >= weekStartISO &amp;&amp; ds <= todayISO;
+  if (periodo === 'month') return ds.slice(0,7) === monthPrefix;
+  return true;
+}
+
 function inPeriod(l, periodo) {
   if (periodo === 'all') return true;
   // Tudo referenciado ao fuso de Brasília via localISO (strings YYYY-MM-DD)
@@ -2325,10 +2344,10 @@ function agN(praca, vendEnc, bucket, n){
 function openAgendaList(praca, vendEnc, bucket){
   const vend = vendEnc ? decodeURIComponent(vendEnc) : null;
   _agCtx = {praca:praca, vendEnc:vendEnc, bucket:bucket};
-  const LB = {late:'Atrasados', today:'Hoje', tomorrow:'Amanhã', future:'Próx. 7d', total:'Total', agHoje:'Ag. Hoje', criadosHoje:'Criados Hoje', totalHoje:'Total Hoje'};
+  const LB = {late:'Atrasados', today:'Hoje', tomorrow:'Amanhã', future:'Próx. 7d', total:'Total', agHoje:'Agendado Dia', criadosHoje:'Criado Dia', totalHoje:'Total Dia'};
   const _hojeISO = localISO(new Date());
-  const _agHojeFn = l => String(l.proximaInteracao||'').slice(0,10) === _hojeISO;
-  const _criadoHojeFn = l => l.createdAt &amp;&amp; localISO(new Date(l.createdAt)) === _hojeISO;
+  const _agHojeFn = l => dsInPeriodo(String(l.proximaInteracao||'').slice(0,10), filters.periodo);
+  const _criadoHojeFn = l => l.createdAt &amp;&amp; dsInPeriodo(localISO(new Date(l.createdAt)), filters.periodo);
   const _matchBucket = l => {
     if(bucket==='agHoje') return _agHojeFn(l) &amp;&amp; !_criadoHojeFn(l);
     if(bucket==='criadosHoje') return _criadoHojeFn(l);
@@ -2352,8 +2371,8 @@ function renderAgenda(d) {
   agData = data;
   const _hojeISO = localISO(new Date());
   function bkt(l){ const b = agendaBucket(l.proximaInteracao); if(b==='future' &amp;&amp; dateDiff(l.proximaInteracao) > 7) return null; return (b==='late'||b==='today'||b==='tomorrow'||b==='future') ? b : null; }
-  function agHojeFn(l){ return String(l.proximaInteracao||'').slice(0,10) === _hojeISO; }
-  function criadoHojeFn(l){ return l.createdAt &amp;&amp; localISO(new Date(l.createdAt)) === _hojeISO; }
+  function agHojeFn(l){ return dsInPeriodo(String(l.proximaInteracao||'').slice(0,10), filters.periodo); }
+  function criadoHojeFn(l){ return l.createdAt &amp;&amp; dsInPeriodo(localISO(new Date(l.createdAt)), filters.periodo); }
   const tot = {late:0,today:0,tomorrow:0,future:0};
   const byPraca = {};
   data.forEach(l => {
@@ -2390,7 +2409,7 @@ function renderAgenda(d) {
     return;
   }
   html += '<div class=&quot;section&quot;><div class=&quot;section-title&quot;>Pr\u00f3ximas Intera\u00e7\u00f5es por Pra\u00e7a</div>';
-  html += '<table><thead><tr><th>Pra\u00e7a / Vendedor</th><th>\u26a0\ufe0f Atrasados</th><th>Ag. Hoje</th><th>Criados Hoje</th><th>Total Hoje</th><th>Amanh\u00e3</th><th>Pr\u00f3x. 7d</th></tr></thead><tbody>';
+  html += '<table><thead><tr><th>Pra\u00e7a / Vendedor</th><th>\u26a0\ufe0f Atrasados</th><th>Agendado Dia</th><th>Criado Dia</th><th>Total Dia</th><th>Amanh\u00e3</th><th>Pr\u00f3x. 7d</th></tr></thead><tbody>';
   const pracas = Object.keys(byPraca).sort((a,b)=>byPraca[b].total-byPraca[a].total);
   pracas.forEach(p => {
     const o = byPraca[p]; const open = agendaExpanded.has(p);
