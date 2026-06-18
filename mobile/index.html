@@ -2124,6 +2124,29 @@ function filterPropByPeriod(data, period){
   return data;
 }
 
+// v2.137 — testa se uma data ISO (YYYY-MM-DD) cai no período selecionado das Tarefas de Venda.
+// Mesma semântica do desktop (dateInRealPeriod): D0=hoje, D-1=ontem, Semana=segunda→hoje, Mês=mês corrente.
+// Tudo ancorado em PROP_TODAY (fuso Brasília) e em aritmética UTC p/ não sofrer drift de fuso.
+function tarefaInPeriod(ds){
+  if(!ds) return false;
+  ds = String(ds).slice(0,10);
+  const T = PROP_TODAY;
+  if(propPeriod === 'mes') return ds.slice(0,7) === T.slice(0,7);
+  const [y,m,d] = T.split('-').map(Number);
+  if(propPeriod === 'd0') return ds === T;
+  if(propPeriod === 'd1'){
+    const yd = new Date(Date.UTC(y, m-1, d-1)).toISOString().slice(0,10);
+    return ds === yd;
+  }
+  if(propPeriod === 'semana'){
+    const ref = new Date(Date.UTC(y, m-1, d));
+    const dow = ref.getUTCDay(); const off = (dow === 0 ? 6 : dow - 1);
+    const start = new Date(ref.getTime() - off*86400000).toISOString().slice(0,10);
+    return ds >= start && ds <= T;
+  }
+  return true;
+}
+
 function renderPropostas() {
   const el = document.getElementById('s4-content');
   // v2.117 — garante que os leads (visitas/tarefas) estejam carregados; re-renderiza quando chegarem
@@ -2167,15 +2190,22 @@ function renderPropostas() {
     sellers[r.seller].aprov += r.mwh;
   });
 
-  // v2.117 — Tarefas de Venda Hoje (fuso Brasília): leads criados hoje OU com próxima interação hoje
-  const todayStr = PROP_TODAY;
+  // v2.137 — Tarefas de Venda: MESMA lógica/recorte do desktop (Tarefas de Vendas — Por Vendedor).
+  // Conta = leads CRIADOS no período OU com PRÓXIMA INTERAÇÃO no período (stage ativo, exclui ganho/perdido).
+  // Respeita o período selecionado (D0/D-1/Semana/Mês) no fuso de Brasília — antes ficava fixo em "hoje".
   const brDateMs = ms => { try { return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo'}).format(new Date(ms)); } catch(e){ return ''; } };
+  // stages que o desktop normaliza p/ ganho/perdido (normalizeStage) e portanto NÃO contam como tarefa agendada ativa
+  const INACTIVE_STAGES = ['ganho','won','signing_contract','active_member','perdido','lost'];
   (window.leads||[])
     .filter(l => String((l&&l.stage)||'').trim().toLowerCase() !== 'excluido')
     .forEach(l=>{
-      const createdToday = l.createdAt && brDateMs(l.createdAt) === todayStr;
-      const intToday     = l.proximaInteracao && String(l.proximaInteracao).slice(0,10) === todayStr;
-      if(createdToday || intToday){
+      const st = String((l&&l.stage)||'').trim().toLowerCase();
+      const stageActive = INACTIVE_STAGES.indexOf(st) === -1;
+      const createdISO = l.createdAt ? brDateMs(l.createdAt) : '';
+      const criInPeriod = !!createdISO && tarefaInPeriod(createdISO);            // criados: qualquer stage (= criadosHoje do desktop)
+      const proxISO = l.proximaInteracao ? String(l.proximaInteracao).slice(0,10) : '';
+      const agInPeriod  = !!proxISO && tarefaInPeriod(proxISO) && stageActive;   // agendados: só stage ativo (= agHoje do desktop)
+      if(criInPeriod || agInPeriod){
         const v = canonicalVendedor(l.vendedor||'');
         // resolve para nome canônico via EMAIL_NAME reverso
         const nome = Object.entries(CREDENTIALS).find(([,c])=>canonicalVendedor(c.nome)===v)?.[1]?.nome || l.vendedor;
@@ -2211,7 +2241,7 @@ function renderPropostas() {
       <div class="metric-toggle" style="flex:1">
         <div class="metric-toggle-btn ${propMetric==='aprovado'?'active':''}" onclick="setPropMetric('aprovado')">✅ MWh Aprov.</div>
         <div class="metric-toggle-btn ${propMetric==='propostas'?'active':''}" onclick="setPropMetric('propostas')">📋 Propostas</div>
-        <div class="metric-toggle-btn ${propMetric==='tarefas'?'active':''}" onclick="setPropMetric('tarefas')">📞 Visitas Hoje</div>
+        <div class="metric-toggle-btn ${propMetric==='tarefas'?'active':''}" onclick="setPropMetric('tarefas')">📞 Visitas</div>
       </div>
     </div>
     <div class="metric-toggle" style="margin-bottom:12px">
