@@ -1285,6 +1285,7 @@ function metaClass(pct) { if (pct>=100) return 'green'; if (pct>=90) return 'ora
 
 // ===== Período =====
 let rkPeriodo = 'today';
+function rkPerLbl(){ return rkPeriodo==='today'?'Hoje':rkPeriodo==='yesterday'?'Ontem':rkPeriodo==='week'?'Semana':rkPeriodo==='month'?'Mês':'Hoje'; }
 let rkPraca = 'all';
 function setRkPeriodo(p, el) {
   rkPeriodo = p;
@@ -1435,8 +1436,8 @@ function aggTarefas() {
       if (!isNaN(d) &amp;&amp; localISO(d) < TODAY_ISO) byV[v].atrasados++;
     }
     // Hoje: Criados tem prioridade; Ag.Hoje = agendado hoje E NÃO criado hoje
-    const criHoje = l.createdAt &amp;&amp; localISO(new Date(l.createdAt)) === TODAY_ISO;
-    const agHoje = String(l.proximaInteracao||'').slice(0,10) === TODAY_ISO &amp;&amp; l.stage !== 'ganho' &amp;&amp; l.stage !== 'perdido' &amp;&amp; !criHoje;
+    const criHoje = leadCreatedInPeriod(l);
+    const agHoje = dateInRealPeriod(String(l.proximaInteracao||'').slice(0,10)) &amp;&amp; l.stage !== 'ganho' &amp;&amp; l.stage !== 'perdido' &amp;&amp; !criHoje;
     if (agHoje) byV[v].agHoje++;
     if (criHoje) byV[v].criadosHoje++;
     if (agHoje || criHoje) byV[v].totalHoje++;
@@ -1534,9 +1535,9 @@ function renderAll() {
     renderTable('rk-tarefas', 'tarefas', aggTarefas(), [
       {key:'nome', label:'Vendedor', render:(x)=>x.nome},
       {key:'praca', label:'Praça', render:pracaBadge},
-      {key:'agHoje', label:'Ag. Hoje', sum:true, drill:true},
-      {key:'criadosHoje', label:'Criados Hoje', sum:true, drill:true},
-      {key:'totalHoje', label:'Total Hoje', sum:true, drill:true},
+      {key:'agHoje', label:'Ag. '+rkPerLbl(), sum:true, drill:true},
+      {key:'criadosHoje', label:'Criados '+rkPerLbl(), sum:true, drill:true},
+      {key:'totalHoje', label:'Total '+rkPerLbl(), sum:true, drill:true},
       {key:'perdido', label:'Perdido', sum:true, drill:true},
     ]);
   }
@@ -1596,22 +1597,22 @@ function rkBucketFilter(l, bucket){
     return !isNaN(d) &amp;&amp; localISO(d) < TODAY_ISO;
   }
   if (bucket === 'agHoje'){
-    const crA = l.createdAt &amp;&amp; localISO(new Date(l.createdAt)) === TODAY_ISO;
-    return String(l.proximaInteracao||'').slice(0,10) === TODAY_ISO &amp;&amp; l.stage !== 'ganho' &amp;&amp; l.stage !== 'perdido' &amp;&amp; !crA;
+    const crA = leadCreatedInPeriod(l);
+    return dateInRealPeriod(String(l.proximaInteracao||'').slice(0,10)) &amp;&amp; l.stage !== 'ganho' &amp;&amp; l.stage !== 'perdido' &amp;&amp; !crA;
   }
   if (bucket === 'criadosHoje'){
-    return l.createdAt &amp;&amp; localISO(new Date(l.createdAt)) === TODAY_ISO;
+    return leadCreatedInPeriod(l);
   }
   if (bucket === 'totalHoje'){
-    const crT = l.createdAt &amp;&amp; localISO(new Date(l.createdAt)) === TODAY_ISO;
-    const agT = String(l.proximaInteracao||'').slice(0,10) === TODAY_ISO &amp;&amp; l.stage !== 'ganho' &amp;&amp; l.stage !== 'perdido' &amp;&amp; !crT;
+    const crT = leadCreatedInPeriod(l);
+    const agT = dateInRealPeriod(String(l.proximaInteracao||'').slice(0,10)) &amp;&amp; l.stage !== 'ganho' &amp;&amp; l.stage !== 'perdido' &amp;&amp; !crT;
     return agT || crT;
   }
   return false;
 }
 function openRkList(vEnc, bucket){
   const vend = vEnc ? decodeURIComponent(vEnc) : null;
-  const bucketLbl = {total:'Total', novos:'Novos', qualificados:'Qualificados', propostas:'Propostas', perdido:'Perdido', atrasados:'Atrasados', agHoje:'Ag. Hoje', criadosHoje:'Criados Hoje', totalHoje:'Total Hoje'};
+  const bucketLbl = {total:'Total', novos:'Novos', qualificados:'Qualificados', propostas:'Propostas', perdido:'Perdido', atrasados:'Atrasados', agHoje:'Ag. '+rkPerLbl(), criadosHoje:'Criados '+rkPerLbl(), totalHoje:'Total '+rkPerLbl()};
   const stageLbl = {leads:'Novo', qualificados:'Qualificado', propostas_geradas:'Proposta', aguardando_credito:'Aguard. Crédito', ganho:'Ganho', perdido:'Perdido'};
   let list = leads.filter(l => rkBucketFilter(l, bucket));
   if (vend) list = list.filter(l => l.vendedor === vend);
