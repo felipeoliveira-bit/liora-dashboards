@@ -1421,6 +1421,26 @@ function applySort(rows, section) {
 }
 
 // ===== Agregar vendedores =====
+let interacoes = [];
+async function loadInteracoes(){
+  try{
+    const r = await fetch(LEADS_API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'listInteracoes'})});
+    const d = await r.json();
+    interacoes = (d &amp;&amp; d.interacoes) || [];
+    renderAll();
+  }catch(e){}
+}
+function _feitasMap(){
+  const m = {};
+  (interacoes||[]).forEach(r=>{
+    const v = canonName(String(r.vendedor||'').trim());
+    const ds = String(r.data||'').slice(0,10);
+    if(!v || !ds || !dateInRealPeriod(ds)) return;
+    (m[v] = m[v] || new Set()).add(String(r.lead_id||'')+'|'+ds);
+  });
+  const out = {}; Object.keys(m).forEach(v=> out[v]=m[v].size); return out;
+}
+loadInteracoes();
 function aggTarefas() {
   const byV = {};
   VENDEDORES.forEach(v => byV[v.nome] = { nome:v.nome, praca:v.praca, total:0, novos:0, qualificados:0, propostas:0, perdido:0, atrasados:0, agHoje:0, criadosHoje:0, totalHoje:0 });
@@ -1442,6 +1462,8 @@ function aggTarefas() {
     if (criHoje) byV[v].criadosHoje++;
     if (agHoje || criHoje) byV[v].totalHoje++;
   });
+  const _fm = _feitasMap();
+  Object.values(byV).forEach(x=>{ x.feitas = _fm[x.nome]||0; });
   return Object.values(byV);
 }
 function aggPropostas() {
@@ -1539,6 +1561,7 @@ function renderAll() {
       {key:'criadosHoje', label:'Criados '+rkPerLbl(), sum:true, drill:true},
       {key:'totalHoje', label:'Total '+rkPerLbl(), sum:true, drill:true},
       {key:'perdido', label:'Perdido', sum:true, drill:true},
+      {key:'feitas', label:'Feitas '+rkPerLbl(), sum:true},
     ]);
   }
   if (RAW.length) {

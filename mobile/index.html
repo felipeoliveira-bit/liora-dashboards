@@ -4066,6 +4066,10 @@ async function updateLead(){
     cadastroToast = `✓ Lead "${nome}" atualizado com sucesso`;
   }
 
+  // v2.136 — registra interacao concluida (tarefa feita) ao salvar com proxima interacao definida
+  if (res && res.ok && lead.proximaInteracao && !lead.lost) {
+    try { apiCall('logInteracao', { lead_id: lead.id, vendedor: lead.vendedor, stage: lead.stage, proxima_interacao: lead.proximaInteracao }); } catch(_){}
+  }
   editingLeadId = null;
   kanbanActiveStage = newStage;
   setFunilView('kanban');
