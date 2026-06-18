@@ -619,7 +619,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
 /* ===== Copa Liora — Álbum de figurinhas (TEMPORÁRIO) ===== */
 .copa-header{background:linear-gradient(135deg,#0201F3 0%,#1a00ff 100%);border-radius:16px;padding:18px;margin-bottom:12px;color:#fff;}
 .copa-kicker{font-size:11px;font-weight:800;opacity:.85;text-transform:uppercase;letter-spacing:.12em;}
-.copa-title{font-size:22px;font-weight:800;margin:3px 0 2px;display:flex;align-items:center;gap:8px;}
+.copa-title{font-size:24px;font-weight:800;margin:3px 0 2px;display:flex;align-items:center;gap:8px;}
 .copa-period{font-size:12px;opacity:.92;}
 .copa-totals{margin-top:12px;display:flex;gap:8px;}
 .copa-tot{flex:1;background:rgba(255,255,255,.16);border-radius:10px;padding:8px 6px;text-align:center;}
@@ -627,25 +627,49 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
 .copa-tot span{font-size:10px;opacity:.85;text-transform:uppercase;letter-spacing:.04em;}
 .copa-rules{background:#fff;border-radius:14px;padding:14px 16px;margin-bottom:14px;border:1px solid #ECECF5;}
 .copa-rules-title{font-size:13px;font-weight:800;margin-bottom:10px;}
-.copa-rule{display:flex;align-items:center;gap:10px;font-size:13px;margin:7px 0;color:#333;}
+.copa-rule{display:flex;align-items:flex-start;gap:10px;font-size:13px;margin:7px 0;color:#333;}
 .copa-rule .ic{font-size:20px;width:24px;text-align:center;flex-shrink:0;}
 .copa-rule b{color:#0201F3;}
-.copa-card{background:#fff;border-radius:14px;padding:14px;margin-bottom:10px;border:1px solid #ECECF5;}
-.copa-card.done{border-color:#1D9E75;box-shadow:0 0 0 2px rgba(29,158,117,.18);}
-.copa-row{display:flex;align-items:center;gap:10px;}
-.copa-pos{font-size:18px;width:30px;text-align:center;flex-shrink:0;font-weight:800;color:#888;}
-.copa-name{font-weight:700;font-size:15px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.copa-done-badge{background:#1D9E75;color:#fff;font-size:9.5px;font-weight:800;padding:3px 8px;border-radius:8px;letter-spacing:.03em;flex-shrink:0;}
-.copa-count{font-weight:800;font-size:17px;color:#0201F3;flex-shrink:0;}
-.copa-count small{color:#aaa;font-weight:600;font-size:12px;}
-.copa-bar{height:8px;background:#EEF0F8;border-radius:6px;margin:11px 0 9px;overflow:hidden;}
-.copa-bar>i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#0201F3,#534AB7);transition:width .4s;}
-.copa-badges{display:flex;gap:8px;font-size:11.5px;color:#555;}
-.copa-badge{background:#F4F5FB;border-radius:8px;padding:3px 9px;font-weight:600;}
-.copa-album{display:grid;grid-template-columns:repeat(11,1fr);gap:4px;margin-top:11px;}
-.copa-sticker{aspect-ratio:1;border-radius:4px;background:#E9EBF4;}
-.copa-sticker.on{background:linear-gradient(135deg,#0201F3,#1a00ff);}
-.copa-sticker.bal{background:linear-gradient(135deg,#CC86D6,#534AB7);}
+.copa-done-badge{background:#1D9E75;color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:6px;letter-spacing:.03em;vertical-align:middle;}
+.copa-rank-title,.copa-grp-title{font-size:14px;font-weight:800;color:#0a0a14;margin:16px 2px 8px;}
+.copa-rrow{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #ECECF5;border-radius:12px;padding:9px 12px;margin-bottom:7px;cursor:pointer;transition:.15s;}
+.copa-rrow.sel{border-color:#0201F3;box-shadow:0 0 0 2px rgba(2,1,243,.14);}
+.copa-rrow.top{background:linear-gradient(90deg,#FFFDF4,#fff);}
+.copa-rpos{font-size:16px;font-weight:800;width:26px;text-align:center;flex-shrink:0;color:#888;}
+.copa-rmain{flex:1;min-width:0;}
+.copa-rname{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.copa-rbar{height:7px;background:#EEF0F8;border-radius:6px;margin-top:6px;overflow:hidden;}
+.copa-rbar>i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#0201F3,#534AB7);transition:width .4s;}
+.copa-rbar.big{height:9px;margin-top:7px;}
+.copa-rcount{font-weight:800;font-size:16px;color:#0201F3;flex-shrink:0;}
+.copa-rcount small{color:#aaa;font-weight:600;font-size:11px;}
+.copa-album-head{background:#fff;border:1px solid #ECECF5;border-radius:14px;padding:14px;margin:18px 0 6px;}
+.copa-album-sel label{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:5px;}
+.copa-album-sel select{width:100%;padding:10px 12px;border:1px solid #DDE0EC;border-radius:10px;font-size:14px;font-weight:600;color:#0a0a14;background:#F8F9FD;}
+.copa-album-prog{margin-top:12px;text-align:center;}
+.copa-album-prog b{font-size:26px;font-weight:800;color:#0201F3;}
+.copa-album-prog small{font-size:12px;color:#aaa;font-weight:600;}
+.copa-prog-sub{display:block;font-size:12px;color:#666;margin-top:7px;}
+.copa-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:9px;margin-bottom:6px;}
+.copa-fig{position:relative;border-radius:10px;overflow:hidden;cursor:pointer;background:#E9EBF4;box-shadow:0 2px 8px rgba(0,0,0,.08);transition:transform .12s;}
+.copa-fig:active{transform:scale(.96);}
+.copa-fig img{display:block;width:100%;aspect-ratio:2/3;object-fit:cover;}
+.copa-fig.lk img{filter:grayscale(1) brightness(.45) contrast(.9);}
+.copa-lock{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:22px;}
+.copa-modal{position:fixed;inset:0;background:rgba(6,6,30,.78);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:1000;padding:24px;}
+.copa-modal.open{display:flex;}
+.copa-modal-card{background:#fff;border-radius:18px;overflow:hidden;max-width:300px;width:100%;text-align:center;animation:copaPop .18s ease;}
+@keyframes copaPop{from{transform:scale(.9);opacity:0;}to{transform:scale(1);opacity:1;}}
+.copa-modal-card>img{width:100%;display:block;}
+.copa-modal-card>img.lk{filter:grayscale(1) brightness(.5);}
+.copa-modal-info{padding:14px 16px 6px;}
+.copa-modal-name{font-size:17px;font-weight:800;color:#0a0a14;}
+.copa-modal-role{font-size:12px;font-weight:700;color:#0201F3;text-transform:uppercase;letter-spacing:.04em;margin-top:2px;}
+.copa-modal-grp{font-size:13px;color:#666;margin-top:4px;}
+.copa-modal-tag{font-size:12px;font-weight:700;border-radius:8px;padding:7px;margin:12px 0 2px;}
+.copa-modal-tag.ok{background:#E8F7F0;color:#13855E;}
+.copa-modal-tag.lk{background:#FBF1F1;color:#A32D2D;}
+.copa-modal-x{width:100%;border:0;background:#0201F3;color:#fff;font-size:15px;font-weight:700;padding:13px;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -698,6 +722,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
   <div class="screen" id="screen-copa">
     <div id="s6-content"></div>
   </div>
+  <div class="copa-modal" id="copa-modal" onclick="closeCopaFig()"></div>
 
   <div style="position:fixed;bottom:78px;right:8px;font-size:9px;color:#aaa;background:rgba(255,255,255,.85);padding:2px 6px;border-radius:8px;z-index:99;font-family:monospace;pointer-events:none">
     v2.104 · 10/06
@@ -1797,48 +1822,111 @@ function getNextTier(mwh){
   return null; // já está no topo
 }
 
-// ===== Copa Liora — Álbum de figurinhas (TEMPORÁRIO) =====
-// 1 figurinha por cliente novo aprovado · 3 figurinhas por baleia (fatura > R$2.000)
-// Período: 16/06 a 15/07/2026 · álbum completo = 44 figurinhas
+// ===== Copa Liora — Álbum de figurinhas da equipe (TEMPORÁRIO) =====
+// Regra: cada cliente novo aprovado = 1 figurinha · baleia (fatura > R$2.000) = 3 figurinhas
+// Álbum = 44 figurinhas da equipe (9 times) · os 3 primeiros a completar levam prêmio
+// Período: 16/06 a 15/07/2026 · figurinhas desbloqueiam em ordem (01 -> 44)
 const COPA_INI = '2026-06-16';
 const COPA_END = '2026-07-15';
 const COPA_ALBUM = 44;
 const COPA_BALEIA_FATURA = 2000;
 
-function copaNoPeriodo(x){
-  const d = (x.aprov_date || '').slice(0,10);
-  return d >= COPA_INI && d <= COPA_END;
-}
+const COPA_GRUPOS = [
+  { nome:'Feira de Santana',           emoji:'🌵', ini:1,  fim:5  },
+  { nome:'Fortaleza',                  emoji:'☀️', ini:6,  fim:9  },
+  { nome:'Natal',                      emoji:'🏖️', ini:10, fim:12 },
+  { nome:'Salvador',                   emoji:'⛪', ini:13, fim:17 },
+  { nome:'SPI',                        emoji:'🌾', ini:18, fim:22 },
+  { nome:'Inside Sales e Parcerias',   emoji:'📞', ini:23, fim:27 },
+  { nome:'Tech',                       emoji:'💻', ini:28, fim:33 },
+  { nome:'Ops',                        emoji:'⚙️', ini:34, fim:40 },
+  { nome:'Comercial',                  emoji:'🏆', ini:41, fim:44 },
+];
+const COPA_NOMES = {
+  1:'Kelma Rangel',2:'Lucileide Carlos',3:'Rosangela Mendes',4:'Tiago Freitas',5:'Ryan Trindade',
+  6:'Bruno Borges',7:'Neilon Nascimento',8:'Nubia Andrade',9:'Odirley Costa',
+  10:'Bruno Andrade',11:'Marcio Galvao',12:'Rodrigo Ribeiro',
+  13:'Adroaldo Bonfim',14:'Ettore Rossi',15:'Maria Lucia',16:'Tais Santos',17:'Antonio Mariano',
+  18:'Caio Lannes',19:'Monica Silveira',20:'Franciele Felix',21:'Ederson Silva',22:'Diego Faria',
+  23:'Gustavo Zschaber',24:'Jonas Alencar',25:'Luisa Sasahara',26:'Jefferson Félix',27:'Mariana Phaelante',
+  28:'Marcio Reis',29:'Bea Ribeiro',30:'Rodrigo Inter',31:'Zé William',32:'Fernando Constantino',33:'Larissa Santana',
+  34:'Bruno Poljokan',35:'Raynara Silva',36:'Angelo Kim',37:'Caique Soares',38:'Rodolfo Paiva',39:'Luigi Locatelli',40:'Laudiceia Silva',
+  41:'Renata Feijo',42:'Felipe Oliveira',43:'Lucas Ferrara',44:'Andressa Évora'
+};
+const COPA_CAP = {1:'Capitã',6:'Capitão',10:'Capitão',13:'Capitão',18:'Capitão',28:'Capitão',34:'Capitão',41:'Capitã'};
+const COPA_APOIO = {42:1,43:1,44:1};
+function copaPapel(n){ return COPA_CAP[n] || (COPA_APOIO[n] ? 'Apoio' : 'Agente da Transformação'); }
+function copaGrupoDe(n){ return COPA_GRUPOS.find(g => n>=g.ini && n<=g.fim) || {nome:'',emoji:''}; }
+function copaImg(n){ return 'figurinhas/' + String(n).padStart(2,'0') + '.jpg'; }
 
-function renderCopa(){
+let copaSeller = null; // vendedor cujo álbum está aberto
+
+function copaNoPeriodo(x){ const d=(x.aprov_date||'').slice(0,10); return d>=COPA_INI && d<=COPA_END; }
+
+function copaStats(){
   const aprov = rawData.filter(x => isAprovado(x) && copaNoPeriodo(x));
   const byS = {};
   aprov.forEach(x => {
     const k = x.s || '—';
     if(!byS[k]) byS[k] = { clientes:0, baleias:0 };
-    if((x.fatura || 0) > COPA_BALEIA_FATURA) byS[k].baleias++; else byS[k].clientes++;
+    if((x.fatura||0) > COPA_BALEIA_FATURA) byS[k].baleias++; else byS[k].clientes++;
   });
-
   const names = [...new Set([...Object.keys(byS), ...Object.keys(METAS)])];
   const rows = names.map(name => {
     const o = byS[name] || { clientes:0, baleias:0 };
-    const fig = o.clientes + o.baleias * 3;
-    return { name, clientes:o.clientes, baleias:o.baleias, fig };
-  }).sort((a,b) => b.fig - a.fig || b.baleias - a.baleias || a.name.localeCompare(b.name));
+    const fig = o.clientes + o.baleias*3;
+    return { name, clientes:o.clientes, baleias:o.baleias, fig, unlocked:Math.min(fig,COPA_ALBUM) };
+  }).sort((a,b)=> b.fig-a.fig || b.baleias-a.baleias || a.name.localeCompare(b.name));
+  return rows;
+}
 
-  const totFig = rows.reduce((a,r) => a + r.fig, 0);
-  const totBal = rows.reduce((a,r) => a + r.baleias, 0);
-  const completos = rows.filter(r => r.fig >= COPA_ALBUM).length;
+function copaSelectSeller(name){
+  copaSeller = name;
+  renderCopa();
+  const el = document.getElementById('copa-album-anchor');
+  if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function openCopaFig(n, unlocked){
+  const nome = COPA_NOMES[n] || ('Figurinha '+n);
+  const g = copaGrupoDe(n);
+  const m = document.getElementById('copa-modal');
+  m.innerHTML =
+      '<div class="copa-modal-card" onclick="event.stopPropagation()">'
+    +   '<img class="' + (unlocked?'':'lk') + '" src="' + copaImg(n) + '" alt="' + nome + '">'
+    +   '<div class="copa-modal-info">'
+    +     '<div class="copa-modal-name">#' + String(n).padStart(2,'0') + ' · ' + nome + '</div>'
+    +     '<div class="copa-modal-role">' + copaPapel(n) + '</div>'
+    +     '<div class="copa-modal-grp">' + g.emoji + ' ' + g.nome + '</div>'
+    +     (unlocked
+        ? '<div class="copa-modal-tag ok">✅ Figurinha conquistada</div>'
+        : '<div class="copa-modal-tag lk">🔒 Bloqueada — aprove mais clientes para desbloquear</div>')
+    +   '</div>'
+    +   '<button class="copa-modal-x" onclick="closeCopaFig()">Fechar</button>'
+    + '</div>';
+  m.classList.add('open');
+}
+function closeCopaFig(){ const m=document.getElementById('copa-modal'); if(m) m.classList.remove('open'); }
+
+function renderCopa(){
+  const rows = copaStats();
+  const totFig = rows.reduce((a,r)=>a+r.fig,0);
+  const completos = rows.filter(r=>r.fig>=COPA_ALBUM).length;
   const medals = ['🥇','🥈','🥉'];
+
+  // vendedor do álbum: mantém seleção; senão o líder
+  if(copaSeller === null) copaSeller = (rows[0] && rows[0].fig>0) ? rows[0].name : '';
+  const sel = rows.find(r=>r.name===copaSeller) || {name:copaSeller,fig:0,clientes:0,baleias:0,unlocked:0};
+  const selPct = Math.min((sel.fig/COPA_ALBUM)*100, 100);
 
   let html = ''
     + '<div class="copa-header">'
-    +   '<div class="copa-kicker">Campanha temporaria</div>'
+    +   '<div class="copa-kicker">⚡ Edição oficial · 2026</div>'
     +   '<div class="copa-title">⚽ Copa Liora</div>'
-    +   '<div class="copa-period">Álbum de figurinhas · 16/06 a 15/07/2026</div>'
+    +   '<div class="copa-period">Vários times, uma seleção · álbum de figurinhas</div>'
     +   '<div class="copa-totals">'
-    +     '<div class="copa-tot"><b>' + totFig + '</b><span>figurinhas</span></div>'
-    +     '<div class="copa-tot"><b>' + totBal + '</b><span>baleias</span></div>'
+    +     '<div class="copa-tot"><b>9</b><span>times</span></div>'
+    +     '<div class="copa-tot"><b>44</b><span>figurinhas</span></div>'
     +     '<div class="copa-tot"><b>' + completos + '</b><span>álbuns completos</span></div>'
     +   '</div>'
     + '</div>';
@@ -1846,38 +1934,55 @@ function renderCopa(){
   html += ''
     + '<div class="copa-rules">'
     +   '<div class="copa-rules-title">📖 Como completar o álbum</div>'
-    +   '<div class="copa-rule"><span class="ic">🟦</span><div>Cada <b>cliente novo aprovado</b> vale <b>1 figurinha</b>.</div></div>'
-    +   '<div class="copa-rule"><span class="ic">🐋</span><div>Cada <b>baleia</b> (fatura acima de R$ 2.000) vale <b>3 figurinhas</b>.</div></div>'
-    +   '<div class="copa-rule"><span class="ic">🏆</span><div>Álbum completo = <b>44 figurinhas</b>. Quem completa, fecha a Copa!</div></div>'
+    +   '<div class="copa-rule"><span class="ic">🎴</span><div>Cada <b>cliente novo aprovado</b> = <b>1 figurinha</b>.</div></div>'
+    +   '<div class="copa-rule"><span class="ic">🐋</span><div>Cada <b>baleia</b> (fatura acima de R$ 2.000) = <b>3 figurinhas</b>.</div></div>'
+    +   '<div class="copa-rule"><span class="ic">🏆</span><div>Os <b>3 primeiros</b> a completar as <b>44 figurinhas</b> levam um prêmio especial 🤫</div></div>'
     + '</div>';
 
+  // ranking
+  html += '<div class="copa-rank-title">🏁 Ranking do álbum</div>';
   rows.forEach((r,i) => {
-    const done = r.fig >= COPA_ALBUM;
-    const pct = Math.min((r.fig / COPA_ALBUM) * 100, 100);
-    const pos = i < 3 ? medals[i] : (i+1) + 'º';
-    // album: baleia stickers (lilas) primeiro, depois clientes (azul), resto vazio
-    const balDots = Math.min(r.baleias * 3, COPA_ALBUM);
-    const onDots = Math.min(r.clientes, COPA_ALBUM - balDots);
-    let album = '';
-    for(let k=0; k<COPA_ALBUM; k++){
-      const cls = k < balDots ? ' bal' : (k < balDots + onDots ? ' on' : '');
-      album += '<div class="copa-sticker' + cls + '"></div>';
-    }
+    const pct = Math.min((r.fig/COPA_ALBUM)*100,100);
+    const pos = i<3 ? medals[i] : (i+1)+'º';
+    const done = r.fig>=COPA_ALBUM;
+    const isSel = r.name===copaSeller;
     html += ''
-      + '<div class="copa-card' + (done ? ' done' : '') + '">'
-      +   '<div class="copa-row">'
-      +     '<div class="copa-pos">' + pos + '</div>'
-      +     '<div class="copa-name">' + r.name + '</div>'
-      +     (done ? '<div class="copa-done-badge">ÁLBUM COMPLETO</div>' : '')
-      +     '<div class="copa-count">' + r.fig + '<small>/' + COPA_ALBUM + '</small></div>'
+      + '<div class="copa-rrow' + (isSel?' sel':'') + (i<3?' top':'') + '" onclick="copaSelectSeller(\'' + r.name.replace(/'/g,"\\'") + '\')">'
+      +   '<div class="copa-rpos">' + pos + '</div>'
+      +   '<div class="copa-rmain">'
+      +     '<div class="copa-rname">' + r.name + (done?' <span class="copa-done-badge">COMPLETO</span>':'') + '</div>'
+      +     '<div class="copa-rbar"><i style="width:' + pct.toFixed(1) + '%"></i></div>'
       +   '</div>'
-      +   '<div class="copa-bar"><i style="width:' + pct.toFixed(1) + '%"></i></div>'
-      +   '<div class="copa-badges">'
-      +     '<span class="copa-badge">🟦 ' + r.clientes + ' clientes</span>'
-      +     '<span class="copa-badge">🐋 ' + r.baleias + ' baleias</span>'
-      +   '</div>'
-      +   '<div class="copa-album">' + album + '</div>'
+      +   '<div class="copa-rcount">' + r.fig + '<small>/44</small></div>'
       + '</div>';
+  });
+
+  // seletor + álbum
+  const opts = rows.map(r=>'<option value="'+r.name.replace(/"/g,'&quot;')+'"'+(r.name===copaSeller?' selected':'')+'>'+r.name+' ('+r.fig+'/44)</option>').join('');
+  html += ''
+    + '<div id="copa-album-anchor"></div>'
+    + '<div class="copa-album-head">'
+    +   '<div class="copa-album-sel">'
+    +     '<label>📔 Ver o álbum de</label>'
+    +     '<select onchange="copaSelectSeller(this.value)">' + opts + '</select>'
+    +   '</div>'
+    +   '<div class="copa-album-prog">'
+    +     '<b>' + sel.fig + '</b><small>/44 figurinhas</small>'
+    +     '<div class="copa-rbar big"><i style="width:' + selPct.toFixed(1) + '%"></i></div>'
+    +     '<span class="copa-prog-sub">🎴 ' + sel.clientes + ' clientes · 🐋 ' + sel.baleias + ' baleias</span>'
+    +   '</div>'
+    + '</div>';
+
+  COPA_GRUPOS.forEach(g => {
+    html += '<div class="copa-grp-title">' + g.emoji + ' ' + g.nome + '</div><div class="copa-grid">';
+    for(let n=g.ini; n<=g.fim; n++){
+      const unlocked = n <= sel.unlocked;
+      html += '<div class="copa-fig' + (unlocked?'':' lk') + '" onclick="openCopaFig(' + n + ',' + (unlocked?1:0) + ')">'
+            +   '<img loading="lazy" src="' + copaImg(n) + '" alt="' + (COPA_NOMES[n]||'') + '">'
+            +   (unlocked?'':'<span class="copa-lock">🔒</span>')
+            + '</div>';
+    }
+    html += '</div>';
   });
 
   document.getElementById('s6-content').innerHTML = html;
