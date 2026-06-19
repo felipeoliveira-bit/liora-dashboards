@@ -1635,6 +1635,7 @@ function rkBucketFilter(l, bucket){
 }
 function openRkList(vEnc, bucket){
   const vend = vEnc ? decodeURIComponent(vEnc) : null;
+  const isLost = bucket === 'perdido';
   const bucketLbl = {total:'Total', novos:'Novos', qualificados:'Qualificados', propostas:'Propostas', perdido:'Perdido', atrasados:'Atrasados', agHoje:'Ag. '+rkPerLbl(), criadosHoje:'Criados '+rkPerLbl(), totalHoje:'Total '+rkPerLbl()};
   const stageLbl = {leads:'Novo', qualificados:'Qualificado', propostas_geradas:'Proposta', aguardando_credito:'Aguard. Crédito', ganho:'Ganho', perdido:'Perdido'};
   let list = leads.filter(l => rkBucketFilter(l, bucket));
@@ -1643,15 +1644,15 @@ function openRkList(vEnc, bucket){
   list.sort((a,b) => (b.fatura||0)-(a.fatura||0));
   const titWho = vend || (rkPraca !== 'all' ? rkPraca : 'FIELD');
   const fmtR = (n) => 'R$ ' + (Number(n)||0).toLocaleString('pt-BR');
-  let rows = list.map(l => '<tr><td><strong>'+(l.nome||'—')+'</strong></td><td>'+(l.vendedor||'—')+'</td><td>'+(stageLbl[l.stage]||l.stage||'—')+'</td><td>'+(l.proximaInteracao? String(l.proximaInteracao).slice(0,10) : '—')+'</td><td>'+fmtR(l.fatura)+'</td><td>'+(l.cidade||'—')+'</td></tr>').join('');
-  if (!rows) rows = '<tr><td colspan=&quot;6&quot; class=&quot;rkld-empty&quot;>Nenhum cliente nesta categoria.</td></tr>';
+  let rows = list.map(l => '<tr><td><strong>'+(l.nome||'—')+'</strong></td><td>'+(l.vendedor||'—')+'</td>'+(isLost?('<td>'+(l.lostReason||'—')+'</td>'):'')+'<td>'+(stageLbl[l.stage]||l.stage||'—')+'</td><td>'+(l.proximaInteracao? String(l.proximaInteracao).slice(0,10) : '—')+'</td><td>'+fmtR(l.fatura)+'</td><td>'+(l.cidade||'—')+'</td></tr>').join('');
+  if (!rows) rows = '<tr><td colspan=&quot;'+(isLost?7:6)+'&quot; class=&quot;rkld-empty&quot;>Nenhum cliente nesta categoria.</td></tr>';
   const modal = document.getElementById('rk-ld-modal');
   modal.innerHTML =
     '<div class=&quot;rkld-head&quot;><div class=&quot;rkld-title&quot;>'+titWho+' · '+(bucketLbl[bucket]||bucket)+'</div>'+
     '<div class=&quot;rkld-sub&quot;>'+list.length+' cliente(s)</div>'+
     '<button class=&quot;rkld-close&quot; onclick=&quot;closeRkList()&quot;>×</button></div>'+
     '<div class=&quot;rkld-body&quot;><table class=&quot;rkld-list&quot;><thead><tr>'+
-    '<th>Cliente</th><th>Vendedor</th><th>Etapa</th><th>Próx. Int.</th><th>Fatura</th><th>Cidade</th>'+
+    '<th>Cliente</th><th>Vendedor</th>'+(isLost?'<th>Motivo</th>':'')+'<th>Etapa</th><th>Próx. Int.</th><th>Fatura</th><th>Cidade</th>'+
     '</tr></thead><tbody>'+rows+'</tbody></table></div>';
   document.getElementById('rk-ld-overlay').classList.add('open');
 }
