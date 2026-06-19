@@ -120,6 +120,11 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
 .agd-cli { padding:8px 10px; border-radius:8px; background:#fff; border:1px solid #F0F0F5; margin-bottom:6px; }
 .agd-cli-name { font-size:12px; font-weight:700; color:var(--ink); }
 .agd-cli-meta { font-size:10px; color:var(--muted); margin-top:2px; }
+.agd-cli.agd-cli-act { cursor:pointer; }
+.agd-cli.agd-cli-act .agd-cli-name::after { content:'\25B8'; float:right; color:var(--muted); font-size:11px; font-weight:400; }
+.agd-cli.agd-cli-act.open .agd-cli-name::after { content:'\25BE'; }
+.agd-cli-actions { display:none; margin-top:8px; }
+.agd-cli.open .agd-cli-actions { display:block; }
 .stat-card.clickable, .alert-card.clickable { cursor:pointer; }
 
 /* v2.104 — destaque do vendedor identificado na aba Card */
@@ -1371,9 +1376,18 @@ function openAgDocsModal(){
       const cliHtml = vd.clientes
         .sort((a,b)=>b.mwh-a.mwh)
         .map(c => `
-          <div class="agd-cli">
+          <div class="agd-cli${c.deal_id?' agd-cli-act':''}"${c.deal_id?` onclick="this.classList.toggle('open')"`:''}>
             <div class="agd-cli-name">${escapeHtml(c.c || 'Cliente sem nome')}</div>
             <div class="agd-cli-meta">⚡ ${(c.mwh||0).toFixed(2)} MWh · ${escapeHtml(c.dist||'—')}${c.city?` · 📍 ${escapeHtml(c.city)}`:''}${c.idle?` · ⏳ ${c.idle}d parado`:''}</div>
+            ${c.deal_id ? `
+            <div class="agd-cli-actions">
+              <button class="relatar-btn" data-deal-id="${escapeHtml(c.deal_id)}" data-cliente-nome="${escapeHtml(c.c)}" onclick="event.stopPropagation(); openRelatarSituacaoFromBtn(this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 11a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v3a4 4 0 0 1-4 4H8l-5 4z"/></svg>
+                Relatar situação ao suporte
+              </button>
+              <button onclick="event.stopPropagation(); openTrocarResponsavel('${c.deal_id}')" style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:6px;padding:9px 12px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;font-size:12px;font-weight:700;color:#C2410C;cursor:pointer;font-family:inherit">🔄 Solicitar troca de responsável</button>
+              <button onclick="event.stopPropagation(); solicitarPerdido('${c.deal_id}')" style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:6px;padding:9px 12px;background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;font-size:12px;font-weight:700;color:#B91C1C;cursor:pointer;font-family:inherit">🚫 Solicitar perdido</button>
+            </div>`:''}
           </div>`).join('');
       return `
         <div class="agd-vend">
