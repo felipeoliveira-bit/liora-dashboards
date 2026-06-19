@@ -1167,12 +1167,131 @@ function renderRemRulesCard(seller){
     </div>`;
 }
 
+// ===== v2.138 — Card de Metas do LÍDER (RV proporcional + aceleradores) =====
+// Atingimento do líder = MWh APROVADOS DO TIME (praça) ÷ meta do líder (aba "Time").
+// 100% = R$ 2.000. <70% defrator zera. 70–124% proporcional. 125/150/200 = aceleradores.
+const LIDER_BASE_RV = 2000;
+function liderRV(pct){
+  if(pct < 70)  return 0;
+  if(pct < 125) return Math.round(pct/100 * LIDER_BASE_RV);
+  if(pct < 150) return 3000;
+  if(pct < 200) return 4000;
+  return 6000;
+}
+function liderProxMarco(pct){ return [70,125,150,200].find(m => pct < m) || null; }
+function teamMwhAprovado(praca){
+  return rawData
+    .filter(x => (SELLER_PRACA[x.s]||'').toLowerCase() === praca && noMes(x) && isAprovado(x))
+    .reduce((a,x)=>a+x.mwh, 0);
+}
+function renderRemProgressLider(seller, teamMwh, meta){
+  const pct = meta>0 ? (teamMwh/meta*100) : 0;
+  const rv  = liderRV(pct);
+  const rvTxt = rv>0
+    ? `<span style="color:var(--green);font-weight:800">R$ ${rv.toLocaleString('pt-BR')}</span> <span style="color:var(--muted)">de RV</span>`
+    : `<span style="color:var(--muted)">Abaixo de 70% — RV zerada (defrator)</span>`;
+  const marco = liderProxMarco(pct);
+  let faltaTxt;
+  if(marco){
+    const faltaMwh = Math.max(meta*marco/100 - teamMwh, 0);
+    faltaTxt = `Faltam <b>${faltaMwh.toFixed(1)} MWh</b> p/ ${marco}% (R$ ${liderRV(marco).toLocaleString('pt-BR')})`;
+  } else {
+    faltaTxt = `🎉 Acelerador máximo (200%+)`;
+  }
+  return `
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;padding-top:10px;border-top:1px solid #F0F0F5">
+      <div style="font-size:13px;color:var(--ink)">${rvTxt}</div>
+      <div style="font-size:11px;color:var(--muted);text-align:right">${faltaTxt}</div>
+    </div>`;
+}
+function renderRemRulesCardLider(seller, pct){
+  const faixa = pct < 70 ? 'def' : pct < 125 ? 'prop' : pct < 150 ? 'a125' : pct < 200 ? 'a150' : 'a200';
+  const rowL = (faixaTxt, mech, val, on, valColor) => `
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;${on?'background:#EEEDFE;':''}">
+      <div style="width:3px;align-self:stretch;border-radius:3px;background:${on?'var(--blue)':'#ECECF3'}"></div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:7px">
+          <span style="font-size:15px;font-weight:700;color:var(--text)">${faixaTxt}</span>
+          ${on?'<span style="font-size:9px;font-weight:800;letter-spacing:.3px;color:#fff;background:var(--blue);padding:2px 7px;border-radius:20px">VOCÊ</span>':''}
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-top:1px">${mech}</div>
+      </div>
+      <div style="font-size:15px;font-weight:800;color:${valColor};white-space:nowrap">${val}</div>
+    </div>`;
+  const sec = txt => `<div style="font-size:10px;font-weight:700;letter-spacing:.6px;color:var(--muted);text-transform:uppercase;margin:12px 4px 3px">${txt}</div>`;
+  return `
+    <div class="rem-rules-card">
+      <div class="rem-rules-title">💰 Card de Metas — Líder</div>
+      <div style="font-size:12px;color:var(--muted);margin:3px 0 6px">100% de atingimento = <b style="color:var(--text)">R$ 2.000</b></div>
+      ${sec('Base')}
+      ${rowL('Abaixo de 70%', 'Defrator — zera a RV',         'R$ 0',            faixa==='def',  'var(--muted)')}
+      ${rowL('70% – 124%',    'Proporcional ao atingimento',  'R$ 1.400–2.480',  faixa==='prop', 'var(--text)')}
+      ${sec('Aceleradores')}
+      ${rowL('125%',          'Paga como 150%',               'R$ 3.000',        faixa==='a125', 'var(--blue)')}
+      ${rowL('150%',          'Paga como 200%',               'R$ 4.000',        faixa==='a150', 'var(--blue)')}
+      ${rowL('200%',          'Paga como 300%',               'R$ 6.000',        faixa==='a200', 'var(--blue)')}
+      <div style="font-size:11px;color:var(--muted);margin-top:11px;padding-top:9px;border-top:1px solid var(--border);line-height:1.5">
+        Entre gatilhos paga o de baixo (135% paga como 150%). · 🗓️ RV no <b>1º dia útil do mês seguinte</b>.
+      </div>
+    </div>`;
+}
+
+function renderCarteiraLider(seller){
+  const praca = liderPraca(seller);
+  const meta  = (typeof PRACA_DEF!=='undefined' && PRACA_DEF[praca] && PRACA_DEF[praca].meta) ? PRACA_DEF[praca].meta : (METAS[seller] || 0);
+  const teamMwh = teamMwhAprovado(praca);
+  const pct = meta>0 ? (teamMwh/meta*100) : 0;
+  const pc  = pct>=70?'var(--green)':pct>=40?'var(--blue)':'var(--red)';
+  const barW = Math.min(pct,100);
+  const membros = VENDEDORES
+    .filter(v => (SELLER_PRACA[v.nome]||'').toLowerCase() === praca && v.nome !== seller)
+    .map(v => ({
+      nome: v.nome,
+      mwh:  rawData.filter(x=>x.s===v.nome && noMes(x) && isAprovado(x)).reduce((a,x)=>a+x.mwh,0),
+      mt:   METAS[v.nome]||0
+    }))
+    .sort((a,b)=>b.mwh-a.mwh);
+  let html = `
+    <div class="card">
+      <div class="card-title">Resultado do Time · ${PRACA_LABEL[praca]||praca}</div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px">
+        <div>
+          <div style="font-size:32px;font-weight:800;color:var(--blue);line-height:1">${teamMwh.toFixed(1)}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">MWh do time · meta ${meta}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:28px;font-weight:800;color:${pc}">${pct.toFixed(0)}%</div>
+          <div style="font-size:11px;color:var(--muted)">de atingimento</div>
+        </div>
+      </div>
+      <div class="bar-bg"><div class="bar-fill" style="width:${barW.toFixed(0)}%;background:var(--blue)"></div></div>
+      ${renderRemProgressLider(seller, teamMwh, meta)}
+    </div>
+    ${renderRemRulesCardLider(seller, pct)}
+    <div class="section-head">Time (${membros.length})</div>`;
+  membros.forEach(m=>{
+    const mp = m.mt>0?Math.min(m.mwh/m.mt*100,100):0;
+    const mc = mp>=70?'var(--green)':mp>=40?'var(--blue)':'var(--red)';
+    html += `
+      <div class="client-card" onclick="document.getElementById('seller-select').value=this.dataset.nome;renderCarteira()" data-nome="${escapeHtml(m.nome)}" style="cursor:pointer">
+        <div class="client-name">${escapeHtml(m.nome)}${m.nome===seller?' · você':''}</div>
+        <div class="client-meta">
+          <span class="mwh-badge">${m.mwh.toFixed(1)} MWh</span>
+          <span class="days-badge" style="color:${mc}">${mp.toFixed(0)}% · meta ${m.mt}</span>
+        </div>
+      </div>`;
+  });
+  return html;
+}
+
 function renderCarteira(){
   // v2.122 — reflete identidade global mas MANTÉM a escolha manual do seletor
   if (typeof initSellerSelect === 'function') initSellerSelect(true);
   const seller = document.getElementById('seller-select').value;
   const el = document.getElementById('s2-content');
   if(!seller){ el.innerHTML = '<div class="empty"><div class="empty-icon">👆</div><div class="empty-text">Identifica-te no topo da tela pra ver tua carteira</div></div>'; return; }
+
+  if(typeof isLider==='function' && isLider(seller)){ el.innerHTML = renderCarteiraLider(seller); return; }
 
   const myDeals = rawData.filter(x=>x.s===seller);
   const myAprov = myDeals.filter(x => noMes(x) && isAprovado(x)).reduce((a,x)=>a+x.mwh,0);
@@ -2082,7 +2201,7 @@ function renderCampSemana(){
         ${avatarImg(s.name, 'rank-avatar')}
         <div class="rank-info">
           <div class="rank-name">${s.name}${prizeInfo}</div>
-          <div class="rank-praca" style="color:${pc}">Mês: ${mes.toFixed(1)} MWh · ${pct.toFixed(0)}% da meta</div>
+          <div class="rank-praca" style="color:${isLider(s.name)?'var(--muted)':pc}">Mês: ${mes.toFixed(1)} MWh${isLider(s.name)?'':` · ${pct.toFixed(0)}% da meta`}</div>
           ${nextInfo}
         </div>
         <div class="rank-right">
