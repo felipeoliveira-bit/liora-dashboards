@@ -125,6 +125,9 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
 .agd-cli.agd-cli-act.open .agd-cli-name::after { content:'\25BE'; }
 .agd-cli-actions { display:none; margin-top:8px; }
 .agd-cli.open .agd-cli-actions { display:block; }
+.agd-cli-docs { font-size:10px; font-weight:700; color:#92400E; background:#FEF8EC; border:1px solid #F5E2B8; border-radius:6px; padding:4px 7px; margin-top:5px; line-height:1.35; }
+.agd-cli-docs.ok { color:#166534; background:#F0FDF4; border-color:#BBF7D0; }
+.agd-cli-docs.muted { color:var(--muted); background:#F7F7FB; border-color:#ECECF3; font-weight:600; }
 .stat-card.clickable, .alert-card.clickable { cursor:pointer; }
 
 /* v2.104 — destaque do vendedor identificado na aba Card */
@@ -1379,6 +1382,7 @@ function openAgDocsModal(){
           <div class="agd-cli${c.deal_id?' agd-cli-act':''}"${c.deal_id?` onclick="this.classList.toggle('open')"`:''}>
             <div class="agd-cli-name">${escapeHtml(c.c || 'Cliente sem nome')}</div>
             <div class="agd-cli-meta">⚡ ${(c.mwh||0).toFixed(2)} MWh · ${escapeHtml(c.dist||'—')}${c.city?` · 📍 ${escapeHtml(c.city)}`:''}${c.idle?` · ⏳ ${c.idle}d parado`:''}</div>
+            ${(c.docs==='__OK__') ? `<div class="agd-cli-docs ok">✅ Documentos recebidos</div>` : (c.docs&&c.docs.trim()) ? `<div class="agd-cli-docs">📄 Falta: ${escapeHtml(c.docs.trim())}</div>` : `<div class="agd-cli-docs muted">📄 Documentos pendentes (detalhe indisponível)</div>`}
             ${c.deal_id ? `
             <div class="agd-cli-actions">
               <button class="relatar-btn" data-deal-id="${escapeHtml(c.deal_id)}" data-cliente-nome="${escapeHtml(c.c)}" onclick="event.stopPropagation(); openRelatarSituacaoFromBtn(this)">
