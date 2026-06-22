@@ -853,7 +853,7 @@ function getStatusInfo(x){
 }
 
 function getAcao(x){
-  if(x.lost_at && isAprovado(x)) return '⚠️ Não aceito pela distribuidora — sem próxima ação';
+  if(x.lost_at && isAprovado(x)) return 'Sem próxima ação';
   if(isAprovado(x)) return '✅ Processo concluído — acompanhar ativação';
   if(isNegado(x))   return (x.motivo && x.motivo.trim()) ? ('🔍 Motivo da negativa: ' + x.motivo.trim()) : '🔍 Entender motivo da negativa e avaliar reativação';
   if(isAgDocs(x)){
@@ -1334,17 +1334,19 @@ function renderCarteira(){
   sorted.forEach(x=>{
     const si = getStatusInfo(x);
     const acao = getAcao(x);
+    const naoAceito = isAprovado(x) && !!x.lost_at;
+    const badgeLabel = naoAceito ? 'Aprovado pela Liora' : si.label;
     const idleColor = x.idle>=8?'var(--red)':x.idle>=5?'var(--orange)':'var(--muted)';
     html += `
       <div class="client-card" onclick="openClienteDetalhes('${escapeHtml(x.deal_id || '')}')" style="cursor:pointer">
         <div class="client-name">${x.c}</div>
         <div class="client-city">${x.city}</div>
         <div class="client-meta">
-          <span class="status-badge" style="background:${si.bg};color:${si.color}">${si.label}</span>
+          <span class="status-badge" style="background:${si.bg};color:${si.color}">${badgeLabel}</span>
           <span class="mwh-badge">${x.mwh.toFixed(2)} MWh</span>
           <span class="days-badge" style="color:${idleColor}">${x.idle}d</span>
         </div>
-        <div class="acao-text">${acao}</div>
+        ${naoAceito ? `<div class="acao-text" style="background:#FCEBEB;border:1px solid #F5C2C2;color:#A32D2D;font-weight:700;border-radius:10px;padding:8px 10px">⚠️ Não aceito pela distribuidora${x.lost_reason ? ` · ${escapeHtml(x.lost_reason)}` : ''}</div>` : `<div class="acao-text">${acao}</div>`}
         ${x.deal_id ? `
           <button class="relatar-btn" data-deal-id="${escapeHtml(x.deal_id)}" data-cliente-nome="${escapeHtml(x.c)}" onclick="event.stopPropagation(); openRelatarSituacaoFromBtn(this)">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -1822,6 +1824,8 @@ function openClienteDetalhes(dealId){
   // Label do estágio amigável
   const si = getStatusInfo(lead);
   const acao = getAcao(lead);
+  const naoAceito = isAprovado(lead) && !!lead.lost_at;
+  const badgeLabel = naoAceito ? 'Aprovado pela Liora' : si.label;
   const idleColor = lead.idle>=8?'var(--red)':lead.idle>=5?'var(--orange)':'var(--muted)';
 
   const existing = document.getElementById('cliente-detail-modal');
@@ -1859,7 +1863,7 @@ function openClienteDetalhes(dealId){
       <div class="cd-header">
         <div class="cd-name">${escapeHtml(lead.c || '(sem nome)')}</div>
         <div class="cd-badges">
-          <span class="status-badge" style="background:${si.bg};color:${si.color}">${si.label}</span>
+          <span class="status-badge" style="background:${si.bg};color:${si.color}">${badgeLabel}</span>
           <span class="mwh-badge">${(lead.mwh||0).toFixed(2)} MWh</span>
           <span class="days-badge" style="color:${idleColor}">${lead.idle||0}d parado</span>
         </div>
