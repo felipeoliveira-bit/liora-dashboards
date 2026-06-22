@@ -1844,7 +1844,7 @@ function openClienteDetalhes(dealId){
   // Bloco de perdido (se aplicável)
   const lostBlock = lead.lost_at
     ? `<div class="cd-section cd-section-lost">
-         <div class="cd-section-title">❌ Lead perdido</div>
+         <div class="cd-section-title">${isAprovado(lead) ? '⚠️ Não aceito pela distribuidora' : '❌ Lead perdido'}</div>
          <div class="cd-row"><div class="cd-row-k">Data</div><div class="cd-row-v">${lead.lost_at}</div></div>
          <div class="cd-row"><div class="cd-row-k">Motivo</div><div class="cd-row-v">${lead.lost_reason || '—'}</div></div>
        </div>`
