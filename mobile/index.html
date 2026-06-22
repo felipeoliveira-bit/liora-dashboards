@@ -1883,6 +1883,7 @@ function openClienteDetalhes(dealId){
         <div class="cd-row"><div class="cd-row-k">Criação do deal</div><div class="cd-row-v">${_fmtDate(lead.date)}</div></div>
         <div class="cd-row"><div class="cd-row-k">Aprovação (risco)</div><div class="cd-row-v">${lead.aprov_date ? _fmtDate(lead.aprov_date) : '—'}</div></div>
         <div class="cd-row"><div class="cd-row-k">Estágio atual</div><div class="cd-row-v">${escapeHtml(lead.stage||'—')}</div></div>
+        ${STAGE_DESC[(lead.stage||'').trim()]?`<div class="cd-row"><div class="cd-row-k">O que significa</div><div class="cd-row-v" style="color:#1D9E75;font-weight:500">${escapeHtml(STAGE_DESC[(lead.stage||'').trim()])}</div></div>`:''}
         ${lead.semana ? `<div class="cd-row"><div class="cd-row-k">Semana</div><div class="cd-row-v">${escapeHtml(lead.semana)}</div></div>` : ''}
       </div>
 
@@ -5331,6 +5332,7 @@ function moveLead(id, newStage){
   });
 }
 
+const STAGE_DESC={'WAITING_DOCUMENTS':'Falta documento pra análise','BACKGROUND_CHECKING':'Em processo de análise do time de Ops','BACKGROUND CHECKING':'Em processo de análise do time de Ops','BGC_PARCEIRO':'Em processo de análise do time de Ops','BGC_REVIEW':'Em processo de análise do time de Ops','REQUEST_TITULARIDADE':'Aprovado na análise, aguardando processo de troca de titularidade','TITULARIDADE_ONGOING':'Troca de titularidade solicitada, aguardando confirmação da distribuidora','TITULARIDADE ONGOING':'Troca de titularidade solicitada, aguardando confirmação da distribuidora','REGISTERING_DG':'Troca de titularidade aprovada, aguardando cadastro na DG para gerar a fatura','ACTIVE_MEMBER':'Troca aprovada e cliente cadastrado na DG para gerar faturas Liora','ACTIVE MEMBER':'Troca aprovada e cliente cadastrado na DG para gerar faturas Liora'};
 function escapeHtml(s){
   if(!s) return '';
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');

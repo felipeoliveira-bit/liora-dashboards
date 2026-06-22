@@ -3389,6 +3389,7 @@ function ppEnsureModal(){
 function ppEmpty(v){ return v===null || v===undefined || v==='' || (typeof v==='string' &amp;&amp; !v.trim()); }
 function openPropDetail(i){ ppOpenDetail((window.__propRows||[])[i]); }
 function openWhaleDetail(i){ ppOpenDetail((window.__whaleRows||[])[i]); }
+const STAGE_DESC={'WAITING_DOCUMENTS':'Falta documento pra análise','BACKGROUND_CHECKING':'Em processo de análise do time de Ops','BACKGROUND CHECKING':'Em processo de análise do time de Ops','BGC_PARCEIRO':'Em processo de análise do time de Ops','BGC_REVIEW':'Em processo de análise do time de Ops','REQUEST_TITULARIDADE':'Aprovado na análise, aguardando processo de troca de titularidade','TITULARIDADE_ONGOING':'Troca de titularidade solicitada, aguardando confirmação da distribuidora','TITULARIDADE ONGOING':'Troca de titularidade solicitada, aguardando confirmação da distribuidora','REGISTERING_DG':'Troca de titularidade aprovada, aguardando cadastro na DG para gerar a fatura','ACTIVE_MEMBER':'Troca aprovada e cliente cadastrado na DG para gerar faturas Liora','ACTIVE MEMBER':'Troca aprovada e cliente cadastrado na DG para gerar faturas Liora'};
 function ppOpenDetail(d){
   if(!d) return;
   ppEnsureModal();
@@ -3398,6 +3399,7 @@ function ppOpenDetail(d){
     ['Valor da fatura', ppEmpty(d.bill_cost)?'':fB(d.bill_cost)],
     ['Consumo', ppEmpty(d.consumption_mwh)?'':fW(d.consumption_mwh)+' MWh'],
     ['Estágio', (d.deal_stage||'').replace(/_/g,' ')],
+    ['O que significa', STAGE_DESC[(d.deal_stage||'').trim()]||''],
     ['Proposta aceita', d.accepted_proposal?'Sim':'Não'],
   ];
   let rows = '';
@@ -4552,6 +4554,7 @@ const STAGE_LABEL = {
   'BACKGROUND_CHECKING':'BGC','BGC_PARCEIRO':'BGC Parceiro',
   'ACTIVE_MEMBER':'Membro ativo','WAITING_DOCUMENTS':'Ag. documentos',
 };
+const STAGE_DESC={'WAITING_DOCUMENTS':'Falta documento pra análise','BACKGROUND_CHECKING':'Em processo de análise do time de Ops','BACKGROUND CHECKING':'Em processo de análise do time de Ops','BGC_PARCEIRO':'Em processo de análise do time de Ops','BGC_REVIEW':'Em processo de análise do time de Ops','REQUEST_TITULARIDADE':'Aprovado na análise, aguardando processo de troca de titularidade','TITULARIDADE_ONGOING':'Troca de titularidade solicitada, aguardando confirmação da distribuidora','TITULARIDADE ONGOING':'Troca de titularidade solicitada, aguardando confirmação da distribuidora','REGISTERING_DG':'Troca de titularidade aprovada, aguardando cadastro na DG para gerar a fatura','ACTIVE_MEMBER':'Troca aprovada e cliente cadastrado na DG para gerar faturas Liora','ACTIVE MEMBER':'Troca aprovada e cliente cadastrado na DG para gerar faturas Liora'};
 
 function getAcao(x) {
   if (isAgDocs(x))      return ACOES['WAITING_DOCUMENTS'];
@@ -4854,7 +4857,7 @@ function renderCampanha() {
         <td style=&quot;font-size:12px;color:#666&quot;>${x.s}</td>
         <td style=&quot;font-size:12px;color:#666&quot;><span style=&quot;display:inline-block;width:8px;height:8px;border-radius:50%;background:${col};margin-right:5px;vertical-align:middle&quot;></span>${opLabel}</td>
         <td style=&quot;text-align:right;font-size:11px;color:#888&quot;>${x.city}</td>
-        <td style=&quot;text-align:right;font-size:11px;color:#888&quot;>${stageLabel}</td>
+        <td style=&quot;text-align:right;font-size:11px;color:#888&quot; title=&quot;${STAGE_DESC[x.stage]||''}&quot;>${stageLabel}</td>
         <td style=&quot;text-align:right&quot;><span style=&quot;background:${sc.bg};color:${sc.text};font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px&quot;>${statusLabel}</span></td>
         <td style=&quot;text-align:right;font-weight:700&quot;>${x.mwh.toFixed(2)}</td>
       </tr>`;
@@ -5143,7 +5146,7 @@ function render() {
       return `<div class=&quot;row&quot; style=&quot;grid-template-columns:${cols}&quot;>
         <div><div class=&quot;cname&quot;>${x.c}</div><div style=&quot;font-size:10px;color:#aaa;margin-top:2px&quot;>${x.city}</div></div>
         <div class=&quot;cseller&quot;>${x.s}</div>
-        <div style=&quot;font-size:11px;color:#888&quot;>${STAGE_LABEL[x.stage]||x.stage}</div>
+        <div style=&quot;font-size:11px;color:#888&quot; title=&quot;${STAGE_DESC[x.stage]||''}&quot;>${STAGE_LABEL[x.stage]||x.stage}</div>
         <div style=&quot;font-size:12px;text-align:right;font-weight:500&quot;>${x.mwh>0?x.mwh.toFixed(2):'—'}</div>
         <div style=&quot;font-size:12px;text-align:center;color:${idleColor};font-weight:${x.idle>=7?'600':'400'}&quot;>${x.idle}d</div>
         <div style=&quot;text-align:center&quot;><span class=&quot;cpill&quot; style=&quot;background:${scfg.bg};color:${scfg.text}&quot;>${scfg.label}</span></div>
