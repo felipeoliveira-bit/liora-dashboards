@@ -1300,7 +1300,7 @@ function renderCarteira(){
   const pct = meta>0?Math.min((myAprov/meta)*100,100):0;
   const pc = pct>=70?'var(--green)':pct>=40?'var(--blue)':'var(--red)';
   const myPend = myDeals.filter(x=>!isAprovado(x)&&!isNegado(x)).reduce((a,x)=>a+x.mwh,0);
-  const campMwh= myDeals.filter(x=>noPeriodo(x,CAMP_INI,CAMP_END)&&isAprovado(x)).reduce((a,x)=>a+x.mwh,0);
+  const campCount= myDeals.filter(x=>noPeriodo(x,CAMP_INI,CAMP_END)&&isAprovado(x)).length;
 
   let html = `
     <div class="card">
@@ -1319,8 +1319,8 @@ function renderCarteira(){
       ${renderRemProgress(seller, myAprov)}
     </div>
     <div class="summary-bar">
-      <div class="summary-row"><span class="summary-key">🏆 Campanha ${formatCampPeriod()}</span><span class="summary-val" style="color:var(--blue)">${campMwh.toFixed(2)} MWh</span></div>
-      ${renderCampProgress(campMwh)}
+      <div class="summary-row"><span class="summary-key">🏆 Campanha ${formatCampPeriod()}</span><span class="summary-val" style="color:var(--blue)">${campCount} aprovados</span></div>
+      ${renderCampProgress(campCount)}
     </div>
     ${renderRemRulesCard(seller)}
     <div class="section-head">Sua Carteira (${myDeals.length} clientes)</div>`;
@@ -1372,13 +1372,12 @@ renderCarteira();
 // v2.108 — Campanha da Semana 16-22/06 (individual · aprovados na semana · pgto 23/06)
 // 4 tiers: Aquecimento/Pressão/Gol/Hat-trick (mesmos valores semana anterior)
 const CAMP_TIERS = [
-  { mwh: 15, prize: 3000, label: 'R$ 3.000', tier: 4 },
-  { mwh: 12, prize: 2000, label: 'R$ 2.000', tier: 3 },
-  { mwh: 8,  prize: 1500, label: 'R$ 1.500', tier: 2 },
-  { mwh: 5,  prize: 750,  label: 'R$ 750',   tier: 1 },
+  { mwh: 8, prize: 500, label: 'R$ 500', tier: 3 },
+  { mwh: 5, prize: 250, label: 'R$ 250', tier: 2 },
+  { mwh: 3, prize: 50,  label: 'R$ 50',  tier: 1 },
 ];
-const CAMP_INI = '2026-06-16';
-const CAMP_END = '2026-06-22';
+const CAMP_INI = '2026-06-22';
+const CAMP_END = '2026-06-25';
 
 // v2.104 — calcula prêmio atual e quanto falta pro próximo tier da campanha.
 function campProgressInfo(mwh){
@@ -1399,7 +1398,7 @@ function renderCampProgress(mwh){
     ? `<span style="color:var(--green);font-weight:800">${i.premioLabel}</span> garantido`
     : `<span style="color:var(--muted)">Sem prêmio ainda</span>`;
   const faltaTxt = i.proximo
-    ? `Faltam <b>${i.falta.toFixed(2)} MWh</b> para ${i.proximo.label}`
+    ? `${i.falta===1?'Falta <b>1 cliente</b>':'Faltam <b>'+i.falta+' clientes</b>'} para ${i.proximo.label}`
     : `🎉 Faixa máxima atingida!`;
   return `
     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0 2px">
@@ -1421,11 +1420,11 @@ function formatCampPeriod(){
 function openCampDetails(vendedor, type){
   // v2.56 — só Semana (Bateu Levou removida); param 'type' preservado pra compat futura
   const deals = rawData.filter(x => x.s === vendedor && noPeriodo(x, CAMP_INI, CAMP_END) && isAprovado(x));
-  const periodLabel = '09/06 a 15/06';
-  const totalMwh = deals.reduce((a,d)=>a+d.mwh, 0);
-  const tier = getPrizeTier(totalMwh);
+  const periodLabel = '22/06 a 25/06';
+  const totalCount = deals.length;
+  const tier = getPrizeTier(totalCount);
   const prizeLabel = tier ? `🏆 ${tier.label}` : null;
-  const totalLabel = `${totalMwh.toFixed(2)} MWh em ${deals.length} aprovado${deals.length===1?'':'s'}`;
+  const totalLabel = `${totalCount} aprovado${totalCount===1?'':'s'} no período`;
 
   // Ordena por aprov_date descendente (mais recente primeiro)
   deals.sort((a,b) => (b.aprov_date||'').localeCompare(a.aprov_date||''));
@@ -2140,7 +2139,7 @@ function renderCampSemana(){
   // v2.51 — Filtro por DATA exata (09-15/06) — campanha da semana
   const campData = rawData.filter(x=>noPeriodo(x,CAMP_INI,CAMP_END)&&isAprovado(x));
   const byS = {};
-  campData.forEach(x=>{ byS[x.s]=(byS[x.s]||0)+x.mwh; });
+  campData.forEach(x=>{ byS[x.s]=(byS[x.s]||0)+1; });
 
   const ranked = Object.entries(byS).map(([name,mwh])=>({name,mwh})).sort((a,b)=>b.mwh-a.mwh);
   const allCampSellers = [...new Set([...ranked.map(r=>r.name), ...Object.keys(METAS)])];
@@ -2151,30 +2150,26 @@ function renderCampSemana(){
 
   let html = `
     <div class="camp-header">
-      <div class="camp-title">Campanha da Semana</div>
-      <div class="camp-period">16 a 22/06/2026 · 23h59 · pgto 23/06</div>
-      <div class="camp-sub">Aprovados · Total acumulado: ${totalCamp.toFixed(2)} MWh</div>
+      <div class="camp-title">⚡ Bateu Levou</div>
+      <div class="camp-period">22 a 25/06/2026 · 23h59 · pgto 26/06</div>
+      <div class="camp-sub">Clientes aprovados · Total: ${totalCamp} aprovados</div>
     </div>
 
     <div class="rules-card">
       <div class="rules-title">📋 Regras da Campanha</div>
-      <div class="rules-desc">Remuneração variável <b>individual</b> pelos MWh <b>aprovados</b> no período de 16/06 a 22/06. Pagamento no dia 23/06.</div>
+      <div class="rules-desc">Remuneração variável <b>individual</b> por <b>clientes aprovados</b> no período de 22/06 a 25/06. Pagamento no dia 26/06.</div>
       <div class="tiers-grid">
         <div class="tier tier-1">
-          <div class="tier-mwh">5 MWh</div>
-          <div class="tier-prize">R$ 750</div>
+          <div class="tier-mwh">3 clientes</div>
+          <div class="tier-prize">R$ 50</div>
         </div>
         <div class="tier tier-2">
-          <div class="tier-mwh">8 MWh</div>
-          <div class="tier-prize">R$ 1.500</div>
+          <div class="tier-mwh">5 clientes</div>
+          <div class="tier-prize">R$ 250</div>
         </div>
         <div class="tier tier-3">
-          <div class="tier-mwh">12 MWh</div>
-          <div class="tier-prize">R$ 2.000</div>
-        </div>
-        <div class="tier tier-4">
-          <div class="tier-mwh">15 MWh</div>
-          <div class="tier-prize">R$ 3.000</div>
+          <div class="tier-mwh">8 clientes</div>
+          <div class="tier-prize">R$ 500</div>
         </div>
       </div>
     </div>`;
@@ -2192,8 +2187,8 @@ function renderCampSemana(){
     if (tier) prizeInfo = `<span class="prize-badge b${tier.tier}">🏆 ${tier.label}</span>`;
     let nextInfo = '';
     if (next) {
-      const falta = (next.mwh - s.mwh).toFixed(2);
-      nextInfo = `<div class="prize-empty">Faltam ${falta} MWh para ${next.label}</div>`;
+      const falta = next.mwh - s.mwh;
+      nextInfo = `<div class="prize-empty">${falta===1?'Falta 1 cliente':'Faltam '+falta+' clientes'} para ${next.label}</div>`;
     } else if (tier) {
       nextInfo = `<div class="prize-empty" style="color:var(--green);font-weight:700">✓ Faixa máxima atingida</div>`;
     }
@@ -2211,8 +2206,8 @@ function renderCampSemana(){
           ${nextInfo}
         </div>
         <div class="rank-right">
-          <div class="rank-mwh ${hasMwh?'':'zero'}">${hasMwh?s.mwh.toFixed(2):'—'}</div>
-          <div class="rank-unit">${hasMwh?'MWh camp.':''}</div>
+          <div class="rank-mwh ${hasMwh?'':'zero'}">${hasMwh?s.mwh:'—'}</div>
+          <div class="rank-unit">${hasMwh?'aprovados':''}</div>
         </div>
       </div>`;
   });
