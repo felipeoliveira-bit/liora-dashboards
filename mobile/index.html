@@ -853,6 +853,7 @@ function getStatusInfo(x){
 }
 
 function getAcao(x){
+  if(x.lost_at && isAprovado(x)) return '⚠️ Não aceito pela distribuidora — sem próxima ação';
   if(isAprovado(x)) return '✅ Processo concluído — acompanhar ativação';
   if(isNegado(x))   return (x.motivo && x.motivo.trim()) ? ('🔍 Motivo da negativa: ' + x.motivo.trim()) : '🔍 Entender motivo da negativa e avaliar reativação';
   if(isAgDocs(x)){
