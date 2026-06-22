@@ -733,7 +733,7 @@ function renderPropostas() {
 // SEÇÃO 3: CLIENTES APROVADOS (com atingimento de meta + campanha)
 // ============================================================
 function isAprovado(x) {
-  if (x.lost_at) { if ((x.lost_reason||'').trim().toLowerCase() !== 'troca de titularidade') return false; }
+  if (x.lost_at) { if (x.stage === 'BACKGROUND_CHECKING') { if ((x.lost_reason||'').trim().toLowerCase() !== 'troca de titularidade') return false; } }
   if (x.risk === 'DENIED') return false;
   if (x.risk === 'APPROVED') return true; // analise de risco APPROVED (definicao oficial)
   const s = (x.status || '').toLowerCase();
@@ -1477,7 +1477,7 @@ function aggPropostas() {
   });
   return Object.values(byV);
 }
-function isAprovado(x) { if(x.lost_at){ if((x.lost_reason||'').trim().toLowerCase() !== 'troca de titularidade') return false; } if(x.risk==='DENIED') return false; if(x.risk==='APPROVED') return true; const s=(x.status||'').toLowerCase(); if(s.includes('aprovado')) return true; if(x.stage==='REQUEST_TITULARIDADE') return true; return false; }
+function isAprovado(x) { if(x.lost_at){ if(x.stage==='BACKGROUND_CHECKING'){ if((x.lost_reason||'').trim().toLowerCase() !== 'troca de titularidade') return false; } } if(x.risk==='DENIED') return false; if(x.risk==='APPROVED') return true; const s=(x.status||'').toLowerCase(); if(s.includes('aprovado')) return true; if(x.stage==='REQUEST_TITULARIDADE') return true; return false; }
 function isPendenteOPS(x) { const s=x.status||''; return s==='Pendente OPS'||s==='Aguardando período'||s==='Mudando Titularidade'; }
 function aggAprovados() {
   const byV = {};
@@ -4505,15 +4505,15 @@ function isAgDocs(x) {
 }
 
 function isNegado(x) {
+  if (x.stage !== 'BACKGROUND_CHECKING') return false;
   if (x.status === 'NEGADO') return true;
-  if (x.lost_reason === 'Análise de risco') return true;
-  if (x.lost_reason === 'Duplicado') return true;
+  if ((x.lost_reason||'').trim() !== '') return true;
   return false;
 }
 
 const VENDEDORES_OCULTOS = ['Ananias Neto']; // saíram do time: ocultar linha individual, mas resultado continua somando na praça
 const isAprovado = x => {
-  if (x.lost_at) { if ((x.lost_reason||'').trim().toLowerCase() !== 'troca de titularidade') return false; }
+  if (x.lost_at) { if (x.stage === 'BACKGROUND_CHECKING') { if ((x.lost_reason||'').trim().toLowerCase() !== 'troca de titularidade') return false; } }
   if (x.risk === 'DENIED') return false;        // analise de risco negada
   if (x.risk === 'APPROVED') return true;        // analise de risco APPROVED (mesma def do BAU/Rankings)
   if (x.stage === 'WAITING_DOCUMENTS') return false; // sempre Ag. Documentos, nunca aprovado
@@ -4526,7 +4526,7 @@ const isAprovado = x => {
 };
 
 function isAprovadoByStatus(x) {
-  if (x.lost_at) { if ((x.lost_reason||'').trim().toLowerCase() !== 'troca de titularidade') return false; }
+  if (x.lost_at) { if (x.stage === 'BACKGROUND_CHECKING') { if ((x.lost_reason||'').trim().toLowerCase() !== 'troca de titularidade') return false; } }
   if (x.status === 'APROVADO') return true;
   if ((x.status === 'N/A' || x.status === '' || x.status === null) &amp;&amp; isCpflEnel(x)) return true;
   return false;
@@ -6027,7 +6027,7 @@ function metaPracaPeriodo(praca) {
 }
 
 /* ===== REGRAS ===== */
-function isAprovado(x) { if(x.lost_at){ if((x.lost_reason||'').trim().toLowerCase() !== 'troca de titularidade') return false; } if(x.risk==='DENIED') return false; if(x.risk==='APPROVED') return true; if((x.status||'').toLowerCase().includes('aprovado')) return true; if(x.stage==='REQUEST_TITULARIDADE') return true; return false; }
+function isAprovado(x) { if(x.lost_at){ if(x.stage==='BACKGROUND_CHECKING'){ if((x.lost_reason||'').trim().toLowerCase() !== 'troca de titularidade') return false; } } if(x.risk==='DENIED') return false; if(x.risk==='APPROVED') return true; if((x.status||'').toLowerCase().includes('aprovado')) return true; if(x.stage==='REQUEST_TITULARIDADE') return true; return false; }
 function isPendenteOPS(x) { const s=x.status||''; return s==='Pendente OPS'||s==='Aguardando período'||s==='Mudando Titularidade'; }
 
 /* ===== DADOS via bridge ===== */

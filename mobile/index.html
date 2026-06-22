@@ -809,13 +809,13 @@ function isCoelba(x){ return distType(x) === 'coelba'; }
 // A data de aprovação (p/ mês/campanha) é essa mesma coluna. CPFL/Enel ainda em
 // proposta não têm essa coluna preenchida → não contam como aprovado (correto).
 function isAprovado(x){
-  return !!x.aprov_date && (!x.lost_at || (x.lost_reason||'').trim().toLowerCase() === 'troca de titularidade');
+  return !!x.aprov_date && (!x.lost_at || x.stage !== 'BACKGROUND_CHECKING' || (x.lost_reason||'').trim().toLowerCase() === 'troca de titularidade');
 }
 
 function isNegado(x){
+  if(x.stage !== 'BACKGROUND_CHECKING') return false;
   if(x.status === 'NEGADO') return true;
-  if(x.lost_reason === 'Análise de risco') return true;
-  if(x.lost_reason === 'Duplicado') return true;
+  if((x.lost_reason||'').trim() !== '') return true;
   return false;
 }
 
