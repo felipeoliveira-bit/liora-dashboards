@@ -2345,7 +2345,7 @@ function renderPracas(d) {
   document.getElementById('content').innerHTML = html;
 }
 
-let agData = []; let _fromAgenda=false; let _agCtx=null;
+let agData = []; let agDataAll = []; let _fromAgenda=false; let _agCtx=null;
 function openLeadFromAgenda(i){ _fromAgenda=true; _perdCtx=null; openLeadDetail(i); }
 function backToAgendaList(){ if(_perdCtx){ openLostList(_perdCtx.praca, _perdCtx.vendEnc); return; } if(_agCtx) openAgendaList(_agCtx.praca, _agCtx.vendEnc, _agCtx.bucket); }
 let perdData=[]; let _perdCtx=null;
@@ -2377,13 +2377,17 @@ function openAgendaList(praca, vendEnc, bucket){
   const _agHojeFn = l => dsInPeriodo(String(l.proximaInteracao||'').slice(0,10), filters.periodo);
   const _criadoHojeFn = l => l.createdAt &amp;&amp; dsInPeriodo(localISO(new Date(l.createdAt)), filters.periodo);
   const _matchBucket = l => {
-    if(bucket==='agHoje') return _agHojeFn(l) &amp;&amp; !_criadoHojeFn(l);
-    if(bucket==='criadosHoje') return _criadoHojeFn(l);
-    if(bucket==='totalHoje') return _criadoHojeFn(l) || _agHojeFn(l);
+    const cr = _criadoHojeFn(l);
+    const op = l.stage !== 'ganho' &amp;&amp; l.stage !== 'perdido';
+    const ag = op &amp;&amp; _agHojeFn(l) &amp;&amp; !cr;
+    if(bucket==='agHoje') return ag;
+    if(bucket==='criadosHoje') return cr;
+    if(bucket==='totalHoje') return cr || ag;
     if(bucket==='total') return _agBkt(l)!==null;
     return _agBkt(l)===bucket;
   };
-  const list = (agData||[]).filter(l => pracaOf(l)===praca &amp;&amp; (!vend || l.vendedor===vend) &amp;&amp; _matchBucket(l));
+  const _src = (bucket==='criadosHoje'||bucket==='totalHoje') ? (agDataAll||[]) : (agData||[]);
+  const list = (_src).filter(l => pracaOf(l)===praca &amp;&amp; (!vend || l.vendedor===vend) &amp;&amp; _matchBucket(l));
   list.sort((a,b)=> String(a.proximaInteracao||'').localeCompare(String(b.proximaInteracao||'')));
   detalheLeads = list;
   const titWho = vend ? vend : praca;
@@ -2397,6 +2401,7 @@ function openAgendaList(praca, vendEnc, bucket){
 function renderAgenda(d) {
   const data = d.filter(l => l.stage !== 'ganho' &amp;&amp; l.stage !== 'perdido');
   agData = data;
+  agDataAll = d;
   const _hojeISO = localISO(new Date());
   function bkt(l){ const b = agendaBucket(l.proximaInteracao); if(b==='future' &amp;&amp; dateDiff(l.proximaInteracao) > 7) return null; return (b==='late'||b==='today'||b==='tomorrow'||b==='future') ? b : null; }
   function agHojeFn(l){ return dsInPeriodo(String(l.proximaInteracao||'').slice(0,10), filters.periodo); }
@@ -2413,21 +2418,19 @@ function renderAgenda(d) {
     const v = o.vend[l.vendedor]; v[b]++; v.total++;
   });
   // Contadores de HOJE: Criados Hoje tem prioridade; Ag. Hoje = agendado hoje E NÃO criado hoje. Total = Ag + Criados (sem sobreposição)
-  data.forEach(l => {
+  d.forEach(l => {
     const p = pracaOf(l);
-    if(!byPraca[p]) return;
+    const open = l.stage !== 'ganho' &amp;&amp; l.stage !== 'perdido';
     const cr = criadoHojeFn(l);
-    const ag = agHojeFn(l) &amp;&amp; !cr; // se criado hoje, conta só em Criados
+    const ag = open &amp;&amp; agHojeFn(l) &amp;&amp; !cr;
     if(!ag &amp;&amp; !cr) return;
+    if(!byPraca[p]) byPraca[p] = {late:0,today:0,tomorrow:0,future:0,total:0,agHoje:0,criadosHoje:0,totalHoje:0,vend:{}};
     const o = byPraca[p];
-    if(ag) o.agHoje++;
-    if(cr) o.criadosHoje++;
-    o.totalHoje++; // ag e cr são mutuamente exclusivos agora
     if(!o.vend[l.vendedor]) o.vend[l.vendedor] = {late:0,today:0,tomorrow:0,future:0,total:0,agHoje:0,criadosHoje:0,totalHoje:0};
     const v = o.vend[l.vendedor];
-    if(ag) v.agHoje++;
-    if(cr) v.criadosHoje++;
-    v.totalHoje++;
+    if(ag){ o.agHoje++; v.agHoje++; }
+    if(cr){ o.criadosHoje++; v.criadosHoje++; }
+    o.totalHoje++; v.totalHoje++;
   });
   const totalAll = tot.late+tot.today+tot.tomorrow+tot.future;
   let html = '';
