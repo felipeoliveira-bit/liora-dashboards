@@ -1374,21 +1374,21 @@ function renderCarteira(){
 renderCarteira();
 
 // ── SCREEN 3: CAMPANHA ────────────────────────────────────
-// v2.108 — Campanha da Semana 16-22/06 (individual · aprovados na semana · pgto 23/06)
-// 4 tiers: Aquecimento/Pressão/Gol/Hat-trick (mesmos valores semana anterior)
+// v2.139 — Campanha da Semana 23-30/06 (individual · MWh aprovados na semana · pgto 01/07)
+// 3 tiers: Aquecimento(5)/Pressão(8)/Gol(12) — matinal 24/06 Copa da Liora
 const CAMP_CFG = {
   semana: { key:'semana', btn:'Campanha da Semana', title:'Campanha da Semana',
-    ini:'2026-06-16', end:'2026-06-22', period:'16 a 22/06/2026 · 23h59 · pgto 23/06',
-    desc:'Remuneração variável <b>individual</b> pelos MWh <b>aprovados</b> no período de 16/06 a 22/06. Pagamento no dia 23/06.',
+    ini:'2026-06-23', end:'2026-06-30', period:'23 a 30/06/2026 · 23h59 · pgto 01/07',
+    desc:'Remuneração variável <b>individual</b> pelos MWh <b>aprovados</b> no período de 23/06 a 30/06. Pagamento no dia 01/07.',
     metric:'mwh', unit:'MWh camp.', tierUnit:'MWh', totalWord:'Total acumulado',
-    tiers:[ {v:15,label:'R$ 3.000',tier:4},{v:12,label:'R$ 2.000',tier:3},{v:8,label:'R$ 1.500',tier:2},{v:5,label:'R$ 750',tier:1} ] },
+    tiers:[ {v:12,label:'R$ 2.000',tier:3},{v:8,label:'R$ 1.500',tier:2},{v:5,label:'R$ 750',tier:1} ] },
   bateu: { key:'bateu', btn:'⚡ Bateu Levou', title:'⚡ Bateu Levou',
     ini:'2026-06-22', end:'2026-06-25', period:'22 a 25/06/2026 · 23h59 · pgto 26/06',
     desc:'Remuneração variável <b>individual</b> por <b>clientes aprovados</b> no período de 22/06 a 25/06. Pagamento no dia 26/06.',
     metric:'count', unit:'aprovados', tierUnit:'clientes', totalWord:'Total',
     tiers:[ {v:8,label:'R$ 500',tier:3},{v:5,label:'R$ 250',tier:2},{v:3,label:'R$ 50',tier:1} ] }
 };
-let CAMP_VIEW = 'bateu';
+let CAMP_VIEW = 'semana';
 function setCampView(k){ CAMP_VIEW = k; renderCampanha(); }
 function campVal(cfg, deals){ return cfg.metric==='count' ? deals.length : deals.reduce((a,d)=>a+(d.mwh||0),0); }
 function campFmt(cfg, v){ return cfg.metric==='count' ? String(v) : v.toFixed(2); }
