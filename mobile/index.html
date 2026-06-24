@@ -276,7 +276,10 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
 .prize-badge.b4 { background: var(--blue); color: white; }
 .prize-empty { font-size: 10px; color: var(--muted); margin-top: 2px; }
 
-.tiers-grid.three-col { grid-template-columns: 1fr 1fr 1fr; }
+.tiers-grid.three-col { grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.tiers-grid.three-col .tier { padding: 10px 5px; }
+.tiers-grid.three-col .tier-mwh { font-size: 12px; }
+.tiers-grid.three-col .tier-prize { font-size: 10px; }
 
 /* v2.52 — Discagem rápida pelo card do lead */
 .lead-meta-tel { cursor: pointer; user-select: none; transition: opacity .15s; }
@@ -2147,7 +2150,7 @@ function renderCampaignView(cfg){
     <div class="rules-card">
       <div class="rules-title">📋 Regras da Campanha</div>
       <div class="rules-desc">${cfg.desc}</div>
-      <div class="tiers-grid">
+      <div class="tiers-grid${cfg.tiers.length===3?' three-col':''}">
         ${[...cfg.tiers].sort((a,b)=>a.v-b.v).map(t=>`<div class="tier tier-${t.tier}"><div class="tier-mwh">${t.v} ${cfg.tierUnit}</div><div class="tier-prize">${t.label}</div></div>`).join('')}
       </div>
     </div>`;
