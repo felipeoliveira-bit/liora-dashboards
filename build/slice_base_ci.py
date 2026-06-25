@@ -14,6 +14,14 @@ try:
 except Exception:
     TODAY = datetime.date.today()
 
+# Deals duplicados a excluir de TODOS os recortes (mesmo cliente aberto p/
+# vendedores diferentes). Mantemos so o deal original. Espelha automacao/slice_base.py.
+EXCLUDE_DEALS = {
+    # CARLA NUNCIA BESERRA (Ederson Silva) - duplicata do deal do Marcio Galvao
+    # (criado mais cedo no mesmo dia 22/06). Conta so p/ Marcio.
+    'ffaf1289-3bc1-44e1-86ba-a60d43e4133e',
+}
+
 MESES = {'janeiro':1,'fevereiro':2,'março':3,'marco':3,'abril':4,'maio':5,'junho':6,
          'julho':7,'agosto':8,'setembro':9,'outubro':10,'novembro':11,'dezembro':12}
 
@@ -39,6 +47,11 @@ def main():
     with open(base_path, encoding='utf-8-sig') as fh:
         rd=csv.DictReader(fh); fields=rd.fieldnames; base=list(rd)
     print('base:', os.path.basename(base_path), '|', len(base), 'linhas |', len(fields), 'cols')
+    if EXCLUDE_DEALS:
+        n0=len(base)
+        base=[r for r in base if (r.get('deal_id') or '') not in EXCLUDE_DEALS]
+        if len(base)!=n0:
+            print('excluidos %d deal(s) duplicado(s): %s' % (n0-len(base), ', '.join(sorted(EXCLUDE_DEALS))))
     if len(base) < 2000:
         sys.exit('ABORT: base com %d linhas (<2000).' % len(base))
     for c in ('internal_sales_classification','deal_stage','latest_risk_analysis_created_at',
