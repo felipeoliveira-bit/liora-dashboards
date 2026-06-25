@@ -129,7 +129,7 @@ def build_rawData(deals_path, ag_path, docs_map=None):
             'deal_id':did,'tel':r['client_phone_number'],'cnpj':r['current_client_cnpj'],'cpf':r['current_client_cpf'],
             'fatura':pfloat(r['current_total_bill_cost (R$)']),'semana':semana(basis),
             'lost_at':r['deal_lost_at'],'lost_reason':r['deal_lost_reason'],
-            'motivo':(r.get('latest_risk_analysis_comments') or '').strip(),
+            'motivo':(('CANCELADO — '+(r.get('deal_lost_reason') or '').strip()) if ((r.get('latest_risk_analysis_result') or '').strip()=='APPROVED' and (r.get('deal_lost_at') or '').strip() and r.get('deal_stage')=='BACKGROUND_CHECKING' and (r.get('deal_lost_reason') or '').strip().lower()!='troca de titularidade') else (r.get('latest_risk_analysis_comments') or '').strip()),
             'date':iso(created),'aprov_date':aprov,
             'docs':docs_map.get((r.get('latest_contract_id') or '').strip(),''),
         })
