@@ -17,9 +17,8 @@ except Exception:
 # Deals duplicados a excluir de TODOS os recortes (mesmo cliente aberto p/
 # vendedores diferentes). Mantemos so o deal original. Espelha automacao/slice_base.py.
 EXCLUDE_DEALS = {
-    # CARLA NUNCIA BESERRA (Ederson Silva) - duplicata do deal do Marcio Galvao
-    # (criado mais cedo no mesmo dia 22/06). Conta so p/ Marcio.
-    'ffaf1289-3bc1-44e1-86ba-a60d43e4133e',
+    # (vazio) Carla Beserra/Bezerra: confirmado 25/06 que NAO era duplicata -
+    # 2 UCs distintas do mesmo CPF (faturas/consumo/contratos diferentes). As duas contam.
 }
 
 MESES = {'janeiro':1,'fevereiro':2,'março':3,'marco':3,'abril':4,'maio':5,'junho':6,
