@@ -49,7 +49,9 @@ def live_aprovados(base_path):
     risco no mes corrente, dedup deal_id -> conta APPROVED nao perdido."""
     with open(base_path, encoding='utf-8-sig') as fh:
         base = list(csv.DictReader(fh))
-    fs = [r for r in base if r.get('internal_sales_classification') == 'FS_Liora']
+    # mesma regra do slice: operacao de campo conta por sales_team, nao so pela tag.
+    fs = [r for r in base if r.get('internal_sales_classification') == 'FS_Liora'
+          or (r.get('sales_team') or '').strip() == 'Field Sales']
     seen = set(); appr = 0; analisados = 0
     for r in fs:
         if not in_cur_month(r.get('latest_risk_analysis_created_at')): continue

@@ -47,13 +47,17 @@ def main():
     if len(set(r['deal_stage'] for r in base)) <= 1:
         sys.exit('ABORT: base com um unico deal_stage.')
     fs=[r for r in base if r['internal_sales_classification']=='FS_Liora']
+    # Operacao de campo: deals de Field Sales as vezes vem com classificacao
+    # 'Outro' (tag errada). Para APROVADOS/analisados contamos pela operacao
+    # (sales_team), nao so pela tag. Propostas/Aguardando seguem so FS_Liora.
+    fs_field=[r for r in base if r['internal_sales_classification']=='FS_Liora' or (r.get('sales_team') or '').strip()=='Field Sales']
     def dedup(rs):
         out=[]; seen=set()
         for r in rs:
             if r['deal_id'] in seen: continue
             seen.add(r['deal_id']); out.append(r)
         return out
-    deals=dedup([r for r in fs if in_cur_month(r['latest_risk_analysis_created_at'])])
+    deals=dedup([r for r in fs_field if in_cur_month(r['latest_risk_analysis_created_at'])])
     prop =[r for r in fs if in_cur_month(r['proposal_created_at'])]
     agu  =dedup([r for r in fs if r['deal_stage']=='WAITING_DOCUMENTS'
                  and not (r['deal_lost_at'] or '').strip()
