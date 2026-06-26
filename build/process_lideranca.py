@@ -148,6 +148,7 @@ def norm(s): return re.sub(r'\s+',' ',(s or '').strip()).upper()
 CLIENT_OVERRIDE = {
  norm('NIVALDO GESTEIRA DE OLIVEIRA'): ('Maria Lúcia','salvador','Salvador'),
  norm('MANOEL ROQUE DA SILVA JUNIOR'): ('Lucileide Carlos','feira','Feira de Santana'),
+ norm('CARLA NUNCIA BESERRA'): ('Marcio Galvão','natal','Natal'),  # 2a UC da Carla - é do Marcio (Felipe 26/06)
 }
 
 unknown = set()
