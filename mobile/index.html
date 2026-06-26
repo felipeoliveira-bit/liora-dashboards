@@ -1289,6 +1289,7 @@ function renderCarteiraLider(seller){
 }
 
 function renderCarteira(){
+  const me = getCurrentVendedor();  // fix: me precisa estar em escopo (botao troca / isLider)
   // v2.122 — reflete identidade global mas MANTÉM a escolha manual do seletor
   if (typeof initSellerSelect === 'function') initSellerSelect(true);
   const seller = document.getElementById('seller-select').value;
@@ -1478,6 +1479,7 @@ function closeCampDetailsModal(){
 
 // v2.104 — Drill-down "Aguardando documentação": praça → vendedor → clientes
 function openAgDocsModal(){
+  const me = getCurrentVendedor();  // fix: me precisa estar em escopo (botao troca / isLider)
   const docs = rawData.filter(isAgDocs);
   // agrupa por praça e vendedor
   const byPraca = {};
@@ -1637,6 +1639,7 @@ function solicitarPerdido(dealId){var x=rawData.find(function(r){return r.deal_i
   window.open(url,'_blank');
 }
 function openClientDetailModal(dealId){
+  const me = getCurrentVendedor();  // fix: me precisa estar em escopo (botao troca / isLider)
   const x = rawData.find(r => r.deal_id === dealId);
   if(!x) return;
 
@@ -1696,6 +1699,7 @@ function openClientDetailModal(dealId){
   document.body.appendChild(modal);
 }
 function openRankSellerModal(el){
+  const me = getCurrentVendedor();  // fix: me precisa estar em escopo (botao troca / isLider)
   const name   = el.dataset.name;
   const metric = el.dataset.metric;
   const period = el.dataset.period;
