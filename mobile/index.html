@@ -5040,16 +5040,20 @@ function setVisitFilter(filter){
 // v2.33 — Busca textual do Kanban. Mantém foco e cursor no input após cada keystroke.
 function setSearchQuery(value){
   searchQuery = value;
-  // Re-render: como o input vai ser redesenhado, vamos restaurar foco/cursor depois.
-  renderFunil();
-  setTimeout(() => {
+  // v2.140 — debounce: só re-renderiza ~280ms DEPOIS de parar de digitar.
+  // Antes re-renderizava a cada tecla (renderFunil), o que piscava a tela e
+  // tirava o foco do campo, impedindo digitar o nome inteiro. Agora o texto
+  // digitado fica no input nativo e o filtro roda quando o usuário pausa.
+  clearTimeout(window._ksTimer);
+  window._ksTimer = setTimeout(() => {
+    renderFunil();
     const inp = document.getElementById('kanban-search-input');
     if (inp) {
       inp.focus();
       const len = inp.value.length;
       try { inp.setSelectionRange(len, len); } catch(e){}
     }
-  }, 0);
+  }, 280);
 }
 
 function clearSearch(){
