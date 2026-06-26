@@ -1362,10 +1362,10 @@ function renderCarteira(){
             </svg>
             Relatar situação ao suporte
           </button>
-          <button onclick="event.stopPropagation(); openTrocarResponsavel('${x.deal_id}')"
+          ${(me===GESTOR||isLider(me))?`<button onclick="event.stopPropagation(); openTrocarResponsavel('${x.deal_id}')"
             style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:6px;padding:9px 12px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;font-size:12px;font-weight:700;color:#C2410C;cursor:pointer;font-family:inherit">
             🔄 Solicitar troca de responsável
-          </button><button onclick="event.stopPropagation(); solicitarPerdido('${x.deal_id}')" style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:6px;padding:9px 12px;background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;font-size:12px;font-weight:700;color:#B91C1C;cursor:pointer;font-family:inherit">🚫 Solicitar perdido</button>
+          </button>`:''}<button onclick="event.stopPropagation(); solicitarPerdido('${x.deal_id}')" style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:6px;padding:9px 12px;background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;font-size:12px;font-weight:700;color:#B91C1C;cursor:pointer;font-family:inherit">🚫 Solicitar perdido</button>
         ` : ''}
       </div>`;
   });
@@ -1515,7 +1515,7 @@ function openAgDocsModal(){
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 11a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v3a4 4 0 0 1-4 4H8l-5 4z"/></svg>
                 Relatar situação ao suporte
               </button>
-              <button onclick="event.stopPropagation(); openTrocarResponsavel('${c.deal_id}')" style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:6px;padding:9px 12px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;font-size:12px;font-weight:700;color:#C2410C;cursor:pointer;font-family:inherit">🔄 Solicitar troca de responsável</button>
+              ${(me===GESTOR||isLider(me))?`<button onclick="event.stopPropagation(); openTrocarResponsavel('${c.deal_id}')" style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:6px;padding:9px 12px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;font-size:12px;font-weight:700;color:#C2410C;cursor:pointer;font-family:inherit">🔄 Solicitar troca de responsável</button>`:''}
               <button onclick="event.stopPropagation(); solicitarPerdido('${c.deal_id}')" style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:6px;padding:9px 12px;background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;font-size:12px;font-weight:700;color:#B91C1C;cursor:pointer;font-family:inherit">🚫 Solicitar perdido</button>
             </div>`:''}
           </div>`).join('');
@@ -1688,10 +1688,10 @@ function openClientDetailModal(dealId){
         </div>
       </div>
 
-      <button onclick="openTrocarResponsavel('${x.deal_id}')"
+      ${(me===GESTOR||isLider(me))?`<button onclick="openTrocarResponsavel('${x.deal_id}')"
         style="width:100%;margin-top:12px;background:#FFF7ED;color:#C2410C;border:1.5px solid #FED7AA;border-radius:10px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">
         🔄 Solicitar troca de responsável
-      </button>
+      </button>`:''}
     </div>`;
   document.body.appendChild(modal);
 }
@@ -1727,10 +1727,10 @@ function openRankSellerModal(el){
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 11a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v3a4 4 0 0 1-4 4H8l-5 4z"/></svg>
                 Relatar situação
               </button>
-              <button onclick="event.stopPropagation();openTrocarResponsavel('${x.deal_id}')"
+              ${(me===GESTOR||isLider(me))?`<button onclick="event.stopPropagation();openTrocarResponsavel('${x.deal_id}')"
                 style="display:flex;align-items:center;justify-content:center;gap:5px;padding:9px 8px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;font-size:11px;font-weight:700;color:#C2410C;cursor:pointer;font-family:inherit">
                 🔄 Solicitar troca
-              </button>
+              </button>`:''}
             </div>
           </div>`).join('');
 
