@@ -42,6 +42,7 @@ def load_docs(path):
 
 # ── Maps canônicos ──
 EMAIL_NOME = {
+ 'mecenas.junior@lioraenergia.com.br':'Mecenas Junior',
  'kelma.rangel@lioraenergia.com.br':'Kelma Rangel','lucileide.carlos@lioraenergia.com.br':'Lucileide Carlos',
  'rosangela.mendes@lioraenergia.com.br':'Rosangela Mendes','tiago.freitas@lioraenergia.com.br':'Tiago Freitas',
  'ryan.trindade@lioraenergia.com.br':'Ryan Trindade','bruno.borges@lioraenergia.com.br':'Bruno Borges',
@@ -61,6 +62,7 @@ NAME_MAP = {  # fallback quando não há email reconhecido (nome cru -> canônic
  'antonio carlos':'Antonio Mariano','bruno rodrigues':'Bruno Andrade','ananias oliveira':'Ananias Neto',
 }
 SELLER_PRACA = {  # canônico -> label praça
+ 'Mecenas Junior':'Natal',
  'Adroaldo Bonfim':'Salvador','Ettore Rossi':'Salvador','Maria Lúcia':'Salvador','Tais Santos':'Salvador','Antonio Mariano':'Salvador',
  'Kelma Rangel':'Feira de Santana','Lucileide Carlos':'Feira de Santana','Rosangela Mendes':'Feira de Santana','Tiago Freitas':'Feira de Santana','Ryan Trindade':'Feira de Santana',
  'Bruno Andrade':'Natal','Marcio Galvão':'Natal','Rodrigo Ribeiro':'Natal','Ananias Neto':'Natal','Thiago Araujo França':'Natal',

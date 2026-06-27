@@ -114,6 +114,7 @@ DOW = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
 
 # ---- Mapas canônicos (referência = EMAIL) --------------------------------
 PRACA_TITLE = {  # email -> praça (Title) usada no RAW
+ 'mecenas.junior@lioraenergia.com.br':'Natal',
  'adroaldo.bonfim@lioraenergia.com.br':'Salvador','ananias.neto@lioraenergia.com.br':'Natal',
  'antonio.mariano@lioraenergia.com.br':'Salvador','bruno.andrade@lioraenergia.com.br':'Natal',
  'bruno.borges@lioraenergia.com.br':'CE','caio.lannes@lioraenergia.com.br':'SPI',
@@ -128,6 +129,7 @@ PRACA_TITLE = {  # email -> praça (Title) usada no RAW
  'tiago.freitas@lioraenergia.com.br':'Feira de Santana','thiago.araujo@lioraenergia.com.br':'Natal',
 }
 EMAIL2NAME = {  # email -> nome canônico do vendedor (resolve nomes variáveis do CRM)
+ 'mecenas.junior@lioraenergia.com.br':'Mecenas Junior',
  'adroaldo.bonfim@lioraenergia.com.br':'Adroaldo Bonfim','ananias.neto@lioraenergia.com.br':'Ananias Neto',
  'antonio.mariano@lioraenergia.com.br':'Antonio Mariano','bruno.andrade@lioraenergia.com.br':'Bruno Andrade',
  'bruno.borges@lioraenergia.com.br':'Bruno Borges','caio.lannes@lioraenergia.com.br':'Caio Lannes',
