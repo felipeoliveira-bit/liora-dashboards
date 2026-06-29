@@ -42,6 +42,10 @@ def load_docs(path):
 
 # ── Maps canônicos ──
 EMAIL_NOME = {
+ 'silmara.gomes@lioraenergia.com.br':'Silmara Gomes',
+ 'luciana.campos@lioraenergia.com.br':'Luciana Campos',
+ 'nicola.popovic@lioraenergia.com.br':'Nicola Popovic',
+ 'nha.negocios@gmail.com':'Anderson Correia',
  'mecenas.junior@lioraenergia.com.br':'Mecenas Junior',
  'kelma.rangel@lioraenergia.com.br':'Kelma Rangel','lucileide.carlos@lioraenergia.com.br':'Lucileide Carlos',
  'rosangela.mendes@lioraenergia.com.br':'Rosangela Mendes','tiago.freitas@lioraenergia.com.br':'Tiago Freitas',
@@ -62,6 +66,10 @@ NAME_MAP = {  # fallback quando não há email reconhecido (nome cru -> canônic
  'antonio carlos':'Antonio Mariano','bruno rodrigues':'Bruno Andrade','ananias oliveira':'Ananias Neto',
 }
 SELLER_PRACA = {  # canônico -> label praça
+ 'Silmara Gomes':'CE',
+ 'Luciana Campos':'Salvador',
+ 'Nicola Popovic':'SPI',
+ 'Anderson Correia':'SPI',
  'Mecenas Junior':'Natal',
  'Adroaldo Bonfim':'Salvador','Ettore Rossi':'Salvador','Maria Lúcia':'Salvador','Tais Santos':'Salvador','Antonio Mariano':'Salvador',
  'Kelma Rangel':'Feira de Santana','Lucileide Carlos':'Feira de Santana','Rosangela Mendes':'Feira de Santana','Tiago Freitas':'Feira de Santana','Ryan Trindade':'Feira de Santana',
