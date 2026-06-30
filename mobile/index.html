@@ -2300,7 +2300,7 @@ function renderPropostas() {
   // By seller — ordena pela métrica selecionada
   const sellers = {};
   data.forEach(r=>{
-    if(!sellers[r.seller]) sellers[r.seller]={prop:0,mwh:0,aprov:0,tarefas:0};
+    if(!sellers[r.seller]) sellers[r.seller]={prop:0,mwh:0,aprov:0,aprovCount:0,tarefas:0};
     sellers[r.seller].prop++;
     sellers[r.seller].mwh+=r.consumption_mwh;
   });
@@ -2311,8 +2311,9 @@ function renderPropostas() {
     .filter(x => isAprovado(x))
     .map(x => ({ seller: x.s, mwh: x.mwh, date: x.aprov_date }));
   filterPropByPeriod(aprovBase, propPeriod).forEach(r=>{
-    if(!sellers[r.seller]) sellers[r.seller]={prop:0,mwh:0,aprov:0,tarefas:0};
+    if(!sellers[r.seller]) sellers[r.seller]={prop:0,mwh:0,aprov:0,aprovCount:0,tarefas:0};
     sellers[r.seller].aprov += r.mwh;
+    sellers[r.seller].aprovCount += 1;
   });
 
   // v2.137 — Tarefas de Venda: MESMA lógica/recorte do desktop (Tarefas de Vendas — Por Vendedor).
@@ -2334,7 +2335,7 @@ function renderPropostas() {
         const v = canonicalVendedor(l.vendedor||'');
         // resolve para nome canônico via EMAIL_NAME reverso
         const nome = Object.entries(CREDENTIALS).find(([,c])=>canonicalVendedor(c.nome)===v)?.[1]?.nome || l.vendedor;
-        if(!sellers[nome]) sellers[nome]={prop:0,mwh:0,aprov:0,tarefas:0};
+        if(!sellers[nome]) sellers[nome]={prop:0,mwh:0,aprov:0,aprovCount:0,tarefas:0};
         sellers[nome].tarefas++;
       }
     });
@@ -2346,6 +2347,7 @@ function renderPropostas() {
     .filter(([name]) => !RANK_HIDDEN.includes(name))
     .sort((a,b)=>{
     if(propMetric === 'aprovado') return b[1].aprov - a[1].aprov;
+    if(propMetric === 'qtd')      return b[1].aprovCount - a[1].aprovCount;
     if(propMetric === 'tarefas')  return b[1].tarefas - a[1].tarefas;
     return b[1].prop - a[1].prop;
   });
@@ -2363,8 +2365,9 @@ function renderPropostas() {
 
   html += `<div class="section-head">Ranking por Vendedor</div>
     <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center">
-      <div class="metric-toggle" style="flex:1">
+      <div class="metric-toggle" style="flex:1;flex-wrap:wrap">
         <div class="metric-toggle-btn ${propMetric==='aprovado'?'active':''}" onclick="setPropMetric('aprovado')">✅ MWh Aprov.</div>
+        <div class="metric-toggle-btn ${propMetric==='qtd'?'active':''}" onclick="setPropMetric('qtd')">👥 Clientes</div>
         <div class="metric-toggle-btn ${propMetric==='propostas'?'active':''}" onclick="setPropMetric('propostas')">📋 Propostas</div>
         <div class="metric-toggle-btn ${propMetric==='tarefas'?'active':''}" onclick="setPropMetric('tarefas')">📞 Visitas</div>
       </div>
@@ -2393,7 +2396,10 @@ function renderPropostas() {
     let mainVal, mainUnit, subInfo;
     if(propMetric === 'aprovado'){
       mainVal = d.aprov.toFixed(1); mainUnit = 'MWh aprov.';
-      subInfo = `${d.prop} propostas · ${d.tarefas} visitas`;
+      subInfo = `${d.aprovCount} aprovados · ${d.prop} propostas · ${d.tarefas} visitas`;
+    } else if(propMetric === 'qtd'){
+      mainVal = d.aprovCount; mainUnit = d.aprovCount===1?'aprovado':'aprovados';
+      subInfo = `${d.aprov.toFixed(1)} MWh · ${d.prop} propostas · ${d.tarefas} visitas`;
     } else if(propMetric === 'tarefas'){
       mainVal = d.tarefas; mainUnit = 'visitas';
       subInfo = `${d.prop} propostas · ${d.aprov.toFixed(1)} MWh aprov.`;
@@ -5333,11 +5339,4 @@ function moveLead(id, newStage){
   });
 }
 
-const STAGE_DESC={'WAITING_DOCUMENTS':'Falta documento pra análise','BACKGROUND_CHECKING':'Em processo de análise do time de Ops','BACKGROUND CHECKING':'Em processo de análise do time de Ops','BGC_PARCEIRO':'Em processo de análise do time de Ops','BGC_REVIEW':'Em processo de análise do time de Ops','REQUEST_TITULARIDADE':'Aprovado na análise, aguardando processo de troca de titularidade','TITULARIDADE_ONGOING':'Troca de titularidade solicitada, aguardando confirmação da distribuidora','TITULARIDADE ONGOING':'Troca de titularidade solicitada, aguardando confirmação da distribuidora','REGISTERING_DG':'Troca de titularidade aprovada, aguardando cadastro na DG para gerar a fatura','ACTIVE_MEMBER':'Troca aprovada e cliente cadastrado na DG para gerar faturas Liora','ACTIVE MEMBER':'Troca aprovada e cliente cadastrado na DG para gerar faturas Liora'};
-function escapeHtml(s){
-  if(!s) return '';
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-</script>
-</body>
-</html>
+const STAGE_DESC={'WAITING_DOCUMENTS':'Falta documento pra análise','BACKGROUND_CHECKING':'Em processo de análise do time de Ops','BACKGROUND CHECKING':'Em processo de análise do time de Ops','BGC_PARCEIRO':'Em processo de análise do time de Ops','BGC_REVIEW':'Em processo de análise do time de Ops','REQUEST_TITULARIDADE':'Aprovado na análise, aguardando processo de troca de titularidade','TITULARIDADE_ONGOING':'Troca de titularidade solicitada, aguardando confirmação da distribuidora','TITULARIDADE ON
