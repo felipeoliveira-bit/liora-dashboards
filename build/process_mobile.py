@@ -46,6 +46,7 @@ EMAIL_NOME = {
  'luciana.campos@lioraenergia.com.br':'Luciana Campos',
  'nicola.popovic@lioraenergia.com.br':'Nicola Popovic',
  'nha.negocios@gmail.com':'Anderson Correia',
+ 'anderson.correia@lioraenergia.com.br':'Anderson Correia',
  'mecenas.junior@lioraenergia.com.br':'Mecenas Junior',
  'kelma.rangel@lioraenergia.com.br':'Kelma Rangel','lucileide.carlos@lioraenergia.com.br':'Lucileide Carlos',
  'rosangela.mendes@lioraenergia.com.br':'Rosangela Mendes','tiago.freitas@lioraenergia.com.br':'Tiago Freitas',
