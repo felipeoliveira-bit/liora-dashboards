@@ -2972,7 +2972,14 @@ async function loadLeads(){
     return;
   }
   try {
-    const data = await apiCall('list');
+    // v2.140 — rede movel + payload ~2MB as vezes estoura o timeout; tenta 2x (45s, depois 60s)
+    // com pequena pausa entre elas, antes de cair no cache local. Reduz o "Erro ao sincronizar" transitorio.
+    let data, lastErr=null;
+    for (let attempt=1; attempt<=2; attempt++){
+      try { data = await apiCall('list', null, { timeoutMs: attempt===1 ? 45000 : 60000 }); lastErr=null; break; }
+      catch(e){ lastErr=e; if(attempt===1) await new Promise(r=>setTimeout(r,800)); }
+    }
+    if (lastErr) throw lastErr;
     window.leads = (data.leads || [])
       // v2.29: descarta leads marcados como excluídos no Sheets (kept para histórico,
       // mas não devem entrar em window.leads — senão contam no header e somem das abas).
