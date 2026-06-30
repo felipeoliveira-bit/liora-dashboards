@@ -59,6 +59,8 @@ run(['python3', os.path.join(BUILD,'swap_data_lideranca.py'), DESK, os.path.join
 vd = run(['python3', os.path.join(BUILD,'validate_lideranca.py'), os.path.join(WORK,'out_desktop.html')], cwd=WORK)
 if 'HOUVE ERROS' in vd: sys.exit('VALIDATE desktop reportou erros.')
 stamp(os.path.join(WORK,'out_desktop.html'))
+_minb = int(os.path.getsize(DESK)*0.9) if os.path.isfile(DESK) else 0
+run(['python3', os.path.join(BUILD,'validate_html.py'), os.path.join(WORK,'out_desktop.html'), '--kind','desktop','--min-bytes',str(_minb)])
 shutil.copy(os.path.join(WORK,'out_desktop.html'), DESK)
 print('   desktop carimbado ->', TS)
 
@@ -70,6 +72,8 @@ run(['python3', os.path.join(BUILD,'process_mobile.py')]+margs, cwd=WORK)
 run(['python3', os.path.join(BUILD,'swap_mobile.py'), MOB, os.path.join(WORK,'out_mobile.html')], cwd=WORK)
 node_check_scripts(os.path.join(WORK,'out_mobile.html'), 'mobile')
 stamp(os.path.join(WORK,'out_mobile.html'))
+_minb = int(os.path.getsize(MOB)*0.9) if os.path.isfile(MOB) else 0
+run(['python3', os.path.join(BUILD,'validate_html.py'), os.path.join(WORK,'out_mobile.html'), '--kind','mobile','--min-bytes',str(_minb)])
 shutil.copy(os.path.join(WORK,'out_mobile.html'), MOB)
 print('   mobile carimbado ->', TS)
 
