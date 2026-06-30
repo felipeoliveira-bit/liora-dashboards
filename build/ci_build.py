@@ -68,7 +68,7 @@ print('   desktop carimbado ->', TS)
 docs = os.path.join(WORK,'docs_pendentes.csv')
 margs = [os.path.join(WORK,'deals.csv'), os.path.join(WORK,'aguardando_documentos.csv'), os.path.join(WORK,'propostas_geradas.csv')]
 if os.path.isfile(docs): margs.append(docs)
-run(['python3', os.path.join(BUILD,'process_mobile.py')]+margs, cwd=WORK)
+run(['python3', os.path.join(BUILD,'process_mobile.py')]+margs, cwd=WORK, env={'UC_CSV': os.path.join(WORK,'uc_por_deal.csv')})
 run(['python3', os.path.join(BUILD,'swap_mobile.py'), MOB, os.path.join(WORK,'out_mobile.html')], cwd=WORK)
 node_check_scripts(os.path.join(WORK,'out_mobile.html'), 'mobile')
 stamp(os.path.join(WORK,'out_mobile.html'))

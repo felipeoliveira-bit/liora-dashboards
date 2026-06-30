@@ -1891,6 +1891,7 @@ function openClienteDetalhes(dealId){
         <div class="cd-section-title">👤 Identificação</div>
         ${telBlock}
         <div class="cd-row"><div class="cd-row-k">📄 Documento</div><div class="cd-row-v">${doc}</div></div>
+        <div class="cd-row"><div class="cd-row-k">🔌 Instalação (UC)</div><div class="cd-row-v">${lead.uc ? escapeHtml(lead.uc) : '—'}</div></div>
         <div class="cd-row"><div class="cd-row-k">📍 Cidade · Estado</div><div class="cd-row-v">${escapeHtml(lead.city||'—')}${lead.state ? ' · '+escapeHtml(lead.state) : ''}</div></div>
         <div class="cd-row"><div class="cd-row-k">⚡ Distribuidora</div><div class="cd-row-v">${escapeHtml(lead.dist||'—')}</div></div>
       </div>
@@ -1921,6 +1922,7 @@ function openClienteDetalhes(dealId){
         <button class="cd-btn-relatar" onclick="document.getElementById('cliente-detail-modal').remove(); openRelatarSituacao('${escapeHtml(lead.deal_id||'')}', '${escapeHtml(lead.c||'')}')">
           💬 Relatar situação ao suporte
         </button>
+        ${lead.uc ? `<div class="cd-deal-id">Instalação (UC): <code>${escapeHtml(lead.uc)}</code></div>` : ''}
         <div class="cd-deal-id">ID do deal: <code>${escapeHtml(lead.deal_id||'')}</code></div>
       </div>
     </div>

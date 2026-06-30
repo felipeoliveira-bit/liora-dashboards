@@ -74,6 +74,17 @@ print('deals   :', os.path.basename(f_deals))
 print('aguardando:', os.path.basename(f_agu))
 print('propostas:', os.path.basename(f_prop))
 DOCS = load_docs(f_docs); print('docs pendentes:', len(DOCS), '|', os.path.basename(f_docs) if f_docs else 'sem arquivo')
+f_uc = (sorted(glob.glob(os.path.join(UP,'uc_por_deal*.csv'))) or [None])[-1]
+def _load_uc(p):
+    m={}
+    if not p: return m
+    try:
+        for r in rows(p):
+            did=(r.get('deal_id') or '').strip(); uc=(r.get('uc') or '').strip()
+            if did and uc: m[did]=uc
+    except Exception as e: print('aviso uc:', e)
+    return m
+UC = _load_uc(f_uc); print('uc por deal:', len(UC), '|', os.path.basename(f_uc) if f_uc else 'sem arquivo')
 
 deals = rows(f_deals)
 agu   = rows(f_agu)
@@ -201,6 +212,7 @@ def mk_deal(r):
       'lost_reason': r['deal_lost_reason'] or '',
       'motivo': (('CANCELADO — '+(r.get('deal_lost_reason') or '').strip()) if ((r.get('latest_risk_analysis_result') or '').strip()=='APPROVED' and (r.get('deal_lost_at') or '').strip() and r.get('deal_stage')=='BACKGROUND_CHECKING' and (r.get('deal_lost_reason') or '').strip().lower()!='troca de titularidade') else (r.get('latest_risk_analysis_comments') or '').strip()),
       'docs': DOCS.get((r.get('latest_contract_id') or '').strip(),''),
+      'uc': UC.get(r['deal_id'],''),
       'date': d or '',
     }
 seen = set(); rawData = []
@@ -230,6 +242,7 @@ for r in prop:
       'deal_stage': r['deal_stage'],
       'accepted_proposal': (r['accepted_proposal'] or '').strip().lower() == 'true',
       'praca': praca_of(r['sales_person_email'], r['current_client_name']),
+      'uc': UC.get(r['deal_id'],''),
       'det': {
         'CNPJ': r['current_client_cnpj'], 'CPF': r['current_client_cpf'],
         'Telefone': r['client_phone_number'], 'Cidade': r['current_client_city'],

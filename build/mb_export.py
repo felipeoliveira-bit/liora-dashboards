@@ -55,6 +55,36 @@ LEFT JOIN uploaded u ON u.contract_id=p.contract_id AND u.tag=p.tag
 GROUP BY wc.contract_id
 """
 
+UC_SQL = r"""
+WITH deals_dedup AS (
+  SELECT id AS deal_id FROM (
+    SELECT id, deleted_at, ROW_NUMBER() OVER (PARTITION BY id ORDER BY _ingested_at DESC) rn
+    FROM `liora_bronze.deals`
+  ) WHERE rn=1 AND deleted_at IS NULL
+),
+prop AS (
+  SELECT deal_id, id AS proposal_id
+  FROM `liora_silver.distributed_generation_proposals`
+  WHERE deleted_at IS NULL
+),
+bills AS (
+  SELECT distributed_generation_proposal_id AS proposal_id,
+         current_client_instalation AS uc,
+         ROW_NUMBER() OVER (PARTITION BY distributed_generation_proposal_id ORDER BY created_at DESC) rn
+  FROM `liora_silver.original_electricity_bills`
+  WHERE deleted_at IS NULL AND current_client_instalation IS NOT NULL
+    AND TRIM(current_client_instalation) != ''
+),
+joined AS (
+  SELECT d.deal_id, b.uc,
+    ROW_NUMBER() OVER (PARTITION BY d.deal_id ORDER BY b.uc) rn2
+  FROM deals_dedup d
+  JOIN prop p ON p.deal_id = d.deal_id
+  JOIN bills b ON b.proposal_id = p.proposal_id AND b.rn = 1
+)
+SELECT deal_id, uc FROM joined WHERE rn2 = 1
+"""
+
 def _req(path, data=None, form=False):
     url = URL + path
     headers = {'x-api-key': KEY}
@@ -110,6 +140,14 @@ def main():
         try: os.remove(os.path.join(OUT, 'docs_pendentes.csv'))
         except Exception: pass
         print('aviso: docs_pendentes falhou (segue sem ele): %s' % e, file=sys.stderr)
+    # uc_por_deal (opcional) - nro de instalacao (UC) por deal, via conta de luz
+    try:
+        u = export_sql_csv(DATABASE_ID, UC_SQL, os.path.join(OUT, 'uc_por_deal.csv'))
+        print('uc_por_deal.csv OK: %d linhas' % u)
+    except Exception as e:
+        try: os.remove(os.path.join(OUT, 'uc_por_deal.csv'))
+        except Exception: pass
+        print('aviso: uc_por_deal falhou (segue sem ele): %s' % e, file=sys.stderr)
 
 if __name__ == '__main__':
     main()

@@ -3414,6 +3414,7 @@ function ppOpenDetail(d){
   const topo = [
     ['Vendedor', d.seller || d.sales_person_name],
     ['UF', d.current_client_state],
+    ['Instalação (UC)', d.uc],
     ['Valor da fatura', ppEmpty(d.bill_cost)?'':fB(d.bill_cost)],
     ['Consumo', ppEmpty(d.consumption_mwh)?'':fW(d.consumption_mwh)+' MWh'],
     ['Estágio', (d.deal_stage||'').replace(/_/g,' ')],

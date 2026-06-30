@@ -114,8 +114,21 @@ def semana(basis_date):
     idx = (mon - ANCHOR_MON).days // 7
     return f"S{idx}"
 
-def build_rawData(deals_path, ag_path, docs_map=None):
+def load_uc(path):
+    m={}
+    if not path: return m
+    try:
+        with open(path,newline='',encoding='utf-8-sig') as f:
+            for r in csv.DictReader(f):
+                did=(r.get('deal_id') or '').strip(); uc=(r.get('uc') or '').strip()
+                if did and uc: m[did]=uc
+    except Exception as e:
+        print('aviso: uc nao carregado:', e)
+    return m
+
+def build_rawData(deals_path, ag_path, docs_map=None, uc_map=None):
     docs_map = docs_map or {}
+    uc_map = uc_map or {}
     def rows(p):
         with open(p,newline='',encoding='utf-8') as f: return list(csv.DictReader(f))
     out=[]; seen=set()
@@ -138,7 +151,7 @@ def build_rawData(deals_path, ag_path, docs_map=None):
             'stage':r['deal_stage'],'status':r['ops_tt_status'],'idle':idle,
             'city':r['current_client_city'],'state':r['current_client_state'],
             'dist':DIST_MAP.get(r['distributor_short_name'], r['distributor_short_name']),
-            'deal_id':did,'tel':r['client_phone_number'],'cnpj':r['current_client_cnpj'],'cpf':r['current_client_cpf'],
+            'deal_id':did,'uc':uc_map.get(did,''),'tel':r['client_phone_number'],'cnpj':r['current_client_cnpj'],'cpf':r['current_client_cpf'],
             'fatura':pfloat(r['current_total_bill_cost (R$)']),'semana':semana(basis),
             'lost_at':r['deal_lost_at'],'lost_reason':r['deal_lost_reason'],
             'motivo':(('CANCELADO — '+(r.get('deal_lost_reason') or '').strip()) if ((r.get('latest_risk_analysis_result') or '').strip()=='APPROVED' and (r.get('deal_lost_at') or '').strip() and r.get('deal_stage')=='BACKGROUND_CHECKING' and (r.get('deal_lost_reason') or '').strip().lower()!='troca de titularidade') else (r.get('latest_risk_analysis_comments') or '').strip()),
@@ -176,7 +189,10 @@ if __name__=='__main__':
     d,a,p = sys.argv[1],sys.argv[2],sys.argv[3]
     docs_path = sys.argv[4] if len(sys.argv)>4 else None
     docs_map = load_docs(docs_path)
-    rd=build_rawData(d,a,docs_map); rp=build_RAW_PROP(p)
+    import os as _os
+    uc_map = load_uc(_os.environ.get('UC_CSV'))
+    print('uc carregados:', len(uc_map))
+    rd=build_rawData(d,a,docs_map,uc_map); rp=build_RAW_PROP(p)
     print('docs pendentes carregados:', len(docs_map))
     json.dump(rd,open('new_rawData.json','w'),ensure_ascii=False)
     json.dump(rp,open('new_RAW_PROP.json','w'),ensure_ascii=False)
