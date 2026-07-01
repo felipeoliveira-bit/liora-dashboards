@@ -1300,9 +1300,18 @@ function renderCarteiraLider(seller){
 
 // v2.140 — média de visitas de venda (leads API) por dia útil no mês corrente
 function _cardBrDate(ms){ try { return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo'}).format(new Date(ms)); } catch(e){ return ''; } }
+// v2.141 — TEMP: congela em JUNHO/2026 (mês fechado) p/ mostrar ao time. Voltar p/ PROP_TODAY qd quiser mês corrente.
+const VIS_MES = '2026-06';
+const VIS_MES_LABEL = 'junho';
+function diasUteisDoMesFechado(){
+  const p = VIS_MES.split('-').map(Number); const y=p[0], m=p[1];
+  const last = new Date(Date.UTC(y, m, 0)).getUTCDate();
+  let n=0; for(let dd=1; dd<=last; dd++){ const wd=new Date(Date.UTC(y,m-1,dd)).getUTCDay(); if(wd>=1&&wd<=5) n++; }
+  return n||1;
+}
 function visitasMesDoVendedor(seller){
   if(!window.leads || !leads.length) return 0;
-  const mes = PROP_TODAY.slice(0,7);
+  const mes = VIS_MES;
   const INACT = ['ganho','won','signing_contract','active_member','perdido','lost'];
   const alvo = canonicalVendedor(seller);
   let n=0;
@@ -1352,11 +1361,11 @@ function renderCarteira(){
     visitasBlock = '<div class="summary-bar"><div class="summary-row"><span class="summary-key">\u{1F4DE} M\u00e9dia de visitas/dia</span><span class="summary-val" style="color:var(--muted)">\u2026</span></div><div class="summary-row" style="margin-top:2px"><span class="summary-key" style="font-size:11px;color:var(--muted);font-weight:500">carregando visitas\u2026</span><span></span></div></div>';
   } else {
     const _vis = visitasMesDoVendedor(seller);
-    const _du = diasUteisDecorridosMes();
+    const _du = diasUteisDoMesFechado();
     const _media = _vis/_du;
     const _vc = _media>=VIS_PREREQ?'var(--green)':(_media>=VIS_PREREQ*0.6?'var(--orange)':'var(--red)');
-    visitasBlock = '<div class="summary-bar"><div class="summary-row"><span class="summary-key">\u{1F4DE} M\u00e9dia de visitas/dia</span><span class="summary-val" style="color:'+_vc+'">'+_media.toFixed(1)+'/dia</span></div>'
-      + '<div class="summary-row" style="margin-top:2px"><span class="summary-key" style="font-size:11px;color:var(--muted);font-weight:500">'+_vis+' visitas no m\u00eas \u00b7 '+_du+' dias \u00fateis \u00b7 pr\u00e9-req 15/dia</span><span></span></div></div>';
+    visitasBlock = '<div class="summary-bar"><div class="summary-row"><span class="summary-key">\u{1F4DE} M\u00e9dia de visitas/dia \u00b7 '+VIS_MES_LABEL+'</span><span class="summary-val" style="color:'+_vc+'">'+_media.toFixed(1)+'/dia</span></div>'
+      + '<div class="summary-row" style="margin-top:2px"><span class="summary-key" style="font-size:11px;color:var(--muted);font-weight:500">'+_vis+' visitas em '+VIS_MES_LABEL+' \u00b7 '+_du+' dias \u00fateis \u00b7 pr\u00e9-req 15/dia</span><span></span></div></div>';
   }
 
   let html = `
