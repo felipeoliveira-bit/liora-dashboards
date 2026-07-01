@@ -1298,6 +1298,36 @@ function renderCarteiraLider(seller){
   return html;
 }
 
+// v2.140 — média de visitas de venda (leads API) por dia útil no mês corrente
+function _cardBrDate(ms){ try { return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo'}).format(new Date(ms)); } catch(e){ return ''; } }
+function visitasMesDoVendedor(seller){
+  if(!window.leads || !leads.length) return 0;
+  const mes = PROP_TODAY.slice(0,7);
+  const INACT = ['ganho','won','signing_contract','active_member','perdido','lost'];
+  const alvo = canonicalVendedor(seller);
+  let n=0;
+  leads.forEach(function(l){
+    if(String((l&&l.stage)||'').trim().toLowerCase()==='excluido') return;
+    const v = canonicalVendedor(l.vendedor||'');
+    const nome = (Object.entries(CREDENTIALS).find(function(e){return canonicalVendedor(e[1].nome)===v;})||[null,{}])[1].nome || l.vendedor;
+    if(canonicalVendedor(nome)!==alvo) return;
+    const st = String((l&&l.stage)||'').trim().toLowerCase();
+    const stageActive = INACT.indexOf(st)===-1;
+    const criISO = l.createdAt ? _cardBrDate(l.createdAt) : '';
+    const criInMes = criISO && criISO.slice(0,7)===mes;
+    const proxISO = l.proximaInteracao ? String(l.proximaInteracao).slice(0,10) : '';
+    const agInMes = proxISO && proxISO.slice(0,7)===mes && stageActive;
+    if(criInMes || agInMes) n++;
+  });
+  return n;
+}
+function diasUteisDecorridosMes(){
+  const parts = PROP_TODAY.split('-').map(Number);
+  const y=parts[0], m=parts[1], d=parts[2];
+  let n=0;
+  for(let dd=1; dd<=d; dd++){ const wd = new Date(Date.UTC(y,m-1,dd)).getUTCDay(); if(wd>=1 && wd<=5) n++; }
+  return n || 1;
+}
 function renderCarteira(){
   const me = getCurrentVendedor();  // fix: me precisa estar em escopo (botao troca / isLider)
   // v2.122 — reflete identidade global mas MANTÉM a escolha manual do seletor
@@ -1316,6 +1346,18 @@ function renderCarteira(){
   const myPend = myDeals.filter(x=>!isAprovado(x)&&!isNegado(x)).reduce((a,x)=>a+x.mwh,0);
   const campValSemana = campVal(CAMP_CFG.semana, myDeals.filter(x=>noPeriodo(x,CAMP_CFG.semana.ini,CAMP_CFG.semana.end)&&isAprovado(x)));
   const campValBateu  = campVal(CAMP_CFG.bateu,  myDeals.filter(x=>noPeriodo(x,CAMP_CFG.bateu.ini,CAMP_CFG.bateu.end)&&isAprovado(x)));
+  const VIS_PREREQ = 15;
+  let visitasBlock;
+  if(!leadsLoaded){
+    visitasBlock = '<div class="summary-bar"><div class="summary-row"><span class="summary-key">\u{1F4DE} M\u00e9dia de visitas/dia</span><span class="summary-val" style="color:var(--muted)">\u2026</span></div><div class="summary-row" style="margin-top:2px"><span class="summary-key" style="font-size:11px;color:var(--muted);font-weight:500">carregando visitas\u2026</span><span></span></div></div>';
+  } else {
+    const _vis = visitasMesDoVendedor(seller);
+    const _du = diasUteisDecorridosMes();
+    const _media = _vis/_du;
+    const _vc = _media>=VIS_PREREQ?'var(--green)':(_media>=VIS_PREREQ*0.6?'var(--orange)':'var(--red)');
+    visitasBlock = '<div class="summary-bar"><div class="summary-row"><span class="summary-key">\u{1F4DE} M\u00e9dia de visitas/dia</span><span class="summary-val" style="color:'+_vc+'">'+_media.toFixed(1)+'/dia</span></div>'
+      + '<div class="summary-row" style="margin-top:2px"><span class="summary-key" style="font-size:11px;color:var(--muted);font-weight:500">'+_vis+' visitas no m\u00eas \u00b7 '+_du+' dias \u00fateis \u00b7 pr\u00e9-req 15/dia</span><span></span></div></div>';
+  }
 
   let html = `
     <div class="card">
@@ -1341,6 +1383,7 @@ function renderCarteira(){
       <div class="summary-row"><span class="summary-key">⚡ Bateu Levou</span><span class="summary-val" style="color:var(--blue)">${campValBateu} aprovados</span></div>
       ${renderCampProgress(CAMP_CFG.bateu, campValBateu)}
     </div>
+    ${visitasBlock}
     ${renderRemRulesCard(seller)}
     <div class="section-head">Sua Carteira (${myDeals.length} clientes)</div>`;
 
@@ -1382,6 +1425,7 @@ function renderCarteira(){
   });
 
   el.innerHTML = html;
+  if(!leadsLoaded){ loadLeads().then(function(){ if(currentScreen==='carteira') renderCarteira(); }); }
 }
 
 // Init carteira empty
