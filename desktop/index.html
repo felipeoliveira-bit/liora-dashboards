@@ -185,7 +185,7 @@ table.bau tbody tr.field-row td:first-child { color: #fff; }
 <div class=&quot;header&quot;>
   <div>
     <div class=&quot;title-main&quot;>🎯 BAU — Business as Usual</div>
-    <div class=&quot;subtitle&quot;>Resumo executivo da operação · Junho 2026</div>
+    <div class=&quot;subtitle&quot;>Resumo executivo da operação · Julho 2026</div>
   </div>
   <div class=&quot;sync-status&quot; id=&quot;sync-status&quot;>Carregando dados…</div>
   <button class=&quot;refresh-btn&quot; onclick=&quot;loadAll()&quot;>🔄 Atualizar</button>
@@ -235,7 +235,7 @@ table.bau tbody tr.field-row td:first-child { color: #fff; }
 // ============================================================
 const LEADS_API_URL = 'https://script.google.com/macros/s/AKfycbyk_rqDKe49ZOCtLJkXYNvITqF5wQBjs5Uu1-9-U5HadPsP_tyzulBaCpyeuLpaqokL1w/exec';
 
-// Vendedores ativos junho 2026
+// Vendedores ativos julho 2026
 const VENDEDORES_OCULTOS = ['Ananias Neto']; // saíram do time
 const VENDEDORES = [
   {nome:'Silmara Gomes',praca:'CE'},
@@ -274,7 +274,7 @@ PRACA_OF['Tais Santos'] = 'Salvador';
 
 const PRACAS = ['Salvador','Feira','Natal','SPI','CE'];
 
-// Metas Safra junho 2026
+// Metas Safra julho 2026
 const METAS_SAFRA = { Salvador: 60, Feira: 60, Natal: 45, SPI: 48, CE: 36 };
 // Meta INDIVIDUAL por vendedor (da planilha de metas, mensal MWh)
 const META_IND = { Salvador: 19.0, Feira: 19.0, Natal: 19.0, SPI: 15.0, CE: 15.0 };
@@ -1146,7 +1146,7 @@ td.rk-clk:hover{ text-decoration:underline; }
 <div class=&quot;header&quot;>
   <div>
     <div class=&quot;title-main&quot;>🏆 Rankings — Por Vendedor</div>
-    <div class=&quot;subtitle&quot;>Classificação individual da equipe · Junho 2026</div>
+    <div class=&quot;subtitle&quot;>Classificação individual da equipe · Julho 2026</div>
   </div>
   <div class=&quot;sync-status&quot; id=&quot;sync-status&quot;>Carregando dados…</div>
   <button class=&quot;refresh-btn&quot; onclick=&quot;loadAll()&quot;>🔄 Atualizar</button>
@@ -3202,7 +3202,7 @@ tr:hover td{background:#f8f9fc}
 <div class=&quot;sticky-top&quot;>
 <div class=&quot;hdr&quot;>
   <div class=&quot;hdr-top&quot;>
-    <div class=&quot;dtb&quot;><strong id=&quot;hdr-date&quot;>01/06/2026</strong>Semana 23 · Junho 2026</div>
+    <div class=&quot;dtb&quot;><strong id=&quot;hdr-date&quot;>01/06/2026</strong>Semana 23 · Julho 2026</div>
   </div>
   <nav class=&quot;nav&quot;>
     <button class=&quot;nb active&quot; onclick=&quot;showTab('overview',this)&quot;>Visão Geral</button>
@@ -4282,7 +4282,7 @@ td.fn-clk:hover{ text-decoration:underline; }
 </head>
 <body>
 
-<div class=&quot;header-row&quot;><div class=&quot;title&quot;>✅ Vendas — Funil de Clientes</div><div class=&quot;sync-status&quot;>Junho 2026</div></div>
+<div class=&quot;header-row&quot;><div class=&quot;title&quot;>✅ Vendas — Funil de Clientes</div><div class=&quot;sync-status&quot;>Julho 2026</div></div>
 
 <div class=&quot;section-title&quot;>Tipo de pendência <span style=&quot;font-size:10px;font-weight:400;color:#999;margin-left:4px&quot;>— selecione um ou mais</span></div>
 <div class=&quot;status-tabs&quot; style=&quot;margin-bottom:1.5rem&quot; id=&quot;status-tabs&quot;>
@@ -4336,7 +4336,7 @@ td.fn-clk:hover{ text-decoration:underline; }
 <div class=&quot;view-toggle&quot;>
   <button class=&quot;vtab active&quot; onclick=&quot;setView('detalhe')&quot;>📋 Detalhe</button>
   <button class=&quot;vtab&quot; onclick=&quot;setView('praca')&quot;>📊 Resultado</button>
-  <button class=&quot;vtab&quot; onclick=&quot;setView('campanha')&quot;>🏆 Resultado do Mês — Junho 2026</button>
+  <button class=&quot;vtab&quot; onclick=&quot;setView('campanha')&quot;>🏆 Resultado do Mês — Julho 2026</button>
 </div>
 
 <!-- Detail view -->
@@ -4366,7 +4366,7 @@ td.fn-clk:hover{ text-decoration:underline; }
   </div>
   <div class=&quot;summary-table-wrap&quot; id=&quot;camp-resumo&quot;></div>
   <div class=&quot;summary-table-wrap&quot; id=&quot;camp-clientes&quot; style=&quot;display:none&quot;></div>
-  <p style=&quot;font-size:11px;color:#aaa;margin-top:.75rem;padding:0 4px&quot;>MWh = Aprovado · Junho 2026</p>
+  <p style=&quot;font-size:11px;color:#aaa;margin-top:.75rem;padding:0 4px&quot;>MWh = Aprovado · Julho 2026</p>
 </div>
 
 <script>
@@ -4454,12 +4454,12 @@ function toggleMetaMode(btn) {
 }
 
 const WEEKS = [
-  { key:'todas',    label:'Todas',     dates:'junho completo' },
-  { key:'S1',       label:'Semana 1',  dates:'01 a 07/06' },
-  { key:'S2',       label:'Semana 2',  dates:'08 a 14/06' },
-  { key:'S3',       label:'Semana 3',  dates:'15 a 21/06' },
-  { key:'S4',       label:'Semana 4',  dates:'22 a 28/06' },
-  { key:'S5',       label:'Semana 5',  dates:'29 a 30/06' },
+  { key:'todas',    label:'Todas',     dates:'julho completo' },
+  { key:'S1',       label:'Semana 1',  dates:'01 a 07/07' },
+  { key:'S2',       label:'Semana 2',  dates:'08 a 14/07' },
+  { key:'S3',       label:'Semana 3',  dates:'15 a 21/07' },
+  { key:'S4',       label:'Semana 4',  dates:'22 a 28/07' },
+  { key:'S5',       label:'Semana 5',  dates:'29 a 31/07' },
 ];
 
 const ACOES = {
@@ -4750,7 +4750,7 @@ function setView(v) {
   if (v==='campanha') renderCampanha();
 }
 
-// ── RESULTADO DE JUNHO 2026 ──────────────────────────────────────
+// ── RESULTADO DE JULHO 2026 ──────────────────────────────────────
 const CAMP_SELLERS = [
   {name:'Maria Lúcia', praca:'Salvador', meta:19, mes:0.00, camp:0.00},
   {name:'Ettore Rossi', praca:'Salvador', meta:19, mes:0.00, camp:0.00},
@@ -5981,7 +5981,7 @@ body { font-family: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif; back
 <div class=&quot;header&quot;>
   <div>
     <div class=&quot;title-main&quot;>🎯 Meta Líder</div>
-    <div class=&quot;subtitle&quot;>Atingimento e remuneração variável por praça · Junho 2026</div>
+    <div class=&quot;subtitle&quot;>Atingimento e remuneração variável por praça · Julho 2026</div>
   </div>
   <div class=&quot;sync-status&quot; id=&quot;sync-status&quot;>Carregando…</div>
   <button class=&quot;refresh-btn&quot; onclick=&quot;loadAll()&quot;>🔄 Atualizar</button>

@@ -904,12 +904,12 @@ rawData.forEach(x => x.praca = getPraca(x.city, x.s));
 // v2.18: início do mês de meta vigente. Conta pela DATA DE APROVAÇÃO (latest_risk_analysis_created_at,
 // campo aprov_date). Se foi aprovado dentro do mês, conta — mesmo criado no mês anterior.
 // Fallback p/ data de criação quando não há data de aprovação. Atualizar na virada de mês.
-const MES_INICIO = '2026-06-01';
+const MES_INICIO = '2026-07-01';
 function noMes(x){ return (x.aprov_date || x.date) >= MES_INICIO; }
 function noPeriodo(x, ini, fim){ const d = x.aprov_date || x.date; return d >= ini && d <= fim; }
 
 // v2.42 — Meta to date: pro-rata por dia útil transcorrido até PROP_TODAY
-// Junho 2026: 22 dias úteis no mês. Hoje (PROP_TODAY) define quantos úteis passaram.
+// Julho 2026: 23 dias úteis no mês. Hoje (PROP_TODAY) define quantos úteis passaram.
 function getMetaToDateInfo(){
   const ref = new Date(PROP_TODAY + 'T00:00:00');
   const year = ref.getFullYear(), month = ref.getMonth(), dayRef = ref.getDate();
@@ -989,7 +989,7 @@ function renderResumo(){
   // Hero card
   let html = `
     <div class="hero-card">
-      <div class="hero-label">Aprovado · Junho</div>
+      <div class="hero-label">Aprovado · Julho</div>
       <div class="hero-value">${totalAprov.toFixed(1)}<span class="hero-unit">MWh</span></div>
       <div class="hero-sub">de ${totalMeta} MWh meta do mês</div>
       <div class="hero-progress"><div class="hero-progress-fill" style="width:${totalPct.toFixed(0)}%"></div></div>
@@ -1109,7 +1109,7 @@ function initSellerSelect(keepSelection){
   }
 }
 
-// v2.62 — Regras de remuneração variável (Junho) por praça
+// v2.62 — Regras de remuneração variável (Julho) por praça
 const REM_RULES = {
   abc:   { label: 'Salvador · Feira · Natal', min: 15, meta: 19, sup: 25 },
   defgh: { label: 'SPI · Ceará',               min: 12, meta: 15, sup: 20 },
@@ -1302,9 +1302,9 @@ function renderCarteiraLider(seller){
 
 // v2.140 — média de visitas de venda (leads API) por dia útil no mês corrente
 function _cardBrDate(ms){ try { return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo'}).format(new Date(ms)); } catch(e){ return ''; } }
-// v2.141 — TEMP: congela em JUNHO/2026 (mês fechado) p/ mostrar ao time. Voltar p/ PROP_TODAY qd quiser mês corrente.
-const VIS_MES = '2026-06';
-const VIS_MES_LABEL = 'junho';
+// v2.141 — TEMP: mostra JULHO/2026 (mês fechado) p/ mostrar ao time. Voltar p/ PROP_TODAY qd quiser mês corrente.
+const VIS_MES = '2026-07';
+const VIS_MES_LABEL = 'julho';
 function diasUteisDoMesFechado(){
   const p = VIS_MES.split('-').map(Number); const y=p[0], m=p[1];
   const last = new Date(Date.UTC(y, m, 0)).getUTCDate();
