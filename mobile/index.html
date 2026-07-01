@@ -1068,7 +1068,7 @@ function initSellerSelect(keepSelection){
   const me = (typeof getCurrentVendedor === 'function') ? getCurrentVendedor() : '';
   const wrap = document.querySelector('.seller-select-wrap');
   const praça = liderPraca(me);
-  const isGestor = me === 'Felipe Oliveira';
+  const isGestor = isGestor_(me);
 
   // v2.122 — preserva a escolha manual ao reconstruir (senão o select volta sempre p/ "me")
   const prev = sel.value;
@@ -1427,7 +1427,7 @@ function renderCarteira(){
             </svg>
             Relatar situação ao suporte
           </button>
-          ${(me==='Felipe Oliveira'||isLider(me))?`<button onclick="event.stopPropagation(); openTrocarResponsavel('${x.deal_id}')"
+          ${(isGestor_(me)||isLider(me))?`<button onclick="event.stopPropagation(); openTrocarResponsavel('${x.deal_id}')"
             style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:6px;padding:9px 12px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;font-size:12px;font-weight:700;color:#C2410C;cursor:pointer;font-family:inherit">
             🔄 Solicitar troca de responsável
           </button>`:''}<button onclick="event.stopPropagation(); solicitarPerdido('${x.deal_id}')" style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:6px;padding:9px 12px;background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;font-size:12px;font-weight:700;color:#B91C1C;cursor:pointer;font-family:inherit">🚫 Solicitar perdido</button>
@@ -1445,6 +1445,9 @@ renderCarteira();
 // ── SCREEN 3: CAMPANHA ────────────────────────────────────
 // v2.142 — Campanha da Semana 01-08/07 (individual · MWh aprovados na semana · pgto 01/07)
 // 3 tiers: Aquecimento(5)/Pressão(8)/Gol(12) — matinal 24/06 Copa da Liora
+// Gestores com visão geral (veem tudo, todas as praças) — v2.140
+const GESTORES = ['Felipe Oliveira','Ana Ribeiro'];
+function isGestor_(n){ return GESTORES.indexOf(n) !== -1; }
 const CAMP_CFG = {
   semana: { key:'semana', btn:'Campanha da Semana', title:'Campanha da Semana',
     ini:'2026-07-01', end:'2026-07-08', period:'01 a 08/07/2026 · 23h59 · pgto 09/07',
@@ -1582,7 +1585,7 @@ function openAgDocsModal(){
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 11a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v3a4 4 0 0 1-4 4H8l-5 4z"/></svg>
                 Relatar situação ao suporte
               </button>
-              ${(me==='Felipe Oliveira'||isLider(me))?`<button onclick="event.stopPropagation(); openTrocarResponsavel('${c.deal_id}')" style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:6px;padding:9px 12px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;font-size:12px;font-weight:700;color:#C2410C;cursor:pointer;font-family:inherit">🔄 Solicitar troca de responsável</button>`:''}
+              ${(isGestor_(me)||isLider(me))?`<button onclick="event.stopPropagation(); openTrocarResponsavel('${c.deal_id}')" style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:6px;padding:9px 12px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;font-size:12px;font-weight:700;color:#C2410C;cursor:pointer;font-family:inherit">🔄 Solicitar troca de responsável</button>`:''}
               <button onclick="event.stopPropagation(); solicitarPerdido('${c.deal_id}')" style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:6px;padding:9px 12px;background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;font-size:12px;font-weight:700;color:#B91C1C;cursor:pointer;font-family:inherit">🚫 Solicitar perdido</button>
             </div>`:''}
           </div>`).join('');
@@ -1756,7 +1759,7 @@ function openClientDetailModal(dealId){
         </div>
       </div>
 
-      ${(me==='Felipe Oliveira'||isLider(me))?`<button onclick="openTrocarResponsavel('${x.deal_id}')"
+      ${(isGestor_(me)||isLider(me))?`<button onclick="openTrocarResponsavel('${x.deal_id}')"
         style="width:100%;margin-top:12px;background:#FFF7ED;color:#C2410C;border:1.5px solid #FED7AA;border-radius:10px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">
         🔄 Solicitar troca de responsável
       </button>`:''}
@@ -1796,7 +1799,7 @@ function openRankSellerModal(el){
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 11a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v3a4 4 0 0 1-4 4H8l-5 4z"/></svg>
                 Relatar situação
               </button>
-              ${(me==='Felipe Oliveira'||isLider(me))?`<button onclick="event.stopPropagation();openTrocarResponsavel('${x.deal_id}')"
+              ${(isGestor_(me)||isLider(me))?`<button onclick="event.stopPropagation();openTrocarResponsavel('${x.deal_id}')"
                 style="display:flex;align-items:center;justify-content:center;gap:5px;padding:9px 8px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;font-size:11px;font-weight:700;color:#C2410C;cursor:pointer;font-family:inherit">
                 🔄 Solicitar troca
               </button>`:''}
@@ -4827,14 +4830,14 @@ function renderFunilKanban(el){
   const allLeads = window.leads;
   const GESTOR = 'Felipe Oliveira';
   const praçaLider = liderPraca(me);
-  const isLiderOuGestor = me === GESTOR || !!praçaLider;
+  const isLiderOuGestor = isGestor_(me) || !!praçaLider;
 
   // Se líder/gestor escolheu um liderado específico, filtra só por ele
   const viewAs = (isLiderOuGestor && funilViewAs) ? funilViewAs : null;
 
   const myLeads = me ? allLeads.filter(l => {
     if(viewAs) return canonicalVendedor(l.vendedor) === canonicalVendedor(viewAs);
-    if(me === GESTOR) return true;  // gestor vê tudo
+    if(isGestor_(me)) return true;  // gestor vê tudo
     if(praçaLider){
       // líder: vê os próprios + todos os da praça
       const lPraca = (SELLER_PRACA[canonicalVendedor(l.vendedor)] || '').toLowerCase();
@@ -4998,7 +5001,7 @@ function renderFunilKanban(el){
       // Líder / Gestor: seletor de vendedor
       const praça = praçaLider;
       let time;
-      if(me === GESTOR){
+      if(isGestor_(me)){
         time = VENDEDORES.filter(v=>v.praca!=='Outros');
       } else {
         time = VENDEDORES.filter(v=>(SELLER_PRACA[v.nome]||'').toLowerCase() === praça);
@@ -5178,11 +5181,11 @@ function getFunilScopedLeads(){
   const meN = canonicalVendedor(me);
   const GESTOR = 'Felipe Oliveira';
   const praçaLider = liderPraca(me);
-  const isLiderOuGestor = me === GESTOR || !!praçaLider;
+  const isLiderOuGestor = isGestor_(me) || !!praçaLider;
   const viewAs = (isLiderOuGestor && funilViewAs) ? funilViewAs : null;
   return window.leads.filter(l => {
     if(viewAs) return canonicalVendedor(l.vendedor) === canonicalVendedor(viewAs);
-    if(me === GESTOR) return true;
+    if(isGestor_(me)) return true;
     if(praçaLider){
       const lPraca = (SELLER_PRACA[canonicalVendedor(l.vendedor)] || '').toLowerCase();
       return lPraca === praçaLider || canonicalVendedor(l.vendedor) === meN;
