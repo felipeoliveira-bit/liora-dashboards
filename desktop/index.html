@@ -1872,6 +1872,7 @@ tbody tr:hover { background: #fafbff; }
       <button class=&quot;fbtn-sm&quot; data-periodo=&quot;yesterday&quot; onclick=&quot;setFilter('periodo','yesterday',this)&quot;>D-1 (ontem)</button>
       <button class=&quot;fbtn-sm&quot; data-periodo=&quot;week&quot; onclick=&quot;setFilter('periodo','week',this)&quot;>Semana</button>
       <button class=&quot;fbtn-sm&quot; data-periodo=&quot;month&quot; onclick=&quot;setFilter('periodo','month',this)&quot;>Mês</button>
+      <select id=&quot;tarefaMesSel&quot; class=&quot;fbtn-sm&quot; style=&quot;padding:2px 6px;max-width:150px&quot; onchange=&quot;setPeriodoMes(this)&quot;><option value=&quot;&quot;>Mês específico…</option></select>
     </div>
     
     <span class=&quot;fbar-label&quot; style=&quot;margin-left:8px&quot;>Praça</span>
@@ -2036,6 +2037,7 @@ function dsInPeriodo(ds, periodo) {
   if (periodo === 'yesterday') return ds === yesterdayISO;
   if (periodo === 'week') return ds >= weekStartISO &amp;&amp; ds <= todayISO;
   if (periodo === 'month') return ds.slice(0,7) === monthPrefix;
+  if (/^\d{4}-\d{2}$/.test(periodo)) return ds.slice(0,7) === periodo;
   return true;
 }
 
@@ -2064,6 +2066,7 @@ function inPeriod(l, periodo) {
     if (periodo === 'yesterday') return ds === yesterdayISO;
     if (periodo === 'week') return ds >= weekStartISO &amp;&amp; ds <= todayISO;
     if (periodo === 'month') return ds.slice(0,7) === monthPrefix;
+    if (/^\d{4}-\d{2}$/.test(periodo)) return ds.slice(0,7) === periodo;
     return true;
   });
 }
@@ -2156,6 +2159,7 @@ async function loadLeads() {
       leads = data.leads.filter(l => String((l&amp;&amp;l.stage)||'').trim().toLowerCase() !== 'excluido').map(normalizeLead);
       const time = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
       status.innerHTML = `✅ ${leads.length} leads · ${time}`;
+      populateMesSel();
       renderCurrent();
     } else {
       throw new Error(data &amp;&amp; data.error || 'Erro desconhecido');
@@ -2188,12 +2192,44 @@ function setFilter(key, value, el) {
     el.parentElement.querySelectorAll('.fbtn-sm').forEach(b => b.classList.remove('active'));
     el.classList.add('active');
   }
+  if (key === 'periodo' &amp;&amp; el &amp;&amp; el.tagName === 'BUTTON') {
+    const _ms = document.getElementById('tarefaMesSel'); if (_ms) _ms.value = '';
+  }
   if (el &amp;&amp; el.tagName === 'SELECT') {
     el.classList.toggle('active', value !== 'all');
   }
   if (key === 'praca') populateVendedores(value);
   updateFilterActiveCount();
   renderCurrent();
+}
+
+// Seletor de mes especifico (historico) - v2.142
+function setPeriodoMes(sel){
+  const v = sel.value;
+  if (!v) return;
+  filters.periodo = v;
+  document.querySelectorAll('[data-periodo]').forEach(b => b.classList.remove('active'));
+  sel.classList.add('active');
+  updateFilterActiveCount();
+  renderCurrent();
+}
+function populateMesSel(){
+  const sel = document.getElementById('tarefaMesSel');
+  if (!sel) return;
+  const meses = {};
+  leads.forEach(l => {
+    if (l.createdAt) { const ds = localISO(new Date(l.createdAt)); if (ds) meses[ds.slice(0,7)] = true; }
+    if (l.proximaInteracao) meses[String(l.proximaInteracao).slice(0,7)] = true;
+  });
+  const curMon = localISO(new Date()).slice(0,7);
+  const keys = Object.keys(meses).filter(m => /^\d{4}-\d{2}$/.test(m) &amp;&amp; m < curMon).sort().reverse();
+  const NOMES = ['','jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  const prev = sel.value;
+  sel.innerHTML = '<option value=&quot;&quot;>Mês específico…</option>' + keys.map(m => {
+    const p = m.split('-'); const lbl = NOMES[parseInt(p[1],10)] + '/' + p[0].slice(2);
+    return '<option value=&quot;' + m + '&quot;>' + lbl + '</option>';
+  }).join('');
+  if (prev &amp;&amp; keys.indexOf(prev) !== -1) sel.value = prev;
 }
 
 function toggleBaleia(el){ filters.baleia = !filters.baleia; if(el) el.classList.toggle('active', filters.baleia); updateFilterActiveCount(); renderCurrent(); }
@@ -2203,6 +2239,7 @@ function clearAllFilters() {
     b.classList.toggle('active', b.dataset.periodo === 'all' || b.dataset.praca === 'all');
   });
   document.querySelectorAll('.fsel-clean').forEach(s => { s.value = 'all'; s.classList.remove('active'); });
+  { const _ms = document.getElementById('tarefaMesSel'); if (_ms) { _ms.value=''; _ms.classList.remove('active'); } }
   updateFilterActiveCount();
   renderCurrent();
 }
