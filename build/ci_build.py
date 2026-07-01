@@ -44,6 +44,16 @@ def node_check_scripts(html_path, label):
             sys.exit('VALIDATE %s falhou (script %d):\n%s' % (label, i, rc.stderr))
     print('%s validado (node --check OK).' % label)
 
+# min-bytes: guard anti-truncamento. No inicio do mes (dia<=5) os recortes de
+# "mes corrente" despencam e o HTML encolhe legitimamente -> afrouxa pra nao travar
+# o job. O resto (script balanceado, </html>, node --check, marcadores) ainda protege.
+def _min_bytes(path):
+    if not os.path.isfile(path):
+        return 0
+    base = os.path.getsize(path)
+    factor = 0.25 if NOW.day <= 5 else 0.9
+    return int(base * factor)
+
 # 0) limpa work
 shutil.rmtree(WORK, ignore_errors=True); os.makedirs(WORK)
 
@@ -59,7 +69,7 @@ run(['python3', os.path.join(BUILD,'swap_data_lideranca.py'), DESK, os.path.join
 vd = run(['python3', os.path.join(BUILD,'validate_lideranca.py'), os.path.join(WORK,'out_desktop.html')], cwd=WORK)
 if 'HOUVE ERROS' in vd: sys.exit('VALIDATE desktop reportou erros.')
 stamp(os.path.join(WORK,'out_desktop.html'))
-_minb = int(os.path.getsize(DESK)*0.9) if os.path.isfile(DESK) else 0
+_minb = _min_bytes(DESK)
 run(['python3', os.path.join(BUILD,'validate_html.py'), os.path.join(WORK,'out_desktop.html'), '--kind','desktop','--min-bytes',str(_minb)])
 shutil.copy(os.path.join(WORK,'out_desktop.html'), DESK)
 print('   desktop carimbado ->', TS)
@@ -72,7 +82,7 @@ run(['python3', os.path.join(BUILD,'process_mobile.py')]+margs, cwd=WORK, env={'
 run(['python3', os.path.join(BUILD,'swap_mobile.py'), MOB, os.path.join(WORK,'out_mobile.html')], cwd=WORK)
 node_check_scripts(os.path.join(WORK,'out_mobile.html'), 'mobile')
 stamp(os.path.join(WORK,'out_mobile.html'))
-_minb = int(os.path.getsize(MOB)*0.9) if os.path.isfile(MOB) else 0
+_minb = _min_bytes(MOB)
 run(['python3', os.path.join(BUILD,'validate_html.py'), os.path.join(WORK,'out_mobile.html'), '--kind','mobile','--min-bytes',str(_minb)])
 shutil.copy(os.path.join(WORK,'out_mobile.html'), MOB)
 print('   mobile carimbado ->', TS)
