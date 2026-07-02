@@ -1590,8 +1590,8 @@ function openCalcSaida(){
         <div class="calc-months" id="calc-months"></div>
       </div>
       <div class="calc-field">
-        <label>IGP-M acumulado no período (%) <span style="font-weight:400;color:var(--muted)">— opcional</span></label>
-        <div class="calc-prefix"><span>%</span><input type="number" id="calc-igpm" value="0" min="0" step="0.01" inputmode="decimal"></div>
+        <label>Correção monetária (IGP-M)</label>
+        <div style="padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;background:#F7F8FC;color:var(--text);font-size:15px;font-weight:700">1% <span style="font-weight:400;color:var(--muted);font-size:12.5px">— fixo</span></div>
       </div>
       <div class="calc-result">
         <div class="calc-result-label">Valor total a devolver</div>
@@ -1601,11 +1601,11 @@ function openCalcSaida(){
           <div class="k">Valor proporcional (pro-rata)</div><div class="v" id="calc-pr">–</div>
           <div class="k">Deságio comercial</div><div class="v" id="calc-ds">–</div>
           <div class="k">Valor + deságio</div><div class="v" id="calc-cd">–</div>
-          <div class="k">Correção (IGP-M)</div><div class="v" id="calc-co">–</div>
+          <div class="k">Correção (IGP-M 1%)</div><div class="v" id="calc-co">–</div>
           <div class="k tr">Total a devolver</div><div class="v tr" id="calc-tr">–</div>
         </div>
       </div>
-      <div class="calc-note"><strong>Fórmula:</strong> (Valor × meses restantes ÷ 12) × (1 + deságio) + correção IGP-M.<br>Deságio: <b>10%</b> saindo do 1º ao 6º mês · <b>5%</b> do 7º ao 12º. A correção IGP-M é aplicada sobre o valor já com deságio (índice acumulado da FGV, informado manualmente).</div>
+      <div class="calc-note"><strong>Fórmula:</strong> (Valor × meses restantes ÷ 12) × (1 + deságio) + correção IGP-M.<br>Deságio: <b>10%</b> saindo do 1º ao 6º mês · <b>5%</b> do 7º ao 12º. A correção IGP-M (1%) é aplicada sobre o valor já com deságio.</div>
     </div>`;
   document.body.appendChild(modal);
   var mrow = modal.querySelector('#calc-months');
@@ -1619,14 +1619,13 @@ function openCalcSaida(){
     })(m);
   }
   modal.querySelector('#calc-valor').addEventListener('input', calcSaidaCompute);
-  modal.querySelector('#calc-igpm').addEventListener('input', calcSaidaCompute);
   calcSaidaCompute();
 }
 function closeCalcSaida(){ var m=document.getElementById('calc-saida-modal'); if(m) m.remove(); }
 function calcSaidaCompute(){
   var fmt=function(n){ return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); };
   var valor=parseFloat(document.getElementById('calc-valor').value)||0;
-  var igpm=(parseFloat(document.getElementById('calc-igpm').value)||0)/100;
+  var igpm=0.01; // IGP-M fixo em 1%
   var mes=calcSaidaMes;
   var mr=Math.max(12-mes,0);
   var ds=mes<=6?0.10:0.05;
