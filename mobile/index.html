@@ -893,11 +893,11 @@ function getAcao(x){
 
 // ── PRAÇAS ────────────────────────────────────────────────
 const PRACA_DEF = {
-  natal:    {key:'natal',label:'Natal (RN)',color:'#378ADD',meta:45},
+  natal:    {key:'natal',label:'Natal (RN)',color:'#378ADD',meta:75},
   feira:    {key:'feira',label:'Feira',color:'#EF9F27',meta:60},
-  spi:      {key:'spi',label:'Campinas SPI',color:'#7F77DD',meta:48},
+  spi:      {key:'spi',label:'Campinas SPI',color:'#7F77DD',meta:72},
   ribeirao: {key:'ribeirao',label:'Ribeirão Preto SPI',color:'#A78BFA',meta:15},
-  ce:       {key:'ce',label:'CE (Fortaleza)',color:'#D4537E',meta:36},
+  ce:       {key:'ce',label:'CE (Fortaleza)',color:'#D4537E',meta:60},
   salvador: {key:'salvador',label:'Salvador',color:'#1D9E75',meta:60},
   outras:   {key:'outras',label:'Outras',color:'#999',meta:0},
 };
@@ -995,15 +995,15 @@ renderResumo();
 function renderResumo(){
   const pracas = [
     {key:'salvador',label:'Salvador',color:'#1D9E75',meta:60},
-    {key:'natal',label:'Natal (RN)',color:'#378ADD',meta:45},
+    {key:'natal',label:'Natal (RN)',color:'#378ADD',meta:75},
     {key:'feira',label:'Feira',color:'#EF9F27',meta:60},
-    {key:'spi',label:'Campinas SPI',color:'#7F77DD',meta:48},
+    {key:'spi',label:'Campinas SPI',color:'#7F77DD',meta:72},
     {key:'ribeirao',label:'Ribeirão Preto SPI',color:'#A78BFA',meta:15},
-    {key:'ce',label:'CE (Fortaleza)',color:'#D4537E',meta:36},
+    {key:'ce',label:'CE (Fortaleza)',color:'#D4537E',meta:60},
   ];
 
   const totalAprov = rawData.filter(x => noMes(x) && isAprovado(x)).reduce((a,x)=>a+x.mwh,0);
-  const totalMeta  = 264;
+  const totalMeta  = 342;
   const totalPct   = Math.min((totalAprov/totalMeta)*100,100);
   const mtdFrac    = getMetaToDateInfo().fraction;
   const totalMetaTD = totalMeta * mtdFrac;
