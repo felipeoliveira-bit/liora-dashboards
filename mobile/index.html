@@ -1459,7 +1459,8 @@ function renderCarteira(){
   const el = document.getElementById('s2-content');
   if(!seller){ el.innerHTML = '<div class="empty"><div class="empty-icon">👆</div><div class="empty-text">Identifica-te no topo da tela pra ver tua carteira</div></div>'; return; }
 
-  if(typeof isLider==='function' && isLider(seller)){ el.innerHTML = renderCarteiraLider(seller); return; }
+  const CARD_AS_SELLER = ['João Santos']; // por enquanto: Card do João usa regras de vendedor, não de líder
+  if(typeof isLider==='function' && isLider(seller) && !CARD_AS_SELLER.includes(seller)){ el.innerHTML = renderCarteiraLider(seller); return; }
 
   const myDeals = rawData.filter(x=>x.s===seller);
   const myAprov = myDeals.filter(x => noMes(x) && isAprovado(x)).reduce((a,x)=>a+x.mwh,0);
@@ -2258,6 +2259,7 @@ function openPhoneActions(tel, ev){
 const COPA_INI = '2026-06-16';
 const COPA_END = '2026-07-19';
 const COPA_ALBUM = 44;
+const COPA_JUNE = {"Bruno Borges":{c:1,b:0}, "Caio Lannes":{c:5,b:1}, "Diego Faria":{c:5,b:0}, "Ederson Silva":{c:4,b:0}, "Ettore Rossi":{c:7,b:1}, "Franciele Felix":{c:0,b:2}, "Lucileide Carlos":{c:6,b:1}, "Marcio Galvão":{c:3,b:0}, "Maria Lúcia":{c:2,b:1}, "Mecenas Junior":{c:5,b:0}, "Neilon Nascimento":{c:4,b:0}, "Núbia Andrade":{c:3,b:0}, "Odirley Costa":{c:3,b:0}, "Rodrigo Ribeiro":{c:5,b:0}, "Ryan Trindade":{c:4,b:0}, "Tais Santos":{c:4,b:0}, "Tiago Freitas":{c:6,b:2}}; // snapshot fixo 16-30/06/2026 (mês fechado; rawData mobile é só o mês corrente)
 const COPA_BALEIA_FATURA = 2000;
 
 const COPA_GRUPOS = [
@@ -2295,6 +2297,8 @@ function copaNoPeriodo(x){ const d=(x.aprov_date||'').slice(0,10); return d>=COP
 function copaStats(){
   const aprov = rawData.filter(x => isAprovado(x) && copaNoPeriodo(x));
   const byS = {};
+  // Snapshot fixo de junho (16-30/06) — rawData do mobile só tem o mês corrente
+  Object.keys(COPA_JUNE).forEach(k => { byS[k] = { clientes: COPA_JUNE[k].c||0, baleias: COPA_JUNE[k].b||0 }; });
   aprov.forEach(x => {
     const k = x.s || '—';
     if(!byS[k]) byS[k] = { clientes:0, baleias:0 };
