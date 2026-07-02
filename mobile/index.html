@@ -669,6 +669,18 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
 .metric-toggle { display: flex; gap: 4px; background: #eef0f7; padding: 3px; border-radius: 10px; margin-bottom: 12px; }
 .metric-toggle-btn { flex: 1; text-align: center; padding: 8px 10px; border-radius: 8px; font-size: 12px; font-weight: 700; color: var(--muted); cursor: pointer; transition: .15s; user-select: none; }
 .metric-toggle-btn.active { background: var(--blue); color: #fff; box-shadow: 0 2px 8px rgba(2,1,243,.25); }
+/* v2.147 — Ranking layout */
+.rk-seg { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-bottom:12px; }
+.rk-seg-btn { background:#eef0f7; border-radius:12px; padding:9px 3px 8px; text-align:center; cursor:pointer; transition:.15s; user-select:none; }
+.rk-seg-btn .ic { font-size:16px; line-height:1; display:block; }
+.rk-seg-btn .lb { font-size:9.5px; font-weight:700; color:var(--muted); margin-top:4px; display:block; white-space:nowrap; }
+.rk-seg-btn.active { background:var(--blue); box-shadow:0 3px 10px rgba(2,1,243,.28); }
+.rk-seg-btn.active .lb { color:#fff; }
+.rk-scope { display:flex; gap:6px; overflow-x:auto; margin:0 -16px 14px; padding:0 16px 2px; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+.rk-scope::-webkit-scrollbar{ display:none; }
+.rk-chip { flex-shrink:0; padding:7px 14px; background:#fff; border:1.5px solid #ECECF5; border-radius:100px; font-size:11.5px; font-weight:700; color:var(--muted); white-space:nowrap; cursor:pointer; transition:.15s; }
+.rk-chip.active { background:var(--blue); border-color:var(--blue); color:#fff; }
+.rank-card.rank-me { border:1.5px solid var(--blue); box-shadow:0 2px 12px rgba(2,1,243,.14); }
 
 /* ===== Copa Liora — Álbum de figurinhas (TEMPORÁRIO) ===== */
 .copa-header{background:linear-gradient(135deg,#0201F3 0%,#1a00ff 100%);border-radius:16px;padding:18px;margin-bottom:12px;color:#fff;}
@@ -2634,57 +2646,47 @@ function renderPropostas() {
     </div>`;
 
   html += `<div class="section-head">Ranking por Vendedor</div>
-    <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center">
-      <div class="metric-toggle" style="flex:1;flex-wrap:wrap">
-        <div class="metric-toggle-btn ${propMetric==='aprovado'?'active':''}" onclick="setPropMetric('aprovado')">✅ MWh Aprov.</div>
-        <div class="metric-toggle-btn ${propMetric==='qtd'?'active':''}" onclick="setPropMetric('qtd')">👥 Clientes</div>
-        <div class="metric-toggle-btn ${propMetric==='propostas'?'active':''}" onclick="setPropMetric('propostas')">📋 Propostas</div>
-        <div class="metric-toggle-btn ${propMetric==='tarefas'?'active':''}" onclick="setPropMetric('tarefas')">📞 Visitas</div>
-      </div>
+    <div class="rk-seg">
+      <div class="rk-seg-btn ${propMetric==='aprovado'?'active':''}" onclick="setPropMetric('aprovado')"><span class="ic">⚡</span><span class="lb">MWh aprov.</span></div>
+      <div class="rk-seg-btn ${propMetric==='qtd'?'active':''}" onclick="setPropMetric('qtd')"><span class="ic">👥</span><span class="lb">Clientes</span></div>
+      <div class="rk-seg-btn ${propMetric==='propostas'?'active':''}" onclick="setPropMetric('propostas')"><span class="ic">📋</span><span class="lb">Propostas</span></div>
+      <div class="rk-seg-btn ${propMetric==='tarefas'?'active':''}" onclick="setPropMetric('tarefas')"><span class="ic">📞</span><span class="lb">Visitas</span></div>
     </div>
-    <div class="metric-toggle" style="margin-bottom:12px">
-      <div class="metric-toggle-btn ${rankScope===''?'active':''}" onclick="setRankScope('')">🌐 Todas</div>
-      <div class="metric-toggle-btn ${rankScope==='Salvador'?'active':''}" onclick="setRankScope('Salvador')">Salvador</div>
-      <div class="metric-toggle-btn ${rankScope==='Feira de Santana'?'active':''}" onclick="setRankScope('Feira de Santana')">Feira</div>
-      <div class="metric-toggle-btn ${rankScope==='Natal'?'active':''}" onclick="setRankScope('Natal')">Natal</div>
-      <div class="metric-toggle-btn ${rankScope==='CE'?'active':''}" onclick="setRankScope('CE')">CE</div>
-      <div class="metric-toggle-btn ${rankScope==='SPI'?'active':''}" onclick="setRankScope('SPI')">SPI</div>
+    <div class="rk-scope">
+      ${[['','Todas'],['salvador','Salvador'],['feira','Feira'],['natal','Natal'],['ce','CE'],['spi','Campinas SPI'],['ribeirao','Ribeirão SPI']].map(o=>`<div class="rk-chip ${rankScope===o[0]?'active':''}" onclick="setRankScope('${o[0]}')">${o[1]}</div>`).join('')}
     </div>`;
 
   // Filtra vendedores pela praça selecionada
   const filteredSellers = rankScope
-    ? topSellers.filter(([name])=>{
-        const sp = SELLER_PRACA[name]||'outras';
-        const label = sp==='salvador'?'Salvador':sp==='feira'?'Feira de Santana':sp==='natal'?'Natal':sp==='ce'?'CE':sp==='spi'?'SPI':'Outros';
-        return label === rankScope;
-      })
+    ? topSellers.filter(([name])=> (SELLER_PRACA[name]||'outras') === rankScope)
     : topSellers;
 
   const medals = ['🥇','🥈','🥉'];
 
   function renderSellerCard(name, d, i){
+    const isMe = name === (typeof getCurrentVendedor==='function'?getCurrentVendedor():'');
     let mainVal, mainUnit, subInfo;
     if(propMetric === 'aprovado'){
       mainVal = d.aprov.toFixed(1); mainUnit = 'MWh aprov.';
-      subInfo = `${d.aprovCount} aprovados · ${d.prop} propostas · ${d.tarefas} visitas`;
+      subInfo = `✅ ${d.aprovCount} aprov · 📋 ${d.prop} props · 📞 ${d.tarefas} visitas`;
     } else if(propMetric === 'qtd'){
       mainVal = d.aprovCount; mainUnit = d.aprovCount===1?'aprovado':'aprovados';
-      subInfo = `${d.aprov.toFixed(1)} MWh · ${d.prop} propostas · ${d.tarefas} visitas`;
+      subInfo = `⚡ ${d.aprov.toFixed(1)} MWh · 📋 ${d.prop} props · 📞 ${d.tarefas} visitas`;
     } else if(propMetric === 'tarefas'){
       mainVal = d.tarefas; mainUnit = 'visitas';
-      subInfo = `${d.prop} propostas · ${d.aprov.toFixed(1)} MWh aprov.`;
+      subInfo = `📋 ${d.prop} props · ⚡ ${d.aprov.toFixed(1)} MWh aprov.`;
     } else {
       mainVal = d.prop; mainUnit = 'props';
-      subInfo = `${d.tarefas} visitas · ${d.aprov.toFixed(1)} MWh aprov.`;
+      subInfo = `📞 ${d.tarefas} visitas · ⚡ ${d.aprov.toFixed(1)} MWh aprov.`;
     }
     const hasMwh = d.aprov > 0;
-    const cardClass = hasMwh ? 'rank-card clickable' : 'rank-card';
+    const cardClass = (hasMwh ? 'rank-card clickable' : 'rank-card') + (isMe ? ' rank-me' : '');
     return `
       <div class="${cardClass}" ${hasMwh?`onclick="openRankSellerModal(this)"`:''} data-name="${name}" data-metric="${propMetric}" data-period="${propPeriod}">
         <div class="rank-num ${i<3?'top':''}">${i<3?medals[i]:i+1}</div>
         ${avatarImg(name, 'rank-avatar')}
         <div class="rank-info">
-          <div class="rank-name">${name}</div>
+          <div class="rank-name">${name}${isMe?' <span style="color:var(--blue);font-size:10px;font-weight:800">· você</span>':''}</div>
           <div class="rank-praca" style="color:var(--muted)">${subInfo}</div>
         </div>
         <div class="rank-right">
