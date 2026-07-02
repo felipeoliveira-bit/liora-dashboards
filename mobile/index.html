@@ -767,7 +767,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
       <div class="nav-icon">
         <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1V9.5z"/></svg>
       </div>
-      <div class="nav-label">Resumo</div>
+      <div class="nav-label">Field</div>
     </div>
     <div class="nav-item" onclick="setScreen('propostas')" id="nav-propostas">
       <div class="nav-icon">
@@ -935,6 +935,7 @@ function noPeriodo(x, ini, fim){ const d = x.aprov_date || x.date; return d >= i
 
 // v2.42 — Meta to date: pro-rata por dia útil transcorrido até PROP_TODAY
 // Julho 2026: 23 dias úteis no mês. Hoje (PROP_TODAY) define quantos úteis passaram.
+const PROP_PER_MWH = { salvador:9.58, feira:9.58, spi:9.58, ribeirao:9.58, natal:9.20, ce:9.20, outras:9.4 }; // propostas por MWh (plano BP, conv ~15%)
 function getMetaToDateInfo(){
   const ref = new Date(PROP_TODAY + 'T00:00:00');
   const year = ref.getFullYear(), month = ref.getMonth(), dayRef = ref.getDate();
@@ -973,7 +974,7 @@ let METAS = {
 };
 
 // ── NAV ───────────────────────────────────────────────────
-const TITLES = {resumo:'Resumo Field',carteira:'Card', campanha:'Campanhas',propostas:'Ranking',funil:'Funil de Vendas',copa:'Copa Liora'};
+const TITLES = {resumo:'Field',carteira:'Card', campanha:'Campanhas',propostas:'Ranking',funil:'Funil de Vendas',copa:'Copa Liora'};
 let currentScreen = 'resumo';
 
 function setScreen(s){
@@ -1078,6 +1079,56 @@ function renderResumo(){
       </div>
     </div>
   `;
+
+  // ── Execução diária p/ fechar o mês (adaptativo: desdobra o que falta nos dias úteis restantes) ──
+  const diasRest = Math.max(1, mtdInfo.totalUteis - mtdInfo.uteisPassados + 1);
+  const CONV_BP = 15;
+  const aprovCountByK = {}, propCountByK = {};
+  rawData.forEach(x => { if(noMes(x) && isAprovado(x)){ const k=x.praca.key; aprovCountByK[k]=(aprovCountByK[k]||0)+1; } });
+  RAW_PROP.forEach(r => { const k = SELLER_PRACA[r.seller] || 'outras'; propCountByK[k]=(propCountByK[k]||0)+1; });
+  let exMwhTot=0, exPropTot=0, aprovCTot=0, propCTot=0, exRows='';
+  pracas.forEach(p => {
+    const aprovMwh = rawData.filter(x => x.praca.key===p.key && noMes(x) && isAprovado(x)).reduce((a,x)=>a+x.mwh,0);
+    const falta = Math.max(0, p.meta - aprovMwh);
+    const mwhDia = falta / diasRest;
+    const propDia = mwhDia * (PROP_PER_MWH[p.key] || 9.5);
+    exMwhTot += mwhDia; exPropTot += propDia;
+    const ac = aprovCountByK[p.key]||0, pc = propCountByK[p.key]||0;
+    aprovCTot += ac; propCTot += pc;
+    const conv = pc>0 ? (ac/pc*100) : null;
+    const convTxt = conv===null ? '—' : conv.toFixed(0)+'%';
+    const convColor = conv===null ? 'var(--muted)' : (conv>=CONV_BP ? 'var(--green)' : 'var(--red)');
+    const batida = falta <= 0.05;
+    exRows += `
+      <div style="padding:8px 0;border-top:1px solid #F4F5FA">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px">
+          <div style="display:flex;align-items:center;gap:6px;min-width:0"><span class="metas-dot" style="background:${p.color}"></span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.label}</span></div>
+          <div style="text-align:right;white-space:nowrap;color:var(--ink)">${batida ? '<span style="color:var(--green);font-weight:700">✅ meta batida</span>' : `<b>${mwhDia.toFixed(1)}</b> MWh · <b>${Math.ceil(propDia)}</b> props<span style="color:var(--muted)">/dia</span>`}</div>
+        </div>
+        <div style="text-align:right;font-size:10.5px;margin-top:2px">
+          <span style="color:var(--muted)">conversão: </span><span style="color:${convColor};font-weight:700">${convTxt} real</span><span style="color:var(--muted)"> · meta ${CONV_BP}%</span>
+        </div>
+      </div>`;
+  });
+  const convTot = propCTot>0 ? (aprovCTot/propCTot*100) : null;
+  const convTotTxt = convTot===null?'—':convTot.toFixed(0)+'%';
+  const convTotColor = convTot===null?'var(--muted)':(convTot>=CONV_BP?'var(--green)':'var(--red)');
+  html += `
+    <div class="metas-table">
+      <div class="metas-table-head">
+        <div class="metas-table-title">🏃 Execução diária p/ fechar julho</div>
+        <div class="metas-table-sub">${diasRest} dias úteis restantes</div>
+      </div>
+      ${exRows}
+      <div style="padding:9px 0 2px;border-top:2px solid #ECECF5;display:flex;justify-content:space-between;align-items:center;font-size:12.5px;font-weight:800">
+        <div>TOTAL FIELD</div>
+        <div style="text-align:right;white-space:nowrap;color:var(--blue)">${exMwhTot.toFixed(1)} MWh · ${Math.ceil(exPropTot)} props/dia</div>
+      </div>
+      <div style="text-align:right;font-size:10.5px;margin-top:2px"><span style="color:var(--muted)">conversão geral: </span><span style="color:${convTotColor};font-weight:700">${convTotTxt} real</span><span style="color:var(--muted)"> · meta ${CONV_BP}%</span></div>
+      <div style="font-size:10px;color:var(--muted);line-height:1.5;margin-top:10px;padding-top:8px;border-top:1px solid #F4F5FA">
+        MWh/dia = o que falta da meta ÷ dias úteis restantes (se não entregar hoje, sobe amanhã). Propostas/dia estimadas pela conversão-alvo do BP (~${CONV_BP}%). Conversão realizada = aprovados ÷ propostas do mês.
+      </div>
+    </div>`;
 
   document.getElementById('s1-content').innerHTML = html;
 }
