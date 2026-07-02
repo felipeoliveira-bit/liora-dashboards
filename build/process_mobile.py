@@ -48,6 +48,7 @@ EMAIL_NOME = {
  'nha.negocios@gmail.com':'Anderson Correia',
  'anderson.correia@lioraenergia.com.br':'Anderson Correia',
  'ana.ribeiro@lioraenergia.com.br':'Ana Ribeiro',
+ 'joao.santos@lioraenergia.com.br':'João Santos',
  'mecenas.junior@lioraenergia.com.br':'Mecenas Junior',
  'kelma.rangel@lioraenergia.com.br':'Kelma Rangel','lucileide.carlos@lioraenergia.com.br':'Lucileide Carlos',
  'rosangela.mendes@lioraenergia.com.br':'Rosangela Mendes','tiago.freitas@lioraenergia.com.br':'Tiago Freitas',
@@ -73,6 +74,7 @@ SELLER_PRACA = {  # canônico -> label praça
  'Nicola Popovic':'SPI',
  'Anderson Correia':'SPI',
  'Ana Ribeiro':'SPI',
+ 'João Santos':'Ribeirão Preto SPI',
  'Mecenas Junior':'Natal',
  'Adroaldo Bonfim':'Salvador','Ettore Rossi':'Salvador','Maria Lúcia':'Salvador','Tais Santos':'Salvador','Antonio Mariano':'Salvador',
  'Kelma Rangel':'Feira de Santana','Lucileide Carlos':'Feira de Santana','Rosangela Mendes':'Feira de Santana','Tiago Freitas':'Feira de Santana','Ryan Trindade':'Feira de Santana',
@@ -142,7 +144,7 @@ def build_rawData(deals_path, ag_path, docs_map=None, uc_map=None):
         s=canon_seller(r['sales_person_email'], r['sales_person_name'])
         ov=CLIENT_OVERRIDE.get((cli or '').strip().upper())
         if ov: s=ov[0]
-        approved = r['latest_risk_analysis_result']=='APPROVED'
+        approved = r['latest_risk_analysis_result']=='APPROVED' and r['deal_stage']!='BGC_PARCEIRO'  # BGC_PARCEIRO = validação Antecipa, ainda não aprovado
         aprov = iso(pdate(r['latest_risk_analysis_created_at'])) if approved else ''
         created = pdate(r['deal_created_at'])
         basis = pdate(r['latest_risk_analysis_created_at']) if approved else created

@@ -131,6 +131,7 @@ PRACA_TITLE = {  # email -> praça (Title) usada no RAW
  'nha.negocios@gmail.com':'SPI',
  'anderson.correia@lioraenergia.com.br':'SPI',
  'ana.ribeiro@lioraenergia.com.br':'SPI',
+ 'joao.santos@lioraenergia.com.br':'Ribeirão Preto SPI',
  'mecenas.junior@lioraenergia.com.br':'Natal',
  'adroaldo.bonfim@lioraenergia.com.br':'Salvador','ananias.neto@lioraenergia.com.br':'Natal',
  'antonio.mariano@lioraenergia.com.br':'Salvador','bruno.andrade@lioraenergia.com.br':'Natal',
@@ -152,6 +153,7 @@ EMAIL2NAME = {  # email -> nome canônico do vendedor (resolve nomes variáveis 
  'nha.negocios@gmail.com':'Anderson Correia',
  'anderson.correia@lioraenergia.com.br':'Anderson Correia',
  'ana.ribeiro@lioraenergia.com.br':'Ana Ribeiro',
+ 'joao.santos@lioraenergia.com.br':'João Santos',
  'mecenas.junior@lioraenergia.com.br':'Mecenas Junior',
  'adroaldo.bonfim@lioraenergia.com.br':'Adroaldo Bonfim','ananias.neto@lioraenergia.com.br':'Ananias Neto',
  'antonio.mariano@lioraenergia.com.br':'Antonio Mariano','bruno.andrade@lioraenergia.com.br':'Bruno Andrade',
@@ -166,7 +168,7 @@ EMAIL2NAME = {  # email -> nome canônico do vendedor (resolve nomes variáveis 
  'ryan.trindade@lioraenergia.com.br':'Ryan Trindade','tais.santos@lioraenergia.com.br':'Tais Santos',
  'tiago.freitas@lioraenergia.com.br':'Tiago Freitas','thiago.araujo@lioraenergia.com.br':'Thiago Araujo França',
 }
-TITLE2OP = {'Salvador':'salvador','Feira de Santana':'feira','Natal':'natal','SPI':'spi','CE':'ce','Outras':'outras'}
+TITLE2OP = {'Salvador':'salvador','Feira de Santana':'feira','Natal':'natal','SPI':'spi','Ribeirão Preto SPI':'ribeirao','CE':'ce','Outras':'outras'}
 
 def norm(s): return re.sub(r'\s+',' ',(s or '').strip()).upper()
 # CLIENT_OVERRIDE: força vendedor/praça enquanto o suporte não corrige na origem
@@ -197,6 +199,7 @@ def praca_of(email, client):
 # ---- rawData (deals + aguardando, dedup por deal_id) ---------------------
 def mk_deal(r):
     risk = (r['latest_risk_analysis_result'] or '').strip()
+    if r['deal_stage']=='BGC_PARCEIRO': risk=''  # em validação Antecipa: não conta como aprovado
     # aprovado conta pela DATA DA ANÁLISE DE RISCO; sem risco (WAITING) usa criação
     d = pdate(r['latest_risk_analysis_created_at']) or pdate(r['deal_created_at'])
     return {

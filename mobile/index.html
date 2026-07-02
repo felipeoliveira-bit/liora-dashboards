@@ -681,6 +681,30 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
 .copa-modal-tag.ok{background:#E8F7F0;color:#13855E;}
 .copa-modal-tag.lk{background:#FBF1F1;color:#A32D2D;}
 .copa-modal-x{width:100%;border:0;background:#0201F3;color:#fff;font-size:15px;font-weight:700;padding:13px;cursor:pointer;}
+
+/* ── Calculadora de Saída Antecipada (Liora Antecipa) ── */
+.header-calc-btn{ width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,.18); border:none; color:#fff; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(8px); padding:0; line-height:1; transition:.15s; }
+.header-calc-btn:hover,.header-calc-btn:active{ background:rgba(255,255,255,.34); }
+.calc-field{ margin-bottom:16px; }
+.calc-field label{ display:block; font-size:12.5px; color:var(--muted); margin-bottom:6px; font-weight:600; }
+.calc-prefix{ position:relative; }
+.calc-prefix>span{ position:absolute; left:13px; top:50%; transform:translateY(-50%); color:var(--muted); font-size:15px; pointer-events:none; }
+.calc-prefix input{ width:100%; padding:12px 14px 12px 34px; border:1.5px solid var(--border); border-radius:10px; background:#fff; color:var(--text); font-size:16px; font-family:inherit; outline:none; }
+.calc-prefix input:focus{ border-color:var(--blue); box-shadow:0 0 0 3px rgba(2,1,243,.12); }
+.calc-months{ display:grid; grid-template-columns:repeat(6,1fr); gap:6px; }
+.calc-month{ padding:10px 0; text-align:center; border-radius:8px; font-size:13px; font-weight:700; border:1.5px solid var(--border); background:#fff; color:var(--text); cursor:pointer; user-select:none; transition:.12s; }
+.calc-month.active{ background:var(--blue); border-color:var(--blue); color:#fff; }
+.calc-badge{ display:inline-block; padding:2px 9px; border-radius:20px; font-size:10.5px; font-weight:800; margin-left:2px; vertical-align:middle; }
+.calc-badge.d10{ background:#FBF0DD; color:#854F0B; }
+.calc-badge.d5{ background:#E8F7F0; color:#13855E; }
+.calc-result{ background:linear-gradient(135deg,var(--blue) 0%,#1a18ff 100%); color:#fff; border-radius:14px; padding:20px; margin:18px 0 6px; }
+.calc-result-label{ font-size:11px; text-transform:uppercase; letter-spacing:.1em; font-weight:800; opacity:.8; }
+.calc-result-value{ font-size:34px; font-weight:800; margin:4px 0 14px; letter-spacing:-.01em; }
+.calc-break{ display:grid; grid-template-columns:1fr auto; gap:7px 12px; font-size:13.5px; border-top:1px solid rgba(255,255,255,.22); padding-top:12px; }
+.calc-break .k{ color:rgba(255,255,255,.8); }
+.calc-break .v{ text-align:right; font-weight:700; font-variant-numeric:tabular-nums; }
+.calc-break .k.tr,.calc-break .v.tr{ font-size:15px; padding-top:8px; margin-top:2px; border-top:1px dashed rgba(255,255,255,.35); }
+.calc-note{ font-size:12px; color:var(--muted); line-height:1.6; margin-top:14px; border-left:2px solid var(--blue); padding-left:11px; }
 </style>
 </head>
 <body>
@@ -692,9 +716,12 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
         <div class="header-title" id="screen-title">Resumo Field</div>
         <div class="header-date" id="header-date">—</div>
       </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
-        <div class="header-avatar">⚡</div>
-        <div id="identity-badge-container"></div>
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <button class="header-calc-btn" onclick="openCalcSaida()" aria-label="Calculadora de saída antecipada" title="Calculadora de saída antecipada">🧮</button>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+          <div class="header-avatar">⚡</div>
+          <div id="identity-badge-container"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -812,6 +839,7 @@ function isCoelba(x){ return distType(x) === 'coelba'; }
 // A data de aprovação (p/ mês/campanha) é essa mesma coluna. CPFL/Enel ainda em
 // proposta não têm essa coluna preenchida → não contam como aprovado (correto).
 function isAprovado(x){
+  if(x.stage === 'BGC_PARCEIRO') return false; // em validação Antecipa
   return !!x.aprov_date && (!x.lost_at || x.stage !== 'BACKGROUND_CHECKING' || (x.lost_reason||'').trim().toLowerCase() === 'troca de titularidade');
 }
 
@@ -824,7 +852,7 @@ function isNegado(x){
 
 function isBGCCoelba(x){
   if(x.lost_at || x.lost_reason) return false;
-  if(x.stage === 'BGC_PARCEIRO' && isCoelba(x)) return true;
+  if(x.stage === 'BGC_PARCEIRO') return true;  // em validação Antecipa (qualquer distribuidora)
   if(x.stage === 'BACKGROUND_CHECKING') return true;
   return false;
 }
@@ -872,7 +900,8 @@ function getAcao(x){
 const PRACA_DEF = {
   natal:    {key:'natal',label:'Natal (RN)',color:'#378ADD',meta:45},
   feira:    {key:'feira',label:'Feira',color:'#EF9F27',meta:60},
-  spi:      {key:'spi',label:'SPI (CPFL)',color:'#7F77DD',meta:48},
+  spi:      {key:'spi',label:'Campinas SPI',color:'#7F77DD',meta:48},
+  ribeirao: {key:'ribeirao',label:'Ribeirão Preto SPI',color:'#A78BFA',meta:15},
   ce:       {key:'ce',label:'CE (Fortaleza)',color:'#D4537E',meta:36},
   salvador: {key:'salvador',label:'Salvador',color:'#1D9E75',meta:60},
   outras:   {key:'outras',label:'Outras',color:'#999',meta:0},
@@ -886,6 +915,7 @@ let SELLER_PRACA = {
   'Nicola Popovic':'spi',
   'Anderson Correia':'spi',
   'Ana Ribeiro':'spi',
+  'João Santos':'ribeirao',
   'Mecenas Junior':'natal',
   'Adroaldo Bonfim':'salvador','Antonio Mariano':'salvador','Ettore Rossi':'salvador','Maria Lúcia':'salvador','Tais Santos':'salvador',
   'Kelma Rangel':'feira','Lucileide Carlos':'feira','Rosangela Mendes':'feira','Tiago Freitas':'feira','Ryan Trindade':'feira',
@@ -928,6 +958,7 @@ function metaToDate(metaMes){ return metaMes * getMetaToDateInfo().fraction; }
 
 // ── METAS VENDEDOR ────────────────────────────────────────
 let METAS = {
+  'João Santos':15,
   'Silmara Gomes':15,
   'Luciana Campos':19,
   'Nicola Popovic':15,
@@ -971,12 +1002,13 @@ function renderResumo(){
     {key:'salvador',label:'Salvador',color:'#1D9E75',meta:60},
     {key:'natal',label:'Natal (RN)',color:'#378ADD',meta:45},
     {key:'feira',label:'Feira',color:'#EF9F27',meta:60},
-    {key:'spi',label:'SPI (CPFL)',color:'#7F77DD',meta:48},
+    {key:'spi',label:'Campinas SPI',color:'#7F77DD',meta:48},
+    {key:'ribeirao',label:'Ribeirão Preto SPI',color:'#A78BFA',meta:15},
     {key:'ce',label:'CE (Fortaleza)',color:'#D4537E',meta:36},
   ];
 
   const totalAprov = rawData.filter(x => noMes(x) && isAprovado(x)).reduce((a,x)=>a+x.mwh,0);
-  const totalMeta  = 249;
+  const totalMeta  = 264;
   const totalPct   = Math.min((totalAprov/totalMeta)*100,100);
   const mtdFrac    = getMetaToDateInfo().fraction;
   const totalMetaTD = totalMeta * mtdFrac;
@@ -1538,6 +1570,85 @@ function openCampDetails(vendedor, type){
     </div>
   `;
   document.body.appendChild(modal);
+}
+
+// ── CALCULADORA DE SAÍDA ANTECIPADA (Liora Antecipa) ─────────
+var calcSaidaMes = 2;
+function openCalcSaida(){
+  closeCalcSaida();
+  var modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  modal.id = 'calc-saida-modal';
+  modal.onclick = function(e){ if(e.target === modal) closeCalcSaida(); };
+  modal.innerHTML = `
+    <div class="modal-sheet" style="max-height:92vh;overflow-y:auto">
+      <div class="modal-handle"></div>
+      <button class="modal-close" onclick="closeCalcSaida()">✕</button>
+      <div class="modal-title">Calculadora de Saída Antecipada</div>
+      <div class="modal-sub">Quanto o cliente devolve se cancelar antes de completar 12 meses do Liora Antecipa.</div>
+      <div class="calc-field">
+        <label>Valor adiantado ao cliente</label>
+        <div class="calc-prefix"><span>R$</span><input type="number" id="calc-valor" value="1000" min="0" step="0.01" inputmode="decimal"></div>
+      </div>
+      <div class="calc-field">
+        <label>Mês em que o cliente quer sair <span id="calc-badge" class="calc-badge d10">1º–6º mês · deságio 10%</span></label>
+        <div class="calc-months" id="calc-months"></div>
+      </div>
+      <div class="calc-field">
+        <label>IGP-M acumulado no período (%) <span style="font-weight:400;color:var(--muted)">— opcional</span></label>
+        <div class="calc-prefix"><span>%</span><input type="number" id="calc-igpm" value="0" min="0" step="0.01" inputmode="decimal"></div>
+      </div>
+      <div class="calc-result">
+        <div class="calc-result-label">Valor total a devolver</div>
+        <div class="calc-result-value" id="calc-total">R$ 0,00</div>
+        <div class="calc-break">
+          <div class="k">Meses restantes até 12</div><div class="v" id="calc-mr">–</div>
+          <div class="k">Valor proporcional (pro-rata)</div><div class="v" id="calc-pr">–</div>
+          <div class="k">Deságio comercial</div><div class="v" id="calc-ds">–</div>
+          <div class="k">Valor + deságio</div><div class="v" id="calc-cd">–</div>
+          <div class="k">Correção (IGP-M)</div><div class="v" id="calc-co">–</div>
+          <div class="k tr">Total a devolver</div><div class="v tr" id="calc-tr">–</div>
+        </div>
+      </div>
+      <div class="calc-note"><strong>Fórmula:</strong> (Valor × meses restantes ÷ 12) × (1 + deságio) + correção IGP-M.<br>Deságio: <b>10%</b> saindo do 1º ao 6º mês · <b>5%</b> do 7º ao 12º. A correção IGP-M é aplicada sobre o valor já com deságio (índice acumulado da FGV, informado manualmente).</div>
+    </div>`;
+  document.body.appendChild(modal);
+  var mrow = modal.querySelector('#calc-months');
+  for(var m=1;m<=12;m++){
+    (function(mm){
+      var b=document.createElement('div');
+      b.className='calc-month'+(mm===calcSaidaMes?' active':'');
+      b.textContent=mm;
+      b.onclick=function(){ calcSaidaMes=mm; mrow.querySelectorAll('.calc-month').forEach(function(x){x.classList.remove('active');}); b.classList.add('active'); calcSaidaCompute(); };
+      mrow.appendChild(b);
+    })(m);
+  }
+  modal.querySelector('#calc-valor').addEventListener('input', calcSaidaCompute);
+  modal.querySelector('#calc-igpm').addEventListener('input', calcSaidaCompute);
+  calcSaidaCompute();
+}
+function closeCalcSaida(){ var m=document.getElementById('calc-saida-modal'); if(m) m.remove(); }
+function calcSaidaCompute(){
+  var fmt=function(n){ return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); };
+  var valor=parseFloat(document.getElementById('calc-valor').value)||0;
+  var igpm=(parseFloat(document.getElementById('calc-igpm').value)||0)/100;
+  var mes=calcSaidaMes;
+  var mr=Math.max(12-mes,0);
+  var ds=mes<=6?0.10:0.05;
+  var pr=valor*(mr/12);
+  var cd=pr*(1+ds);
+  var co=cd*igpm;
+  var total=cd+co;
+  document.getElementById('calc-mr').textContent=mr;
+  document.getElementById('calc-pr').textContent=fmt(pr);
+  document.getElementById('calc-ds').textContent=(ds*100).toFixed(0)+'%';
+  document.getElementById('calc-cd').textContent=fmt(cd);
+  document.getElementById('calc-co').textContent=fmt(co);
+  document.getElementById('calc-tr').textContent=fmt(total);
+  document.getElementById('calc-total').textContent=fmt(total);
+  var badge=document.getElementById('calc-badge');
+  if(mes<=6){ badge.textContent='1º–6º mês · deságio 10%'; badge.className='calc-badge d10'; }
+  else { badge.textContent='7º–12º mês · deságio 5%'; badge.className='calc-badge d5'; }
 }
 
 function closeCampDetailsModal(){
@@ -2511,6 +2622,7 @@ let LIDERES = {
   'Bruno Andrade':   'natal',
   'Adroaldo Bonfim': 'salvador',
   'Caio Lannes':     'spi',
+  'João Santos':     'ribeirao',
 };
 function isLider(name){ return !!(name && LIDERES[name]); }
 function liderPraca(name){ return LIDERES[name] || ''; }
@@ -2525,6 +2637,7 @@ let CREDENTIALS = {
   'nha.negocios@gmail.com': { nome: 'Anderson Correia', senha: 'SPI' },
    'anderson.correia@lioraenergia.com.br': { nome: 'Anderson Correia', senha: 'SPI' },
    'ana.ribeiro@lioraenergia.com.br': { nome: 'Ana Ribeiro', senha: 'SPI' },
+  'joao.santos@lioraenergia.com.br': { nome: 'João Santos', senha: 'SPI' },
   'mecenas.junior@lioraenergia.com.br': { nome: 'Mecenas Junior', senha: 'RN' },
   'kelma.rangel@lioraenergia.com.br':       { nome: 'Kelma Rangel',       senha: 'Feira' },
   'lucileide.carlos@lioraenergia.com.br':   { nome: 'Lucileide Carlos',   senha: 'Feira' },
@@ -2563,11 +2676,12 @@ function normPracaKey(txt){
   if(s.startsWith('salvador')) return 'salvador';
   if(s.startsWith('feira'))    return 'feira';
   if(s.startsWith('natal') || s === 'rn') return 'natal';
-  if(s === 'spi' || s.includes('paulo') || s.includes('cpfl') || s.includes('interior')) return 'spi';
+  if(s.includes('ribeir')) return 'ribeirao';
+  if(s === 'spi' || s.includes('paulo') || s.includes('cpfl') || s.includes('interior') || s.includes('campinas')) return 'spi';
   if(s === 'ce' || s.includes('cear') || s.includes('fortaleza') || s.includes('enel')) return 'ce';
   return 'outras';
 }
-const PRACA_LABEL = { salvador:'Salvador', feira:'Feira de Santana', natal:'Natal', spi:'SPI', ce:'CE', outras:'Outros' };
+const PRACA_LABEL = { salvador:'Salvador', feira:'Feira de Santana', natal:'Natal', spi:'Campinas SPI', ribeirao:'Ribeirão Preto SPI', ce:'CE', outras:'Outros' };
 
 // Aplica as linhas da aba Time (vindas do Apps Script) nas estruturas vivas do CRM.
 // rows: [{ email, praca, posicao, meta, senha }]
@@ -2575,7 +2689,7 @@ function applyTeam(rows){
   if(!Array.isArray(rows) || !rows.length) return false;
 
   const novoVend = [];
-  const ordem = ['Salvador','Feira de Santana','Natal','SPI','CE'];
+  const ordem = ['Salvador','Feira de Santana','Natal','Campinas SPI','Ribeirão Preto SPI','CE'];
 
   rows.forEach(r => {
     const email = (r.email||'').toString().trim().toLowerCase();
@@ -2794,9 +2908,9 @@ const DISTRIBUIDORAS = ['Enel','Coelba','Cosern','CPFL Paulista'];
 let VENDEDORES = [
   { nome: 'Silmara Gomes', praca: 'CE' },
   { nome: 'Luciana Campos', praca: 'Salvador' },
-  { nome: 'Nicola Popovic', praca: 'SPI' },
-  { nome: 'Anderson Correia', praca: 'SPI' },
-  { nome: 'Ana Ribeiro', praca: 'SPI' },
+  { nome: 'Nicola Popovic', praca: 'Campinas SPI' },
+  { nome: 'Anderson Correia', praca: 'Campinas SPI' },
+  { nome: 'Ana Ribeiro', praca: 'Campinas SPI' },
   { nome: 'Mecenas Junior', praca: 'Natal' },
   // Salvador
   { nome: 'Adroaldo Bonfim',  praca: 'Salvador' },
@@ -2815,11 +2929,13 @@ let VENDEDORES = [
   { nome: 'Marcio Galvão',    praca: 'Natal' },
   { nome: 'Rodrigo Ribeiro',  praca: 'Natal' },  // junho/26
   // SPI
-  { nome: 'Caio Lannes',      praca: 'SPI' },
-  { nome: 'Ederson Silva',    praca: 'SPI' },
-  { nome: 'Franciele Felix',  praca: 'SPI' },
-  { nome: 'Monica Silveira',  praca: 'SPI' },
-  { nome: 'Diego Faria',      praca: 'SPI' },  // junho/26
+  { nome: 'Caio Lannes',      praca: 'Campinas SPI' },
+  { nome: 'Ederson Silva',    praca: 'Campinas SPI' },
+  { nome: 'Franciele Felix',  praca: 'Campinas SPI' },
+  { nome: 'Monica Silveira',  praca: 'Campinas SPI' },
+  { nome: 'Diego Faria',      praca: 'Campinas SPI' },  // junho/26
+  // Ribeirão Preto SPI
+  { nome: 'João Santos',      praca: 'Ribeirão Preto SPI' },  // julho/26 — líder
   // CE
   { nome: 'Bruno Borges',     praca: 'CE' },
   { nome: 'Neilon Nascimento',praca: 'CE' },  // junho/26

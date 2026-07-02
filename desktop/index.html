@@ -94,7 +94,7 @@ body { font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; background: v
 .op-section { margin-bottom: 14px; }
 .op-section-head { display:flex; align-items:center; justify-content:space-between; margin-bottom: 10px; }
 .op-section-title { font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
-.op-cards { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+.op-cards { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
 .op-card { background: #fff; border: 2px solid var(--border); border-radius: 10px; padding: 13px 14px; }
 .op-card.active { border-color: var(--blue); box-shadow: 0 2px 8px rgba(2,1,243,0.12); }
 .op-card .op-name { font-size: 13px; font-weight: 700; color: var(--text1); margin-bottom: 8px; }
@@ -126,6 +126,7 @@ table.bau tbody tr.vendedor-row.last td { border-bottom: 2px solid var(--border)
 .b-Feira { background: var(--orange); }
 .b-Natal { background: var(--lightblue); }
 .b-SPI { background: var(--purple); }
+    .b-Ribeirao { background: #A78BFA; }
 .b-CE { background: var(--pink); }
 
 .meta-bar-cell { min-width: 100px; }
@@ -205,7 +206,7 @@ table.bau tbody tr.field-row td:first-child { color: #fff; }
 <div class=&quot;section op-section&quot;>
   <div class=&quot;op-section-head&quot;>
     <span class=&quot;op-section-title&quot;>Operação</span>
-    <span style=&quot;font-size:11px;color:var(--text3)&quot;>Meta Safra: 249 MWh/mês</span>
+    <span style=&quot;font-size:11px;color:var(--text3)&quot;>Meta Safra: 264 MWh/mês</span>
   </div>
   <div class=&quot;op-cards&quot; id=&quot;bau-op-cards&quot;></div>
 </div>
@@ -262,7 +263,7 @@ const VENDEDORES = [
   {nome:'Monica Silveira',praca:'SPI'},
   {nome:'Franciele Felix',praca:'SPI'},
   {nome:'Ederson Silva',praca:'SPI'},
-  {nome:'Diego Faria',praca:'SPI'},
+  {nome:'Diego Faria',praca:'SPI'},{nome:'João Santos',praca:'Ribeirao'},
 ];
 
 const PRACA_OF = {};
@@ -272,12 +273,12 @@ PRACA_OF['Bruno Rodrigues'] = 'Natal';
 PRACA_OF['Camila Couto'] = 'Feira';
 PRACA_OF['Tais Santos'] = 'Salvador';
 
-const PRACAS = ['Salvador','Feira','Natal','SPI','CE'];
+const PRACAS = ['Salvador','Feira','Natal','SPI','Ribeirao','CE'];
 
 // Metas Safra julho 2026
-const METAS_SAFRA = { Salvador: 60, Feira: 60, Natal: 45, SPI: 48, CE: 36 };
+const METAS_SAFRA = { Salvador: 60, Feira: 60, Natal: 45, SPI: 48, Ribeirao: 15, CE: 36 };
 // Meta INDIVIDUAL por vendedor (da planilha de metas, mensal MWh)
-const META_IND = { Salvador: 19.0, Feira: 19.0, Natal: 19.0, SPI: 15.0, CE: 15.0 };
+const META_IND = { Salvador: 19.0, Feira: 19.0, Natal: 19.0, SPI: 15.0, Ribeirao: 15.0, CE: 15.0 };
 // Exceções de meta individual que diferem da praça (nome do vendedor → meta mensal MWh)
 const META_VEND_OVERRIDE = {};
 function metaVendMensal(nome, praca) {
@@ -581,14 +582,15 @@ function bauColVal(x, col) {
 }
 
 const OP_LIST = [
-  {key:'todas', label:'Todas', color:'#0201F3', meta:249},
+  {key:'todas', label:'Todas', color:'#0201F3', meta:264},
   {key:'salvador', label:'Salvador', color:'#1D9E75', meta:60},
   {key:'natal', label:'Natal (RN)', color:'#378ADD', meta:45},
   {key:'feira', label:'Feira', color:'#EF9F27', meta:60},
-  {key:'spi', label:'SPI (CPFL)', color:'#7F77DD', meta:48},
+  {key:'spi', label:'Campinas SPI', color:'#7F77DD', meta:48},
+  {key:'ribeirao', label:'Ribeirão Preto SPI', color:'#A78BFA', meta:15},
   {key:'ce', label:'CE (Fortaleza)', color:'#D4537E', meta:36},
 ];
-const OP_TO_PRACA = {salvador:'Salvador', feira:'Feira', natal:'Natal', spi:'SPI', ce:'CE'};
+const OP_TO_PRACA = {salvador:'Salvador', feira:'Feira', natal:'Natal', spi:'SPI', ribeirao:'Ribeirao', ce:'CE'};
 
 function renderOpCards() {
   const el = document.getElementById('bau-op-cards');
@@ -603,7 +605,7 @@ function renderOpCards() {
     // meta to-date do mês (acumulada até hoje, proporcional aos dias úteis)
     let metaToDate, metaMes;
     if (op.key === 'todas') {
-      metaMes = 249;
+      metaMes = 264;
       metaToDate = PRACAS.reduce((a,p)=>a+safraToDate(p), 0);
     } else {
       const praca = OP_TO_PRACA[op.key];
@@ -709,7 +711,7 @@ function renderPropostas() {
     if (byP[v.praca]) { byP[v.praca].perVendedor[v.nome] = {total:0, mwh:0, fatura:0}; byP[v.praca].vendedores.add(v.nome); }
   });
   
-  const PRACA_SHORT = {'Feira de Santana':'Feira','Natal (RN)':'Natal','SPI (CPFL)':'SPI','CE (Fortaleza)':'CE'};
+  const PRACA_SHORT = {'Feira de Santana':'Feira','Natal (RN)':'Natal','Campinas SPI':'SPI','Ribeirão Preto SPI':'Ribeirao','CE (Fortaleza)':'CE'};
   monthRaw.forEach(d => {
     let p = PRACA_SHORT[d.praca] || d.praca;
     if (!byP[p]) p = pracaOf(d); // fallback pelo vendedor
@@ -739,6 +741,7 @@ function renderPropostas() {
 // SEÇÃO 3: CLIENTES APROVADOS (com atingimento de meta + campanha)
 // ============================================================
 function isAprovado(x) {
+  if (x.stage === 'BGC_PARCEIRO') return false;
   if (x.lost_at) { if (x.stage === 'BACKGROUND_CHECKING') { if ((x.lost_reason||'').trim().toLowerCase() !== 'troca de titularidade') return false; } }
   if (x.risk === 'DENIED') return false;
   if (x.risk === 'APPROVED') return true; // analise de risco APPROVED (definicao oficial)
@@ -769,7 +772,7 @@ function renderAprovados() {
   
   rawData.filter(d => dateInBauPeriod(d.date)).forEach(d => {
     // mapear op interno para nome da praça
-    const opMap = { salvador:'Salvador', feira:'Feira', natal:'Natal', spi:'SPI', ce:'CE' };
+    const opMap = { salvador:'Salvador', feira:'Feira', natal:'Natal', spi:'SPI', ribeirao:'Ribeirao', ce:'CE' };
     const p = opMap[d.op];
     if (!p || !byP[p]) return;
     
@@ -1104,6 +1107,7 @@ table.rk tbody tr.field-row td { color: #fff; font-weight: 700; font-size: 12px;
 .b-Feira { background: var(--orange); }
 .b-Natal { background: var(--lightblue); }
 .b-SPI { background: var(--purple); }
+    .b-Ribeirao { background: #A78BFA; }
 .b-CE { background: var(--pink); }
 
 .meta-bar-cell { min-width: 100px; }
@@ -1205,7 +1209,7 @@ const VENDEDORES = [
   {nome:'Bruno Andrade',praca:'Natal'},{nome:'Rodrigo Ribeiro',praca:'Natal'},{nome:'Bruno Borges',praca:'CE'},
   {nome:'Neilon Nascimento',praca:'CE'},{nome:'Núbia Andrade',praca:'CE'},{nome:'Odirley Costa',praca:'CE'},{nome:'Caio Lannes',praca:'SPI'},
   {nome:'Monica Silveira',praca:'SPI'},{nome:'Franciele Felix',praca:'SPI'},
-  {nome:'Ederson Silva',praca:'SPI'},{nome:'Diego Faria',praca:'SPI'},
+  {nome:'Ederson Silva',praca:'SPI'},{nome:'Diego Faria',praca:'SPI'},{nome:'João Santos',praca:'Ribeirao'},
 ];
 const PRACA_OF = {};
 VENDEDORES.forEach(v => PRACA_OF[v.nome] = v.praca);
@@ -1214,9 +1218,9 @@ PRACA_OF['Bruno Rodrigues'] = 'Natal';
 PRACA_OF['Camila Couto'] = 'Feira';
 PRACA_OF['Tais Santos'] = 'Salvador';
 
-const PRACAS = ['Salvador','Feira','Natal','SPI','CE'];
-const METAS_SAFRA = { Salvador: 60, Feira: 60, Natal: 45, SPI: 48, CE: 36 };
-const META_IND = { Salvador: 19.0, Feira: 19.0, Natal: 19.0, SPI: 15.0, CE: 15.0 };
+const PRACAS = ['Salvador','Feira','Natal','SPI','Ribeirao','CE'];
+const METAS_SAFRA = { Salvador: 60, Feira: 60, Natal: 45, SPI: 48, Ribeirao: 15, CE: 36 };
+const META_IND = { Salvador: 19.0, Feira: 19.0, Natal: 19.0, SPI: 15.0, Ribeirao: 15.0, CE: 15.0 };
 // Exceções de meta individual que diferem da praça (nome do vendedor → meta mensal MWh)
 const META_VEND_OVERRIDE = {};
 function metaVendMensal(nome, praca) {
@@ -1489,7 +1493,7 @@ function aggPropostas() {
   });
   return Object.values(byV);
 }
-function isAprovado(x) { if(x.lost_at){ if(x.stage==='BACKGROUND_CHECKING'){ if((x.lost_reason||'').trim().toLowerCase() !== 'troca de titularidade') return false; } } if(x.risk==='DENIED') return false; if(x.risk==='APPROVED') return true; const s=(x.status||'').toLowerCase(); if(s.includes('aprovado')) return true; if(x.stage==='REQUEST_TITULARIDADE') return true; return false; }
+function isAprovado(x) { if(x.stage==='BGC_PARCEIRO') return false; if(x.lost_at){ if(x.stage==='BACKGROUND_CHECKING'){ if((x.lost_reason||'').trim().toLowerCase() !== 'troca de titularidade') return false; } } if(x.risk==='DENIED') return false; if(x.risk==='APPROVED') return true; const s=(x.status||'').toLowerCase(); if(s.includes('aprovado')) return true; if(x.stage==='REQUEST_TITULARIDADE') return true; return false; }
 function isPendenteOPS(x) { const s=x.status||''; return s==='Pendente OPS'||s==='Aguardando período'||s==='Mudando Titularidade'; }
 function aggAprovados() {
   const byV = {};
@@ -1773,6 +1777,7 @@ tbody tr:hover { background: #fafbff; }
 .b-Feira { background: var(--orange); }
 .b-Natal { background: var(--lightblue); }
 .b-SPI { background: var(--purple); }
+    .b-Ribeirao { background: #A78BFA; }
 .b-CE { background: var(--pink); }
 .motivo-row { display: grid; grid-template-columns: 200px 1fr 50px 60px 110px; gap: 10px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); }
 .motivo-name { font-size: 12px; font-weight: 600; }
@@ -1937,7 +1942,7 @@ const VENDEDORES = [
   {nome:'Monica Silveira',praca:'SPI'},
   {nome:'Franciele Felix',praca:'SPI'},
   {nome:'Ederson Silva',praca:'SPI'},
-  {nome:'Diego Faria',praca:'SPI'},
+  {nome:'Diego Faria',praca:'SPI'},{nome:'João Santos',praca:'Ribeirao'},
   {nome:'Felipe Oliveira',praca:'SPI'},
 ];
 
@@ -3518,7 +3523,7 @@ window.RAW = RAW;
 // ════════════════════════════════════════════
 const TODAY=(function(){try{var _ds=RAW.map(d=>String(d.date||'').slice(0,10)).filter(Boolean).sort();return _ds[_ds.length-1]||&quot;2026-06-01&quot;;}catch(e){return &quot;2026-06-01&quot;;}})(), CW=23, PW=22;
 try{var _hd=document.getElementById('hdr-date'); if(_hd){var _tp=TODAY.split('-'); _hd.textContent=_tp[2]+'/'+_tp[1]+'/'+_tp[0];}}catch(e){}
-const PRACAS=[&quot;Salvador&quot;,&quot;Feira&quot;,&quot;Natal&quot;,&quot;CE&quot;,&quot;SPI&quot;];
+const PRACAS=[&quot;Salvador&quot;,&quot;Feira&quot;,&quot;Natal&quot;,&quot;CE&quot;,&quot;SPI&quot;,&quot;Ribeirao&quot;];
 const PC={
   &quot;Salvador&quot;:&quot;#0201F3&quot;,
   &quot;Feira&quot;:&quot;#7c3aed&quot;,
@@ -4231,7 +4236,7 @@ h2 { font-size: 18px; font-weight: 500; margin-bottom: 1.25rem; }
 .metric .val { font-size: 22px; font-weight: 500; }
 .metric .sub { font-size: 10px; color: #aaa; margin-top: 2px; }
 .divider { height: .5px; background: #e5e5e5; margin: 1rem 0 .75rem; }
-.op-cards { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 1.5rem; }
+.op-cards { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 1.5rem; }
 .op-card { background: #fff; border: .5px solid #e0e0e0; border-radius: 8px; padding: 10px 12px; cursor: pointer; }
 .op-card.active { border: 2px solid #0201F3; }
 .op-card .op-name { font-size: 11px; font-weight: 600; margin-bottom: 3px; }
@@ -4345,7 +4350,7 @@ td.fn-clk:hover{ text-decoration:underline; }
     onmouseover=&quot;this.style.background='#e0e8ff'&quot;
     onmouseout=&quot;this.style.background='#f0f4ff'&quot;>
     <span class=&quot;tmm-label&quot; style=&quot;font-size:11px;font-weight:700;color:#0201F3&quot;>Ver BP</span>
-    <span class=&quot;tmm-sub&quot; style=&quot;font-size:9px;color:#888;margin-top:1px&quot;>Meta: 249 MWh</span>
+    <span class=&quot;tmm-sub&quot; style=&quot;font-size:9px;color:#888;margin-top:1px&quot;>Meta: 264 MWh</span>
   </button>
 </div>
 <div class=&quot;op-cards&quot; id=&quot;op-cards&quot;></div>
@@ -4408,28 +4413,30 @@ td.fn-clk:hover{ text-decoration:underline; }
 
 <script>
 const OPS_SAFRA = [
-  { key:'todas',    label:'Todas',          meta:249, color:'#0201F3' },
+  { key:'todas',    label:'Todas',          meta:264, color:'#0201F3' },
   { key:'salvador', label:'Salvador',       meta:60,  color:'#1D9E75',
     cities:['SALVADOR','DIAS DAVILA',&quot;DIAS D'ÁVILA&quot;,'CAMAÇARI','CAMACAR','MATA DE SÃO JOÃO','MATA DE SAD JOAO','MATA DE SAO OAO','DIAS DAVIL','SIMÕES FILHO','SIMOES FILHO','SANTO AMARO'] },
   { key:'natal',    label:'Natal (RN)',     meta:45,  color:'#378ADD',
     cities:['PARNAMIRIM','NATAL','EXTREMOZ','MOSSORÓ'] },
   { key:'feira',    label:'Feira',          meta:60,  color:'#EF9F27',
     cities:['FEIRA DE SANTANA','SERRINHA','CONCEIÇÃO DA FEIRA','MURITIBA','SÃO FRANCISCO DO CONDE','FRANCISCO DO CONDE','CRUZ DAS ALMAS','CONCEIÇÃO DO COITÉ'] },
-  { key:'spi',      label:'SPI (CPFL)',     meta:48,  color:'#7F77DD',
+  { key:'spi',      label:'Campinas SPI',     meta:48,  color:'#7F77DD',
     cities:['CAMPINAS','SUMARÉ','RIBEIRÃO PRETO','SÃO PAULO','HORTOLÂNDIA','HORTOLANDIA','PAULÍNIA','PAULINIA','BAURU'] },
+  { key:'ribeirao', label:'Ribeirão Preto SPI', meta:15, color:'#A78BFA', cities:[] },
   { key:'ce',       label:'CE (Fortaleza)', meta:36,  color:'#D4537E',
     cities:['FORTALEZA'] },
 ];
 const OPS_BP = [
-  { key:'todas',    label:'Todas',          meta:235.0,color:'#0201F3' },
+  { key:'todas',    label:'Todas',          meta:250.0,color:'#0201F3' },
   { key:'salvador', label:'Salvador',       meta:35.25,color:'#1D9E75',
     cities:['SALVADOR','DIAS DAVILA',&quot;DIAS D'ÁVILA&quot;,'CAMAÇARI','CAMACAR','MATA DE SÃO JOÃO','MATA DE SAD JOAO','MATA DE SAO OAO','DIAS DAVIL','SIMÕES FILHO','SIMOES FILHO','SANTO AMARO'] },
   { key:'natal',    label:'Natal (RN)',     meta:47.0, color:'#378ADD',
     cities:['PARNAMIRIM','NATAL','EXTREMOZ','MOSSORÓ'] },
   { key:'feira',    label:'Feira',          meta:35.25,color:'#EF9F27',
     cities:['FEIRA DE SANTANA','SERRINHA','CONCEIÇÃO DA FEIRA','MURITIBA','SÃO FRANCISCO DO CONDE','FRANCISCO DO CONDE','CRUZ DAS ALMAS','CONCEIÇÃO DO COITÉ'] },
-  { key:'spi',      label:'SPI (CPFL)',     meta:70.5, color:'#7F77DD',
+  { key:'spi',      label:'Campinas SPI',     meta:70.5, color:'#7F77DD',
     cities:['CAMPINAS','SUMARÉ','RIBEIRÃO PRETO','SÃO PAULO','HORTOLÂNDIA','HORTOLANDIA','PAULÍNIA','PAULINIA','BAURU'] },
+  { key:'ribeirao', label:'Ribeirão Preto SPI', meta:15, color:'#A78BFA', cities:[] },
   { key:'ce',       label:'CE (Fortaleza)', meta:47.0, color:'#D4537E',
     cities:['FORTALEZA'] },
 ];
@@ -4484,7 +4491,7 @@ function toggleMetaMode(btn) {
   META_MODE = META_MODE === 'safra' ? 'bp' : 'safra';
   OPS = META_MODE === 'safra' ? OPS_SAFRA : OPS_BP;
   const label = META_MODE === 'safra' ? 'Ver BP' : 'Ver Safra';
-  const sublabel = META_MODE === 'safra' ? 'Meta: 249 MWh' : 'Meta: 235 MWh';
+  const sublabel = META_MODE === 'safra' ? 'Meta: 264 MWh' : 'Meta: 235 MWh';
   btn.querySelector('.tmm-label').textContent = label;
   btn.querySelector('.tmm-sub').textContent = sublabel;
   buildOpCards(); refreshSummary();
@@ -4574,6 +4581,7 @@ function isNegado(x) {
 
 const VENDEDORES_OCULTOS = ['Ananias Neto']; // saíram do time: ocultar linha individual, mas resultado continua somando na praça
 const isAprovado = x => {
+  if (x.stage === 'BGC_PARCEIRO') return false;
   if (x.lost_at) { if (x.stage === 'BACKGROUND_CHECKING') { if ((x.lost_reason||'').trim().toLowerCase() !== 'troca de titularidade') return false; } }
   if (x.risk === 'DENIED') return false;        // analise de risco negada
   if (x.risk === 'APPROVED') return true;        // analise de risco APPROVED (mesma def do BAU/Rankings)
@@ -4804,11 +4812,11 @@ const CAMP_SELLERS = [
   {name:'Rodrigo Ribeiro', praca:'Natal (RN)', meta:19, mes:0.00, camp:0.00},
   {name:'Bruno Borges', praca:'CE (Fortaleza)', meta:15, mes:0.00, camp:0.00},
   {name:'Neilon Nascimento', praca:'CE (Fortaleza)', meta:15, mes:0.00, camp:0.00},
-  {name:'Caio Lannes', praca:'SPI (CPFL)', meta:15, mes:0.00, camp:0.00},
-  {name:'Monica Silveira', praca:'SPI (CPFL)', meta:15, mes:0.00, camp:0.00},
-  {name:'Franciele Felix', praca:'SPI (CPFL)', meta:15, mes:0.00, camp:0.00},
-  {name:'Ederson Silva', praca:'SPI (CPFL)', meta:15, mes:0.00, camp:0.00},
-  {name:'Diego Faria', praca:'SPI (CPFL)', meta:15, mes:0.00, camp:0.00},
+  {name:'Caio Lannes', praca:'Campinas SPI', meta:15, mes:0.00, camp:0.00},
+  {name:'Monica Silveira', praca:'Campinas SPI', meta:15, mes:0.00, camp:0.00},
+  {name:'Franciele Felix', praca:'Campinas SPI', meta:15, mes:0.00, camp:0.00},
+  {name:'Ederson Silva', praca:'Campinas SPI', meta:15, mes:0.00, camp:0.00},
+  {name:'Diego Faria', praca:'Campinas SPI', meta:15, mes:0.00, camp:0.00},
 ];
 
 const CAMP_CLIENTS = [
@@ -4831,7 +4839,7 @@ const CAMP_CLIENTS = [
   {c:'ELAINE MARTINS SANTOS',v:'Ettore Rossi',p:'Salvador',ci:'SANTO AMARO',st:'Req. TT',status:'Pendente OPS',mwh:0.18,sem:'Semana 3'},
 ];
 
-const PRACA_COLORS_CAMP = {'Salvador':'#1D9E75','Natal (RN)':'#378ADD','Feira':'#EF9F27','SPI (CPFL)':'#7F77DD','CE (Fortaleza)':'#D4537E'};
+const PRACA_COLORS_CAMP = {'Salvador':'#1D9E75','Natal (RN)':'#378ADD','Feira':'#EF9F27','Campinas SPI':'#7F77DD','CE (Fortaleza)':'#D4537E'};
 
 function setCampTab(t) {
   document.getElementById('camp-tab-resumo').classList.toggle('active', t==='resumo');
@@ -4871,7 +4879,7 @@ function renderCampanha() {
   // Merge with CAMP_SELLERS for meta/mes info
   let filteredSellers = CAMP_SELLERS.filter(s =>
     (!sellerFilter || s.name === sellerFilter) &amp;&amp;
-    (!opFilter || s.praca === ({'salvador':'Salvador','natal':'Natal (RN)','feira':'Feira','spi':'SPI (CPFL)','ce':'CE (Fortaleza)'}[opFilter] || opFilter))
+    (!opFilter || s.praca === ({'salvador':'Salvador','natal':'Natal (RN)','feira':'Feira','spi':'Campinas SPI','ribeirao':'Ribeirão Preto SPI','ce':'CE (Fortaleza)'}[opFilter] || opFilter))
   ).map(s => ({
     ...s,
     camp: bySellerMap[s.name]?.camp || 0
@@ -4905,7 +4913,7 @@ function renderCampanha() {
     html2 += '<tr><td colspan=&quot;7&quot; style=&quot;text-align:center;padding:2rem;color:#888&quot;>Nenhum cliente neste filtro.</td></tr>';
   } else {
     sorted.forEach(x=>{
-      const opLabel = {'salvador':'Salvador','natal':'Natal (RN)','feira':'Feira','spi':'SPI (CPFL)','ce':'CE (Fortaleza)'}[x.op] || x.op;
+      const opLabel = {'salvador':'Salvador','natal':'Natal (RN)','feira':'Feira','spi':'Campinas SPI','ribeirao':'Ribeirão Preto SPI','ce':'CE (Fortaleza)'}[x.op] || x.op;
       const col=PC[opLabel]||'#999';
       const statusLabel = isAprovado(x) ? 'Aprovado' : 'Pendente OPS';
       const sc = isAprovado(x) ? {bg:'#EAF3DE',text:'#3B6D11'} : {bg:'#E6F1FB',text:'#185FA5'};
@@ -4941,7 +4949,7 @@ function fmtMwh(v) {
   return `<span class=&quot;has-val&quot;>${v.toFixed(1)}</span>`;
 }
 
-const META_IND = { salvador:19, feira:19, natal:19, spi:15, ce:15 };
+const META_IND = { salvador:19, feira:19, natal:19, spi:15, ribeirao:15, ce:15 };
 function wdFactor() {
   const parts = BP_TODAY.split('-').map(Number);
   const yr = parts[0], mo = parts[1], dy = parts[2];
@@ -5167,7 +5175,7 @@ function render() {
   const approvedMwh = d.filter(x => (isAprovado(x) || isPendenteOPS(x)) &amp;&amp; noMesAtual(x)).reduce((a,x)=>a+x.mwh,0);
   const urgMwh = d.filter(x=>x.status==='Pendente Vendas').reduce((a,x)=>a+x.mwh,0);
   const opObj = OPS.find(o=>o.key===currentOp);
-  const metaOp = opObj?.meta||249;
+  const metaOp = opObj?.meta||264;
 
   document.getElementById('metrics').innerHTML = `
     <div class=&quot;metric&quot; id=&quot;metric-todos&quot; onclick=&quot;metricClick('todos')&quot; title=&quot;Ver todos os clientes&quot;><div class=&quot;lbl&quot;>Clientes Assinados</div><div class=&quot;val&quot;>${d.length}</div></div>
@@ -5522,7 +5530,7 @@ const VENDEDORES = [
   {nome:'Monica Silveira', praca:'SPI'},
   {nome:'Franciele Felix', praca:'SPI'},
   {nome:'Ederson Silva', praca:'SPI'},
-  {nome:'Diego Faria', praca:'SPI'},
+  {nome:'Diego Faria', praca:'SPI'},{nome:'João Santos', praca:'Ribeirao'},
 ];
 
 const STATUS_LABEL = { normal:'Normal', falta:'Falta', ferias:'Férias', meio:'Meio período', onboarding:'Onboarding', feriado:'Feriado' };
@@ -5983,7 +5991,8 @@ body { font-family: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif; back
 .lc-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .badge-praca { font-size: 11px; padding: 3px 12px; border-radius: 11px; color: #fff; font-weight: 700; }
 .b-Salvador { background: var(--green); } .b-Feira { background: var(--orange); }
-.b-Natal { background: var(--lightblue); } .b-SPI { background: var(--purple); } .b-CE { background: var(--pink); }
+.b-Natal { background: var(--lightblue); } .b-SPI { background: var(--purple); }
+    .b-Ribeirao { background: #A78BFA; } .b-CE { background: var(--pink); }
 .lc-pct { font-size: 26px; font-weight: 800; line-height: 1; }
 .lc-metaline { font-size: 12px; color: var(--text2); margin-bottom: 12px; }
 .lc-bar { background: var(--bg); border-radius: 6px; height: 10px; overflow: hidden; position: relative; margin-bottom: 4px; }
@@ -6029,8 +6038,8 @@ body { font-family: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif; back
 <div class=&quot;cards-grid&quot; id=&quot;cards&quot;><div class=&quot;empty&quot;><span class=&quot;spinner&quot;></span> Carregando dados…</div></div>
 
 <script>
-const PRACAS = ['Salvador','Feira','Natal','SPI','CE'];
-const METAS_SAFRA = { Salvador: 60, Feira: 60, Natal: 45, SPI: 48, CE: 36 };
+const PRACAS = ['Salvador','Feira','Natal','SPI','Ribeirao','CE'];
+const METAS_SAFRA = { Salvador: 60, Feira: 60, Natal: 45, SPI: 48, Ribeirao: 15, CE: 36 };
 const BP_TODAY = '2026-07-02';
 const DAY = 86400000;
 function localISO(d) {
@@ -6095,7 +6104,7 @@ function metaPracaPeriodo(praca) {
 }
 
 /* ===== REGRAS ===== */
-function isAprovado(x) { if(x.lost_at){ if(x.stage==='BACKGROUND_CHECKING'){ if((x.lost_reason||'').trim().toLowerCase() !== 'troca de titularidade') return false; } } if(x.risk==='DENIED') return false; if(x.risk==='APPROVED') return true; if((x.status||'').toLowerCase().includes('aprovado')) return true; if(x.stage==='REQUEST_TITULARIDADE') return true; return false; }
+function isAprovado(x) { if(x.stage==='BGC_PARCEIRO') return false; if(x.lost_at){ if(x.stage==='BACKGROUND_CHECKING'){ if((x.lost_reason||'').trim().toLowerCase() !== 'troca de titularidade') return false; } } if(x.risk==='DENIED') return false; if(x.risk==='APPROVED') return true; if((x.status||'').toLowerCase().includes('aprovado')) return true; if(x.stage==='REQUEST_TITULARIDADE') return true; return false; }
 function isPendenteOPS(x) { const s=x.status||''; return s==='Pendente OPS'||s==='Aguardando período'||s==='Mudando Titularidade'; }
 
 /* ===== DADOS via bridge ===== */
@@ -6113,7 +6122,7 @@ function aggPorPraca() {
   const byP = {};
   PRACAS.forEach(p => byP[p] = { praca:p, mwh:0, aprovados:0 });
   rawData.filter(d => dateInPeriod(d.date)).forEach(d => {
-    const opMap = {salvador:'Salvador',feira:'Feira',natal:'Natal',spi:'SPI',ce:'CE'};
+    const opMap = {salvador:'Salvador',feira:'Feira',natal:'Natal',spi:'SPI',ribeirao:'Ribeirao',ce:'CE'};
     const p = opMap[d.op];
     if (!p || !byP[p]) return;
     if (!isAprovado(d) &amp;&amp; !isPendenteOPS(d)) return;
