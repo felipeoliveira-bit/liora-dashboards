@@ -1062,7 +1062,7 @@ function renderResumo(){
     const pct = mtd>0 ? (aprov/mtd)*100 : 0;
     const pc = pct>=100 ? 'var(--green)' : pct>=70 ? 'var(--blue)' : 'var(--red)';
     html += `
-      <div class="metas-row">
+      <div class="metas-row" style="cursor:pointer" onclick="openMetaAprovados('${p.key}')">
         <div class="metas-praca"><span class="metas-dot" style="background:${p.color}"></span>${p.label}</div>
         <div class="metas-mwh"><b>${aprov.toFixed(1)}</b> / ${mtd.toFixed(1)} <span style="opacity:.6">· mês ${p.meta}</span></div>
         <div class="metas-pct" style="color:${pc}">${pct.toFixed(0)}%</div>
@@ -1071,7 +1071,7 @@ function renderResumo(){
   const totalPctMtd = totalMetaToDate>0 ? (totalAprov/totalMetaToDate)*100 : 0;
   const totalPcColor = totalPctMtd>=100 ? 'var(--green)' : totalPctMtd>=70 ? 'var(--blue)' : 'var(--red)';
   html += `
-      <div class="metas-row metas-total">
+      <div class="metas-row metas-total" style="cursor:pointer" onclick="openMetaAprovados('__all__')">
         <div class="metas-praca">TOTAL</div>
         <div class="metas-mwh"><b>${totalAprov.toFixed(1)}</b> / ${totalMetaToDate.toFixed(1)} <span style="opacity:.6">· mês ${totalMeta}</span></div>
         <div class="metas-pct" style="color:${totalPcColor}">${totalPctMtd.toFixed(0)}%</div>
@@ -1644,6 +1644,37 @@ function calcSaidaCompute(){
   if(mes<=6){ badge.textContent='1º–6º mês · deságio 10%'; badge.className='calc-badge d10'; }
   else { badge.textContent='7º–12º mês · deságio 5%'; badge.className='calc-badge d5'; }
 }
+
+function openMetaAprovados(key){
+  closeMetaAprovados();
+  var all = key === '__all__';
+  var def = all ? {label:'Todas as praças', color:'var(--blue)'} : (PRACA_DEF[key] || {label:key, color:'#888'});
+  var cli = rawData
+    .filter(function(x){ return noMes(x) && isAprovado(x) && (all || (x.praca && x.praca.key === key)); })
+    .sort(function(a,b){ return (b.mwh||0)-(a.mwh||0); });
+  var totMwh = cli.reduce(function(a,x){ return a+(x.mwh||0); }, 0);
+  var rows = cli.map(function(c){
+    var d = c.aprov_date ? c.aprov_date.split('-').reverse().slice(0,2).join('/') : '—';
+    return '<div class="camp-deal-card">'
+      + '<div class="camp-deal-name">'+escapeHtml(c.c || 'Cliente sem nome')+'</div>'
+      + '<div class="camp-deal-meta">👤 '+escapeHtml(c.s||'—')+' · ⚡ '+(c.mwh||0).toFixed(2)+' MWh · 📅 '+d+'</div>'
+      + ((c.city||c.dist) ? '<div class="camp-deal-city">'+(c.dist?escapeHtml(c.dist):'')+(c.city?' · 📍 '+escapeHtml(c.city):'')+'</div>' : '')
+      + '</div>';
+  }).join('');
+  var modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  modal.id = 'meta-aprov-modal';
+  modal.onclick = function(e){ if(e.target === modal) closeMetaAprovados(); };
+  modal.innerHTML = '<div class="modal-sheet" style="max-height:85vh;overflow-y:auto">'
+    + '<div class="modal-handle"></div>'
+    + '<button class="modal-close" onclick="closeMetaAprovados()">✕</button>'
+    + '<div class="modal-title">Aprovados · '+escapeHtml(def.label)+'</div>'
+    + '<div class="modal-sub">'+cli.length+' cliente'+(cli.length===1?'':'s')+' · '+totMwh.toFixed(1)+' MWh aprovado no mês</div>'
+    + '<div style="margin-top:14px">'+(rows || '<div style="text-align:center;padding:24px;font-size:12px;color:var(--muted)">Nenhum cliente aprovado neste mês ainda.</div>')+'</div>'
+    + '</div>';
+  document.body.appendChild(modal);
+}
+function closeMetaAprovados(){ var m=document.getElementById('meta-aprov-modal'); if(m) m.remove(); }
 
 function closeCampDetailsModal(){
   const m = document.getElementById('camp-details-modal');
