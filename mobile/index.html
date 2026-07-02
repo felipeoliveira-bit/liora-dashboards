@@ -1105,7 +1105,7 @@ function initSellerSelect(keepSelection){
 
   if(isGestor){
     // Gestor: vê todos ordenados por praça
-    const order = ['Salvador','Feira de Santana','Natal','SPI','CE'];
+    const order = ['Salvador','Feira de Santana','Natal','Campinas SPI','Ribeirão Preto SPI','CE'];
     order.forEach(pr => {
       const grupo = lista.filter(v => v.praca === pr);
       if(!grupo.length) return;
@@ -3001,7 +3001,7 @@ function renderVendedoresList(showCurrentHighlight){
     if(!byPraca[v.praca]) byPraca[v.praca] = [];
     byPraca[v.praca].push(v);
   });
-  const order = ['Salvador','Feira de Santana','Natal','SPI','CE','Outros'];
+  const order = ['Salvador','Feira de Santana','Natal','Campinas SPI','Ribeirão Preto SPI','CE','Outros'];
   const current = getCurrentVendedor();
   let html = '';
   order.forEach(pr => {
