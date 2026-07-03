@@ -2645,7 +2645,7 @@ function renderPropostas() {
 
   // v2.104 — vendedores fora do time: somem da LISTA do ranking, mas os números
   // continuam somando nos totais de praça (pracas vem de `data`, não daqui).
-  const RANK_HIDDEN = ['Ananias Neto'];
+  const RANK_HIDDEN = ['Ananias Neto','Rosangela Mendes'];
   const topSellers = Object.entries(sellers)
     .filter(([name]) => !RANK_HIDDEN.includes(name))
     .sort((a,b)=>{
