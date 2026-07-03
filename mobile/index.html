@@ -2484,7 +2484,6 @@ function renderCampaignView(cfg){
     const prizeInfo = tier ? `<span class="prize-badge b${tier.tier}">🏆 ${tier.label}</span>` : '';
     let nextInfo = '';
     if (next) nextInfo = `<div class="prize-empty">Faltam ${campFaltaTxt(cfg, next.v - s.val)} para ${next.label}</div>`;
-    else if (tier) nextInfo = `<div class="prize-empty" style="color:var(--green);font-weight:700">✓ Faixa máxima atingida</div>`;
     const safeName = s.name.replace(/'/g, "\\'");
     const cardClass = has ? 'rank-card clickable' : 'rank-card';
     const cardOnclick = has ? `onclick="openCampDetails('${safeName}', '${cfg.key}')"` : '';
