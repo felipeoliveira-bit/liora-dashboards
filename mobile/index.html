@@ -1060,6 +1060,9 @@ function renderResumo(){
     {key:'ribeirao',label:'Ribeirão Preto SPI',color:'#A78BFA',meta:15},
     {key:'ce',label:'CE (Fortaleza)',color:'#D4537E',meta:60},
   ];
+  // Praça do vendedor logado vem PRIMEIRO (não precisa caçar na lista)
+  const _meKey = SELLER_PRACA[(typeof getCurrentVendedor==='function'?getCurrentVendedor():'')] || '';
+  if(_meKey && _meKey!=='outras') pracas.sort((a,b)=> (b.key===_meKey) - (a.key===_meKey));
 
   const totalAprov = rawData.filter(x => noMes(x) && isAprovado(x)).reduce((a,x)=>a+x.mwh,0);
   const totalMeta  = 342;
