@@ -1517,6 +1517,8 @@ function aggAprovados() {
 function renderTable(elemId, section, rows, cols) {
   const el = document.getElementById(elemId);
   if (!el) return;
+  const RK_HIDDEN = ['Ananias Neto','Rosangela Mendes'];
+  rows = (rows||[]).filter(r => r &amp;&amp; !RK_HIDDEN.includes(r.nome));
   if (rkPraca !== 'all') rows = (rows||[]).filter(r => r &amp;&amp; r.praca === rkPraca);
   const sorted = applySort(rows, section);
   
