@@ -93,6 +93,9 @@ CLIENT_OVERRIDE = {  # cliente (upper/strip) -> (seller canônico, praça label)
 CONSUMPTION_OVERRIDE = {  # cliente (upper/strip) -> MWh; temp ate base corrigir
  'FRANCISCO ALDECI DE QUEIROZ FERNANDES': 5.86,  # base mostra 0.59 (Felipe 03/07)
 }
+LOST_IGNORE = {  # ignora lost_at/lost_reason (falso 'nao aceito pela distribuidora')
+ 'FRANCISCO ALDECI DE QUEIROZ FERNANDES',  # reprovado e erro; ignorar (Felipe 03/07)
+}
 MES={'janeiro':1,'fevereiro':2,'março':3,'marco':3,'abril':4,'maio':5,'junho':6,'julho':7,'agosto':8,'setembro':9,'outubro':10,'novembro':11,'dezembro':12}
 DOW=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
 ANCHOR = datetime.date(2026,6,1)  # S0 = semana que contém o 1º do mês (junho/2026)
@@ -161,7 +164,7 @@ def build_rawData(deals_path, ag_path, docs_map=None, uc_map=None):
             'dist':DIST_MAP.get(r['distributor_short_name'], r['distributor_short_name']),
             'deal_id':did,'uc':uc_map.get(did,''),'tel':r['client_phone_number'],'cnpj':r['current_client_cnpj'],'cpf':r['current_client_cpf'],
             'fatura':pfloat(r['current_total_bill_cost (R$)']),'semana':semana(basis),
-            'lost_at':r['deal_lost_at'],'lost_reason':r['deal_lost_reason'],
+            'lost_at':('' if (cli or '').strip().upper() in LOST_IGNORE else r['deal_lost_at']),'lost_reason':('' if (cli or '').strip().upper() in LOST_IGNORE else r['deal_lost_reason']),
             'motivo':(('CANCELADO — '+(r.get('deal_lost_reason') or '').strip()) if ((r.get('latest_risk_analysis_result') or '').strip()=='APPROVED' and (r.get('deal_lost_at') or '').strip() and r.get('deal_stage')=='BACKGROUND_CHECKING' and (r.get('deal_lost_reason') or '').strip().lower()!='troca de titularidade') else (r.get('latest_risk_analysis_comments') or '').strip()),
             'date':iso(created),'aprov_date':aprov,
             'docs':docs_map.get((r.get('latest_contract_id') or '').strip(),''),

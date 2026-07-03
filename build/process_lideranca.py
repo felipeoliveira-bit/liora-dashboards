@@ -203,6 +203,8 @@ def praca_of(email, client):
 CONSUMPTION_OVERRIDE = {
  norm('FRANCISCO ALDECI DE QUEIROZ FERNANDES'): 5.86,  # base mostra 0.59 (Felipe 03/07)
 }
+# LOST_IGNORE: ignora lost_at/lost_reason (falso 'nao aceito pela distribuidora') p/ estes clientes.
+LOST_IGNORE = { norm('FRANCISCO ALDECI DE QUEIROZ FERNANDES') }  # reprovado e erro; ignorar (Felipe 03/07)
 def mwh_of(client, raw):
     ov = CONSUMPTION_OVERRIDE.get(norm(client))
     return ov if ov is not None else fnum(raw)
@@ -224,8 +226,8 @@ def mk_deal(r):
       'idle': int(fnum(r['idle_days'])),
       'city': r['current_client_city'],
       'semana': semana(d),
-      'lost_at': r['deal_lost_at'] or '',
-      'lost_reason': r['deal_lost_reason'] or '',
+      'lost_at': ('' if norm(r['current_client_name']) in LOST_IGNORE else (r['deal_lost_at'] or '')),
+      'lost_reason': ('' if norm(r['current_client_name']) in LOST_IGNORE else (r['deal_lost_reason'] or '')),
       'motivo': (('CANCELADO — '+(r.get('deal_lost_reason') or '').strip()) if ((r.get('latest_risk_analysis_result') or '').strip()=='APPROVED' and (r.get('deal_lost_at') or '').strip() and r.get('deal_stage')=='BACKGROUND_CHECKING' and (r.get('deal_lost_reason') or '').strip().lower()!='troca de titularidade') else (r.get('latest_risk_analysis_comments') or '').strip()),
       'docs': DOCS.get((r.get('latest_contract_id') or '').strip(),''),
       'uc': UC.get(r['deal_id'],''),
