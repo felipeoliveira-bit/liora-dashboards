@@ -865,7 +865,7 @@ function renderPracaTable(elemId, byP, section, config) {
     const isOpen = expandedRows[section].has(p);
     
     html += `<tr class=&quot;praca-row ${isOpen?'expanded':''}&quot; onclick=&quot;togglePraca('${section}','${p}','${elemId}')&quot;>
-      <td><span class=&quot;expand-icon ${isOpen?'open':''}&quot;>▶</span><span class=&quot;badge-praca b-${p}&quot;>${p}</span></td>`;
+      <td><span class=&quot;expand-icon ${isOpen?'open':''}&quot;>▶</span><span class=&quot;badge-praca b-${p}&quot;>${p==='SPI'?'Campinas SPI':p}</span></td>`;
     config.cols.forEach(c => {
       const v = c.fmt ? c.fmt(x) : (x[c.key] || '');
       const style = (c.color &amp;&amp; x[c.key]) ? `color:${c.color}` : '';
@@ -946,7 +946,7 @@ function renderAprovadosTable(byP) {
     const pctClamp = Math.min(x.pct, 100);
     
     html += `<tr class=&quot;praca-row ${isOpen?'expanded':''}&quot; onclick=&quot;togglePraca('aprovados','${p}','bau-aprovados')&quot;>
-      <td><span class=&quot;expand-icon ${isOpen?'open':''}&quot;>▶</span><span class=&quot;badge-praca b-${p}&quot;>${p}</span></td>
+      <td><span class=&quot;expand-icon ${isOpen?'open':''}&quot;>▶</span><span class=&quot;badge-praca b-${p}&quot;>${p==='SPI'?'Campinas SPI':p}</span></td>
       <td class=&quot;r&quot; style=&quot;font-size:12px;color:#666&quot;>${metaDisplay(x.metaToDate, x.metaFull)}</td>
       <td class=&quot;r&quot;><strong>${fmtMwh(x.mwh)}</strong></td>
       <td class=&quot;r meta-bar-cell&quot;>
@@ -1566,7 +1566,7 @@ function renderTable(elemId, section, rows, cols) {
   el.innerHTML = html;
 }
 
-function pracaBadge(x) { return `<span class=&quot;badge-praca b-${x.praca}&quot;>${x.praca}</span>`; }
+function pracaBadge(x) { return `<span class=&quot;badge-praca b-${x.praca}&quot;>${x.praca==='SPI'?'Campinas SPI':x.praca}</span>`; }
 
 function renderAll() {
   if (leads.length || true) {
@@ -2342,7 +2342,7 @@ function renderVendedores(d) {
     const conv = v.total > 0 ? ((v.ganhos / v.total) * 100).toFixed(1) : '0.0';
     html += `<tr>
       <td><strong>${v.nome}</strong></td>
-      <td><span class=&quot;badge-praca b-${v.praca}&quot;>${v.praca}</span></td>
+      <td><span class=&quot;badge-praca b-${v.praca}&quot;>${v.praca==='SPI'?'Campinas SPI':v.praca}</span></td>
       <td><strong>${v.total}</strong></td>`;
     STAGES.forEach(s => html += `<td>${v.stages[s.key]||''}</td>`);
     html += `<td style=&quot;color:#e54a4a&quot;>${v.atrasados||''}</td>
@@ -2395,7 +2395,7 @@ function renderPracas(d) {
   ['Salvador','Feira','Natal','SPI','CE'].forEach(p => {
     const x = byP[p];
     html += `<tr>
-      <td><span class=&quot;badge-praca b-${p}&quot;>${p}</span></td>
+      <td><span class=&quot;badge-praca b-${p}&quot;>${p==='SPI'?'Campinas SPI':p}</span></td>
       <td>${x.vendedores.size}</td>
       <td><strong>${x.total}</strong></td>`;
     STAGES_PRACA.forEach(s => html += `<td>${x.stages[s.key]||''}</td>`);
@@ -2505,7 +2505,7 @@ function renderAgenda(d) {
   pracas.forEach(p => {
     const o = byPraca[p]; const open = agendaExpanded.has(p);
     html += `<tr class=&quot;tperd-row ${open?'open':''}&quot; onclick=&quot;toggleAgendaPraca('${p}')&quot;>
-      <td><span class=&quot;tperd-icon ${open?'open':''}&quot;>\u25b6</span><span class=&quot;badge-praca b-${p}&quot;>${p}</span></td>
+      <td><span class=&quot;tperd-icon ${open?'open':''}&quot;>\u25b6</span><span class=&quot;badge-praca b-${p}&quot;>${p==='SPI'?'Campinas SPI':p}</span></td>
       <td style=&quot;color:#e54a4a&quot;>${agN(p,null,'late',o.late)}</td><td>${agN(p,null,'agHoje',o.agHoje)}</td><td>${agN(p,null,'criadosHoje',o.criadosHoje)}</td><td><strong>${agN(p,null,'totalHoje',o.totalHoje)}</strong></td><td>${agN(p,null,'tomorrow',o.tomorrow)}</td><td>${agN(p,null,'future',o.future)}</td></tr>`;
     if(open){
       const vs = Object.entries(o.vend).filter(([vn])=>!VENDEDORES_OCULTOS.includes(vn)).sort((a,b)=>b[1].total-a[1].total);
@@ -2560,7 +2560,7 @@ function renderDetalhe(d) {
     html += `<tr class=&quot;lead-row&quot; onclick=&quot;openLeadDetail(${_i})&quot; title=&quot;Clique para ver a ficha completa&quot;>
       <td><strong>${l.nome}</strong></td>
       <td>${l.vendedor}</td>
-      <td><span class=&quot;badge-praca b-${p}&quot;>${p}</span></td>
+      <td><span class=&quot;badge-praca b-${p}&quot;>${p==='SPI'?'Campinas SPI':p}</span></td>
       <td>${STAGE_LABEL[l.stage]||l.stage}</td>
       <td>${l.proximaInteracao||'—'}</td>
       <td>${l.temperatura||'—'}</td>
@@ -2983,7 +2983,7 @@ function renderPerdidos(d) {
     const principal = Object.entries(motivosV).sort((a,b) => b[1]-a[1])[0];
     const fat = perdidos.filter(l => l.vendedor === v).reduce((s,l) => s+l.fatura, 0);
     const p = PRACA_OF[v] || '?';
-    html += `<tr><td><strong>${v}</strong></td><td><span class=&quot;badge-praca b-${p}&quot;>${p}</span></td><td>${perdN(p, encodeURIComponent(v).replace(/'/g,'%27'), n)}</td><td>${principal[0]}</td><td>${n?((principal[1]/n)*100).toFixed(0):0}% <span style=&quot;color:#9aa3b5;font-size:11px&quot;>(${principal[1]}/${n})</span></td></tr>`;
+    html += `<tr><td><strong>${v}</strong></td><td><span class=&quot;badge-praca b-${p}&quot;>${p==='SPI'?'Campinas SPI':p}</span></td><td>${perdN(p, encodeURIComponent(v).replace(/'/g,'%27'), n)}</td><td>${principal[0]}</td><td>${n?((principal[1]/n)*100).toFixed(0):0}% <span style=&quot;color:#9aa3b5;font-size:11px&quot;>(${principal[1]}/${n})</span></td></tr>`;
   });
   html += '</tbody></table></div>';
   
@@ -6207,7 +6207,7 @@ function render() {
     const isAccel = x.pctReal >= 125;
     const flag = isAccel ? '<div class=&quot;accel-flag&quot;>⚡ ACELERADOR</div>' : '';
     html += '<div class=&quot;lider-card&quot;>' + flag +
-      '<div class=&quot;lc-head&quot;><span class=&quot;badge-praca b-'+x.praca+'&quot;>'+x.praca+'</span>' +
+      '<div class=&quot;lc-head&quot;><span class=&quot;badge-praca b-'+x.praca+'&quot;>'+(x.praca==='SPI'?'Campinas SPI':x.praca)+'</span>' +
         '<span class=&quot;lc-pct&quot; style=&quot;color:'+metaColor(x.pctReal)+'&quot;>'+x.pctReal.toFixed(0)+'%</span></div>' +
       '<div class=&quot;lc-metaline&quot;>'+fmtMwh(x.mwh)+' de '+fmtMwh(x.metaMes)+' MWh (meta mensal) · '+x.aprovados+' clientes</div>' +
       '<div class=&quot;lc-bar&quot;><div class=&quot;lc-bar-fill&quot; style=&quot;width:'+widthPct+'%;background:'+metaColor(x.pctReal)+'&quot;></div></div>' +
