@@ -328,6 +328,9 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
 .exec-metric .v { display:block; font-size:18px; font-weight:800; color:var(--blue); line-height:1.05; font-feature-settings:'tnum'; }
 .exec-metric .v small { font-size:11px; font-weight:700; }
 .exec-metric .u { display:block; font-size:9.5px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.03em; margin-top:3px; }
+.exec-hoje { display:block; font-size:10px; font-weight:800; margin-top:6px; padding-top:5px; border-top:1px dashed #E4E7F0; }
+.exec-hoje.ok { color:var(--green); }
+.exec-hoje.low { color:var(--red); }
 .exec-batida { font-size:13px; font-weight:800; color:var(--green); background:#E8F7F0; border-radius:11px; padding:10px 12px; text-align:center; }
 .exec-total { margin-top:12px; background:linear-gradient(135deg, var(--blue) 0%, #1a18ff 100%); border-radius:13px; padding:13px 15px; color:#fff; box-shadow:0 6px 18px rgba(2,1,243,.22); }
 .exec-total-top { display:flex; align-items:center; justify-content:space-between; gap:8px; }
@@ -1111,6 +1114,9 @@ function renderResumo(){
   const aprovCountByK = {}, propCountByK = {};
   rawData.forEach(x => { if(noMes(x) && isAprovado(x)){ const k=x.praca.key; aprovCountByK[k]=(aprovCountByK[k]||0)+1; } });
   RAW_PROP.forEach(r => { const k = SELLER_PRACA[r.seller] || 'outras'; propCountByK[k]=(propCountByK[k]||0)+1; });
+  const propTodayByK = {};
+  RAW_PROP.forEach(r => { if(r.date===PROP_TODAY){ const k = SELLER_PRACA[r.seller] || 'outras'; propTodayByK[k]=(propTodayByK[k]||0)+1; } });
+  let hojeMwhTot=0, hojePropTot=0;
   let exMwhTot=0, exPropTot=0, aprovCTot=0, propCTot=0, uniRows='';
   pracas.forEach(p => {
     const aprovMwh = rawData.filter(x => x.praca.key===p.key && noMes(x) && isAprovado(x)).reduce((a,x)=>a+x.mwh,0);
@@ -1126,6 +1132,10 @@ function renderResumo(){
     const conv = pc>0 ? (ac/pc*100) : null;
     const convTxt = conv===null ? '—' : conv.toFixed(0)+'%';
     const convCls = conv===null ? 'na' : (conv>=CONV_BP ? 'ok' : 'low');
+    const hojeMwh = rawData.filter(x => x.praca.key===p.key && isAprovado(x) && (x.aprov_date||'')===PROP_TODAY).reduce((a,x)=>a+x.mwh,0);
+    const hojeProp = propTodayByK[p.key]||0;
+    hojeMwhTot += hojeMwh; hojePropTot += hojeProp;
+    const hMwhOk = hojeMwh >= mwhDia, hPropOk = hojeProp >= propDia;
     const batida = falta <= 0.05;
     uniRows += `
       <div class="uni-row" onclick="openMetaAprovados('${p.key}')">
@@ -1142,8 +1152,8 @@ function renderResumo(){
           ? `<div class="exec-batida">✅ meta do mês batida</div>`
           : `<div class="uni-ritmo-lbl">🏃 ritmo diário p/ bater a meta do mês</div>
             <div class="exec-metrics">
-              <div class="exec-metric"><span class="v">${mwhDia.toFixed(1)} <small>MWh</small></span><span class="u">aprovado / dia útil</span></div>
-              <div class="exec-metric"><span class="v">${Math.ceil(propDia)}</span><span class="u">propostas / dia</span></div>
+              <div class="exec-metric"><span class="v">${mwhDia.toFixed(1)} <small>MWh</small></span><span class="u">meta aprov. / dia</span><span class="exec-hoje ${hMwhOk?'ok':'low'}">${hMwhOk?'✓ no ritmo':'✗ abaixo'} · hoje ${hojeMwh.toFixed(1)}</span></div>
+              <div class="exec-metric"><span class="v">${Math.ceil(propDia)}</span><span class="u">meta propostas / dia</span><span class="exec-hoje ${hPropOk?'ok':'low'}">${hPropOk?'✓ no ritmo':'✗ abaixo'} · hoje ${hojeProp}</span></div>
             </div>`}
       </div>`;
   });
@@ -1161,8 +1171,9 @@ function renderResumo(){
         <div class="exec-total-top"><span class="exec-total-lbl">TOTAL FIELD</span><span class="exec-total-val">${totalAprov.toFixed(1)} / ${totalMetaToDate.toFixed(1)} MWh · ${totalPctMtd.toFixed(0)}%</span></div>
         <div style="height:6px;background:rgba(255,255,255,.28);border-radius:4px;overflow:hidden;margin:9px 0 7px"><div style="height:100%;background:#fff;border-radius:4px;width:${Math.min(100,totalPctMtd).toFixed(0)}%"></div></div>
         <div class="exec-total-conv">🏃 ritmo diário p/ bater a meta: <b>${exMwhTot.toFixed(1)} MWh/dia · ${Math.ceil(exPropTot)} props/dia</b></div>
+        <div class="exec-total-conv" style="margin-top:3px">📅 realizado hoje: <b>${hojeMwhTot.toFixed(1)} MWh · ${hojePropTot} propostas</b></div>
       </div>
-      <div class="exec-note">% e barra = atingimento to-date (aprovado ÷ meta proporcional aos dias úteis do mês). <b>Ritmo diário</b> = o que falta da meta do mês ÷ dias úteis restantes — se não entregar hoje, sobe amanhã. Propostas/dia estimadas pela conversão-alvo do BP (~${CONV_BP}%). Toque numa praça p/ ver os clientes.</div>
+      <div class="exec-note">% e barra = atingimento to-date (aprovado ÷ meta proporcional aos dias úteis do mês). <b>Ritmo diário</b> = o que falta da meta do mês ÷ dias úteis restantes — se não entregar hoje, sobe amanhã. Propostas/dia estimadas pela conversão-alvo do BP (~${CONV_BP}%). <b>✓/✗ hoje</b> = realizado do dia vs a meta do dia. Toque numa praça p/ ver os clientes.</div>
     </div>`;
   document.getElementById('s1-content').innerHTML = html;
 }
