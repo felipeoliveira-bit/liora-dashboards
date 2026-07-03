@@ -1487,13 +1487,13 @@ function renderCarteira(){
   const VIS_PREREQ = 15;
   let visitasBlock;
   if(!leadsLoaded){
-    visitasBlock = '<div class="summary-bar"><div class="summary-row"><span class="summary-key">\u{1F4DE} M\u00e9dia de visitas/dia</span><span class="summary-val" style="color:var(--muted)">\u2026</span></div><div class="summary-row" style="margin-top:2px"><span class="summary-key" style="font-size:11px;color:var(--muted);font-weight:500">carregando visitas\u2026</span><span></span></div></div>';
+    visitasBlock = '<div class="summary-bar"><div class="summary-row"><span class="summary-key">\u{1F91D} M\u00e9dia de visitas/dia</span><span class="summary-val" style="color:var(--muted)">\u2026</span></div><div class="summary-row" style="margin-top:2px"><span class="summary-key" style="font-size:11px;color:var(--muted);font-weight:500">carregando visitas\u2026</span><span></span></div></div>';
   } else {
     const _vis = visitasMesDoVendedor(seller);
     const _du = diasUteisDoMesFechado();
     const _media = _vis/_du;
     const _vc = _media>=VIS_PREREQ?'var(--green)':(_media>=VIS_PREREQ*0.6?'var(--orange)':'var(--red)');
-    visitasBlock = '<div class="summary-bar"><div class="summary-row"><span class="summary-key">\u{1F4DE} M\u00e9dia de visitas/dia \u00b7 '+VIS_MES_LABEL+'</span><span class="summary-val" style="color:'+_vc+'">'+_media.toFixed(1)+'/dia</span></div>'
+    visitasBlock = '<div class="summary-bar"><div class="summary-row"><span class="summary-key">\u{1F91D} M\u00e9dia de visitas/dia \u00b7 '+VIS_MES_LABEL+'</span><span class="summary-val" style="color:'+_vc+'">'+_media.toFixed(1)+'/dia</span></div>'
       + '<div class="summary-row" style="margin-top:2px"><span class="summary-key" style="font-size:11px;color:var(--muted);font-weight:500">'+_vis+' visitas em '+VIS_MES_LABEL+' \u00b7 '+_du+' dias \u00fateis \u00b7 pr\u00e9-req 15/dia</span><span></span></div></div>';
   }
 
@@ -2668,7 +2668,7 @@ function renderPropostas() {
       <div class="rk-seg-btn ${propMetric==='aprovado'?'active':''}" onclick="setPropMetric('aprovado')"><span class="ic">⚡</span><span class="lb">MWh aprov.</span></div>
       <div class="rk-seg-btn ${propMetric==='qtd'?'active':''}" onclick="setPropMetric('qtd')"><span class="ic">👥</span><span class="lb">Clientes</span></div>
       <div class="rk-seg-btn ${propMetric==='propostas'?'active':''}" onclick="setPropMetric('propostas')"><span class="ic">📋</span><span class="lb">Propostas</span></div>
-      <div class="rk-seg-btn ${propMetric==='tarefas'?'active':''}" onclick="setPropMetric('tarefas')"><span class="ic">📞</span><span class="lb">Visitas</span></div>
+      <div class="rk-seg-btn ${propMetric==='tarefas'?'active':''}" onclick="setPropMetric('tarefas')"><span class="ic">🤝</span><span class="lb">Visitas</span></div>
     </div>
     <div class="rk-scope">
       ${[['','Todas'],['salvador','Salvador'],['feira','Feira'],['natal','Natal'],['ce','CE'],['spi','Campinas SPI'],['ribeirao','Ribeirão SPI']].map(o=>`<div class="rk-chip ${rankScope===o[0]?'active':''}" onclick="setRankScope('${o[0]}')">${o[1]}</div>`).join('')}
@@ -2686,16 +2686,16 @@ function renderPropostas() {
     let mainVal, mainUnit, subInfo;
     if(propMetric === 'aprovado'){
       mainVal = d.aprov.toFixed(1); mainUnit = 'MWh aprov.';
-      subInfo = `✅ ${d.aprovCount} aprov · 📋 ${d.prop} props · 📞 ${d.tarefas} visitas`;
+      subInfo = `✅ ${d.aprovCount} aprov · 📋 ${d.prop} props · 🤝 ${d.tarefas} visitas`;
     } else if(propMetric === 'qtd'){
       mainVal = d.aprovCount; mainUnit = d.aprovCount===1?'aprovado':'aprovados';
-      subInfo = `⚡ ${d.aprov.toFixed(1)} MWh · 📋 ${d.prop} props · 📞 ${d.tarefas} visitas`;
+      subInfo = `⚡ ${d.aprov.toFixed(1)} MWh · 📋 ${d.prop} props · 🤝 ${d.tarefas} visitas`;
     } else if(propMetric === 'tarefas'){
       mainVal = d.tarefas; mainUnit = 'visitas';
       subInfo = `📋 ${d.prop} props · ⚡ ${d.aprov.toFixed(1)} MWh aprov.`;
     } else {
       mainVal = d.prop; mainUnit = 'props';
-      subInfo = `📞 ${d.tarefas} visitas · ⚡ ${d.aprov.toFixed(1)} MWh aprov.`;
+      subInfo = `🤝 ${d.tarefas} visitas · ⚡ ${d.aprov.toFixed(1)} MWh aprov.`;
     }
     const hasMwh = d.aprov > 0;
     const cardClass = (hasMwh ? 'rank-card clickable' : 'rank-card') + (isMe ? ' rank-me' : '');
