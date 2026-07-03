@@ -1498,6 +1498,7 @@ function renderCarteira(){
   }
 
   let html = `
+    ${visitasBlock}
     <div class="card">
       <div class="card-title">Seu Resultado</div>
       <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px">
@@ -1521,7 +1522,6 @@ function renderCarteira(){
       <div class="summary-row"><span class="summary-key">⚡ Bateu Levou</span><span class="summary-val" style="color:var(--blue)">${campValBateu} aprovados</span></div>
       ${renderCampProgress(CAMP_CFG.bateu, campValBateu)}
     </div>
-    ${visitasBlock}
     ${renderRemRulesCard(seller)}
     <div class="section-head">Sua Carteira (${myDeals.length} clientes)</div>`;
 
