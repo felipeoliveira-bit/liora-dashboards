@@ -425,6 +425,8 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
 .visit-filter-btn .vf-count { background: #F4F5FA; padding: 1px 7px; border-radius: 100px; font-size: 10px; font-weight: 800; }
 .visit-filter-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
 .visit-filter-btn.active .vf-count { background: rgba(255,255,255,.25); }
+.visit-filter-btn.hot.active { background:#F5883C; color:#fff; border-color:#F5883C; }
+.visit-filter-btn.hot.active .vf-count { background:rgba(255,255,255,.25); }
 .visit-filter-btn.overdue.active { background: #DC2626; border-color: #DC2626; }
 /* v2.59 — botão "Leads gerados hoje" (azul Liora) */
 .visit-filter-btn.created-today { background: #EEF2FF; border-color: #C7D2FE; color: #3730A3; }
@@ -597,6 +599,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
 
 .lead-card { background: #fff; border-radius: 14px; padding: 12px 14px; margin-bottom: 8px; box-shadow: 0 2px 10px rgba(0,0,0,.05); border-left: 3px solid var(--blue); cursor: pointer; transition: transform .12s ease, box-shadow .12s ease; }
 .lead-card:active { transform: scale(.98); box-shadow: 0 1px 4px rgba(0,0,0,.05); }
+.lead-card.quente { background:#FFF6EC; border-left-color:#F5883C; }
 .lead-card.new { animation: leadNew .6s ease; }
 @keyframes leadNew { 0% { background: #FFF8EC; transform: scale(1.02); } 100% { background: #fff; transform: scale(1); } }
 .lead-name { font-size: 14px; font-weight: 800; color: var(--ink); line-height: 1.2; margin-bottom: 4px; }
@@ -3087,6 +3090,8 @@ function avatarImg(name, cls, sizeCss){
 const kanbanScope = 'mine'; // v2.110 — funil sempre mostra só os leads do usuário logado
 // ⭐ v2.11 — Filtro por próxima interação (null, 'today', 'tomorrow', 'overdue')
 let visitFilter = null;
+let hotFilter = false;
+function toggleHotFilter(){ hotFilter = !hotFilter; renderFunil(); }
 // v2.33 — busca por texto (nome, cidade, bairro, tel)
 let searchQuery = '';
 
@@ -5161,6 +5166,8 @@ function renderFunilKanban(el){
     });
   }
 
+  const hotCount = filteredLeads.filter(l => (l.temperatura||'') === 'Quente').length;
+  if (hotFilter) filteredLeads = filteredLeads.filter(l => (l.temperatura||'') === 'Quente');
   const counts = {};
   FUNIL_STAGES.forEach(s => counts[s.key] = filteredLeads.filter(l => l.stage === s.key).length);
 
@@ -5206,6 +5213,11 @@ function renderFunilKanban(el){
       <div class="visit-filters-overdue">
         <button class="visit-filter-btn created-today ${visitFilter==='created_today'?'active':''}" onclick="openVisitFilterModal('created_today')">
           ✨ Leads gerados hoje <span class="vf-count">${visitCounts.createdToday}</span>
+        </button>
+      </div>
+      <div class="visit-filters-overdue">
+        <button class="visit-filter-btn hot ${hotFilter?'active':''}" onclick="toggleHotFilter()">
+          🔥 Quentes <span class="vf-count">${hotCount}</span>
         </button>
       </div>
     ` : ''}
@@ -5560,7 +5572,7 @@ function renderLeadCard(lead, stageIdx){
     : `<div class="lead-vendedor" style="color:#aaa;font-style:italic">sem vendedor identificado</div>`;
 
   return `
-    <div class="lead-card ${isNew ? 'new' : ''}" onclick="openEditLead('${lead.id}', event)">
+    <div class="lead-card ${isNew ? 'new' : ''} ${(lead.temperatura||'')==='Quente'?'quente':''}" onclick="openEditLead('${lead.id}', event)">
       <div class="lead-name">
         ${escapeHtml(lead.nome)}
         <span style="float:right;color:var(--muted);font-size:13px;font-weight:400;opacity:.6">✏️</span>
