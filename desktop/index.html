@@ -237,7 +237,7 @@ table.bau tbody tr.field-row td:first-child { color: #fff; }
 const LEADS_API_URL = 'https://script.google.com/macros/s/AKfycbyk_rqDKe49ZOCtLJkXYNvITqF5wQBjs5Uu1-9-U5HadPsP_tyzulBaCpyeuLpaqokL1w/exec';
 
 // Vendedores ativos julho 2026
-const VENDEDORES_OCULTOS = ['Ananias Neto','Rosangela Mendes','Antonio Mariano']; // saíram do time
+const VENDEDORES_OCULTOS = []; // saíram do time
 const VENDEDORES = [
   {nome:'Silmara Gomes',praca:'CE'},
   {nome:'Luciana Campos',praca:'Salvador'},
@@ -1170,7 +1170,7 @@ td.rk-clk:hover{ text-decoration:underline; }
     <button class=&quot;fbtn-sm&quot; data-rk-praca=&quot;Salvador&quot; onclick=&quot;setRkPraca('Salvador',this)&quot;><span class=&quot;fdot&quot; style=&quot;background:var(--green)&quot;></span>Salvador</button>
     <button class=&quot;fbtn-sm&quot; data-rk-praca=&quot;Feira&quot; onclick=&quot;setRkPraca('Feira',this)&quot;><span class=&quot;fdot&quot; style=&quot;background:var(--orange)&quot;></span>Feira</button>
     <button class=&quot;fbtn-sm&quot; data-rk-praca=&quot;Natal&quot; onclick=&quot;setRkPraca('Natal',this)&quot;><span class=&quot;fdot&quot; style=&quot;background:var(--lightblue)&quot;></span>Natal</button>
-    <button class=&quot;fbtn-sm&quot; data-rk-praca=&quot;SPI&quot; onclick=&quot;setRkPraca('SPI',this)&quot;><span class=&quot;fdot&quot; style=&quot;background:var(--purple)&quot;></span>SPI</button>
+    <button class=&quot;fbtn-sm&quot; data-rk-praca=&quot;SPI&quot; onclick=&quot;setRkPraca('SPI',this)&quot;><span class=&quot;fdot&quot; style=&quot;background:var(--purple)&quot;></span>Campinas SPI</button>
     <button class=&quot;fbtn-sm&quot; data-rk-praca=&quot;CE&quot; onclick=&quot;setRkPraca('CE',this)&quot;><span class=&quot;fdot&quot; style=&quot;background:var(--pink)&quot;></span>CE</button>
   </div>
 </div>
@@ -1193,7 +1193,7 @@ td.rk-clk:hover{ text-decoration:underline; }
 <script>
 const LEADS_API_URL = 'https://script.google.com/macros/s/AKfycbyk_rqDKe49ZOCtLJkXYNvITqF5wQBjs5Uu1-9-U5HadPsP_tyzulBaCpyeuLpaqokL1w/exec';
 
-const VENDEDORES_OCULTOS = ['Ananias Neto','Rosangela Mendes','Antonio Mariano']; // saiu do time: conta no total/FIELD da praça, mas não renderiza linha individual
+const VENDEDORES_OCULTOS = []; // saiu do time: conta no total/FIELD da praça, mas não renderiza linha individual
 const VENDEDORES = [
   {nome:'Silmara Gomes',praca:'CE'},
   {nome:'Luciana Campos',praca:'Salvador'},
@@ -1886,7 +1886,7 @@ tbody tr:hover { background: #fafbff; }
       <button class=&quot;fbtn-sm&quot; data-praca=&quot;Salvador&quot; onclick=&quot;setFilter('praca','Salvador',this)&quot;><span class=&quot;dot dot-Salvador&quot;></span>Salvador</button>
       <button class=&quot;fbtn-sm&quot; data-praca=&quot;Feira&quot; onclick=&quot;setFilter('praca','Feira',this)&quot;><span class=&quot;dot dot-Feira&quot;></span>Feira</button>
       <button class=&quot;fbtn-sm&quot; data-praca=&quot;Natal&quot; onclick=&quot;setFilter('praca','Natal',this)&quot;><span class=&quot;dot dot-Natal&quot;></span>Natal</button>
-      <button class=&quot;fbtn-sm&quot; data-praca=&quot;SPI&quot; onclick=&quot;setFilter('praca','SPI',this)&quot;><span class=&quot;dot dot-SPI&quot;></span>SPI</button>
+      <button class=&quot;fbtn-sm&quot; data-praca=&quot;SPI&quot; onclick=&quot;setFilter('praca','SPI',this)&quot;><span class=&quot;dot dot-SPI&quot;></span>Campinas SPI</button>
       <button class=&quot;fbtn-sm&quot; data-praca=&quot;CE&quot; onclick=&quot;setFilter('praca','CE',this)&quot;><span class=&quot;dot dot-CE&quot;></span>CE</button>
     </div>
   <button class=&quot;fbtn-sm&quot; id=&quot;btn-baleia&quot; onclick=&quot;toggleBaleia(this)&quot; title=&quot;Só clientes baleia (fatura acima de R$ 2.000)&quot; style=&quot;margin-left:10px&quot;>🐋 Baleias</button>
@@ -1915,7 +1915,7 @@ tbody tr:hover { background: #fafbff; }
 const LEADS_API_URL = 'https://script.google.com/macros/s/AKfycbyk_rqDKe49ZOCtLJkXYNvITqF5wQBjs5Uu1-9-U5HadPsP_tyzulBaCpyeuLpaqokL1w/exec';
 
 // ===== VENDEDORES (com novos de junho + aliases) =====
-const VENDEDORES_OCULTOS = ['Ananias Neto','Rosangela Mendes','Antonio Mariano']; // saíram do time: ocultar linha individual, total da praça mantém
+const VENDEDORES_OCULTOS = []; // saíram do time: ocultar linha individual, total da praça mantém
 function vExib(l){ return VENDEDORES_OCULTOS.includes(l.vendedor) ? 'Natal' : (l.vendedor||'—'); }
 const VENDEDORES = [
   {nome:'Silmara Gomes',praca:'CE'},
@@ -2691,7 +2691,7 @@ function openLeadDetail(idx){
       '<div style=&quot;border-top:1px solid #eee;padding-top:12px;margin-bottom:12px&quot;>'+
         '<div style=&quot;font-size:11px;color:#999;font-weight:600;margin-bottom:8px&quot;>DADOS DO LEAD</div>'+
         '<div style=&quot;display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:13px&quot;>'+
-          (l.vendedor?'<div><span style=&quot;color:#888&quot;>Vendedor:</span> '+(l.vendedor||'—')+'</div>':'')+
+          '<div><span style=&quot;color:#888&quot;>Vendedor:</span> '+(l.vendedor||'— (sem responsável)')+'</div>'+
           (l.cidade?'<div><span style=&quot;color:#888&quot;>Cidade:</span> '+l.cidade+'</div>':'')+
           (l.bairro?'<div><span style=&quot;color:#888&quot;>Bairro:</span> '+l.bairro+'</div>':'')+
           (l.fatura?'<div><span style=&quot;color:#888&quot;>Fatura:</span> R$ '+l.fatura.toLocaleString('pt-BR')+'</div>':'')+
@@ -2700,7 +2700,7 @@ function openLeadDetail(idx){
           (l.createdAt?'<div><span style=&quot;color:#888&quot;>Criado:</span> '+String(l.createdAt).slice(0,10)+'</div>':'')+
         '</div></div>'+
       // Botão salvar
-      '<button id=&quot;le-save-btn&quot; onclick=&quot;saveLeadEdit()&quot; style=&quot;width:100%;padding:11px;background:#0201F3;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px&quot;>💾 Salvar alterações</button>'+
+      '<button id=&quot;le-save-btn&quot; onclick=&quot;saveLeadEdit()&quot; style=&quot;width:100%;padding:11px;background:#0201F3;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px&quot;>💾 Salvar alterações</button>'+'<div style=&quot;display:flex;gap:8px;margin-top:8px&quot;>'+'<select id=&quot;le-newvend&quot; style=&quot;flex:1;padding:9px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit&quot;>'+VENDEDORES.map(function(v){return '<option value=&quot;'+v.nome+'&quot;'+(v.nome===l.vendedor?' selected':'')+'>'+v.nome+'</option>';}).join('')+'</select>'+'<button onclick=&quot;reassignLead()&quot; style=&quot;padding:9px 12px;background:#0201F3;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap&quot;>🔁 Trocar responsável</button>'+'</div>'+'<button onclick=&quot;deleteLead()&quot; style=&quot;width:100%;padding:10px;margin-top:8px;background:#fff;color:#E5484D;border:1.5px solid #E5484D;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit&quot;>🗑️ Excluir lead</button>'+
       '<div id=&quot;le-status&quot; style=&quot;text-align:center;font-size:12px;color:#888;margin-top:8px;min-height:18px&quot;></div>'+
     '</div>';
   document.getElementById('ld-overlay').classList.add('open');
@@ -2777,6 +2777,43 @@ async function saveLeadEdit(){
 }
 
 function closeLeadDetail(){ document.getElementById('ld-overlay').classList.remove('open'); _editIdx=null; }
+
+function reassignLead(){
+  const l = detalheLeads[_editIdx]; if(!l) return;
+  const leadId = l.id || (l._raw &amp;&amp; l._raw.id) || '';
+  const nv = document.getElementById('le-newvend').value;
+  if(!leadId || !nv){ return; }
+  if(!confirm('Transferir este lead para '+nv+'?')) return;
+  const st = document.getElementById('le-status');
+  st.style.color='#888'; st.textContent='Transferindo...';
+  const base = Object.assign({}, l._raw || {});
+  const body = { action:'create', lead: Object.assign(base, { id: leadId, vendedor: nv }) };
+  fetch(LEADS_API_URL, { method:'POST', mode:'cors', redirect:'follow', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(body) })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if(data.ok){ l.vendedor=nv; if(l._raw) l._raw.vendedor=nv; st.style.color='#1D9E75'; st.textContent='Responsavel alterado para '+nv+'. Clique Atualizar para refletir nas listas.'; }
+      else { st.style.color='#E5484D'; st.textContent='Erro ao transferir: '+(data.error||'desconhecido'); }
+    })
+    .catch(function(e){ st.style.color='#E5484D'; st.textContent='Erro ao transferir: '+(e.message||'tente de novo'); });
+}
+function deleteLead(){
+  const l = detalheLeads[_editIdx]; if(!l) return;
+  const leadId = l.id || (l._raw &amp;&amp; l._raw.id) || '';
+  if(!leadId) return;
+  if(!confirm('Excluir o lead '+(l.nome||'')+'? Ele some do painel (soft-delete, recuperavel mudando o stage).')) return;
+  const st = document.getElementById('le-status');
+  st.style.color='#888'; st.textContent='Excluindo...';
+  const base = Object.assign({}, l._raw || {});
+  const body = { action:'create', lead: Object.assign(base, { id: leadId, stage: 'excluido' }) };
+  fetch(LEADS_API_URL, { method:'POST', mode:'cors', redirect:'follow', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(body) })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if(data.ok){ l.stage='excluido'; st.style.color='#1D9E75'; st.textContent='Lead excluido. Clique Atualizar.'; setTimeout(closeLeadDetail, 900); }
+      else { st.style.color='#E5484D'; st.textContent='Erro ao excluir: '+(data.error||'desconhecido'); }
+    })
+    .catch(function(e){ st.style.color='#E5484D'; st.textContent='Erro ao excluir: '+(e.message||'tente de novo'); });
+}
+
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeLeadDetail(); });
 
 function tdLink(val, praca, vEnc, kind){
@@ -3263,7 +3300,7 @@ tr:hover td{background:#f8f9fc}
       <button class=&quot;fbtn-sm fp&quot; id=&quot;fp-Feira&quot; onclick=&quot;setFilter('Feira',this)&quot;><span class=&quot;fdot&quot; style=&quot;background:#7c3aed&quot;></span>Feira</button>
       <button class=&quot;fbtn-sm fp&quot; id=&quot;fp-Natal&quot; onclick=&quot;setFilter('Natal',this)&quot;><span class=&quot;fdot&quot; style=&quot;background:#059669&quot;></span>Natal</button>
       <button class=&quot;fbtn-sm fp&quot; id=&quot;fp-CE&quot; onclick=&quot;setFilter('CE',this)&quot;><span class=&quot;fdot&quot; style=&quot;background:#d97706&quot;></span>CE</button>
-      <button class=&quot;fbtn-sm fp&quot; id=&quot;fp-SPI&quot; onclick=&quot;setFilter('SPI',this)&quot;><span class=&quot;fdot&quot; style=&quot;background:#db2777&quot;></span>SPI</button>
+      <button class=&quot;fbtn-sm fp&quot; id=&quot;fp-SPI&quot; onclick=&quot;setFilter('SPI',this)&quot;><span class=&quot;fdot&quot; style=&quot;background:#db2777&quot;></span>Campinas SPI</button>
     </div>
     <span class=&quot;fbar-label&quot; style=&quot;margin-left:8px&quot;>Período</span>
     <div class=&quot;fgroup-btns&quot;>
@@ -3318,7 +3355,7 @@ tr:hover td{background:#f8f9fc}
         <option value=&quot;Feira&quot;>Feira</option>
         <option value=&quot;Natal&quot;>Natal</option>
         <option value=&quot;CE&quot;>CE</option>
-        <option value=&quot;SPI&quot;>SPI</option>
+        <option value=&quot;SPI&quot;>Campinas SPI</option>
       </select>
       <button class=&quot;btn-t&quot; onclick=&quot;toggleTable()&quot; id=&quot;smbtn&quot; style=&quot;padding:4px 11px&quot;>Ver todas</button>
     </div>
@@ -4367,7 +4404,7 @@ td.fn-clk:hover{ text-decoration:underline; }
       <button class=&quot;fbtn-sm&quot; data-op=&quot;salvador&quot; onclick=&quot;setOpPraca('salvador',this)&quot;><span class=&quot;dot dot-Salvador&quot;></span>Salvador</button>
       <button class=&quot;fbtn-sm&quot; data-op=&quot;feira&quot; onclick=&quot;setOpPraca('feira',this)&quot;><span class=&quot;dot dot-Feira&quot;></span>Feira</button>
       <button class=&quot;fbtn-sm&quot; data-op=&quot;natal&quot; onclick=&quot;setOpPraca('natal',this)&quot;><span class=&quot;dot dot-Natal&quot;></span>Natal</button>
-      <button class=&quot;fbtn-sm&quot; data-op=&quot;spi&quot; onclick=&quot;setOpPraca('spi',this)&quot;><span class=&quot;dot dot-SPI&quot;></span>SPI</button>
+      <button class=&quot;fbtn-sm&quot; data-op=&quot;spi&quot; onclick=&quot;setOpPraca('spi',this)&quot;><span class=&quot;dot dot-SPI&quot;></span>Campinas SPI</button>
       <button class=&quot;fbtn-sm&quot; data-op=&quot;ce&quot; onclick=&quot;setOpPraca('ce',this)&quot;><span class=&quot;dot dot-CE&quot;></span>CE</button>
     </div>
     <span class=&quot;fbar-label&quot; style=&quot;margin-left:14px&quot;>Vendedor</span>
@@ -4579,7 +4616,7 @@ function isNegado(x) {
   return false;
 }
 
-const VENDEDORES_OCULTOS = ['Ananias Neto','Rosangela Mendes','Antonio Mariano']; // saíram do time: ocultar linha individual, mas resultado continua somando na praça
+const VENDEDORES_OCULTOS = []; // saíram do time: ocultar linha individual, mas resultado continua somando na praça
 const isAprovado = x => {
   if (x.stage === 'BGC_PARCEIRO') return false;
   if (x.lost_at) { if (x.stage === 'BACKGROUND_CHECKING') { if ((x.lost_reason||'').trim().toLowerCase() !== 'troca de titularidade') return false; } }
@@ -5460,7 +5497,7 @@ table.matrix tbody tr.praca-header td { background: #f0f1f5; font-size: 10px; fo
       <button class=&quot;fbtn-sm&quot; data-praca=&quot;Salvador&quot; onclick=&quot;setPracaFilter('Salvador',this)&quot;><span class=&quot;dot dot-Salvador&quot;></span>Salvador</button>
       <button class=&quot;fbtn-sm&quot; data-praca=&quot;Feira&quot; onclick=&quot;setPracaFilter('Feira',this)&quot;><span class=&quot;dot dot-Feira&quot;></span>Feira</button>
       <button class=&quot;fbtn-sm&quot; data-praca=&quot;Natal&quot; onclick=&quot;setPracaFilter('Natal',this)&quot;><span class=&quot;dot dot-Natal&quot;></span>Natal</button>
-      <button class=&quot;fbtn-sm&quot; data-praca=&quot;SPI&quot; onclick=&quot;setPracaFilter('SPI',this)&quot;><span class=&quot;dot dot-SPI&quot;></span>SPI</button>
+      <button class=&quot;fbtn-sm&quot; data-praca=&quot;SPI&quot; onclick=&quot;setPracaFilter('SPI',this)&quot;><span class=&quot;dot dot-SPI&quot;></span>Campinas SPI</button>
       <button class=&quot;fbtn-sm&quot; data-praca=&quot;CE&quot; onclick=&quot;setPracaFilter('CE',this)&quot;><span class=&quot;dot dot-CE&quot;></span>CE</button>
     </div>
     
@@ -5503,7 +5540,7 @@ table.matrix tbody tr.praca-header td { background: #f0f1f5; font-size: 10px; fo
 const LEADS_API_URL = 'https://script.google.com/macros/s/AKfycbyk_rqDKe49ZOCtLJkXYNvITqF5wQBjs5Uu1-9-U5HadPsP_tyzulBaCpyeuLpaqokL1w/exec';
 
 // 20 vendedores ativos em junho 2026 (Camila Couto removida em 29/05)
-const VENDEDORES_OCULTOS = ['Ananias Neto','Rosangela Mendes','Antonio Mariano']; // saíram do time
+const VENDEDORES_OCULTOS = []; // saíram do time
 const VENDEDORES = [
   {nome:'Silmara Gomes',praca:'CE'},
   {nome:'Luciana Campos',praca:'Salvador'},
