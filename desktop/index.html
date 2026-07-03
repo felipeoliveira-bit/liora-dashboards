@@ -846,7 +846,7 @@ function openBauLeadList(praca, vendEnc, bucket){
   var rows = list.map(function(l){ return '<tr><td><strong>'+(l.nome||'—')+'</strong></td><td>'+(l.vendedor||'—')+'</td><td>'+(stageLbl[l.stage]||l.stage||'—')+'</td><td>'+(l.proximaInteracao? String(l.proximaInteracao).slice(0,10):'—')+'</td><td class=&quot;r&quot;>R$ '+((l.fatura||0).toLocaleString('pt-BR',{maximumFractionDigits:0}))+'</td><td>'+(l.cidade||'—')+'</td></tr>'; }).join('');
   if(!list.length) rows = '<tr><td colspan=&quot;6&quot; style=&quot;text-align:center;color:#999;padding:24px&quot;>Nenhum cliente neste filtro.</td></tr>';
   document.getElementById('bau-ld-modal').innerHTML =
-    '<div class=&quot;bld-head&quot;><button class=&quot;bld-close&quot; onclick=&quot;closeBauLeadList()&quot;>×</button><h2>'+titWho+' · '+(labels[bucket]||bucket)+'</h2><div class=&quot;bld-sub&quot;><span class=&quot;badge-praca b-'+praca+'&quot;>'+praca+'</span><span>'+list.length+' cliente(s)</span></div></div>'
+    '<div class=&quot;bld-head&quot;><button class=&quot;bld-close&quot; onclick=&quot;closeBauLeadList()&quot;>×</button><h2>'+titWho+' · '+(labels[bucket]||bucket)+'</h2><div class=&quot;bld-sub&quot;><span class=&quot;badge-praca b-'+praca+'&quot;>'+(praca==='SPI'?'Campinas SPI':praca)+'</span><span>'+list.length+' cliente(s)</span></div></div>'
     + '<div class=&quot;bld-body&quot;><table class=&quot;bld-list&quot;><thead><tr><th>Cliente</th><th>Vendedor</th><th>Etapa</th><th>Próx. Int.</th><th class=&quot;r&quot;>Fatura</th><th>Cidade</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
   document.getElementById('bau-ld-overlay').classList.add('open');
 }
@@ -2420,7 +2420,7 @@ function openLostList(praca, vendEnc){
   var titWho = vend ? vend : praca;
   var rows=list.map(function(l,i){ return '<tr class=&quot;lead-row&quot; onclick=&quot;openLeadFromPerd('+i+')&quot; title=&quot;Ver ficha completa&quot;><td><strong>'+(l.nome||'—')+'</strong></td><td>'+vExib(l)+'</td><td>'+(l.lostReason||'—')+'</td><td>'+(l.temperatura||'—')+'</td><td>R$ '+((l.fatura||0).toLocaleString('pt-BR',{maximumFractionDigits:0}))+'</td><td>'+(l.cidade||'—')+'</td></tr>'; }).join('');
   if(!list.length) rows='<tr><td colspan=&quot;6&quot; style=&quot;text-align:center;color:#999;padding:24px&quot;>Nenhum cliente neste filtro.</td></tr>';
-  document.getElementById('ld-modal').innerHTML = '<div class=&quot;ld-head&quot;><button class=&quot;ld-close&quot; onclick=&quot;closeLeadDetail()&quot;>×</button><h2>'+titWho+' · Perdidos</h2><div class=&quot;ld-sub&quot;><span class=&quot;badge-praca b-'+praca+'&quot;>'+praca+'</span><span>'+list.length+' cliente(s)</span></div></div><div class=&quot;ld-body&quot;><table class=&quot;ag-list&quot;><thead><tr><th>Cliente</th><th>Vendedor</th><th>Motivo</th><th>Temp.</th><th>Fatura</th><th>Cidade</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+  document.getElementById('ld-modal').innerHTML = '<div class=&quot;ld-head&quot;><button class=&quot;ld-close&quot; onclick=&quot;closeLeadDetail()&quot;>×</button><h2>'+titWho+' · Perdidos</h2><div class=&quot;ld-sub&quot;><span class=&quot;badge-praca b-'+praca+'&quot;>'+(praca==='SPI'?'Campinas SPI':praca)+'</span><span>'+list.length+' cliente(s)</span></div></div><div class=&quot;ld-body&quot;><table class=&quot;ag-list&quot;><thead><tr><th>Cliente</th><th>Vendedor</th><th>Motivo</th><th>Temp.</th><th>Fatura</th><th>Cidade</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
   document.getElementById('ld-overlay').classList.add('open');
 }
 function _agBkt(l){ const b=agendaBucket(l.proximaInteracao); if(b==='future' &amp;&amp; dateDiff(l.proximaInteracao)>7) return null; return (b==='late'||b==='today'||b==='tomorrow'||b==='future')?b:null; }
@@ -2454,7 +2454,7 @@ function openAgendaList(praca, vendEnc, bucket){
   let rows = list.map((l,i)=> '<tr class=&quot;lead-row&quot; onclick=&quot;openLeadFromAgenda('+i+')&quot; title=&quot;Ver ficha completa&quot;><td><strong>'+(l.nome||'—')+'</strong></td><td>'+vExib(l)+'</td><td>'+(l.proximaInteracao||'—')+'</td><td>'+(l.temperatura||'—')+'</td><td>R$ '+((l.fatura||0).toLocaleString('pt-BR',{maximumFractionDigits:0}))+'</td><td>'+(l.cidade||'—')+'</td></tr>').join('');
   if(!list.length) rows = '<tr><td colspan=&quot;6&quot; style=&quot;text-align:center;color:#999;padding:24px&quot;>Nenhum cliente neste filtro.</td></tr>';
   document.getElementById('ld-modal').innerHTML =
-    '<div class=&quot;ld-head&quot;><button class=&quot;ld-close&quot; onclick=&quot;closeLeadDetail()&quot;>×</button><h2>'+titWho+' · '+LB[bucket]+'</h2><div class=&quot;ld-sub&quot;><span class=&quot;badge-praca b-'+praca+'&quot;>'+praca+'</span><span>'+list.length+' cliente(s)</span></div></div>'
+    '<div class=&quot;ld-head&quot;><button class=&quot;ld-close&quot; onclick=&quot;closeLeadDetail()&quot;>×</button><h2>'+titWho+' · '+LB[bucket]+'</h2><div class=&quot;ld-sub&quot;><span class=&quot;badge-praca b-'+praca+'&quot;>'+(praca==='SPI'?'Campinas SPI':praca)+'</span><span>'+list.length+' cliente(s)</span></div></div>'
     + '<div class=&quot;ld-body&quot;><table class=&quot;ag-list&quot;><thead><tr><th>Cliente</th><th>Vendedor</th><th>Próx. Int.</th><th>Temp.</th><th>Fatura</th><th>Cidade</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
   document.getElementById('ld-overlay').classList.add('open');
 }
@@ -2655,7 +2655,7 @@ function openLeadDetail(idx){
       '<button class=&quot;ld-close&quot; onclick=&quot;closeLeadDetail()&quot;>×</button>'+
       (_fa?'<button class=&quot;ld-back&quot; onclick=&quot;backToAgendaList()&quot;>← Voltar à lista</button>':'')+
       '<h2>'+(l.nome||'Sem nome')+'</h2>'+
-      '<div class=&quot;ld-sub&quot;><span class=&quot;badge-praca b-'+praca+'&quot;>'+praca+'</span>'+
+      '<div class=&quot;ld-sub&quot;><span class=&quot;badge-praca b-'+praca+'&quot;>'+(praca==='SPI'?'Campinas SPI':praca)+'</span>'+
         '<span>'+stageLabel+'</span>'+(l.temperatura?'<span>· '+l.temperatura+'</span>':'')+'</div>'+
     '</div>'+
     '<div class=&quot;ld-body&quot; id=&quot;ld-edit-body&quot;>'+
@@ -2960,7 +2960,7 @@ function renderPerdidos(d) {
   html += '<div class=&quot;section&quot;><div class=&quot;section-title&quot;>Perdidos por Praça</div><table><thead><tr><th>Praça</th><th>Perdas</th><th>% Perda</th><th>Fatura Perdida</th><th></th></tr></thead><tbody>';
   ['Salvador','Feira','Natal','SPI','CE'].forEach(function(p){
     var isOpen = perdExpanded.has(p);
-    html += '<tr class=&quot;tperd-row'+(isOpen?' open':'')+'&quot; onclick=&quot;togglePerdPraca(\''+p+'\')&quot;><td><span class=&quot;tperd-icon'+(isOpen?' open':'')+'&quot;>▶</span><span class=&quot;badge-praca b-'+p+'&quot;>'+p+'</span></td><td><strong>'+perdN(p,null,(byP[p]||0))+'</strong></td><td>'+pctPerda((byP[p]||0),(totByP[p]||0))+'</td><td>R$ '+((byPfat[p]||0).toLocaleString('pt-BR',{maximumFractionDigits:0}))+'</td><td style=&quot;color:#9aa3b5&quot;>'+(isOpen?'ocultar':'ver vendedores →')+'</td></tr>';
+    html += '<tr class=&quot;tperd-row'+(isOpen?' open':'')+'&quot; onclick=&quot;togglePerdPraca(\''+p+'\')&quot;><td><span class=&quot;tperd-icon'+(isOpen?' open':'')+'&quot;>▶</span><span class=&quot;badge-praca b-'+p+'&quot;>'+(p==='SPI'?'Campinas SPI':p)+'</span></td><td><strong>'+perdN(p,null,(byP[p]||0))+'</strong></td><td>'+pctPerda((byP[p]||0),(totByP[p]||0))+'</td><td>R$ '+((byPfat[p]||0).toLocaleString('pt-BR',{maximumFractionDigits:0}))+'</td><td style=&quot;color:#9aa3b5&quot;>'+(isOpen?'ocultar':'ver vendedores →')+'</td></tr>';
     if(isOpen){
       var vs = Object.entries(byPV[p]||{}).filter(function(kv){return !VENDEDORES_OCULTOS.includes(kv[0]);}).sort(function(a,b){return b[1].n-a[1].n;});
       if(!vs.length) html += '<tr class=&quot;tperd-sub&quot;><td colspan=&quot;5&quot; style=&quot;color:#999;text-align:center;padding:8px&quot;>Sem perdas nessa praça.</td></tr>';
@@ -3977,7 +3977,7 @@ function renderWhale(){
     if(whP){
       const pracasW = [...new Set(wW.map(d=>d.praca))].filter(Boolean).sort();
       const curP = whP.value;
-      whP.innerHTML = '<option value=&quot;&quot;>Todas as praças</option>' + pracasW.map(p=>'<option value=&quot;'+p+'&quot;>'+p+'</option>').join('');
+      whP.innerHTML = '<option value=&quot;&quot;>Todas as praças</option>' + pracasW.map(p=>'<option value=&quot;'+p+'&quot;>'+(p==='SPI'?'Campinas SPI':p)+'</option>').join('');
       whP.value = pracasW.indexOf(curP)>=0 ? curP : '';
     }
     const whPraca = whP ? whP.value : '';
