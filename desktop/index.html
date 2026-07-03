@@ -3491,7 +3491,7 @@ function ppEnsureModal(){
 function ppEmpty(v){ return v===null || v===undefined || v==='' || (typeof v==='string' &amp;&amp; !v.trim()); }
 function openPropDetail(i){ ppOpenDetail((window.__propRows||[])[i]); }
 function openWhaleDetail(i){ ppOpenDetail((window.__whaleRows||[])[i]); }
-const STAGE_DESC={'WAITING_DOCUMENTS':'Falta documento pra análise','BACKGROUND_CHECKING':'Em processo de análise do time de Ops','BACKGROUND CHECKING':'Em processo de análise do time de Ops','BGC_PARCEIRO':'Em processo de análise do time de Ops','BGC_REVIEW':'Em processo de análise do time de Ops','REQUEST_TITULARIDADE':'Aprovado na análise, aguardando processo de troca de titularidade','TITULARIDADE_ONGOING':'Troca de titularidade solicitada, aguardando confirmação da distribuidora','TITULARIDADE ONGOING':'Troca de titularidade solicitada, aguardando confirmação da distribuidora','REGISTERING_DG':'Troca de titularidade aprovada, aguardando cadastro na DG para gerar a fatura','ACTIVE_MEMBER':'Troca aprovada e cliente cadastrado na DG para gerar faturas Liora','ACTIVE MEMBER':'Troca aprovada e cliente cadastrado na DG para gerar faturas Liora'};
+const STAGE_DESC={'WAITING_DOCUMENTS':'Falta documento pra análise','BACKGROUND_CHECKING':'Em processo de análise do time de Ops','BACKGROUND CHECKING':'Em processo de análise do time de Ops','BGC_PARCEIRO':'Já aprovado na análise de risco; agora em análise do Antecipa (parte 2). Prazo de até 1,5 dia útil.','BGC_REVIEW':'Em processo de análise do time de Ops','REQUEST_TITULARIDADE':'Aprovado na análise, aguardando processo de troca de titularidade','TITULARIDADE_ONGOING':'Troca de titularidade solicitada, aguardando confirmação da distribuidora','TITULARIDADE ONGOING':'Troca de titularidade solicitada, aguardando confirmação da distribuidora','REGISTERING_DG':'Troca de titularidade aprovada, aguardando cadastro na DG para gerar a fatura','ACTIVE_MEMBER':'Troca aprovada e cliente cadastrado na DG para gerar faturas Liora','ACTIVE MEMBER':'Troca aprovada e cliente cadastrado na DG para gerar faturas Liora'};
 function ppOpenDetail(d){
   if(!d) return;
   ppEnsureModal();
@@ -4612,6 +4612,7 @@ function isAgDocs(x) {
 }
 
 function isNegado(x) {
+  if (x.stage === 'BGC_PARCEIRO') return !!x.lost_at && (x.lost_reason||'').trim() !== ''; // perdido na validação Antecipa (ex.: reprovado no crédito) = negado
   if (x.stage !== 'BACKGROUND_CHECKING') return false;
   if (x.status === 'NEGADO') return true;
   if ((x.lost_reason||'').trim() !== '') return true;
@@ -4660,7 +4661,7 @@ const STAGE_LABEL = {
   'BACKGROUND_CHECKING':'BGC','BGC_PARCEIRO':'BGC Parceiro',
   'ACTIVE_MEMBER':'Membro ativo','WAITING_DOCUMENTS':'Ag. documentos',
 };
-const STAGE_DESC={'WAITING_DOCUMENTS':'Falta documento pra análise','BACKGROUND_CHECKING':'Em processo de análise do time de Ops','BACKGROUND CHECKING':'Em processo de análise do time de Ops','BGC_PARCEIRO':'Em processo de análise do time de Ops','BGC_REVIEW':'Em processo de análise do time de Ops','REQUEST_TITULARIDADE':'Aprovado na análise, aguardando processo de troca de titularidade','TITULARIDADE_ONGOING':'Troca de titularidade solicitada, aguardando confirmação da distribuidora','TITULARIDADE ONGOING':'Troca de titularidade solicitada, aguardando confirmação da distribuidora','REGISTERING_DG':'Troca de titularidade aprovada, aguardando cadastro na DG para gerar a fatura','ACTIVE_MEMBER':'Troca aprovada e cliente cadastrado na DG para gerar faturas Liora','ACTIVE MEMBER':'Troca aprovada e cliente cadastrado na DG para gerar faturas Liora'};
+const STAGE_DESC={'WAITING_DOCUMENTS':'Falta documento pra análise','BACKGROUND_CHECKING':'Em processo de análise do time de Ops','BACKGROUND CHECKING':'Em processo de análise do time de Ops','BGC_PARCEIRO':'Já aprovado na análise de risco; agora em análise do Antecipa (parte 2). Prazo de até 1,5 dia útil.','BGC_REVIEW':'Em processo de análise do time de Ops','REQUEST_TITULARIDADE':'Aprovado na análise, aguardando processo de troca de titularidade','TITULARIDADE_ONGOING':'Troca de titularidade solicitada, aguardando confirmação da distribuidora','TITULARIDADE ONGOING':'Troca de titularidade solicitada, aguardando confirmação da distribuidora','REGISTERING_DG':'Troca de titularidade aprovada, aguardando cadastro na DG para gerar a fatura','ACTIVE_MEMBER':'Troca aprovada e cliente cadastrado na DG para gerar faturas Liora','ACTIVE MEMBER':'Troca aprovada e cliente cadastrado na DG para gerar faturas Liora'};
 
 function getAcao(x) {
   if (isAgDocs(x))      return ACOES['WAITING_DOCUMENTS'];

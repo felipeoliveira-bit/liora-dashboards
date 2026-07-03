@@ -130,6 +130,7 @@ PRACA_TITLE = {  # email -> praça (Title) usada no RAW
  'nicola.popovic@lioraenergia.com.br':'SPI',
  'nha.negocios@gmail.com':'SPI',
  'anderson.correia@lioraenergia.com.br':'SPI',
+ 'monica.silveira@lioraenergia.com.br':'SPI',
  'ana.ribeiro@lioraenergia.com.br':'SPI',
  'joao.santos@lioraenergia.com.br':'Ribeirão Preto SPI',
  'mecenas.junior@lioraenergia.com.br':'Natal',
@@ -152,6 +153,7 @@ EMAIL2NAME = {  # email -> nome canônico do vendedor (resolve nomes variáveis 
  'nicola.popovic@lioraenergia.com.br':'Nicola Popovic',
  'nha.negocios@gmail.com':'Anderson Correia',
  'anderson.correia@lioraenergia.com.br':'Anderson Correia',
+ 'monica.silveira@lioraenergia.com.br':'Monica Silveira',
  'ana.ribeiro@lioraenergia.com.br':'Ana Ribeiro',
  'joao.santos@lioraenergia.com.br':'João Santos',
  'mecenas.junior@lioraenergia.com.br':'Mecenas Junior',
@@ -197,6 +199,14 @@ def praca_of(email, client):
     em = (email or '').strip().lower()
     return PRACA_TITLE.get(em, 'Outras')
 
+# CONSUMPTION_OVERRIDE: corrige MWh na fonte enquanto a base nao atualiza (temp).
+CONSUMPTION_OVERRIDE = {
+ norm('FRANCISCO ALDECI DE QUEIROZ FERNANDES'): 5.86,  # base mostra 0.59 (Felipe 03/07)
+}
+def mwh_of(client, raw):
+    ov = CONSUMPTION_OVERRIDE.get(norm(client))
+    return ov if ov is not None else fnum(raw)
+
 # ---- rawData (deals + aguardando, dedup por deal_id) ---------------------
 def mk_deal(r):
     risk = (r['latest_risk_analysis_result'] or '').strip()
@@ -208,7 +218,7 @@ def mk_deal(r):
       's': seller_of(r['sales_person_email'], r['current_client_name']),
       'op': op_of(r['sales_person_email'], r['current_client_name']),
       'risk': risk,
-      'mwh': fnum(r['current_consumption_filled']),
+      'mwh': mwh_of(r['current_client_name'], r['current_consumption_filled']),
       'stage': r['deal_stage'],
       'status': r['ops_tt_status'] or 'N/A',
       'idle': int(fnum(r['idle_days'])),
@@ -242,7 +252,7 @@ for r in prop:
       'sales_person_name': r['sales_person_name'],
       'seller': seller_of(r['sales_person_email'], r['current_client_name']),
       'bill_cost': round(fnum(r['current_total_bill_cost (R$)']), 2),  # R$ CRU (sem /1000!)
-      'consumption_mwh': fnum(r['current_consumption_filled']),
+      'consumption_mwh': mwh_of(r['current_client_name'], r['current_consumption_filled']),
       'current_client_name': r['current_client_name'],
       'current_client_state': r['current_client_state'],
       'deal_stage': r['deal_stage'],

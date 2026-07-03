@@ -90,6 +90,9 @@ CLIENT_OVERRIDE = {  # cliente (upper/strip) -> (seller canônico, praça label)
  'CARLA NUNCIA BESERRA':('Marcio Galvão','Natal'),  # 2a UC da Carla (mesma CPF) - é do Marcio, não do Ederson (Felipe 26/06)
  'MARIA SOARES RODRIGUES':('Rodrigo Ribeiro','Natal'),  # deal do Bruno -> Rodrigo (Felipe 03/07); base ainda nao atualizou
 }
+CONSUMPTION_OVERRIDE = {  # cliente (upper/strip) -> MWh; temp ate base corrigir
+ 'FRANCISCO ALDECI DE QUEIROZ FERNANDES': 5.86,  # base mostra 0.59 (Felipe 03/07)
+}
 MES={'janeiro':1,'fevereiro':2,'março':3,'marco':3,'abril':4,'maio':5,'junho':6,'julho':7,'agosto':8,'setembro':9,'outubro':10,'novembro':11,'dezembro':12}
 DOW=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
 ANCHOR = datetime.date(2026,6,1)  # S0 = semana que contém o 1º do mês (junho/2026)
@@ -152,7 +155,7 @@ def build_rawData(deals_path, ag_path, docs_map=None, uc_map=None):
         try: idle=int(float(r['idle_days'])) if r['idle_days'].strip()!='' else 0
         except: idle=0
         out.append({
-            'c':cli,'s':s,'mwh':pfloat(r['current_consumption_filled']),
+            'c':cli,'s':s,'mwh':CONSUMPTION_OVERRIDE.get((cli or '').strip().upper(), pfloat(r['current_consumption_filled'])),
             'stage':r['deal_stage'],'status':r['ops_tt_status'],'idle':idle,
             'city':r['current_client_city'],'state':r['current_client_state'],
             'dist':DIST_MAP.get(r['distributor_short_name'], r['distributor_short_name']),
@@ -182,7 +185,7 @@ def build_RAW_PROP(prop_path):
             'dayofweek':(DOW[d.weekday()] if d else ''),
             'sales_person_name':r['sales_person_name'],'seller':seller,
             'bill_cost':pfloat(r['current_total_bill_cost (R$)']),
-            'consumption_mwh':pfloat(r['current_consumption_filled']),
+            'consumption_mwh':CONSUMPTION_OVERRIDE.get((cli or '').strip().upper(), pfloat(r['current_consumption_filled'])),
             'current_client_name':cli,'current_client_state':r['current_client_state'],
             'deal_stage':r['deal_stage'],'accepted_proposal':(str(r['accepted_proposal']).strip().lower()=='true'),
             'praca':praca,

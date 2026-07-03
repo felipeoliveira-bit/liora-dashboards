@@ -900,6 +900,7 @@ function isAprovado(x){
 }
 
 function isNegado(x){
+  if(x.stage === 'BGC_PARCEIRO') return !!x.lost_at && (x.lost_reason||'').trim() !== ''; // perdido na validação Antecipa (ex.: reprovado no crédito) = negado
   if(x.stage !== 'BACKGROUND_CHECKING') return false;
   if(x.status === 'NEGADO') return true;
   if((x.lost_reason||'').trim() !== '') return true;
@@ -942,7 +943,7 @@ function getStatusInfo(x){
 function getAcao(x){
   if(x.lost_at && isAprovado(x)) return 'Sem próxima ação';
   if(isAprovado(x)) return '✅ Processo concluído — acompanhar ativação';
-  if(isNegado(x))   return (x.motivo && x.motivo.trim()) ? ('🔍 Motivo da negativa: ' + x.motivo.trim()) : '🔍 Entender motivo da negativa e avaliar reativação';
+  if(isNegado(x)){ const _mot=(x.motivo&&x.motivo.trim())||(x.lost_reason||'').trim(); return _mot ? ('🔍 Motivo da negativa: ' + _mot) : '🔍 Entender motivo da negativa e avaliar reativação'; };
   if(isAgDocs(x)){
     if(x.docs==='__OK__') return '✅ Documentos recebidos — aguardando processamento';
     if(x.docs && x.docs.trim()) return '📄 Pendente: ' + x.docs.trim();
@@ -5665,7 +5666,7 @@ function moveLead(id, newStage){
   });
 }
 
-const STAGE_DESC={'WAITING_DOCUMENTS':'Falta documento pra análise','BACKGROUND_CHECKING':'Em processo de análise do time de Ops','BACKGROUND CHECKING':'Em processo de análise do time de Ops','BGC_PARCEIRO':'Em processo de análise do time de Ops','BGC_REVIEW':'Em processo de análise do time de Ops','REQUEST_TITULARIDADE':'Aprovado na análise, aguardando processo de troca de titularidade','TITULARIDADE_ONGOING':'Troca de titularidade solicitada, aguardando confirmação da distribuidora','TITULARIDADE ONGOING':'Troca de titularidade solicitada, aguardando confirmação da distribuidora','REGISTERING_DG':'Troca de titularidade aprovada, aguardando cadastro na DG para gerar a fatura','ACTIVE_MEMBER':'Troca aprovada e cliente cadastrado na DG para gerar faturas Liora','ACTIVE MEMBER':'Troca aprovada e cliente cadastrado na DG para gerar faturas Liora'};
+const STAGE_DESC={'WAITING_DOCUMENTS':'Falta documento pra análise','BACKGROUND_CHECKING':'Em processo de análise do time de Ops','BACKGROUND CHECKING':'Em processo de análise do time de Ops','BGC_PARCEIRO':'Já aprovado na análise de risco; agora em análise do Antecipa (parte 2). Prazo de até 1,5 dia útil.','BGC_REVIEW':'Em processo de análise do time de Ops','REQUEST_TITULARIDADE':'Aprovado na análise, aguardando processo de troca de titularidade','TITULARIDADE_ONGOING':'Troca de titularidade solicitada, aguardando confirmação da distribuidora','TITULARIDADE ONGOING':'Troca de titularidade solicitada, aguardando confirmação da distribuidora','REGISTERING_DG':'Troca de titularidade aprovada, aguardando cadastro na DG para gerar a fatura','ACTIVE_MEMBER':'Troca aprovada e cliente cadastrado na DG para gerar faturas Liora','ACTIVE MEMBER':'Troca aprovada e cliente cadastrado na DG para gerar faturas Liora'};
 function escapeHtml(s){
   if(!s) return '';
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
