@@ -1166,13 +1166,13 @@ function renderResumo(){
         <div class="exec-title">🎯 Meta &amp; ritmo · julho</div>
         <div class="exec-days">${mtdInfo.uteisPassados}/${mtdInfo.totalUteis} dias úteis<br>${diasRest} restantes</div>
       </div>
-      ${uniRows}
       <div class="exec-total" onclick="openMetaAprovados('__all__')" style="cursor:pointer">
         <div class="exec-total-top"><span class="exec-total-lbl">TOTAL FIELD</span><span class="exec-total-val">${totalAprov.toFixed(1)} / ${totalMetaToDate.toFixed(1)} MWh · ${totalPctMtd.toFixed(0)}%</span></div>
         <div style="height:6px;background:rgba(255,255,255,.28);border-radius:4px;overflow:hidden;margin:9px 0 7px"><div style="height:100%;background:#fff;border-radius:4px;width:${Math.min(100,totalPctMtd).toFixed(0)}%"></div></div>
         <div class="exec-total-conv">🏃 ritmo diário p/ bater a meta: <b>${exMwhTot.toFixed(1)} MWh/dia · ${Math.ceil(exPropTot)} props/dia</b></div>
         <div class="exec-total-conv" style="margin-top:3px">📅 realizado hoje: <b>${hojeMwhTot.toFixed(1)} MWh · ${hojePropTot} propostas</b></div>
       </div>
+      ${uniRows}
       <div class="exec-note">% e barra = atingimento to-date (aprovado ÷ meta proporcional aos dias úteis do mês). <b>Ritmo diário</b> = o que falta da meta do mês ÷ dias úteis restantes — se não entregar hoje, sobe amanhã. Propostas/dia estimadas pela conversão-alvo do BP (~${CONV_BP}%). <b>✓/✗ hoje</b> = realizado do dia vs a meta do dia. Toque numa praça p/ ver os clientes.</div>
     </div>`;
   document.getElementById('s1-content').innerHTML = html;
