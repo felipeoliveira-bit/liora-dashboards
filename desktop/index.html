@@ -517,7 +517,7 @@ async function loadLeads() {
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({action:'list'}),
     });
-    const data = await r.json();
+    let data, _t='', _ok=false; for(let _i=0; _i<3; _i++){ try { const _r = (_i===0) ? r : await fetch(LEADS_API_URL,{method:'POST',mode:'cors',redirect:'follow',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'list'})}); _t = await _r.text(); data = JSON.parse(_t); _ok = true; break; } catch(_e){ if(_i < 2) await new Promise(function(s){ setTimeout(s,1200); }); } } if(!_ok) throw new Error(String(_t).trim().charAt(0)==='<' ? 'Sincronizando… clique Atualizar' : 'Base de leads indisponivel');
     if (data &amp;&amp; data.leads) {
       leads = data.leads.filter(l => String((l&amp;&amp;l.stage)||'').trim().toLowerCase() !== 'excluido').map(l => ({
         ...l,
@@ -1393,7 +1393,7 @@ async function loadLeads() {
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({action:'list'}),
     });
-    const data = await r.json();
+    let data, _t='', _ok=false; for(let _i=0; _i<3; _i++){ try { const _r = (_i===0) ? r : await fetch(LEADS_API_URL,{method:'POST',mode:'cors',redirect:'follow',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'list'})}); _t = await _r.text(); data = JSON.parse(_t); _ok = true; break; } catch(_e){ if(_i < 2) await new Promise(function(s){ setTimeout(s,1200); }); } } if(!_ok) throw new Error(String(_t).trim().charAt(0)==='<' ? 'Sincronizando… clique Atualizar' : 'Base de leads indisponivel');
     if (data &amp;&amp; data.leads) {
       leads = data.leads.filter(l => String((l&amp;&amp;l.stage)||'').trim().toLowerCase() !== 'excluido').map(l => ({ ...l, vendedor: canonName( (l.vendedor||'').trim()), stage: normalizeStage(l.stage), fatura: parseFloat(l.fatura||0)||0 }));
       const time = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
@@ -2161,7 +2161,7 @@ async function loadLeads() {
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({action:'list'}),
     });
-    const data = await r.json();
+    let data, _t='', _ok=false; for(let _i=0; _i<3; _i++){ try { const _r = (_i===0) ? r : await fetch(LEADS_API_URL,{method:'POST',mode:'cors',redirect:'follow',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'list'})}); _t = await _r.text(); data = JSON.parse(_t); _ok = true; break; } catch(_e){ if(_i < 2) await new Promise(function(s){ setTimeout(s,1200); }); } } if(!_ok) throw new Error(String(_t).trim().charAt(0)==='<' ? 'Sincronizando… clique Atualizar' : 'Base de leads indisponivel');
     if (data &amp;&amp; data.leads) {
       leads = data.leads.filter(l => String((l&amp;&amp;l.stage)||'').trim().toLowerCase() !== 'excluido').map(normalizeLead);
       const time = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
@@ -5641,7 +5641,7 @@ async function loadAttendance() {
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({action:'listAttendance', year: YEAR, month: MONTH+1}),
     });
-    const data = await r.json();
+    let data, _t='', _ok=false; for(let _i=0; _i<3; _i++){ try { const _r = (_i===0) ? r : await fetch(LEADS_API_URL,{method:'POST',mode:'cors',redirect:'follow',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'list'})}); _t = await _r.text(); data = JSON.parse(_t); _ok = true; break; } catch(_e){ if(_i < 2) await new Promise(function(s){ setTimeout(s,1200); }); } } if(!_ok) throw new Error(String(_t).trim().charAt(0)==='<' ? 'Sincronizando… clique Atualizar' : 'Base de leads indisponivel');
     attendance = (data &amp;&amp; data.attendance) || {};
     atestados = (data &amp;&amp; data.atestados) || {};
     const time = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
