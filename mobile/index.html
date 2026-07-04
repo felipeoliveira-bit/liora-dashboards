@@ -3234,7 +3234,10 @@ async function apiCall(action, payload, opts){
       signal: ctrl.signal
     });
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    const data = await resp.json();
+    const _txt = await resp.text();
+    let data;
+    try { data = JSON.parse(_txt); }
+    catch(_e){ throw new Error(String(_txt).trim().charAt(0)==='<' ? 'Sincronizando… tente Atualizar' : 'resposta inválida da base'); }
     if (!data.ok) throw new Error(data.error || 'erro desconhecido');
     return data;
   } catch (err) {
