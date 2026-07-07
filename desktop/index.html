@@ -3560,7 +3560,7 @@ window.RAW = RAW;
 // ════════════════════════════════════════════
 // CONSTANTS
 // ════════════════════════════════════════════
-const TODAY=(function(){try{var _ds=RAW.map(d=>String(d.date||'').slice(0,10)).filter(Boolean).sort();return _ds[_ds.length-1]||&quot;2026-06-01&quot;;}catch(e){return &quot;2026-06-01&quot;;}})(), CW=23, PW=22;
+const TODAY=(function(){try{var _ds=RAW.map(d=>String(d.date||'').slice(0,10)).filter(Boolean).sort();return _ds[_ds.length-1]||&quot;2026-06-01&quot;;}catch(e){return &quot;2026-06-01&quot;;}})(), CW=(function(){var _r=RAW.find(function(d){return String(d.date||'').slice(0,10)===TODAY;});return _r?(+_r.week||0):(RAW.length?Math.max.apply(null,RAW.map(function(d){return +d.week||0;})):0);})(), PW=CW-1;
 try{var _hd=document.getElementById('hdr-date'); if(_hd){var _tp=TODAY.split('-'); _hd.textContent=_tp[2]+'/'+_tp[1]+'/'+_tp[0];}}catch(e){}
 const PRACAS=[&quot;Salvador&quot;,&quot;Feira&quot;,&quot;Natal&quot;,&quot;CE&quot;,&quot;SPI&quot;,&quot;Ribeirao&quot;];
 const PC={
@@ -3691,7 +3691,7 @@ function renderOverview(){
   const elPracaOv=document.getElementById(&quot;praca-kpis-ov&quot;);
   if(elPracaOv){
     elPracaOv.innerHTML=visiblePracasOv.map(p=>{
-      const d=weekD.filter(x=>x.praca===p);const m=M(d);const col=PC[p]||&quot;#0201F3&quot;;const bg=PC_LIGHT[p]||&quot;#f0f0ff&quot;;
+      const d=base.filter(x=>x.praca===p);const m=M(d);const col=PC[p]||&quot;#0201F3&quot;;const bg=PC_LIGHT[p]||&quot;#f0f0ff&quot;;
       return`<div class=&quot;card&quot; style=&quot;border-top:3px solid ${col};background:${bg}&quot;>
         <div class=&quot;cl&quot; style=&quot;color:${col}&quot;>${p}</div>
         <div class=&quot;cv&quot; style=&quot;color:${col}&quot;>${m.qty}</div>

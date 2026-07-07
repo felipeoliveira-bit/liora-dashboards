@@ -824,7 +824,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
   <div class="copa-modal" id="copa-modal" onclick="closeCopaFig()"></div>
 
   <div style="position:fixed;bottom:78px;right:8px;font-size:9px;color:#aaa;background:rgba(255,255,255,.85);padding:2px 6px;border-radius:8px;z-index:99;font-family:monospace;pointer-events:none">
-    v2.151 · 07/07
+    v2.152 · 07/07
   </div>
 
   <!-- BOTTOM NAV -->
@@ -1760,7 +1760,7 @@ function openMetaAprovados(key){
   var def = all ? {label:'Todas as praças', color:'var(--blue)'} : (PRACA_DEF[key] || {label:key, color:'#888'});
   var cli = rawData
     .filter(function(x){ return noMes(x) && isAprovado(x) && (all || (x.praca && x.praca.key === key)); })
-    .sort(function(a,b){ return (b.mwh||0)-(a.mwh||0); });
+    .sort(function(a,b){ return String(b.aprov_date||'').localeCompare(String(a.aprov_date||'')) || (b.mwh||0)-(a.mwh||0); });
   var totMwh = cli.reduce(function(a,x){ return a+(x.mwh||0); }, 0);
   var rows = cli.map(function(c){
     var d = c.aprov_date ? c.aprov_date.split('-').reverse().slice(0,2).join('/') : '—';
