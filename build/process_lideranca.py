@@ -132,20 +132,20 @@ PRACA_TITLE = {  # email -> praça (Title) usada no RAW
  'anderson.correia@lioraenergia.com.br':'SPI',
  'monica.silveira@lioraenergia.com.br':'SPI',
  'ana.ribeiro@lioraenergia.com.br':'SPI',
- 'joao.santos@lioraenergia.com.br':'Ribeirão Preto SPI',
+ 'joao.santos@lioraenergia.com.br':'Ribeirao',
  'mecenas.junior@lioraenergia.com.br':'Natal',
  'adroaldo.bonfim@lioraenergia.com.br':'Salvador','ananias.neto@lioraenergia.com.br':'Natal',
  'antonio.mariano@lioraenergia.com.br':'Salvador','bruno.andrade@lioraenergia.com.br':'Natal',
  'bruno.borges@lioraenergia.com.br':'CE','caio.lannes@lioraenergia.com.br':'SPI',
  'diego.faria@lioraenergia.com.br':'SPI','ederson.silva@lioraenergia.com.br':'SPI',
  'ettore.rossi@lioraenergia.com.br':'Salvador','felipe.oliveira@lioraenergia.com.br':'Outras',
- 'franciele.felix@lioraenergia.com.br':'SPI','kelma.rangel@lioraenergia.com.br':'Feira de Santana',
- 'lucileide.carlos@lioraenergia.com.br':'Feira de Santana','marcio.galvao@lioraenergia.com.br':'Natal',
+ 'franciele.felix@lioraenergia.com.br':'SPI','kelma.rangel@lioraenergia.com.br':'Feira',
+ 'lucileide.carlos@lioraenergia.com.br':'Feira','marcio.galvao@lioraenergia.com.br':'Natal',
  'maria.lucia@lioraenergia.com.br':'Salvador','neilon.nascimento@lioraenergia.com.br':'CE',
  'nubia.andrade@lioraenergia.com.br':'Outras','odirley.costa@lioraenergia.com.br':'Outras',
- 'rodrigo.ribeiro@lioraenergia.com.br':'Natal','rosangela.mendes@lioraenergia.com.br':'Feira de Santana',
- 'ryan.trindade@lioraenergia.com.br':'Feira de Santana','tais.santos@lioraenergia.com.br':'Salvador',
- 'tiago.freitas@lioraenergia.com.br':'Feira de Santana','thiago.araujo@lioraenergia.com.br':'Natal',
+ 'rodrigo.ribeiro@lioraenergia.com.br':'Natal','rosangela.mendes@lioraenergia.com.br':'Feira',
+ 'ryan.trindade@lioraenergia.com.br':'Feira','tais.santos@lioraenergia.com.br':'Salvador',
+ 'tiago.freitas@lioraenergia.com.br':'Feira','thiago.araujo@lioraenergia.com.br':'Natal',
 }
 EMAIL2NAME = {  # email -> nome canônico do vendedor (resolve nomes variáveis do CRM)
  'silmara.gomes@lioraenergia.com.br':'Silmara Gomes',
@@ -170,13 +170,13 @@ EMAIL2NAME = {  # email -> nome canônico do vendedor (resolve nomes variáveis 
  'ryan.trindade@lioraenergia.com.br':'Ryan Trindade','tais.santos@lioraenergia.com.br':'Tais Santos',
  'tiago.freitas@lioraenergia.com.br':'Tiago Freitas','thiago.araujo@lioraenergia.com.br':'Thiago Araujo França',
 }
-TITLE2OP = {'Salvador':'salvador','Feira de Santana':'feira','Natal':'natal','SPI':'spi','Ribeirão Preto SPI':'ribeirao','CE':'ce','Outras':'outras'}
+TITLE2OP = {'Salvador':'salvador','Feira':'feira','Natal':'natal','SPI':'spi','Ribeirao':'ribeirao','CE':'ce','Outras':'outras'}
 
 def norm(s): return re.sub(r'\s+',' ',(s or '').strip()).upper()
 # CLIENT_OVERRIDE: força vendedor/praça enquanto o suporte não corrige na origem
 CLIENT_OVERRIDE = {
  norm('NIVALDO GESTEIRA DE OLIVEIRA'): ('Maria Lúcia','salvador','Salvador'),
- norm('MANOEL ROQUE DA SILVA JUNIOR'): ('Lucileide Carlos','feira','Feira de Santana'),
+ norm('MANOEL ROQUE DA SILVA JUNIOR'): ('Lucileide Carlos','feira','Feira'),
  norm('CARLA NUNCIA BESERRA'): ('Marcio Galvão','natal','Natal'),  # 2a UC da Carla - é do Marcio (Felipe 26/06)
  norm('MARIA SOARES RODRIGUES'): ('Rodrigo Ribeiro','natal','Natal'),  # deal do Bruno -> Rodrigo (Felipe 03/07)
 }
