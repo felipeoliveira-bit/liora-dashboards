@@ -290,6 +290,10 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
 .phone-action-wa { background: #25D366; }
 .phone-action-icon { font-size: 22px; line-height: 1; }
 .phone-action-label { font-size: 15px; }
+.tel-input-row { display: flex; gap: 8px; align-items: stretch; }
+.tel-input-row .form-input { flex: 1; min-width: 0; }
+.tel-call-btn { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 0 16px; border: none; border-radius: 12px; background: var(--blue); color: #fff; font-weight: 700; font-size: 15px; white-space: nowrap; cursor: pointer; transition: opacity .15s, transform .1s; }
+.tel-call-btn:active { transform: scale(.97); opacity: .85; }
 
 /* v2.55 — Campos extras do motivo de perdido (condicional) */
 .lost-extra-block { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #FCD34D; }
@@ -819,7 +823,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
   <div class="copa-modal" id="copa-modal" onclick="closeCopaFig()"></div>
 
   <div style="position:fixed;bottom:78px;right:8px;font-size:9px;color:#aaa;background:rgba(255,255,255,.85);padding:2px 6px;border-radius:8px;z-index:99;font-family:monospace;pointer-events:none">
-    v2.148 · 07/07
+    v2.149 · 07/07
   </div>
 
   <!-- BOTTOM NAV -->
@@ -2226,6 +2230,14 @@ function openClienteDetalhes(dealId){
     </div>
   `;
   document.body.appendChild(overlay);
+}
+
+function dialLeadTel(){
+  const el = document.getElementById('lead-tel');
+  const digits = ((el && el.value) || '').replace(/\D/g,'');
+  if (digits.length < 10) { alert('Digite o telefone com DDD antes de ligar.'); if (el) el.focus(); return; }
+  const withCountry = digits.startsWith('55') ? digits : '55' + digits;
+  window.location.href = 'tel:+' + withCountry;
 }
 
 function openPhoneActions(tel, ev){
@@ -3642,7 +3654,10 @@ function renderFunilCadastro(el){
       </div>
       <div class="form-group">
         <label class="form-label" for="lead-tel">Telefone com DDD</label>
-        <input class="form-input" id="lead-tel" type="tel" placeholder="71 99876-1122" autocomplete="off" inputmode="tel" />
+        <div class="tel-input-row">
+          <input class="form-input" id="lead-tel" type="tel" placeholder="71 99876-1122" autocomplete="off" inputmode="tel" />
+          <button type="button" class="tel-call-btn" onclick="dialLeadTel()" title="Ligar para o cliente" aria-label="Ligar para o cliente"><span aria-hidden="true">📞</span><span>Ligar</span></button>
+        </div>
         <div class="form-hint">Formato: DDD + número (ex: 41 9xxxx-xxxx)</div>
       </div>
       <div class="form-group">
