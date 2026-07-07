@@ -203,6 +203,7 @@ def praca_of(email, client):
 CONSUMPTION_OVERRIDE = {
  norm('FRANCISCO ALDECI DE QUEIROZ FERNANDES'): 5.86,  # base mostra 0.59 (Felipe 03/07)
  norm('PERFECTA VIDROS E ALUMINIOS EIRELI'): 0.9,  # base mostra 0.19 (Felipe 07/07)
+ norm('CHEVROFOR COM PECAS E ACESSORIOS LTDA'): 1.21,  # base mostra 0.50 (Felipe 07/07)
 }
 # LOST_IGNORE: ignora lost_at/lost_reason (falso 'nao aceito pela distribuidora') p/ estes clientes.
 LOST_IGNORE = { norm('FRANCISCO ALDECI DE QUEIROZ FERNANDES') }  # reprovado e erro; ignorar (Felipe 03/07)
