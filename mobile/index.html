@@ -824,7 +824,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
   <div class="copa-modal" id="copa-modal" onclick="closeCopaFig()"></div>
 
   <div style="position:fixed;bottom:78px;right:8px;font-size:9px;color:#aaa;background:rgba(255,255,255,.85);padding:2px 6px;border-radius:8px;z-index:99;font-family:monospace;pointer-events:none">
-    v2.152 · 07/07
+    v2.153 · 07/07
   </div>
 
   <!-- BOTTOM NAV -->
@@ -983,7 +983,7 @@ let SELLER_PRACA = {
   'Kelma Rangel':'feira','Lucileide Carlos':'feira','Rosangela Mendes':'feira','Tiago Freitas':'feira','Ryan Trindade':'feira',
   'Ananias Neto':'natal','Bruno Andrade':'natal','Marcio Galvão':'natal','Rodrigo Ribeiro':'natal','Thiago Araujo França':'natal',
   'Caio Lannes':'spi','Ederson Silva':'spi','Franciele Felix':'spi','Monica Silveira':'spi','Diego Faria':'spi',
-  'Bruno Borges':'ce','Neilon Nascimento':'ce','Núbia Andrade':'ce','Odirley Costa':'ce',
+  'Bruno Borges':'ce','Neilon Nascimento':'ce','Sabrina Tomazeti':'ce','Núbia Andrade':'ce','Odirley Costa':'ce',
 };
 function getPracaKey(city, seller){
   if(seller && SELLER_PRACA[seller]) return SELLER_PRACA[seller];
@@ -1037,7 +1037,7 @@ let METAS = {
   // SPI — 15 MWh
   'Caio Lannes':15,'Ederson Silva':15,'Franciele Felix':15,'Monica Silveira':15,'Diego Faria':15,
   // CE — 15 MWh
-  'Bruno Borges':15,'Neilon Nascimento':15,'Núbia Andrade':15,'Odirley Costa':15
+  'Bruno Borges':15,'Neilon Nascimento':15,'Sabrina Tomazeti':15,'Núbia Andrade':15,'Odirley Costa':15
 };
 
 // ── NAV ───────────────────────────────────────────────────
@@ -2783,6 +2783,7 @@ let CREDENTIALS = {
   'ryan.trindade@lioraenergia.com.br':      { nome: 'Ryan Trindade',      senha: 'Feira' },
   'bruno.borges@lioraenergia.com.br':       { nome: 'Bruno Borges',       senha: 'CE' },
   'neilon.nascimento@lioraenergia.com.br':  { nome: 'Neilon Nascimento',  senha: 'CE' },
+  'sabrina.tomazeti@lioraenergia.com.br':  { nome: 'Sabrina Tomazeti',  senha: 'CE' },
   'odirley.costa@lioraenergia.com.br':      { nome: 'Odirley Costa',      senha: 'CE' },
   'nubia.andrade@lioraenergia.com.br':      { nome: 'Núbia Andrade',      senha: 'CE' },
   'marcio.galvao@lioraenergia.com.br':      { nome: 'Marcio Galvão',      senha: 'RN' },
@@ -3072,7 +3073,7 @@ let VENDEDORES = [
   { nome: 'João Santos',      praca: 'Ribeirão Preto SPI' },  // julho/26 — líder
   // CE
   { nome: 'Bruno Borges',     praca: 'CE' },
-  { nome: 'Neilon Nascimento',praca: 'CE' },  // junho/26
+  { nome: 'Neilon Nascimento',praca: 'CE' },{ nome: 'Sabrina Tomazeti',praca: 'CE' },  // junho/26
   { nome: 'Núbia Andrade',    praca: 'CE' },  // junho/26
   { nome: 'Odirley Costa',    praca: 'CE' },  // junho/26
   // Outros (admin)
