@@ -819,7 +819,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
   <div class="copa-modal" id="copa-modal" onclick="closeCopaFig()"></div>
 
   <div style="position:fixed;bottom:78px;right:8px;font-size:9px;color:#aaa;background:rgba(255,255,255,.85);padding:2px 6px;border-radius:8px;z-index:99;font-family:monospace;pointer-events:none">
-    v2.104 · 10/06
+    v2.148 · 07/07
   </div>
 
   <!-- BOTTOM NAV -->
@@ -3091,6 +3091,10 @@ function avatarImg(name, cls, sizeCss){
 // Filtro do Kanban: 'mine' (default) ou 'all'
 const kanbanScope = 'mine'; // v2.110 — funil sempre mostra só os leads do usuário logado
 // ⭐ v2.11 — Filtro por próxima interação (null, 'today', 'tomorrow', 'overdue')
+// v2.105 — Helper: lead perdido = stage 'perdido' OU marcado lost=true.
+// Cobre o caso do lead marcado perdido enquanto em stage ativo (fechamentos/contratos),
+// que mantem o stage antigo mas ganha lost=true — nao deve contar em atrasados nem em quentes.
+function isLeadPerdido(l){ return !!l && (l.stage === 'perdido' || l.lost === true); }
 let visitFilter = null;
 let hotFilter = false;
 function toggleHotFilter(){ hotFilter = !hotFilter; renderFunil(); }
@@ -5102,7 +5106,7 @@ function renderFunilKanban(el){
   // ⭐ v2.11 — Calcula contagens dos filtros de visita (sempre baseado nos MEUS leads, etapas ativas)
   // Etapas ativas: planejados, qualificados, propostas, fechamentos (sem perdido e contratos)
   const ACTIVE_STAGES = ['planejados','qualificados','propostas','fechamentos'];
-  const activeLeads = me ? myLeads.filter(l => ACTIVE_STAGES.includes(l.stage)) : [];
+  const activeLeads = me ? myLeads.filter(l => ACTIVE_STAGES.includes(l.stage) && !isLeadPerdido(l)) : [];
 
   const today = new Date(); today.setHours(0,0,0,0);
   const todayStr = today.toISOString().slice(0,10);
@@ -5171,8 +5175,8 @@ function renderFunilKanban(el){
     });
   }
 
-  const hotCount = filteredLeads.filter(l => (l.temperatura||'') === 'Quente').length;
-  if (hotFilter) filteredLeads = filteredLeads.filter(l => (l.temperatura||'') === 'Quente');
+  const hotCount = filteredLeads.filter(l => (l.temperatura||'') === 'Quente' && !isLeadPerdido(l)).length;
+  if (hotFilter) filteredLeads = filteredLeads.filter(l => (l.temperatura||'') === 'Quente' && !isLeadPerdido(l));
   const counts = {};
   FUNIL_STAGES.forEach(s => counts[s.key] = filteredLeads.filter(l => l.stage === s.key).length);
 
