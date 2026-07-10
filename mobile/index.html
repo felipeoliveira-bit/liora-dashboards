@@ -824,7 +824,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
   <div class="copa-modal" id="copa-modal" onclick="closeCopaFig()"></div>
 
   <div style="position:fixed;bottom:78px;right:8px;font-size:9px;color:#aaa;background:rgba(255,255,255,.85);padding:2px 6px;border-radius:8px;z-index:99;font-family:monospace;pointer-events:none">
-    v2.154 · 10/07
+    v2.155 · 10/07
   </div>
 
   <!-- BOTTOM NAV -->
@@ -3325,6 +3325,29 @@ function fmtCacheTs(ms){
   }catch(e){return '';}
 }
 
+// v2.155 — auto-recuperacao: se o sync falhar, tenta sozinho em segundo plano
+// (15s, 30s, 45s, 60s, 60s) ate voltar, sem o usuario precisar tocar em Atualizar.
+let _leadsRetryTimer = null, _leadsRetryCount = 0;
+function scheduleLeadsAutoRetry(){
+  if (_leadsRetryTimer || _leadsRetryCount >= 5) return;
+  const delay = Math.min(15000 * (_leadsRetryCount + 1), 60000);
+  _leadsRetryTimer = setTimeout(async () => {
+    _leadsRetryTimer = null; _leadsRetryCount++;
+    leadsLoaded = false;               // permite recarregar
+    await loadLeads();
+    if (!leadsLoadError) {              // voltou ao normal: re-renderiza e zera
+      _leadsRetryCount = 0;
+      try { if (typeof renderFunil === 'function') renderFunil(); } catch(_e){}
+    } else {
+      scheduleLeadsAutoRetry();         // ainda falhando: agenda a proxima
+    }
+  }, delay);
+}
+function resetLeadsAutoRetry(){
+  if (_leadsRetryTimer) { clearTimeout(_leadsRetryTimer); _leadsRetryTimer = null; }
+  _leadsRetryCount = 0;
+}
+
 async function loadLeads(){
   if (leadsLoaded) return;
   if (!LEADS_API_ENABLED) {
@@ -3357,6 +3380,7 @@ async function loadLeads(){
     leadsFromCache = false;
     leadsCacheTs = 0;
     saveLeadsCache(window.leads);   // guarda a ultima carga boa
+    resetLeadsAutoRetry();
   } catch (err) {
     leadsLoadError = err.message;
     // Fallback: mantém leads em memória se houver, senão usa seed
@@ -3371,6 +3395,7 @@ async function loadLeads(){
       }
     }
     leadsLoaded = true;  // marca como carregado pra não ficar em loop
+    scheduleLeadsAutoRetry();   // tenta se recuperar sozinho em segundo plano
   }
 }
 
@@ -5302,9 +5327,9 @@ function renderFunilKanban(el){
     ${filterBanner}
 
     ${leadsLoadError ? `
-      <div style="margin-bottom:10px;padding:10px 12px;background:#FEE2E2;border-radius:10px;border:1px solid #FCA5A5;font-size:12px;color:#B91C1C;line-height:1.4">
-        <b>⚠️ Erro ao sincronizar com a planilha:</b> ${escapeHtml(leadsLoadError)}.<br/>
-        ${leadsFromCache && leadsCacheTs ? `Mostrando sua última base salva (${fmtCacheTs(leadsCacheTs)}). ` : 'Está vendo os leads do cache local. '}Clique em <b>Atualizar</b> abaixo pra tentar novamente.
+      <div style="margin-bottom:10px;padding:10px 12px;background:#FEF3C7;border-radius:10px;border:1px solid #FCD34D;font-size:12px;color:#92400E;line-height:1.4">
+        <b>🔄 Reconectando com a planilha…</b> ${leadsFromCache && leadsCacheTs ? `você está vendo sua última base salva (${fmtCacheTs(leadsCacheTs)})` : 'você está vendo o cache local'}. Estou tentando sincronizar sozinho em segundo plano — não precisa fazer nada.<br/>
+        <span style="opacity:.75">Se quiser forçar agora, toque em <b>Atualizar</b> abaixo.</span>
       </div>
     ` : ''}
 
