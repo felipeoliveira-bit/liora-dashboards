@@ -824,7 +824,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
   <div class="copa-modal" id="copa-modal" onclick="closeCopaFig()"></div>
 
   <div style="position:fixed;bottom:78px;right:8px;font-size:9px;color:#aaa;background:rgba(255,255,255,.85);padding:2px 6px;border-radius:8px;z-index:99;font-family:monospace;pointer-events:none">
-    v2.155 · 10/07
+    v2.156 · 10/07
   </div>
 
   <!-- BOTTOM NAV -->
@@ -2763,6 +2763,18 @@ let LIDERES = {
 };
 function isLider(name){ return !!(name && LIDERES[name]); }
 function liderPraca(name){ return LIDERES[name] || ''; }
+// v2.156 — permissão de edição: dono, ou líder da praça do dono, ou gestor.
+function canEditLead(lead){
+  const me = getCurrentVendedor();
+  if(!me) return false;
+  const meN = canonicalVendedor(me);
+  const owner = canonicalVendedor((lead && lead.vendedor) || '');
+  if(!owner || owner === meN) return true;          // sem dono ou o próprio dono
+  if(isGestor_(me)) return true;                     // gestor edita qualquer lead
+  const pl = liderPraca(me);                         // líder edita os leads da sua praça
+  if(pl) return (SELLER_PRACA[owner] || '').toLowerCase() === pl;
+  return false;
+}
 
 // ── v2.123 — Credenciais e equipe lidas AO VIVO da aba "Time" da planilha ──
 // O bloco abaixo é apenas o FALLBACK (usado se a planilha não responder, ex.: offline/preview).
@@ -3676,7 +3688,8 @@ function renderFunilCadastro(el){
   const leadBeingEdited = editing ? window.leads.find(l => l.id === editingLeadId) : null;
   const me = getCurrentVendedor();
   const isOwner = leadBeingEdited ? (canonicalVendedor(leadBeingEdited.vendedor) === canonicalVendedor(me)) : true;
-  const readOnly = editing && !isOwner;
+  const canEdit = leadBeingEdited ? canEditLead(leadBeingEdited) : true;   // v2.156 dono/líder/gestor
+  const readOnly = editing && !canEdit;
 
   // Se está editando mas lead não encontrado, volta pro Kanban
   if (editing && !leadBeingEdited) {
@@ -3692,8 +3705,10 @@ function renderFunilCadastro(el){
   const editBanner = editing ? `
     <div style="background:${readOnly ? '#FFF8EC' : '#EEF2FF'};border:1px solid ${readOnly ? '#FCE7B6' : '#C7D2FE'};border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:12px;color:${readOnly ? '#854d0e' : '#3730A3'};line-height:1.4">
       ${readOnly
-        ? `🔒 <b>Visualização:</b> Este lead pertence a <b>${escapeHtml(leadBeingEdited.vendedor || 'outro vendedor')}</b>. Você não pode editar.`
-        : `✏️ <b>Editando lead:</b> ${escapeHtml(leadBeingEdited.nome)} (criado há ${Math.floor((Date.now() - leadBeingEdited.createdAt) / 86400000)}d)`}
+        ? `🔒 <b>Visualização:</b> Este lead pertence a <b>${escapeHtml(leadBeingEdited.vendedor || 'outro vendedor')}</b> e você não tem permissão para editar.`
+        : (!isOwner
+            ? `👑 <b>Editando como ${isGestor_(me)?'gestor':'líder'}:</b> lead de <b>${escapeHtml(leadBeingEdited.vendedor || '—')}</b>. As alterações são salvas no nome dele(a).`
+            : `✏️ <b>Editando lead:</b> ${escapeHtml(leadBeingEdited.nome)} (criado há ${Math.floor((Date.now() - leadBeingEdited.createdAt) / 86400000)}d)`)}
     </div>
   ` : '';
   const readOnlyAttr = readOnly ? 'readonly' : '';
@@ -4561,9 +4576,9 @@ async function updateLead(){
     return;
   }
 
-  // Permissão: só dono pode editar
+  // Permissão: dono, líder da praça do dono, ou gestor (v2.156)
   const me = getCurrentVendedor();
-  if (lead.vendedor && canonicalVendedor(lead.vendedor) !== canonicalVendedor(me)) {
+  if (!canEditLead(lead)) {
     alert(`Você não pode editar leads de outros vendedores. Este lead é de ${lead.vendedor}.`);
     return;
   }
@@ -4680,7 +4695,7 @@ async function deleteLead(leadId){
   if (!lead) return;
 
   const me = getCurrentVendedor();
-  if (lead.vendedor && canonicalVendedor(lead.vendedor) !== canonicalVendedor(me)) {
+  if (!canEditLead(lead)) {
     alert(`Você não pode excluir leads de outros vendedores. Este lead é de ${lead.vendedor}.`);
     return;
   }
