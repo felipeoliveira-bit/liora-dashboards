@@ -212,7 +212,7 @@ LOST_IGNORE = { norm('FRANCISCO ALDECI DE QUEIROZ FERNANDES') }  # reprovado e e
 # FORCE_APPROVED: deals que contam como aprovado por decisao manual (contrato assinado,
 # aguardando BGC). Chave = deal_id. Remover quando a base refletir BGC APPROVED.
 FORCE_APPROVED = {
- 'a4a2cc08-a77e-4549-8306-ef13db2a3a95': 'Marcio Pereira pinto / Nicola Popovic - aprovado manual (Felipe 10/07)',
+ 'a4a2cc08-a77e-4549-8306-ef13db2a3a95': '2026-07-10',  # Marcio Pereira pinto / Nicola Popovic - aprovado manual (Felipe 10/07)
 }
 def mwh_of(client, raw):
     ov = CONSUMPTION_OVERRIDE.get(norm(client))
@@ -225,6 +225,7 @@ def mk_deal(r):
     if r['deal_id'] in FORCE_APPROVED: risk='APPROVED'  # aprovado manual
     # aprovado conta pela DATA DA ANÁLISE DE RISCO; sem risco (WAITING) usa criação
     d = pdate(r['latest_risk_analysis_created_at']) or pdate(r['deal_created_at'])
+    if r['deal_id'] in FORCE_APPROVED and FORCE_APPROVED[r['deal_id']]: d = FORCE_APPROVED[r['deal_id']]  # data de aprovação manual
     return {
       'c': r['current_client_name'],
       's': seller_of(r['sales_person_email'], r['current_client_name']),

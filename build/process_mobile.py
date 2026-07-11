@@ -98,7 +98,7 @@ CONSUMPTION_OVERRIDE = {  # cliente (upper/strip) -> MWh; temp ate base corrigir
  'MÁRCIO PEREIRA PINTO': 5.866,  # aprovado manual, base mostra 1.3 (Felipe 10/07)
 }
 FORCE_APPROVED = {  # deal_id -> nota; contam como aprovado por decisao manual (pre-BGC)
- 'a4a2cc08-a77e-4549-8306-ef13db2a3a95': 'Marcio Pereira pinto / Nicola Popovic (Felipe 10/07)',
+ 'a4a2cc08-a77e-4549-8306-ef13db2a3a95': '2026-07-10',  # Marcio Pereira pinto / Nicola Popovic (Felipe 10/07)
 }
 LOST_IGNORE = {  # ignora lost_at/lost_reason (falso 'nao aceito pela distribuidora')
  'FRANCISCO ALDECI DE QUEIROZ FERNANDES',  # reprovado e erro; ignorar (Felipe 03/07)
@@ -163,6 +163,8 @@ def build_rawData(deals_path, ag_path, prop_path=None, docs_map=None, uc_map=Non
         aprov = (iso(pdate(r['latest_risk_analysis_created_at']) or pdate(r['deal_created_at'])) if approved else '')
         created = pdate(r['deal_created_at'])
         basis = pdate(r['latest_risk_analysis_created_at']) if approved else created
+        if forced and FORCE_APPROVED[did]:
+            aprov = FORCE_APPROVED[did]; basis = pdate(FORCE_APPROVED[did])  # data de aprovação manual
         try: idle=int(float(r['idle_days'])) if r['idle_days'].strip()!='' else 0
         except: idle=0
         out.append({
