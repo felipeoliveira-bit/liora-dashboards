@@ -205,6 +205,7 @@ CONSUMPTION_OVERRIDE = {
  norm('GABRIEL LUCHIARI ALBERTO'): 0.567,  # base mostra 0.13; fatura R$526/615 SP CPFL (Felipe 08/07)
  norm('PERFECTA VIDROS E ALUMINIOS EIRELI'): 0.89,  # base mostra 0.19 (Felipe 07/07, ajuste p/ 0,890)
  norm('CHEVROFOR COM PECAS E ACESSORIOS LTDA'): 1.21,  # base mostra 0.50 (Felipe 07/07)
+ norm('MÁRCIO PEREIRA PINTO'): 5.866,  # aprovado manual, base mostra 1.3 (Felipe 10/07)
 }
 # LOST_IGNORE: ignora lost_at/lost_reason (falso 'nao aceito pela distribuidora') p/ estes clientes.
 LOST_IGNORE = { norm('FRANCISCO ALDECI DE QUEIROZ FERNANDES') }  # reprovado e erro; ignorar (Felipe 03/07)
