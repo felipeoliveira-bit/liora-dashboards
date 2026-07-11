@@ -208,6 +208,11 @@ CONSUMPTION_OVERRIDE = {
 }
 # LOST_IGNORE: ignora lost_at/lost_reason (falso 'nao aceito pela distribuidora') p/ estes clientes.
 LOST_IGNORE = { norm('FRANCISCO ALDECI DE QUEIROZ FERNANDES') }  # reprovado e erro; ignorar (Felipe 03/07)
+# FORCE_APPROVED: deals que contam como aprovado por decisao manual (contrato assinado,
+# aguardando BGC). Chave = deal_id. Remover quando a base refletir BGC APPROVED.
+FORCE_APPROVED = {
+ 'a4a2cc08-a77e-4549-8306-ef13db2a3a95': 'Marcio Pereira pinto / Nicola Popovic - aprovado manual (Felipe 10/07)',
+}
 def mwh_of(client, raw):
     ov = CONSUMPTION_OVERRIDE.get(norm(client))
     return ov if ov is not None else fnum(raw)
@@ -216,6 +221,7 @@ def mwh_of(client, raw):
 def mk_deal(r):
     risk = (r['latest_risk_analysis_result'] or '').strip()
     if r['deal_stage']=='BGC_PARCEIRO': risk=''  # em validação Antecipa: não conta como aprovado
+    if r['deal_id'] in FORCE_APPROVED: risk='APPROVED'  # aprovado manual
     # aprovado conta pela DATA DA ANÁLISE DE RISCO; sem risco (WAITING) usa criação
     d = pdate(r['latest_risk_analysis_created_at']) or pdate(r['deal_created_at'])
     return {
@@ -242,6 +248,11 @@ for r in deals + agu:                 # aguardando entra como deals extras
     if did in seen: continue           # dedup por deal_id (clientes multi-UC)
     seen.add(did)
     rawData.append(mk_deal(r))
+for r in prop:                        # injeta aprovados manuais ausentes dos recortes
+    did = r['deal_id']
+    if did in FORCE_APPROVED and did not in seen:
+        seen.add(did)
+        rawData.append(mk_deal(r))
 rawData.sort(key=lambda x: (x['date'], -x['mwh']), reverse=True)
 
 # ---- RAW (propostas — todas do mês corrente, sem dedup) ------------------

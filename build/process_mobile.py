@@ -96,6 +96,9 @@ CONSUMPTION_OVERRIDE = {  # cliente (upper/strip) -> MWh; temp ate base corrigir
  'PERFECTA VIDROS E ALUMINIOS EIRELI': 0.89,  # base mostra 0.19 (Felipe 07/07, ajuste p/ 0,890)
  'CHEVROFOR COM PECAS E ACESSORIOS LTDA': 1.21,  # base mostra 0.50 (Felipe 07/07)
 }
+FORCE_APPROVED = {  # deal_id -> nota; contam como aprovado por decisao manual (pre-BGC)
+ 'a4a2cc08-a77e-4549-8306-ef13db2a3a95': 'Marcio Pereira pinto / Nicola Popovic (Felipe 10/07)',
+}
 LOST_IGNORE = {  # ignora lost_at/lost_reason (falso 'nao aceito pela distribuidora')
  'FRANCISCO ALDECI DE QUEIROZ FERNANDES',  # reprovado e erro; ignorar (Felipe 03/07)
 }
@@ -140,7 +143,7 @@ def load_uc(path):
         print('aviso: uc nao carregado:', e)
     return m
 
-def build_rawData(deals_path, ag_path, docs_map=None, uc_map=None):
+def build_rawData(deals_path, ag_path, prop_path=None, docs_map=None, uc_map=None):
     docs_map = docs_map or {}
     uc_map = uc_map or {}
     def rows(p):
@@ -154,8 +157,9 @@ def build_rawData(deals_path, ag_path, docs_map=None, uc_map=None):
         s=canon_seller(r['sales_person_email'], r['sales_person_name'])
         ov=CLIENT_OVERRIDE.get((cli or '').strip().upper())
         if ov: s=ov[0]
-        approved = r['latest_risk_analysis_result']=='APPROVED' and r['deal_stage']!='BGC_PARCEIRO'  # BGC_PARCEIRO = validação Antecipa, ainda não aprovado
-        aprov = iso(pdate(r['latest_risk_analysis_created_at'])) if approved else ''
+        forced = did in FORCE_APPROVED
+        approved = forced or (r['latest_risk_analysis_result']=='APPROVED' and r['deal_stage']!='BGC_PARCEIRO')  # BGC_PARCEIRO = validação Antecipa, ainda não aprovado
+        aprov = (iso(pdate(r['latest_risk_analysis_created_at']) or pdate(r['deal_created_at'])) if approved else '')
         created = pdate(r['deal_created_at'])
         basis = pdate(r['latest_risk_analysis_created_at']) if approved else created
         try: idle=int(float(r['idle_days'])) if r['idle_days'].strip()!='' else 0
@@ -174,6 +178,9 @@ def build_rawData(deals_path, ag_path, docs_map=None, uc_map=None):
         })
     for r in rows(deals_path): emit(r)
     for r in rows(ag_path):    emit(r)
+    if prop_path:                       # injeta aprovados manuais ausentes dos recortes
+        for r in rows(prop_path):
+            if r['deal_id'] in FORCE_APPROVED and r['deal_id'] not in seen: emit(r)
     return out
 
 def build_RAW_PROP(prop_path):
@@ -206,7 +213,7 @@ if __name__=='__main__':
     import os as _os
     uc_map = load_uc(_os.environ.get('UC_CSV'))
     print('uc carregados:', len(uc_map))
-    rd=build_rawData(d,a,docs_map,uc_map); rp=build_RAW_PROP(p)
+    rd=build_rawData(d,a,p,docs_map,uc_map); rp=build_RAW_PROP(p)
     print('docs pendentes carregados:', len(docs_map))
     json.dump(rd,open('new_rawData.json','w'),ensure_ascii=False)
     json.dump(rp,open('new_RAW_PROP.json','w'),ensure_ascii=False)
