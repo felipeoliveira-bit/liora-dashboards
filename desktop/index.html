@@ -94,7 +94,7 @@ body { font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; background: v
 .op-section { margin-bottom: 14px; }
 .op-section-head { display:flex; align-items:center; justify-content:space-between; margin-bottom: 10px; }
 .op-section-title { font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
-.op-cards { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+.op-cards { display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; }
 .op-card { background: #fff; border: 2px solid var(--border); border-radius: 10px; padding: 13px 14px; }
 .op-card.active { border-color: var(--blue); box-shadow: 0 2px 8px rgba(2,1,243,0.12); }
 .op-card .op-name { font-size: 13px; font-weight: 700; color: var(--text1); margin-bottom: 8px; }
@@ -125,6 +125,7 @@ table.bau tbody tr.vendedor-row.last td { border-bottom: 2px solid var(--border)
 .b-Salvador { background: var(--green); }
 .b-Feira { background: var(--orange); }
 .b-Natal { background: var(--lightblue); }
+.b-RNInterior { background: #0EA5A5; }
 .b-SPI { background: var(--purple); }
     .b-Ribeirao { background: #A78BFA; }
 .b-CE { background: var(--pink); }
@@ -206,7 +207,7 @@ table.bau tbody tr.field-row td:first-child { color: #fff; }
 <div class=&quot;section op-section&quot;>
   <div class=&quot;op-section-head&quot;>
     <span class=&quot;op-section-title&quot;>Operação</span>
-    <span style=&quot;font-size:11px;color:var(--text3)&quot;>Meta Safra: 342 MWh/mês</span>
+    <span style=&quot;font-size:11px;color:var(--text3)&quot;>Meta Safra: 357 MWh/mês</span>
   </div>
   <div class=&quot;op-cards&quot; id=&quot;bau-op-cards&quot;></div>
 </div>
@@ -244,7 +245,7 @@ const VENDEDORES = [
   {nome:'Nicola Popovic',praca:'SPI'},
   {nome:'Anderson Correia',praca:'SPI'},
   {nome:'Ana Ribeiro',praca:'SPI'},
-  {nome:'Mecenas Junior',praca:'Natal'},{nome:'Daniel Magnus',praca:'Natal'},
+  {nome:'Mecenas Junior',praca:'Natal'},{nome:'Mirla Albuquerque',praca:'RNInterior'},{nome:'Daniel Magnus',praca:'Natal'},
   {nome:'Maria Lúcia',praca:'Salvador'},
   {nome:'Ettore Rossi',praca:'Salvador'},
   {nome:'Antonio Mariano',praca:'Salvador'},
@@ -273,12 +274,12 @@ PRACA_OF['Bruno Rodrigues'] = 'Natal';
 PRACA_OF['Camila Couto'] = 'Feira';
 PRACA_OF['Tais Santos'] = 'Salvador';
 
-const PRACAS = ['Salvador','Feira','Natal','SPI','Ribeirao','CE'];
+const PRACAS = ['Salvador','Feira','Natal','SPI','Ribeirao','CE','RNInterior'];
 
 // Metas Safra julho 2026
-const METAS_SAFRA = { Salvador: 60, Feira: 60, Natal: 75, SPI: 72, Ribeirao: 15, CE: 60 };
+const METAS_SAFRA = { Salvador: 60, Feira: 60, Natal: 75, SPI: 72, Ribeirao: 15, CE: 60, RNInterior: 15 };
 // Meta INDIVIDUAL por vendedor (da planilha de metas, mensal MWh)
-const META_IND = { Salvador: 19.0, Feira: 19.0, Natal: 19.0, SPI: 15.0, Ribeirao: 15.0, CE: 15.0 };
+const META_IND = { Salvador: 19.0, Feira: 19.0, Natal: 19.0, SPI: 15.0, Ribeirao: 15.0, CE: 15.0, RNInterior: 15.0 };
 // Exceções de meta individual que diferem da praça (nome do vendedor → meta mensal MWh)
 const META_VEND_OVERRIDE = {};
 function metaVendMensal(nome, praca) {
@@ -582,15 +583,16 @@ function bauColVal(x, col) {
 }
 
 const OP_LIST = [
-  {key:'todas', label:'Todas', color:'#0201F3', meta:342},
+  {key:'todas', label:'Todas', color:'#0201F3', meta:357},
   {key:'salvador', label:'Salvador', color:'#1D9E75', meta:60},
-  {key:'natal', label:'Natal (RN)', color:'#378ADD', meta:75},
+  {key:'natal', label:'RN Capital', color:'#378ADD', meta:75},
+  {key:'rninterior', label:'RN Interior', color:'#0EA5A5', meta:15},
   {key:'feira', label:'Feira', color:'#EF9F27', meta:60},
   {key:'spi', label:'Campinas SPI', color:'#7F77DD', meta:72},
   {key:'ribeirao', label:'Ribeirão Preto SPI', color:'#A78BFA', meta:15},
   {key:'ce', label:'CE (Fortaleza)', color:'#D4537E', meta:60},
 ];
-const OP_TO_PRACA = {salvador:'Salvador', feira:'Feira', natal:'Natal', spi:'SPI', ribeirao:'Ribeirao', ce:'CE'};
+const OP_TO_PRACA = {salvador:'Salvador', feira:'Feira', natal:'Natal', spi:'SPI', ribeirao:'Ribeirao', ce:'CE', rninterior:'RNInterior'};
 
 function renderOpCards() {
   const el = document.getElementById('bau-op-cards');
@@ -605,7 +607,7 @@ function renderOpCards() {
     // meta to-date do mês (acumulada até hoje, proporcional aos dias úteis)
     let metaToDate, metaMes;
     if (op.key === 'todas') {
-      metaMes = 342;
+      metaMes = 357;
       metaToDate = PRACAS.reduce((a,p)=>a+safraToDate(p), 0);
     } else {
       const praca = OP_TO_PRACA[op.key];
@@ -711,7 +713,7 @@ function renderPropostas() {
     if (byP[v.praca]) { byP[v.praca].perVendedor[v.nome] = {total:0, mwh:0, fatura:0}; byP[v.praca].vendedores.add(v.nome); }
   });
   
-  const PRACA_SHORT = {'Feira de Santana':'Feira','Natal (RN)':'Natal','Campinas SPI':'SPI','Ribeirão Preto SPI':'Ribeirao','CE (Fortaleza)':'CE'};
+  const PRACA_SHORT = {'Feira de Santana':'Feira','RN Capital':'Natal','RN Interior':'RNInterior','Campinas SPI':'SPI','Ribeirão Preto SPI':'Ribeirao','CE (Fortaleza)':'CE'};
   monthRaw.forEach(d => {
     let p = PRACA_SHORT[d.praca] || d.praca;
     if (!byP[p]) p = pracaOf(d); // fallback pelo vendedor
@@ -772,7 +774,7 @@ function renderAprovados() {
   
   rawData.filter(d => dateInBauPeriod(d.date)).forEach(d => {
     // mapear op interno para nome da praça
-    const opMap = { salvador:'Salvador', feira:'Feira', natal:'Natal', spi:'SPI', ribeirao:'Ribeirao', ce:'CE' };
+    const opMap = { salvador:'Salvador', feira:'Feira', natal:'Natal', spi:'SPI', ribeirao:'Ribeirao', ce:'CE', rninterior:'RNInterior' };
     const p = opMap[d.op];
     if (!p || !byP[p]) return;
     
@@ -1106,6 +1108,7 @@ table.rk tbody tr.field-row td { color: #fff; font-weight: 700; font-size: 12px;
 .b-Salvador { background: var(--green); }
 .b-Feira { background: var(--orange); }
 .b-Natal { background: var(--lightblue); }
+.b-RNInterior { background: #0EA5A5; }
 .b-SPI { background: var(--purple); }
     .b-Ribeirao { background: #A78BFA; }
 .b-CE { background: var(--pink); }
@@ -1200,7 +1203,7 @@ const VENDEDORES = [
   {nome:'Nicola Popovic',praca:'SPI'},
   {nome:'Anderson Correia',praca:'SPI'},
   {nome:'Ana Ribeiro',praca:'SPI'},
-  {nome:'Mecenas Junior',praca:'Natal'},{nome:'Daniel Magnus',praca:'Natal'},
+  {nome:'Mecenas Junior',praca:'Natal'},{nome:'Mirla Albuquerque',praca:'RNInterior'},{nome:'Daniel Magnus',praca:'Natal'},
   {nome:'Maria Lúcia',praca:'Salvador'},{nome:'Ettore Rossi',praca:'Salvador'},
   {nome:'Antonio Mariano',praca:'Salvador'},{nome:'Tais Santos',praca:'Salvador'},
   {nome:'Adroaldo Bonfim',praca:'Salvador'},{nome:'Kelma Rangel',praca:'Feira'},
@@ -1218,9 +1221,9 @@ PRACA_OF['Bruno Rodrigues'] = 'Natal';
 PRACA_OF['Camila Couto'] = 'Feira';
 PRACA_OF['Tais Santos'] = 'Salvador';
 
-const PRACAS = ['Salvador','Feira','Natal','SPI','Ribeirao','CE'];
-const METAS_SAFRA = { Salvador: 60, Feira: 60, Natal: 75, SPI: 72, Ribeirao: 15, CE: 60 };
-const META_IND = { Salvador: 19.0, Feira: 19.0, Natal: 19.0, SPI: 15.0, Ribeirao: 15.0, CE: 15.0 };
+const PRACAS = ['Salvador','Feira','Natal','SPI','Ribeirao','CE','RNInterior'];
+const METAS_SAFRA = { Salvador: 60, Feira: 60, Natal: 75, SPI: 72, Ribeirao: 15, CE: 60, RNInterior: 15 };
+const META_IND = { Salvador: 19.0, Feira: 19.0, Natal: 19.0, SPI: 15.0, Ribeirao: 15.0, CE: 15.0, RNInterior: 15.0 };
 // Exceções de meta individual que diferem da praça (nome do vendedor → meta mensal MWh)
 const META_VEND_OVERRIDE = {};
 function metaVendMensal(nome, praca) {
@@ -1778,6 +1781,7 @@ tbody tr:hover { background: #fafbff; }
 .b-Salvador { background: var(--green); }
 .b-Feira { background: var(--orange); }
 .b-Natal { background: var(--lightblue); }
+.b-RNInterior { background: #0EA5A5; }
 .b-SPI { background: var(--purple); }
     .b-Ribeirao { background: #A78BFA; }
 .b-CE { background: var(--pink); }
@@ -1925,7 +1929,7 @@ const VENDEDORES = [
   {nome:'Nicola Popovic',praca:'SPI'},
   {nome:'Anderson Correia',praca:'SPI'},
   {nome:'Ana Ribeiro',praca:'SPI'},
-  {nome:'Mecenas Junior',praca:'Natal'},{nome:'Daniel Magnus',praca:'Natal'},
+  {nome:'Mecenas Junior',praca:'Natal'},{nome:'Mirla Albuquerque',praca:'RNInterior'},{nome:'Daniel Magnus',praca:'Natal'},
   {nome:'Maria Lúcia',praca:'Salvador'},
   {nome:'Ettore Rossi',praca:'Salvador'},
   {nome:'Antonio Mariano',praca:'Salvador'},
@@ -3562,7 +3566,7 @@ window.RAW = RAW;
 // ════════════════════════════════════════════
 const TODAY=(function(){try{var _ds=RAW.map(d=>String(d.date||'').slice(0,10)).filter(Boolean).sort();return _ds[_ds.length-1]||&quot;2026-06-01&quot;;}catch(e){return &quot;2026-06-01&quot;;}})(), CW=(function(){var _r=RAW.find(function(d){return String(d.date||'').slice(0,10)===TODAY;});return _r?(+_r.week||0):(RAW.length?Math.max.apply(null,RAW.map(function(d){return +d.week||0;})):0);})(), PW=CW-1;
 try{var _hd=document.getElementById('hdr-date'); if(_hd){var _tp=TODAY.split('-'); _hd.textContent=_tp[2]+'/'+_tp[1]+'/'+_tp[0];}}catch(e){}
-const PRACAS=[&quot;Salvador&quot;,&quot;Feira&quot;,&quot;Natal&quot;,&quot;CE&quot;,&quot;SPI&quot;,&quot;Ribeirao&quot;];
+const PRACAS=[&quot;Salvador&quot;,&quot;Feira&quot;,&quot;Natal&quot;,&quot;CE&quot;,&quot;SPI&quot;,&quot;Ribeirao&quot;,&quot;RNInterior&quot;];
 const PC={
   &quot;Salvador&quot;:&quot;#0201F3&quot;,
   &quot;Feira&quot;:&quot;#7c3aed&quot;,
@@ -4275,7 +4279,7 @@ h2 { font-size: 18px; font-weight: 500; margin-bottom: 1.25rem; }
 .metric .val { font-size: 22px; font-weight: 500; }
 .metric .sub { font-size: 10px; color: #aaa; margin-top: 2px; }
 .divider { height: .5px; background: #e5e5e5; margin: 1rem 0 .75rem; }
-.op-cards { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 1.5rem; }
+.op-cards { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; margin-bottom: 1.5rem; }
 .op-card { background: #fff; border: .5px solid #e0e0e0; border-radius: 8px; padding: 10px 12px; cursor: pointer; }
 .op-card.active { border: 2px solid #0201F3; }
 .op-card .op-name { font-size: 11px; font-weight: 600; margin-bottom: 3px; }
@@ -4389,7 +4393,7 @@ td.fn-clk:hover{ text-decoration:underline; }
     onmouseover=&quot;this.style.background='#e0e8ff'&quot;
     onmouseout=&quot;this.style.background='#f0f4ff'&quot;>
     <span class=&quot;tmm-label&quot; style=&quot;font-size:11px;font-weight:700;color:#0201F3&quot;>Ver BP</span>
-    <span class=&quot;tmm-sub&quot; style=&quot;font-size:9px;color:#888;margin-top:1px&quot;>Meta: 342 MWh</span>
+    <span class=&quot;tmm-sub&quot; style=&quot;font-size:9px;color:#888;margin-top:1px&quot;>Meta: 357 MWh</span>
   </button>
 </div>
 <div class=&quot;op-cards&quot; id=&quot;op-cards&quot;></div>
@@ -4452,11 +4456,13 @@ td.fn-clk:hover{ text-decoration:underline; }
 
 <script>
 const OPS_SAFRA = [
-  { key:'todas',    label:'Todas',          meta:342, color:'#0201F3' },
+  { key:'todas',    label:'Todas',          meta:357, color:'#0201F3' },
   { key:'salvador', label:'Salvador',       meta:60,  color:'#1D9E75',
     cities:['SALVADOR','DIAS DAVILA',&quot;DIAS D'ÁVILA&quot;,'CAMAÇARI','CAMACAR','MATA DE SÃO JOÃO','MATA DE SAD JOAO','MATA DE SAO OAO','DIAS DAVIL','SIMÕES FILHO','SIMOES FILHO','SANTO AMARO'] },
-  { key:'natal',    label:'Natal (RN)',     meta:75,  color:'#378ADD',
-    cities:['PARNAMIRIM','NATAL','EXTREMOZ','MOSSORÓ'] },
+  { key:'natal',    label:'RN Capital',     meta:75,  color:'#378ADD',
+    cities:['PARNAMIRIM','NATAL','EXTREMOZ'] },
+  { key:'rninterior',label:'RN Interior',   meta:15,  color:'#0EA5A5',
+    cities:['MOSSORÓ'] },
   { key:'feira',    label:'Feira',          meta:60,  color:'#EF9F27',
     cities:['FEIRA DE SANTANA','SERRINHA','CONCEIÇÃO DA FEIRA','MURITIBA','SÃO FRANCISCO DO CONDE','FRANCISCO DO CONDE','CRUZ DAS ALMAS','CONCEIÇÃO DO COITÉ'] },
   { key:'spi',      label:'Campinas SPI',     meta:72,  color:'#7F77DD',
@@ -4469,8 +4475,10 @@ const OPS_BP = [
   { key:'todas',    label:'Todas',          meta:250.0,color:'#0201F3' },
   { key:'salvador', label:'Salvador',       meta:35.25,color:'#1D9E75',
     cities:['SALVADOR','DIAS DAVILA',&quot;DIAS D'ÁVILA&quot;,'CAMAÇARI','CAMACAR','MATA DE SÃO JOÃO','MATA DE SAD JOAO','MATA DE SAO OAO','DIAS DAVIL','SIMÕES FILHO','SIMOES FILHO','SANTO AMARO'] },
-  { key:'natal',    label:'Natal (RN)',     meta:47.0, color:'#378ADD',
-    cities:['PARNAMIRIM','NATAL','EXTREMOZ','MOSSORÓ'] },
+  { key:'natal',    label:'RN Capital',     meta:47.0, color:'#378ADD',
+    cities:['PARNAMIRIM','NATAL','EXTREMOZ'] },
+  { key:'rninterior',label:'RN Interior',   meta:0,    color:'#0EA5A5',
+    cities:['MOSSORÓ'] },
   { key:'feira',    label:'Feira',          meta:35.25,color:'#EF9F27',
     cities:['FEIRA DE SANTANA','SERRINHA','CONCEIÇÃO DA FEIRA','MURITIBA','SÃO FRANCISCO DO CONDE','FRANCISCO DO CONDE','CRUZ DAS ALMAS','CONCEIÇÃO DO COITÉ'] },
   { key:'spi',      label:'Campinas SPI',     meta:70.5, color:'#7F77DD',
@@ -4530,7 +4538,7 @@ function toggleMetaMode(btn) {
   META_MODE = META_MODE === 'safra' ? 'bp' : 'safra';
   OPS = META_MODE === 'safra' ? OPS_SAFRA : OPS_BP;
   const label = META_MODE === 'safra' ? 'Ver BP' : 'Ver Safra';
-  const sublabel = META_MODE === 'safra' ? 'Meta: 342 MWh' : 'Meta: 235 MWh';
+  const sublabel = META_MODE === 'safra' ? 'Meta: 357 MWh' : 'Meta: 235 MWh';
   btn.querySelector('.tmm-label').textContent = label;
   btn.querySelector('.tmm-sub').textContent = sublabel;
   buildOpCards(); refreshSummary();
@@ -4846,10 +4854,10 @@ const CAMP_SELLERS = [
   {name:'Lucileide Carlos', praca:'Feira', meta:19, mes:0.00, camp:0.00},
   {name:'Rosangela Mendes', praca:'Feira', meta:19, mes:0.00, camp:0.00},
   {name:'Tiago Freitas', praca:'Feira', meta:19, mes:0.00, camp:0.00},
-  {name:'Marcio Galvão', praca:'Natal (RN)', meta:19, mes:0.00, camp:0.00},
-  {name:'Bruno Andrade', praca:'Natal (RN)', meta:19, mes:0.00, camp:0.00},
-  {name:'Ananias Neto', praca:'Natal (RN)', meta:19, mes:0.00, camp:0.00},
-  {name:'Rodrigo Ribeiro', praca:'Natal (RN)', meta:19, mes:0.00, camp:0.00},
+  {name:'Marcio Galvão', praca:'RN Capital', meta:19, mes:0.00, camp:0.00},
+  {name:'Bruno Andrade', praca:'RN Capital', meta:19, mes:0.00, camp:0.00},
+  {name:'Ananias Neto', praca:'RN Capital', meta:19, mes:0.00, camp:0.00},
+  {name:'Rodrigo Ribeiro', praca:'RN Capital', meta:19, mes:0.00, camp:0.00},
   {name:'Bruno Borges', praca:'CE (Fortaleza)', meta:15, mes:0.00, camp:0.00},
   {name:'Neilon Nascimento', praca:'CE (Fortaleza)', meta:15, mes:0.00, camp:0.00},{name:'Sabrina Tomazeti', praca:'CE (Fortaleza)', meta:15, mes:0.00, camp:0.00},
   {name:'Caio Lannes', praca:'Campinas SPI', meta:15, mes:0.00, camp:0.00},
@@ -4865,21 +4873,21 @@ const CAMP_CLIENTS = [
   {c:'JOSE QUITO SA DE JESUS',v:'Maria Lúcia',p:'Salvador',ci:'MATA DE SÃO JOÃO',st:'Req. TT',status:'Pendente OPS',mwh:0.86,sem:'Semana 3'},
   {c:'Paulo Alexandre de Matos Costa',v:'Ettore Rossi',p:'Salvador',ci:'DIAS DAVILA',st:'Req. TT',status:'Pendente OPS',mwh:0.70,sem:'Semana 3'},
   {c:'EDUARDO SOUSA GARRIDO',v:'Ettore Rossi',p:'Salvador',ci:'SALVADOR',st:'Req. TT',status:'Pendente OPS',mwh:0.57,sem:'Semana 3'},
-  {c:'LUIZ GONZAGA DE ALMEIDA JUNIOR',v:'Ananias Neto',p:'Natal (RN)',ci:'NATAL',st:'Req. TT',status:'Pendente OPS',mwh:0.54,sem:'Semana 3'},
+  {c:'LUIZ GONZAGA DE ALMEIDA JUNIOR',v:'Ananias Neto',p:'RN Capital',ci:'NATAL',st:'Req. TT',status:'Pendente OPS',mwh:0.54,sem:'Semana 3'},
   {c:'DANIEL SILVA DO CARMO',v:'Tais Santos',p:'Salvador',ci:'SANTO AMARO',st:'Req. TT',status:'Pendente OPS',mwh:0.48,sem:'Semana 3'},
   {c:'DIEGO MACHADO VIERA',v:'Tiago Freitas',p:'Feira',ci:'FEIRA DE SANTANA',st:'Req. TT',status:'Pendente OPS',mwh:0.44,sem:'Semana 3'},
   {c:'ELAINE MARTINS SANTOS',v:'Maria Lúcia',p:'Salvador',ci:'SANTO AMARO',st:'Req. TT',status:'Pendente OPS',mwh:0.38,sem:'Semana 3'},
   {c:'CRISTIANA TAVARES DE SANTANA',v:'Antonio Carlos',p:'Salvador',ci:'MATA DE SÃO JOÃO',st:'Req. TT',status:'Pendente OPS',mwh:0.28,sem:'Semana 3'},
-  {c:'VANUZA DA SILVA',v:'Marcio Galvão',p:'Natal (RN)',ci:'PARNAMIRIM',st:'Req. TT',status:'Pendente OPS',mwh:0.28,sem:'Semana 3'},
+  {c:'VANUZA DA SILVA',v:'Marcio Galvão',p:'RN Capital',ci:'PARNAMIRIM',st:'Req. TT',status:'Pendente OPS',mwh:0.28,sem:'Semana 3'},
   {c:'RANULFO MUNIZ BARRETTO JUNIOR',v:'Maria Lúcia',p:'Salvador',ci:'SANTO AMARO',st:'Req. TT',status:'Pendente OPS',mwh:0.27,sem:'Semana 3'},
   {c:'JOSE QUITO SA DE JESUS',v:'Antonio Carlos',p:'Salvador',ci:'MATA DE SÃO JOÃO',st:'Req. TT',status:'Pendente OPS',mwh:0.23,sem:'Semana 3'},
-  {c:'BRUCE BRANDAO CAVALCANTI',v:'Marcio Galvão',p:'Natal (RN)',ci:'NATAL',st:'Req. TT',status:'Pendente OPS',mwh:0.22,sem:'Semana 3'},
-  {c:'LUIZ GONZAGA DE ALMEIDA JUNIOR',v:'Ananias Neto',p:'Natal (RN)',ci:'NATAL',st:'Req. TT',status:'Pendente OPS',mwh:0.19,sem:'Semana 3'},
+  {c:'BRUCE BRANDAO CAVALCANTI',v:'Marcio Galvão',p:'RN Capital',ci:'NATAL',st:'Req. TT',status:'Pendente OPS',mwh:0.22,sem:'Semana 3'},
+  {c:'LUIZ GONZAGA DE ALMEIDA JUNIOR',v:'Ananias Neto',p:'RN Capital',ci:'NATAL',st:'Req. TT',status:'Pendente OPS',mwh:0.19,sem:'Semana 3'},
   {c:'RANULFO MUNIZ BARRETTO JUNIOR',v:'Antonio Carlos',p:'Salvador',ci:'SANTO AMARO',st:'Req. TT',status:'Pendente OPS',mwh:0.18,sem:'Semana 3'},
   {c:'ELAINE MARTINS SANTOS',v:'Ettore Rossi',p:'Salvador',ci:'SANTO AMARO',st:'Req. TT',status:'Pendente OPS',mwh:0.18,sem:'Semana 3'},
 ];
 
-const PRACA_COLORS_CAMP = {'Salvador':'#1D9E75','Natal (RN)':'#378ADD','Feira':'#EF9F27','Campinas SPI':'#7F77DD','CE (Fortaleza)':'#D4537E'};
+const PRACA_COLORS_CAMP = {'Salvador':'#1D9E75','RN Capital':'#378ADD','RN Interior':'#0EA5A5','Feira':'#EF9F27','Campinas SPI':'#7F77DD','CE (Fortaleza)':'#D4537E'};
 
 function setCampTab(t) {
   document.getElementById('camp-tab-resumo').classList.toggle('active', t==='resumo');
@@ -4919,7 +4927,7 @@ function renderCampanha() {
   // Merge with CAMP_SELLERS for meta/mes info
   let filteredSellers = CAMP_SELLERS.filter(s =>
     (!sellerFilter || s.name === sellerFilter) &amp;&amp;
-    (!opFilter || s.praca === ({'salvador':'Salvador','natal':'Natal (RN)','feira':'Feira','spi':'Campinas SPI','ribeirao':'Ribeirão Preto SPI','ce':'CE (Fortaleza)'}[opFilter] || opFilter))
+    (!opFilter || s.praca === ({'salvador':'Salvador','natal':'RN Capital','feira':'Feira','spi':'Campinas SPI','ribeirao':'Ribeirão Preto SPI','ce':'CE (Fortaleza)','rninterior':'RN Interior'}[opFilter] || opFilter))
   ).map(s => ({
     ...s,
     camp: bySellerMap[s.name]?.camp || 0
@@ -4953,7 +4961,7 @@ function renderCampanha() {
     html2 += '<tr><td colspan=&quot;7&quot; style=&quot;text-align:center;padding:2rem;color:#888&quot;>Nenhum cliente neste filtro.</td></tr>';
   } else {
     sorted.forEach(x=>{
-      const opLabel = {'salvador':'Salvador','natal':'Natal (RN)','feira':'Feira','spi':'Campinas SPI','ribeirao':'Ribeirão Preto SPI','ce':'CE (Fortaleza)'}[x.op] || x.op;
+      const opLabel = {'salvador':'Salvador','natal':'RN Capital','feira':'Feira','spi':'Campinas SPI','ribeirao':'Ribeirão Preto SPI','ce':'CE (Fortaleza)','rninterior':'RN Interior'}[x.op] || x.op;
       const col=PC[opLabel]||'#999';
       const statusLabel = isAprovado(x) ? 'Aprovado' : 'Pendente OPS';
       const sc = isAprovado(x) ? {bg:'#EAF3DE',text:'#3B6D11'} : {bg:'#E6F1FB',text:'#185FA5'};
@@ -4989,7 +4997,7 @@ function fmtMwh(v) {
   return `<span class=&quot;has-val&quot;>${v.toFixed(1)}</span>`;
 }
 
-const META_IND = { salvador:19, feira:19, natal:19, spi:15, ribeirao:15, ce:15 };
+const META_IND = { salvador:19, feira:19, natal:19, spi:15, ribeirao:15, ce:15, rninterior:15 };
 function wdFactor() {
   const parts = BP_TODAY.split('-').map(Number);
   const yr = parts[0], mo = parts[1], dy = parts[2];
@@ -5215,7 +5223,7 @@ function render() {
   const approvedMwh = d.filter(x => (isAprovado(x) || isPendenteOPS(x)) &amp;&amp; noMesAtual(x)).reduce((a,x)=>a+x.mwh,0);
   const urgMwh = d.filter(x=>x.status==='Pendente Vendas').reduce((a,x)=>a+x.mwh,0);
   const opObj = OPS.find(o=>o.key===currentOp);
-  const metaOp = opObj?.meta||342;
+  const metaOp = opObj?.meta||357;
 
   document.getElementById('metrics').innerHTML = `
     <div class=&quot;metric&quot; id=&quot;metric-todos&quot; onclick=&quot;metricClick('todos')&quot; title=&quot;Ver todos os clientes&quot;><div class=&quot;lbl&quot;>Clientes Assinados</div><div class=&quot;val&quot;>${d.length}</div></div>
@@ -5550,7 +5558,7 @@ const VENDEDORES = [
   {nome:'Nicola Popovic',praca:'SPI'},
   {nome:'Anderson Correia',praca:'SPI'},
   {nome:'Ana Ribeiro',praca:'SPI'},
-  {nome:'Mecenas Junior',praca:'Natal'},{nome:'Daniel Magnus',praca:'Natal'},
+  {nome:'Mecenas Junior',praca:'Natal'},{nome:'Mirla Albuquerque',praca:'RNInterior'},{nome:'Daniel Magnus',praca:'Natal'},
   {nome:'Maria Lúcia', praca:'Salvador'},
   {nome:'Ettore Rossi', praca:'Salvador'},
   {nome:'Antonio Mariano', praca:'Salvador'},
@@ -6031,7 +6039,8 @@ body { font-family: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif; back
 .lc-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .badge-praca { font-size: 11px; padding: 3px 12px; border-radius: 11px; color: #fff; font-weight: 700; }
 .b-Salvador { background: var(--green); } .b-Feira { background: var(--orange); }
-.b-Natal { background: var(--lightblue); } .b-SPI { background: var(--purple); }
+.b-Natal { background: var(--lightblue); }
+.b-RNInterior { background: #0EA5A5; } .b-SPI { background: var(--purple); }
     .b-Ribeirao { background: #A78BFA; } .b-CE { background: var(--pink); }
 .lc-pct { font-size: 26px; font-weight: 800; line-height: 1; }
 .lc-metaline { font-size: 12px; color: var(--text2); margin-bottom: 12px; }
@@ -6078,8 +6087,8 @@ body { font-family: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif; back
 <div class=&quot;cards-grid&quot; id=&quot;cards&quot;><div class=&quot;empty&quot;><span class=&quot;spinner&quot;></span> Carregando dados…</div></div>
 
 <script>
-const PRACAS = ['Salvador','Feira','Natal','SPI','Ribeirao','CE'];
-const METAS_SAFRA = { Salvador: 60, Feira: 60, Natal: 75, SPI: 72, Ribeirao: 15, CE: 60 };
+const PRACAS = ['Salvador','Feira','Natal','SPI','Ribeirao','CE','RNInterior'];
+const METAS_SAFRA = { Salvador: 60, Feira: 60, Natal: 75, SPI: 72, Ribeirao: 15, CE: 60, RNInterior: 15 };
 const BP_TODAY = '2026-07-13';
 const DAY = 86400000;
 function localISO(d) {
@@ -6162,7 +6171,7 @@ function aggPorPraca() {
   const byP = {};
   PRACAS.forEach(p => byP[p] = { praca:p, mwh:0, aprovados:0 });
   rawData.filter(d => dateInPeriod(d.date)).forEach(d => {
-    const opMap = {salvador:'Salvador',feira:'Feira',natal:'Natal',spi:'SPI',ribeirao:'Ribeirao',ce:'CE'};
+    const opMap = {salvador:'Salvador',feira:'Feira',natal:'Natal',spi:'SPI',ribeirao:'Ribeirao',ce:'CE',rninterior:'RNInterior'};
     const p = opMap[d.op];
     if (!p || !byP[p]) return;
     if (!isAprovado(d) &amp;&amp; !isPendenteOPS(d)) return;

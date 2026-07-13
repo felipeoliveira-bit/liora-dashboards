@@ -63,6 +63,7 @@ EMAIL_NOME = {
  'monica.silveira@lioraenergia.com.br':'Monica Silveira','franciele.felix@lioraenergia.com.br':'Franciele Felix',
  'ederson.silva@lioraenergia.com.br':'Ederson Silva','diego.faria@lioraenergia.com.br':'Diego Faria',
  'felipe.oliveira@lioraenergia.com.br':'Felipe Oliveira',
+ 'mirla.albuquerque@lioraenergia.com.br':'Mirla Albuquerque',
  'ananias.neto@lioraenergia.com.br':'Ananias Neto','ananias.oliveira@lioraenergia.com.br':'Ananias Neto',
  'thiago.araujo@lioraenergia.com.br':'Thiago Araujo França',
 }
@@ -76,6 +77,7 @@ SELLER_PRACA = {  # canônico -> label praça
  'Anderson Correia':'SPI',
  'Ana Ribeiro':'SPI',
  'João Santos':'Ribeirão Preto SPI',
+ 'Mirla Albuquerque':'RN Interior',
  'Mecenas Junior':'Natal',
  'Daniel Magnus':'Natal',
  'Adroaldo Bonfim':'Salvador','Ettore Rossi':'Salvador','Maria Lúcia':'Salvador','Tais Santos':'Salvador','Antonio Mariano':'Salvador',

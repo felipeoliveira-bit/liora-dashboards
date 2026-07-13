@@ -824,7 +824,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
   <div class="copa-modal" id="copa-modal" onclick="closeCopaFig()"></div>
 
   <div style="position:fixed;bottom:78px;right:8px;font-size:9px;color:#aaa;background:rgba(255,255,255,.85);padding:2px 6px;border-radius:8px;z-index:99;font-family:monospace;pointer-events:none">
-    v2.157 · 10/07
+    v2.158 · 13/07
   </div>
 
   <!-- BOTTOM NAV -->
@@ -960,7 +960,8 @@ function getAcao(x){
 
 // ── PRAÇAS ────────────────────────────────────────────────
 const PRACA_DEF = {
-  natal:    {key:'natal',label:'Natal (RN)',color:'#378ADD',meta:75},
+  natal:    {key:'natal',label:'RN Capital',color:'#378ADD',meta:75},
+  rninterior:{key:'rninterior',label:'RN Interior',color:'#0EA5A5',meta:15},
   feira:    {key:'feira',label:'Feira',color:'#EF9F27',meta:60},
   spi:      {key:'spi',label:'Campinas SPI',color:'#7F77DD',meta:72},
   ribeirao: {key:'ribeirao',label:'Ribeirão Preto SPI',color:'#A78BFA',meta:15},
@@ -978,6 +979,7 @@ let SELLER_PRACA = {
   'Anderson Correia':'spi',
   'Ana Ribeiro':'spi',
   'João Santos':'ribeirao',
+  'Mirla Albuquerque':'rninterior',
   'Mecenas Junior':'natal',
   'Daniel Magnus':'natal',
   'Adroaldo Bonfim':'salvador','Antonio Mariano':'salvador','Ettore Rossi':'salvador','Maria Lúcia':'salvador','Tais Santos':'salvador',
@@ -1023,6 +1025,7 @@ function metaToDate(metaMes){ return metaMes * getMetaToDateInfo().fraction; }
 // ── METAS VENDEDOR ────────────────────────────────────────
 let METAS = {
   'João Santos':15,
+  'Mirla Albuquerque':15,
   'Silmara Gomes':15,
   'Luciana Campos':19,
   'Nicola Popovic':15,
@@ -1065,7 +1068,8 @@ renderResumo();
 function renderResumo(){
   const pracas = [
     {key:'salvador',label:'Salvador',color:'#1D9E75',meta:60},
-    {key:'natal',label:'Natal (RN)',color:'#378ADD',meta:75},
+    {key:'natal',label:'RN Capital',color:'#378ADD',meta:75},
+    {key:'rninterior',label:'RN Interior',color:'#0EA5A5',meta:15},
     {key:'feira',label:'Feira',color:'#EF9F27',meta:60},
     {key:'spi',label:'Campinas SPI',color:'#7F77DD',meta:72},
     {key:'ribeirao',label:'Ribeirão Preto SPI',color:'#A78BFA',meta:15},
@@ -1076,7 +1080,7 @@ function renderResumo(){
   if(_meKey && _meKey!=='outras') pracas.sort((a,b)=> (b.key===_meKey) - (a.key===_meKey));
 
   const totalAprov = rawData.filter(x => noMes(x) && isAprovado(x)).reduce((a,x)=>a+x.mwh,0);
-  const totalMeta  = 342;
+  const totalMeta  = 357;
   const totalPct   = Math.min((totalAprov/totalMeta)*100,100);
   const mtdFrac    = getMetaToDateInfo().fraction;
   const totalMetaTD = totalMeta * mtdFrac;
@@ -1215,7 +1219,7 @@ function initSellerSelect(keepSelection){
 
   if(isGestor){
     // Gestor: vê todos ordenados por praça
-    const order = ['Salvador','Feira de Santana','Natal','Campinas SPI','Ribeirão Preto SPI','CE'];
+    const order = ['Salvador','Feira de Santana','RN Capital','RN Interior','Campinas SPI','Ribeirão Preto SPI','CE'];
     order.forEach(pr => {
       const grupo = lista.filter(v => v.praca === pr);
       if(!grupo.length) return;
@@ -1248,13 +1252,13 @@ function initSellerSelect(keepSelection){
 
 // v2.62 — Regras de remuneração variável (Julho) por praça
 const REM_RULES = {
-  abc:   { label: 'Salvador · Feira · Natal', min: 15, meta: 19, sup: 25 },
+  abc:   { label: 'Salvador · Feira · RN Capital', min: 15, meta: 19, sup: 25 },
   defgh: { label: 'SPI · Ceará',               min: 12, meta: 15, sup: 20 },
 };
 const REM_PRIZES = { sup: 3500, meta: 2000, min: 1000 };
 function getRemRules(seller){
   const praca = (SELLER_PRACA[seller] || '').toLowerCase();
-  const group = (praca === 'spi' || praca === 'ce') ? 'defgh' : 'abc';
+  const group = (praca === 'spi' || praca === 'ce' || praca === 'rninterior') ? 'defgh' : 'abc';
   return REM_RULES[group];
 }
 
@@ -2792,6 +2796,7 @@ let LIDERES = {
   'Adroaldo Bonfim': 'salvador',
   'Caio Lannes':     'spi',
   'João Santos':     'ribeirao',
+  'Mirla Albuquerque': 'rninterior',
 };
 function isLider(name){ return !!(name && LIDERES[name]); }
 function liderPraca(name){ return LIDERES[name] || ''; }
@@ -2820,6 +2825,7 @@ let CREDENTIALS = {
    'anderson.correia@lioraenergia.com.br': { nome: 'Anderson Correia', senha: 'SPI' },
    'ana.ribeiro@lioraenergia.com.br': { nome: 'Ana Ribeiro', senha: 'SPI' },
   'joao.santos@lioraenergia.com.br': { nome: 'João Santos', senha: 'SPI' },
+  'mirla.albuquerque@lioraenergia.com.br': { nome: 'Mirla Albuquerque', senha: 'RN' },
   'mecenas.junior@lioraenergia.com.br': { nome: 'Mecenas Junior', senha: 'RN' },
   'daniel.magnus@lioraenergia.com.br': { nome: 'Daniel Magnus', senha: 'RN' },
   'kelma.rangel@lioraenergia.com.br':       { nome: 'Kelma Rangel',       senha: 'Feira' },
@@ -2857,13 +2863,14 @@ function normPracaKey(txt){
   const s = (txt||'').toString().trim().toLowerCase();
   if(s.startsWith('salvador')) return 'salvador';
   if(s.startsWith('feira'))    return 'feira';
-  if(s.startsWith('natal') || s === 'rn') return 'natal';
+  if(s.startsWith('natal') || s === 'rn' || s.includes('capital')) return 'natal';
+  if(s.includes('mossor') || s.includes('rn interior') || s === 'rninterior') return 'rninterior';
   if(s.includes('ribeir')) return 'ribeirao';
   if(s === 'spi' || s.includes('paulo') || s.includes('cpfl') || s.includes('interior') || s.includes('campinas')) return 'spi';
   if(s === 'ce' || s.includes('cear') || s.includes('fortaleza') || s.includes('enel')) return 'ce';
   return 'outras';
 }
-const PRACA_LABEL = { salvador:'Salvador', feira:'Feira de Santana', natal:'Natal', spi:'Campinas SPI', ribeirao:'Ribeirão Preto SPI', ce:'CE', outras:'Outros' };
+const PRACA_LABEL = { salvador:'Salvador', feira:'Feira de Santana', natal:'RN Capital', rninterior:'RN Interior', spi:'Campinas SPI', ribeirao:'Ribeirão Preto SPI', ce:'CE', outras:'Outros' };
 
 // Aplica as linhas da aba Time (vindas do Apps Script) nas estruturas vivas do CRM.
 // rows: [{ email, praca, posicao, meta, senha }]
@@ -2871,7 +2878,7 @@ function applyTeam(rows){
   if(!Array.isArray(rows) || !rows.length) return false;
 
   const novoVend = [];
-  const ordem = ['Salvador','Feira de Santana','Natal','Campinas SPI','Ribeirão Preto SPI','CE'];
+  const ordem = ['Salvador','Feira de Santana','RN Capital','RN Interior','Campinas SPI','Ribeirão Preto SPI','CE'];
 
   rows.forEach(r => {
     const email = (r.email||'').toString().trim().toLowerCase();
@@ -3093,8 +3100,8 @@ let VENDEDORES = [
   { nome: 'Nicola Popovic', praca: 'Campinas SPI' },
   { nome: 'Anderson Correia', praca: 'Campinas SPI' },
   { nome: 'Ana Ribeiro', praca: 'Campinas SPI' },
-  { nome: 'Mecenas Junior', praca: 'Natal' },
-  { nome: 'Daniel Magnus', praca: 'Natal' },
+  { nome: 'Mecenas Junior', praca: 'RN Capital' },
+  { nome: 'Daniel Magnus', praca: 'RN Capital' },
   // Salvador
   { nome: 'Adroaldo Bonfim',  praca: 'Salvador' },
   { nome: 'Ettore Rossi',     praca: 'Salvador' },
@@ -3106,9 +3113,9 @@ let VENDEDORES = [
   { nome: 'Tiago Freitas',    praca: 'Feira de Santana' },
   { nome: 'Ryan Trindade',    praca: 'Feira de Santana' },  // junho/26
   // Natal
-  { nome: 'Bruno Andrade',    praca: 'Natal' },
-  { nome: 'Marcio Galvão',    praca: 'Natal' },
-  { nome: 'Rodrigo Ribeiro',  praca: 'Natal' },  // junho/26
+  { nome: 'Bruno Andrade',    praca: 'RN Capital' },
+  { nome: 'Marcio Galvão',    praca: 'RN Capital' },
+  { nome: 'Rodrigo Ribeiro',  praca: 'RN Capital' },  // junho/26
   // SPI
   { nome: 'Caio Lannes',      praca: 'Campinas SPI' },
   { nome: 'Ederson Silva',    praca: 'Campinas SPI' },
@@ -3117,6 +3124,7 @@ let VENDEDORES = [
   { nome: 'Diego Faria',      praca: 'Campinas SPI' },  // junho/26
   // Ribeirão Preto SPI
   { nome: 'João Santos',      praca: 'Ribeirão Preto SPI' },  // julho/26 — líder
+  { nome: 'Mirla Albuquerque', praca: 'RN Interior' },  // julho/26 — líder
   // CE
   { nome: 'Bruno Borges',     praca: 'CE' },
   { nome: 'Neilon Nascimento',praca: 'CE' },{ nome: 'Sabrina Tomazeti',praca: 'CE' },  // junho/26

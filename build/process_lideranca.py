@@ -133,6 +133,7 @@ PRACA_TITLE = {  # email -> praça (Title) usada no RAW
  'monica.silveira@lioraenergia.com.br':'SPI',
  'ana.ribeiro@lioraenergia.com.br':'SPI',
  'joao.santos@lioraenergia.com.br':'Ribeirao',
+ 'mirla.albuquerque@lioraenergia.com.br':'RN Interior',
  'mecenas.junior@lioraenergia.com.br':'Natal',
  'daniel.magnus@lioraenergia.com.br':'Natal',
  'adroaldo.bonfim@lioraenergia.com.br':'Salvador','ananias.neto@lioraenergia.com.br':'Natal',
@@ -157,6 +158,7 @@ EMAIL2NAME = {  # email -> nome canônico do vendedor (resolve nomes variáveis 
  'monica.silveira@lioraenergia.com.br':'Monica Silveira',
  'ana.ribeiro@lioraenergia.com.br':'Ana Ribeiro',
  'joao.santos@lioraenergia.com.br':'João Santos',
+ 'mirla.albuquerque@lioraenergia.com.br':'Mirla Albuquerque',
  'mecenas.junior@lioraenergia.com.br':'Mecenas Junior',
  'daniel.magnus@lioraenergia.com.br':'Daniel Magnus',
  'adroaldo.bonfim@lioraenergia.com.br':'Adroaldo Bonfim','ananias.neto@lioraenergia.com.br':'Ananias Neto',
@@ -172,7 +174,7 @@ EMAIL2NAME = {  # email -> nome canônico do vendedor (resolve nomes variáveis 
  'ryan.trindade@lioraenergia.com.br':'Ryan Trindade','tais.santos@lioraenergia.com.br':'Tais Santos',
  'tiago.freitas@lioraenergia.com.br':'Tiago Freitas','thiago.araujo@lioraenergia.com.br':'Thiago Araujo França',
 }
-TITLE2OP = {'Salvador':'salvador','Feira':'feira','Natal':'natal','SPI':'spi','Ribeirao':'ribeirao','CE':'ce','Outras':'outras'}
+TITLE2OP = {'Salvador':'salvador','Feira':'feira','Natal':'natal','RN Interior':'rninterior','SPI':'spi','Ribeirao':'ribeirao','CE':'ce','Outras':'outras'}
 
 def norm(s): return re.sub(r'\s+',' ',(s or '').strip()).upper()
 # CLIENT_OVERRIDE: força vendedor/praça enquanto o suporte não corrige na origem
