@@ -824,7 +824,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
   <div class="copa-modal" id="copa-modal" onclick="closeCopaFig()"></div>
 
   <div style="position:fixed;bottom:78px;right:8px;font-size:9px;color:#aaa;background:rgba(255,255,255,.85);padding:2px 6px;border-radius:8px;z-index:99;font-family:monospace;pointer-events:none">
-    v2.158 · 13/07
+    v2.159 · 15/07
   </div>
 
   <!-- BOTTOM NAV -->
@@ -3754,11 +3754,39 @@ function renderFunilCadastro(el){
             : `✏️ <b>Editando lead:</b> ${escapeHtml(leadBeingEdited.nome)} (criado há ${Math.floor((Date.now() - leadBeingEdited.createdAt) / 86400000)}d)`)}
     </div>
   ` : '';
+
+  // v2.159 — Realocar lead: LÍDER/gestor troca o responsável direto no CRM.
+  // Escopo: só vendedores da MESMA praça do lead (praça do dono atual; se não houver,
+  // cai na praça do líder). Grava na planilha via saveLead (upsert 'create').
+  let reassignBox = '';
+  if (editing && !readOnly && leadBeingEdited && (isLider(me) || isGestor_(me))) {
+    const ownerCanon = canonicalVendedor(leadBeingEdited.vendedor || '');
+    const alvoPraca = SELLER_PRACA[ownerCanon] || liderPraca(me) || '';
+    const opts = VENDEDORES
+      .filter(v => v.nome !== 'Felipe Oliveira')
+      .filter(v => !alvoPraca || SELLER_PRACA[v.nome] === alvoPraca)
+      .map(v => `<option value="${escapeHtml(v.nome)}"${canonicalVendedor(v.nome)===ownerCanon?' selected':''}>${escapeHtml(v.nome)}</option>`)
+      .join('');
+    if (opts) {
+      const pracaLabel = PRACA_LABEL[alvoPraca] || '';
+      reassignBox = `
+      <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:12px;padding:12px 14px;margin-bottom:14px">
+        <div style="font-size:11px;font-weight:700;color:#C2410C;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">🔁 Realocar lead${pracaLabel?` · ${escapeHtml(pracaLabel)}`:''}</div>
+        <div style="font-size:12px;color:#9A3412;margin-bottom:8px;line-height:1.4">Transferir este lead para outro vendedor da praça. A troca é salva na hora.</div>
+        <div style="display:flex;gap:8px">
+          <select id="reassign-vend" style="flex:1;min-width:0;padding:9px 10px;border:1.5px solid #FED7AA;border-radius:8px;font-size:13px;font-family:inherit;background:#fff;color:var(--ink)">${opts}</select>
+          <button type="button" onclick="reassignLeadMobile()" style="padding:9px 14px;background:#C2410C;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">Trocar</button>
+        </div>
+        <div id="reassign-status" style="font-size:12px;margin-top:8px;min-height:16px;color:var(--muted)"></div>
+      </div>`;
+    }
+  }
   const readOnlyAttr = readOnly ? 'readonly' : '';
   const disabledAttr = readOnly ? 'disabled' : '';
   el.innerHTML = `
     <div class="funil-back" onclick="cancelEdit()">← Voltar</div>
     ${editBanner}
+    ${reassignBox}
     ${toast}
     <div class="form-card">
       <div class="form-group">
@@ -4729,6 +4757,43 @@ async function updateLead(){
     alert('Erro inesperado ao atualizar: ' + (err && err.message ? err.message : 'desconhecido') + '. As mudanças podem estar locais — verifique no Kanban antes de tentar de novo.');
   } finally {
     restoreUpd();
+  }
+}
+
+// v2.159 — Realoca o lead para outro vendedor (líder/gestor). Grava direto na planilha.
+async function reassignLeadMobile(){
+  const leadId = editingLeadId;
+  if(!leadId) return;
+  const lead = window.leads.find(l => l.id === leadId);
+  if(!lead){ alert('Lead não encontrado'); return; }
+  const me = getCurrentVendedor();
+  if(!((isLider(me) || isGestor_(me)) && canEditLead(lead))){
+    alert('Você não tem permissão para realocar este lead.');
+    return;
+  }
+  const sel = document.getElementById('reassign-vend');
+  const nv = sel ? (sel.value||'').trim() : '';
+  const st = document.getElementById('reassign-status');
+  const setSt = (msg, color) => { if(st){ st.style.color = color || 'var(--muted)'; st.textContent = msg; } };
+  if(!nv){ setSt('Selecione um vendedor.', '#E5484D'); return; }
+  if(canonicalVendedor(nv) === canonicalVendedor(lead.vendedor||'')){
+    setSt('Esse já é o responsável atual.', '#E5484D'); return;
+  }
+  if(!confirm(`Transferir "${lead.nome||'este lead'}" para ${nv}?`)) return;
+  setSt('⏳ Transferindo...');
+  const anterior = lead.vendedor || '';
+  lead.vendedor = nv;
+  let res;
+  try { res = await saveLead(lead); }
+  catch(e){ res = { ok:false, error: (e && e.message) || 'erro' }; }
+  if(res && (res.ok || res.offline)){
+    saveLeadsCache(window.leads);
+    cadastroToast = `✓ Lead "${lead.nome||''}" realocado para ${nv}`;
+    editingLeadId = null;
+    setFunilView('kanban');
+  } else {
+    lead.vendedor = anterior;   // reverte se falhou
+    setSt('Erro ao transferir: ' + ((res && res.error) || 'tente novamente'), '#E5484D');
   }
 }
 
