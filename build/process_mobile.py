@@ -165,10 +165,17 @@ def build_rawData(deals_path, ag_path, prop_path=None, docs_map=None, uc_map=Non
         ov=CLIENT_OVERRIDE.get((cli or '').strip().upper())
         if ov: s=ov[0]
         forced = did in FORCE_APPROVED
-        approved = forced or (r['latest_risk_analysis_result']=='APPROVED' and r['deal_stage']!='BGC_PARCEIRO')  # BGC_PARCEIRO = validação Antecipa, ainda não aprovado
+        _risk = (r['latest_risk_analysis_result'] or '').strip()
+        _status = (r.get('ops_tt_status') or '').lower()
+        # Alinha ao desktop (definição oficial isAprovado): conta como aprovado se risco
+        # APPROVED, OU status "aprovado", OU stage REQUEST_TITULARIDADE (fallback p/ deal
+        # que avançou sem risco APPROVED). Nunca conta DENIED nem BGC_PARCEIRO (validação
+        # Antecipa, ainda não aprovado).
+        _reached = (_risk=='APPROVED') or ('aprovado' in _status) or (r['deal_stage']=='REQUEST_TITULARIDADE')
+        approved = forced or (_reached and _risk!='DENIED' and r['deal_stage']!='BGC_PARCEIRO')
         aprov = (iso(pdate(r['latest_risk_analysis_created_at']) or pdate(r['deal_created_at'])) if approved else '')
         created = pdate(r['deal_created_at'])
-        basis = pdate(r['latest_risk_analysis_created_at']) if approved else created
+        basis = (pdate(r['latest_risk_analysis_created_at']) or created) if approved else created
         if forced and FORCE_APPROVED[did]:
             aprov = FORCE_APPROVED[did]; basis = pdate(FORCE_APPROVED[did])  # data de aprovação manual
         try: idle=int(float(r['idle_days'])) if r['idle_days'].strip()!='' else 0
