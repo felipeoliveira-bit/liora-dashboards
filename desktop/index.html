@@ -848,7 +848,7 @@ function openBauLeadList(praca, vendEnc, bucket){
   var rows = list.map(function(l){ return '<tr><td><strong>'+(l.nome||'—')+'</strong></td><td>'+(l.vendedor||'—')+'</td><td>'+(stageLbl[l.stage]||l.stage||'—')+'</td><td>'+(l.proximaInteracao? String(l.proximaInteracao).slice(0,10):'—')+'</td><td class=&quot;r&quot;>R$ '+((l.fatura||0).toLocaleString('pt-BR',{maximumFractionDigits:0}))+'</td><td>'+(l.cidade||'—')+'</td></tr>'; }).join('');
   if(!list.length) rows = '<tr><td colspan=&quot;6&quot; style=&quot;text-align:center;color:#999;padding:24px&quot;>Nenhum cliente neste filtro.</td></tr>';
   document.getElementById('bau-ld-modal').innerHTML =
-    '<div class=&quot;bld-head&quot;><button class=&quot;bld-close&quot; onclick=&quot;closeBauLeadList()&quot;>×</button><h2>'+titWho+' · '+(labels[bucket]||bucket)+'</h2><div class=&quot;bld-sub&quot;><span class=&quot;badge-praca b-'+praca+'&quot;>'+(praca==='SPI'?'Campinas SPI':praca)+'</span><span>'+list.length+' cliente(s)</span></div></div>'
+    '<div class=&quot;bld-head&quot;><button class=&quot;bld-close&quot; onclick=&quot;closeBauLeadList()&quot;>×</button><h2>'+titWho+' · '+(labels[bucket]||bucket)+'</h2><div class=&quot;bld-sub&quot;><span class=&quot;badge-praca b-'+praca+'&quot;>'+(({Natal:'RN Capital',SPI:'Campinas SPI',Ribeirao:'Ribeirão SPI',RNInterior:'RN Interior'}[praca]||praca))+'</span><span>'+list.length+' cliente(s)</span></div></div>'
     + '<div class=&quot;bld-body&quot;><table class=&quot;bld-list&quot;><thead><tr><th>Cliente</th><th>Vendedor</th><th>Etapa</th><th>Próx. Int.</th><th class=&quot;r&quot;>Fatura</th><th>Cidade</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
   document.getElementById('bau-ld-overlay').classList.add('open');
 }
@@ -867,7 +867,7 @@ function renderPracaTable(elemId, byP, section, config) {
     const isOpen = expandedRows[section].has(p);
     
     html += `<tr class=&quot;praca-row ${isOpen?'expanded':''}&quot; onclick=&quot;togglePraca('${section}','${p}','${elemId}')&quot;>
-      <td><span class=&quot;expand-icon ${isOpen?'open':''}&quot;>▶</span><span class=&quot;badge-praca b-${p}&quot;>${p==='SPI'?'Campinas SPI':p}</span></td>`;
+      <td><span class=&quot;expand-icon ${isOpen?'open':''}&quot;>▶</span><span class=&quot;badge-praca b-${p}&quot;>${({Natal:'RN Capital',SPI:'Campinas SPI',Ribeirao:'Ribeirão SPI',RNInterior:'RN Interior'}[p]||p)}</span></td>`;
     config.cols.forEach(c => {
       const v = c.fmt ? c.fmt(x) : (x[c.key] || '');
       const style = (c.color &amp;&amp; x[c.key]) ? `color:${c.color}` : '';
@@ -948,7 +948,7 @@ function renderAprovadosTable(byP) {
     const pctClamp = Math.min(x.pct, 100);
     
     html += `<tr class=&quot;praca-row ${isOpen?'expanded':''}&quot; onclick=&quot;togglePraca('aprovados','${p}','bau-aprovados')&quot;>
-      <td><span class=&quot;expand-icon ${isOpen?'open':''}&quot;>▶</span><span class=&quot;badge-praca b-${p}&quot;>${p==='SPI'?'Campinas SPI':p}</span></td>
+      <td><span class=&quot;expand-icon ${isOpen?'open':''}&quot;>▶</span><span class=&quot;badge-praca b-${p}&quot;>${({Natal:'RN Capital',SPI:'Campinas SPI',Ribeirao:'Ribeirão SPI',RNInterior:'RN Interior'}[p]||p)}</span></td>
       <td class=&quot;r&quot; style=&quot;font-size:12px;color:#666&quot;>${metaDisplay(x.metaToDate, x.metaFull)}</td>
       <td class=&quot;r&quot;><strong>${fmtMwh(x.mwh)}</strong></td>
       <td class=&quot;r meta-bar-cell&quot;>
@@ -1172,8 +1172,10 @@ td.rk-clk:hover{ text-decoration:underline; }
     <button class=&quot;fbtn-sm active&quot; data-rk-praca=&quot;all&quot; onclick=&quot;setRkPraca('all',this)&quot;>Todas</button>
     <button class=&quot;fbtn-sm&quot; data-rk-praca=&quot;Salvador&quot; onclick=&quot;setRkPraca('Salvador',this)&quot;><span class=&quot;fdot&quot; style=&quot;background:var(--green)&quot;></span>Salvador</button>
     <button class=&quot;fbtn-sm&quot; data-rk-praca=&quot;Feira&quot; onclick=&quot;setRkPraca('Feira',this)&quot;><span class=&quot;fdot&quot; style=&quot;background:var(--orange)&quot;></span>Feira</button>
-    <button class=&quot;fbtn-sm&quot; data-rk-praca=&quot;Natal&quot; onclick=&quot;setRkPraca('Natal',this)&quot;><span class=&quot;fdot&quot; style=&quot;background:var(--lightblue)&quot;></span>Natal</button>
+    <button class=&quot;fbtn-sm&quot; data-rk-praca=&quot;Natal&quot; onclick=&quot;setRkPraca('Natal',this)&quot;><span class=&quot;fdot&quot; style=&quot;background:var(--lightblue)&quot;></span>RN Capital</button>
+    <button class=&quot;fbtn-sm&quot; data-rk-praca=&quot;RNInterior&quot; onclick=&quot;setRkPraca('RNInterior',this)&quot;><span class=&quot;fdot&quot; style=&quot;background:#0EA5A5&quot;></span>RN Interior</button>
     <button class=&quot;fbtn-sm&quot; data-rk-praca=&quot;SPI&quot; onclick=&quot;setRkPraca('SPI',this)&quot;><span class=&quot;fdot&quot; style=&quot;background:var(--purple)&quot;></span>Campinas SPI</button>
+    <button class=&quot;fbtn-sm&quot; data-rk-praca=&quot;Ribeirao&quot; onclick=&quot;setRkPraca('Ribeirao',this)&quot;><span class=&quot;fdot&quot; style=&quot;background:#A78BFA&quot;></span>Ribeirão SPI</button>
     <button class=&quot;fbtn-sm&quot; data-rk-praca=&quot;CE&quot; onclick=&quot;setRkPraca('CE',this)&quot;><span class=&quot;fdot&quot; style=&quot;background:var(--pink)&quot;></span>CE</button>
   </div>
 </div>
@@ -1571,7 +1573,7 @@ function renderTable(elemId, section, rows, cols) {
   el.innerHTML = html;
 }
 
-function pracaBadge(x) { return `<span class=&quot;badge-praca b-${x.praca}&quot;>${x.praca==='SPI'?'Campinas SPI':x.praca}</span>`; }
+function pracaBadge(x) { return `<span class=&quot;badge-praca b-${x.praca}&quot;>${({Natal:'RN Capital',SPI:'Campinas SPI',Ribeirao:'Ribeirão SPI',RNInterior:'RN Interior'}[x.praca]||x.praca)}</span>`; }
 
 function renderAll() {
   if (leads.length || true) {
@@ -1891,8 +1893,10 @@ tbody tr:hover { background: #fafbff; }
       <button class=&quot;fbtn-sm active&quot; data-praca=&quot;all&quot; onclick=&quot;setFilter('praca','all',this)&quot;>Todas</button>
       <button class=&quot;fbtn-sm&quot; data-praca=&quot;Salvador&quot; onclick=&quot;setFilter('praca','Salvador',this)&quot;><span class=&quot;dot dot-Salvador&quot;></span>Salvador</button>
       <button class=&quot;fbtn-sm&quot; data-praca=&quot;Feira&quot; onclick=&quot;setFilter('praca','Feira',this)&quot;><span class=&quot;dot dot-Feira&quot;></span>Feira</button>
-      <button class=&quot;fbtn-sm&quot; data-praca=&quot;Natal&quot; onclick=&quot;setFilter('praca','Natal',this)&quot;><span class=&quot;dot dot-Natal&quot;></span>Natal</button>
+      <button class=&quot;fbtn-sm&quot; data-praca=&quot;Natal&quot; onclick=&quot;setFilter('praca','Natal',this)&quot;><span class=&quot;dot dot-Natal&quot;></span>RN Capital</button>
+      <button class=&quot;fbtn-sm&quot; data-praca=&quot;RNInterior&quot; onclick=&quot;setFilter('praca','RNInterior',this)&quot;><span class=&quot;dot&quot; style=&quot;background:#0EA5A5&quot;></span>RN Interior</button>
       <button class=&quot;fbtn-sm&quot; data-praca=&quot;SPI&quot; onclick=&quot;setFilter('praca','SPI',this)&quot;><span class=&quot;dot dot-SPI&quot;></span>Campinas SPI</button>
+      <button class=&quot;fbtn-sm&quot; data-praca=&quot;Ribeirao&quot; onclick=&quot;setFilter('praca','Ribeirao',this)&quot;><span class=&quot;dot&quot; style=&quot;background:#A78BFA&quot;></span>Ribeirão SPI</button>
       <button class=&quot;fbtn-sm&quot; data-praca=&quot;CE&quot; onclick=&quot;setFilter('praca','CE',this)&quot;><span class=&quot;dot dot-CE&quot;></span>CE</button>
     </div>
   <button class=&quot;fbtn-sm&quot; id=&quot;btn-baleia&quot; onclick=&quot;toggleBaleia(this)&quot; title=&quot;Só clientes baleia (fatura acima de R$ 2.000)&quot; style=&quot;margin-left:10px&quot;>🐋 Baleias</button>
@@ -2306,7 +2310,7 @@ function renderOverview(d) {
   const byPraca = {};
   d.forEach(l => { const p = pracaOf(l); byPraca[p] = (byPraca[p]||0) + 1; });
   html += '<div class=&quot;section&quot;><div class=&quot;section-title&quot;>Distribuição por Praça</div><div class=&quot;pcard-grid&quot;>';
-  ['Salvador','Feira','Natal','SPI','CE'].forEach(p => {
+  ['Salvador','Feira','Natal','RNInterior','SPI','Ribeirao','CE'].forEach(p => {
     html += `<div class=&quot;pcard p-${p}&quot; style=&quot;cursor:pointer&quot; onclick=&quot;tarPracaDrill('${p}')&quot; title=&quot;Ver vendedores de ${p}&quot;><div class=&quot;pcard-name&quot;>${p}</div><div class=&quot;pcard-value&quot;>${byPraca[p]||0}</div><div class=&quot;pcard-sub&quot;>ver vendedores →</div></div>`;
   });
   html += '</div></div>';
@@ -2348,7 +2352,7 @@ function renderVendedores(d) {
     const conv = v.total > 0 ? ((v.ganhos / v.total) * 100).toFixed(1) : '0.0';
     html += `<tr>
       <td><strong>${v.nome}</strong></td>
-      <td><span class=&quot;badge-praca b-${v.praca}&quot;>${v.praca==='SPI'?'Campinas SPI':v.praca}</span></td>
+      <td><span class=&quot;badge-praca b-${v.praca}&quot;>${({Natal:'RN Capital',SPI:'Campinas SPI',Ribeirao:'Ribeirão SPI',RNInterior:'RN Interior'}[v.praca]||v.praca)}</span></td>
       <td><strong>${v.total}</strong></td>`;
     STAGES.forEach(s => html += `<td>${v.stages[s.key]||''}</td>`);
     html += `<td style=&quot;color:#e54a4a&quot;>${v.atrasados||''}</td>
@@ -2365,7 +2369,7 @@ function renderVendedores(d) {
 
 function renderPracas(d) {
   const byP = {};
-  ['Salvador','Feira','Natal','SPI','CE'].forEach(p => byP[p] = { 
+  ['Salvador','Feira','Natal','RNInterior','SPI','Ribeirao','CE'].forEach(p => byP[p] = { 
     total:0, atrasados:0, hoje:0, fatura:0, vendedores:new Set(),
     stages: Object.fromEntries(STAGES.map(s=>[s.key,0])),
   });
@@ -2384,7 +2388,7 @@ function renderPracas(d) {
   });
   
   let html = '<div class=&quot;pcard-grid&quot;>';
-  ['Salvador','Feira','Natal','SPI','CE'].forEach(p => {
+  ['Salvador','Feira','Natal','RNInterior','SPI','Ribeirao','CE'].forEach(p => {
     const x = byP[p];
     html += `<div class=&quot;pcard p-${p}&quot;>
       <div class=&quot;pcard-name&quot;>${p}</div>
@@ -2398,10 +2402,10 @@ function renderPracas(d) {
   html += '<div class=&quot;section&quot;><div class=&quot;section-title&quot;>Detalhe por Praça</div><table><thead><tr><th>Praça</th><th>Vendedores</th><th>Total</th>';
   STAGES_PRACA.forEach(s => html += `<th>${s.label}</th>`);
   html += '<th>Atrasados</th><th>Fatura R$</th></tr></thead><tbody>';
-  ['Salvador','Feira','Natal','SPI','CE'].forEach(p => {
+  ['Salvador','Feira','Natal','RNInterior','SPI','Ribeirao','CE'].forEach(p => {
     const x = byP[p];
     html += `<tr>
-      <td><span class=&quot;badge-praca b-${p}&quot;>${p==='SPI'?'Campinas SPI':p}</span></td>
+      <td><span class=&quot;badge-praca b-${p}&quot;>${({Natal:'RN Capital',SPI:'Campinas SPI',Ribeirao:'Ribeirão SPI',RNInterior:'RN Interior'}[p]||p)}</span></td>
       <td>${x.vendedores.size}</td>
       <td><strong>${x.total}</strong></td>`;
     STAGES_PRACA.forEach(s => html += `<td>${x.stages[s.key]||''}</td>`);
@@ -2426,7 +2430,7 @@ function openLostList(praca, vendEnc){
   var titWho = vend ? vend : praca;
   var rows=list.map(function(l,i){ return '<tr class=&quot;lead-row&quot; onclick=&quot;openLeadFromPerd('+i+')&quot; title=&quot;Ver ficha completa&quot;><td><strong>'+(l.nome||'—')+'</strong></td><td>'+vExib(l)+'</td><td>'+(l.lostReason||'—')+'</td><td>'+(l.temperatura||'—')+'</td><td>R$ '+((l.fatura||0).toLocaleString('pt-BR',{maximumFractionDigits:0}))+'</td><td>'+(l.cidade||'—')+'</td></tr>'; }).join('');
   if(!list.length) rows='<tr><td colspan=&quot;6&quot; style=&quot;text-align:center;color:#999;padding:24px&quot;>Nenhum cliente neste filtro.</td></tr>';
-  document.getElementById('ld-modal').innerHTML = '<div class=&quot;ld-head&quot;><button class=&quot;ld-close&quot; onclick=&quot;closeLeadDetail()&quot;>×</button><h2>'+titWho+' · Perdidos</h2><div class=&quot;ld-sub&quot;><span class=&quot;badge-praca b-'+praca+'&quot;>'+(praca==='SPI'?'Campinas SPI':praca)+'</span><span>'+list.length+' cliente(s)</span></div></div><div class=&quot;ld-body&quot;><table class=&quot;ag-list&quot;><thead><tr><th>Cliente</th><th>Vendedor</th><th>Motivo</th><th>Temp.</th><th>Fatura</th><th>Cidade</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+  document.getElementById('ld-modal').innerHTML = '<div class=&quot;ld-head&quot;><button class=&quot;ld-close&quot; onclick=&quot;closeLeadDetail()&quot;>×</button><h2>'+titWho+' · Perdidos</h2><div class=&quot;ld-sub&quot;><span class=&quot;badge-praca b-'+praca+'&quot;>'+(({Natal:'RN Capital',SPI:'Campinas SPI',Ribeirao:'Ribeirão SPI',RNInterior:'RN Interior'}[praca]||praca))+'</span><span>'+list.length+' cliente(s)</span></div></div><div class=&quot;ld-body&quot;><table class=&quot;ag-list&quot;><thead><tr><th>Cliente</th><th>Vendedor</th><th>Motivo</th><th>Temp.</th><th>Fatura</th><th>Cidade</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
   document.getElementById('ld-overlay').classList.add('open');
 }
 function _agBkt(l){ const b=agendaBucket(l.proximaInteracao); if(b==='future' &amp;&amp; dateDiff(l.proximaInteracao)>7) return null; return (b==='late'||b==='today'||b==='tomorrow'||b==='future')?b:null; }
@@ -2460,7 +2464,7 @@ function openAgendaList(praca, vendEnc, bucket){
   let rows = list.map((l,i)=> '<tr class=&quot;lead-row&quot; onclick=&quot;openLeadFromAgenda('+i+')&quot; title=&quot;Ver ficha completa&quot;><td><strong>'+(l.nome||'—')+'</strong></td><td>'+vExib(l)+'</td><td>'+(l.proximaInteracao||'—')+'</td><td>'+(l.temperatura||'—')+'</td><td>R$ '+((l.fatura||0).toLocaleString('pt-BR',{maximumFractionDigits:0}))+'</td><td>'+(l.cidade||'—')+'</td></tr>').join('');
   if(!list.length) rows = '<tr><td colspan=&quot;6&quot; style=&quot;text-align:center;color:#999;padding:24px&quot;>Nenhum cliente neste filtro.</td></tr>';
   document.getElementById('ld-modal').innerHTML =
-    '<div class=&quot;ld-head&quot;><button class=&quot;ld-close&quot; onclick=&quot;closeLeadDetail()&quot;>×</button><h2>'+titWho+' · '+LB[bucket]+'</h2><div class=&quot;ld-sub&quot;><span class=&quot;badge-praca b-'+praca+'&quot;>'+(praca==='SPI'?'Campinas SPI':praca)+'</span><span>'+list.length+' cliente(s)</span></div></div>'
+    '<div class=&quot;ld-head&quot;><button class=&quot;ld-close&quot; onclick=&quot;closeLeadDetail()&quot;>×</button><h2>'+titWho+' · '+LB[bucket]+'</h2><div class=&quot;ld-sub&quot;><span class=&quot;badge-praca b-'+praca+'&quot;>'+(({Natal:'RN Capital',SPI:'Campinas SPI',Ribeirao:'Ribeirão SPI',RNInterior:'RN Interior'}[praca]||praca))+'</span><span>'+list.length+' cliente(s)</span></div></div>'
     + '<div class=&quot;ld-body&quot;><table class=&quot;ag-list&quot;><thead><tr><th>Cliente</th><th>Vendedor</th><th>Próx. Int.</th><th>Temp.</th><th>Fatura</th><th>Cidade</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
   document.getElementById('ld-overlay').classList.add('open');
 }
@@ -2511,7 +2515,7 @@ function renderAgenda(d) {
   pracas.forEach(p => {
     const o = byPraca[p]; const open = agendaExpanded.has(p);
     html += `<tr class=&quot;tperd-row ${open?'open':''}&quot; onclick=&quot;toggleAgendaPraca('${p}')&quot;>
-      <td><span class=&quot;tperd-icon ${open?'open':''}&quot;>\u25b6</span><span class=&quot;badge-praca b-${p}&quot;>${p==='SPI'?'Campinas SPI':p}</span></td>
+      <td><span class=&quot;tperd-icon ${open?'open':''}&quot;>\u25b6</span><span class=&quot;badge-praca b-${p}&quot;>${({Natal:'RN Capital',SPI:'Campinas SPI',Ribeirao:'Ribeirão SPI',RNInterior:'RN Interior'}[p]||p)}</span></td>
       <td style=&quot;color:#e54a4a&quot;>${agN(p,null,'late',o.late)}</td><td>${agN(p,null,'agHoje',o.agHoje)}</td><td>${agN(p,null,'criadosHoje',o.criadosHoje)}</td><td><strong>${agN(p,null,'totalHoje',o.totalHoje)}</strong></td><td>${agN(p,null,'tomorrow',o.tomorrow)}</td><td>${agN(p,null,'future',o.future)}</td></tr>`;
     if(open){
       const vs = Object.entries(o.vend).filter(([vn])=>!VENDEDORES_OCULTOS.includes(vn)).sort((a,b)=>b[1].total-a[1].total);
@@ -2566,7 +2570,7 @@ function renderDetalhe(d) {
     html += `<tr class=&quot;lead-row&quot; onclick=&quot;openLeadDetail(${_i})&quot; title=&quot;Clique para ver a ficha completa&quot;>
       <td><strong>${l.nome}</strong></td>
       <td>${l.vendedor}</td>
-      <td><span class=&quot;badge-praca b-${p}&quot;>${p==='SPI'?'Campinas SPI':p}</span></td>
+      <td><span class=&quot;badge-praca b-${p}&quot;>${({Natal:'RN Capital',SPI:'Campinas SPI',Ribeirao:'Ribeirão SPI',RNInterior:'RN Interior'}[p]||p)}</span></td>
       <td>${STAGE_LABEL[l.stage]||l.stage}</td>
       <td>${l.proximaInteracao||'—'}</td>
       <td>${l.temperatura||'—'}</td>
@@ -2661,7 +2665,7 @@ function openLeadDetail(idx){
       '<button class=&quot;ld-close&quot; onclick=&quot;closeLeadDetail()&quot;>×</button>'+
       (_fa?'<button class=&quot;ld-back&quot; onclick=&quot;backToAgendaList()&quot;>← Voltar à lista</button>':'')+
       '<h2>'+(l.nome||'Sem nome')+'</h2>'+
-      '<div class=&quot;ld-sub&quot;><span class=&quot;badge-praca b-'+praca+'&quot;>'+(praca==='SPI'?'Campinas SPI':praca)+'</span>'+
+      '<div class=&quot;ld-sub&quot;><span class=&quot;badge-praca b-'+praca+'&quot;>'+(({Natal:'RN Capital',SPI:'Campinas SPI',Ribeirao:'Ribeirão SPI',RNInterior:'RN Interior'}[praca]||praca))+'</span>'+
         '<span>'+stageLabel+'</span>'+(l.temperatura?'<span>· '+l.temperatura+'</span>':'')+'</div>'+
     '</div>'+
     '<div class=&quot;ld-body&quot; id=&quot;ld-edit-body&quot;>'+
@@ -2839,7 +2843,7 @@ function renderTD(d) {
     P.vend[v].tarefas++;
     if (l.td === 'TDS') P.vend[v].tds++; else if (l.td === 'TDN') P.vend[v].tdn++;
   });
-  const order = ['Salvador','Feira','Natal','SPI','CE'];
+  const order = ['Salvador','Feira','Natal','RNInterior','SPI','Ribeirao','CE'];
   const keys = Object.keys(pracas).sort((a,b) => {
     const ia = order.indexOf(a), ib = order.indexOf(b);
     return (ia<0?99:ia) - (ib<0?99:ib);
@@ -2964,9 +2968,9 @@ function renderPerdidos(d) {
   d.forEach(function(l){ var p=pracaOf(l); totByP[p]=(totByP[p]||0)+1; if(!totByPV[p]) totByPV[p]={}; totByPV[p][l.vendedor]=(totByPV[p][l.vendedor]||0)+1; });
   var pctPerda = function(n, tot){ return tot>0 ? ((n/tot)*100).toFixed(1)+'%' : '0.0%'; };
   html += '<div class=&quot;section&quot;><div class=&quot;section-title&quot;>Perdidos por Praça</div><table><thead><tr><th>Praça</th><th>Perdas</th><th>% Perda</th><th>Fatura Perdida</th><th></th></tr></thead><tbody>';
-  ['Salvador','Feira','Natal','SPI','CE'].forEach(function(p){
+  ['Salvador','Feira','Natal','RNInterior','SPI','Ribeirao','CE'].forEach(function(p){
     var isOpen = perdExpanded.has(p);
-    html += '<tr class=&quot;tperd-row'+(isOpen?' open':'')+'&quot; onclick=&quot;togglePerdPraca(\''+p+'\')&quot;><td><span class=&quot;tperd-icon'+(isOpen?' open':'')+'&quot;>▶</span><span class=&quot;badge-praca b-'+p+'&quot;>'+(p==='SPI'?'Campinas SPI':p)+'</span></td><td><strong>'+perdN(p,null,(byP[p]||0))+'</strong></td><td>'+pctPerda((byP[p]||0),(totByP[p]||0))+'</td><td>R$ '+((byPfat[p]||0).toLocaleString('pt-BR',{maximumFractionDigits:0}))+'</td><td style=&quot;color:#9aa3b5&quot;>'+(isOpen?'ocultar':'ver vendedores →')+'</td></tr>';
+    html += '<tr class=&quot;tperd-row'+(isOpen?' open':'')+'&quot; onclick=&quot;togglePerdPraca(\''+p+'\')&quot;><td><span class=&quot;tperd-icon'+(isOpen?' open':'')+'&quot;>▶</span><span class=&quot;badge-praca b-'+p+'&quot;>'+(({Natal:'RN Capital',SPI:'Campinas SPI',Ribeirao:'Ribeirão SPI',RNInterior:'RN Interior'}[p]||p))+'</span></td><td><strong>'+perdN(p,null,(byP[p]||0))+'</strong></td><td>'+pctPerda((byP[p]||0),(totByP[p]||0))+'</td><td>R$ '+((byPfat[p]||0).toLocaleString('pt-BR',{maximumFractionDigits:0}))+'</td><td style=&quot;color:#9aa3b5&quot;>'+(isOpen?'ocultar':'ver vendedores →')+'</td></tr>';
     if(isOpen){
       var vs = Object.entries(byPV[p]||{}).filter(function(kv){return !VENDEDORES_OCULTOS.includes(kv[0]);}).sort(function(a,b){return b[1].n-a[1].n;});
       if(!vs.length) html += '<tr class=&quot;tperd-sub&quot;><td colspan=&quot;5&quot; style=&quot;color:#999;text-align:center;padding:8px&quot;>Sem perdas nessa praça.</td></tr>';
@@ -2989,7 +2993,7 @@ function renderPerdidos(d) {
     const principal = Object.entries(motivosV).sort((a,b) => b[1]-a[1])[0];
     const fat = perdidos.filter(l => l.vendedor === v).reduce((s,l) => s+l.fatura, 0);
     const p = PRACA_OF[v] || '?';
-    html += `<tr><td><strong>${v}</strong></td><td><span class=&quot;badge-praca b-${p}&quot;>${p==='SPI'?'Campinas SPI':p}</span></td><td>${perdN(p, encodeURIComponent(v).replace(/'/g,'%27'), n)}</td><td>${principal[0]}</td><td>${n?((principal[1]/n)*100).toFixed(0):0}% <span style=&quot;color:#9aa3b5;font-size:11px&quot;>(${principal[1]}/${n})</span></td></tr>`;
+    html += `<tr><td><strong>${v}</strong></td><td><span class=&quot;badge-praca b-${p}&quot;>${({Natal:'RN Capital',SPI:'Campinas SPI',Ribeirao:'Ribeirão SPI',RNInterior:'RN Interior'}[p]||p)}</span></td><td>${perdN(p, encodeURIComponent(v).replace(/'/g,'%27'), n)}</td><td>${principal[0]}</td><td>${n?((principal[1]/n)*100).toFixed(0):0}% <span style=&quot;color:#9aa3b5;font-size:11px&quot;>(${principal[1]}/${n})</span></td></tr>`;
   });
   html += '</tbody></table></div>';
   
@@ -3983,7 +3987,7 @@ function renderWhale(){
     if(whP){
       const pracasW = [...new Set(wW.map(d=>d.praca))].filter(Boolean).sort();
       const curP = whP.value;
-      whP.innerHTML = '<option value=&quot;&quot;>Todas as praças</option>' + pracasW.map(p=>'<option value=&quot;'+p+'&quot;>'+(p==='SPI'?'Campinas SPI':p)+'</option>').join('');
+      whP.innerHTML = '<option value=&quot;&quot;>Todas as praças</option>' + pracasW.map(p=>'<option value=&quot;'+p+'&quot;>'+(({Natal:'RN Capital',SPI:'Campinas SPI',Ribeirao:'Ribeirão SPI',RNInterior:'RN Interior'}[p]||p))+'</option>').join('');
       whP.value = pracasW.indexOf(curP)>=0 ? curP : '';
     }
     const whPraca = whP ? whP.value : '';
@@ -5507,8 +5511,10 @@ table.matrix tbody tr.praca-header td { background: #f0f1f5; font-size: 10px; fo
       <button class=&quot;fbtn-sm active&quot; data-praca=&quot;all&quot; onclick=&quot;setPracaFilter('all',this)&quot;>Todas</button>
       <button class=&quot;fbtn-sm&quot; data-praca=&quot;Salvador&quot; onclick=&quot;setPracaFilter('Salvador',this)&quot;><span class=&quot;dot dot-Salvador&quot;></span>Salvador</button>
       <button class=&quot;fbtn-sm&quot; data-praca=&quot;Feira&quot; onclick=&quot;setPracaFilter('Feira',this)&quot;><span class=&quot;dot dot-Feira&quot;></span>Feira</button>
-      <button class=&quot;fbtn-sm&quot; data-praca=&quot;Natal&quot; onclick=&quot;setPracaFilter('Natal',this)&quot;><span class=&quot;dot dot-Natal&quot;></span>Natal</button>
+      <button class=&quot;fbtn-sm&quot; data-praca=&quot;Natal&quot; onclick=&quot;setPracaFilter('Natal',this)&quot;><span class=&quot;dot dot-Natal&quot;></span>RN Capital</button>
+      <button class=&quot;fbtn-sm&quot; data-praca=&quot;RNInterior&quot; onclick=&quot;setPracaFilter('RNInterior',this)&quot;><span class=&quot;dot&quot; style=&quot;background:#0EA5A5&quot;></span>RN Interior</button>
       <button class=&quot;fbtn-sm&quot; data-praca=&quot;SPI&quot; onclick=&quot;setPracaFilter('SPI',this)&quot;><span class=&quot;dot dot-SPI&quot;></span>Campinas SPI</button>
+      <button class=&quot;fbtn-sm&quot; data-praca=&quot;Ribeirao&quot; onclick=&quot;setPracaFilter('Ribeirao',this)&quot;><span class=&quot;dot&quot; style=&quot;background:#A78BFA&quot;></span>Ribeirão SPI</button>
       <button class=&quot;fbtn-sm&quot; data-praca=&quot;CE&quot; onclick=&quot;setPracaFilter('CE',this)&quot;><span class=&quot;dot dot-CE&quot;></span>CE</button>
     </div>
     
@@ -5702,7 +5708,7 @@ function renderMatrix() {
   }
   html += '</tr></thead><tbody>';
   
-  ['Salvador','Feira','Natal','CE','SPI'].forEach(p => {
+  ['Salvador','Feira','Natal','RNInterior','SPI','Ribeirao','CE'].forEach(p => {
     if (!groups[p]) return;
     const _mopen = matrixExpanded.has(p) || pracaFilter !== 'all';
     html += `<tr class=&quot;praca-header&quot; onclick=&quot;toggleMatrixPraca('${p}')&quot; style=&quot;cursor:pointer&quot;><td colspan=&quot;${DAYS_IN_MONTH+1}&quot;><span style=&quot;display:inline-block;width:13px;transition:transform .15s;transform:rotate(${_mopen?90:0}deg)&quot;>▶</span> ${p} <span style=&quot;font-weight:400;opacity:.55;font-size:11px&quot;>(${groups[p].length})</span></td></tr>`;
@@ -5964,7 +5970,7 @@ function renderVacancia() {
     const pracaPct = p => vacMetric==='vacancia' ? (byPraca[p].vacWeight/byPraca[p].filled*100)
       : vacMetric==='eficiente' ? (hcPraca[p].normal?hcPraca[p].efic/hcPraca[p].normal*100:0)
       : (hcPraca[p].normal?hcPraca[p].prod/hcPraca[p].normal*100:0);
-    let order = ['Salvador','Feira','Natal','CE','SPI'].filter(p =>
+    let order = ['Salvador','Feira','Natal','RNInterior','SPI','Ribeirao','CE'].filter(p =>
       vacMetric==='vacancia' ? (byPraca[p] &amp;&amp; byPraca[p].filled>0) : (hcPraca[p] &amp;&amp; hcPraca[p].normal>0));
     order.sort((a,b)=> vacMetric==='vacancia' ? pracaPct(b)-pracaPct(a) : pracaPct(a)-pracaPct(b));
     const barHtml = pct => {
@@ -6219,7 +6225,7 @@ function render() {
     const isAccel = x.pctReal >= 125;
     const flag = isAccel ? '<div class=&quot;accel-flag&quot;>⚡ ACELERADOR</div>' : '';
     html += '<div class=&quot;lider-card&quot;>' + flag +
-      '<div class=&quot;lc-head&quot;><span class=&quot;badge-praca b-'+x.praca+'&quot;>'+(x.praca==='SPI'?'Campinas SPI':x.praca)+'</span>' +
+      '<div class=&quot;lc-head&quot;><span class=&quot;badge-praca b-'+x.praca+'&quot;>'+(({Natal:'RN Capital',SPI:'Campinas SPI',Ribeirao:'Ribeirão SPI',RNInterior:'RN Interior'}[x.praca]||x.praca))+'</span>' +
         '<span class=&quot;lc-pct&quot; style=&quot;color:'+metaColor(x.pctReal)+'&quot;>'+x.pctReal.toFixed(0)+'%</span></div>' +
       '<div class=&quot;lc-metaline&quot;>'+fmtMwh(x.mwh)+' de '+fmtMwh(x.metaMes)+' MWh (meta mensal) · '+x.aprovados+' clientes</div>' +
       '<div class=&quot;lc-bar&quot;><div class=&quot;lc-bar-fill&quot; style=&quot;width:'+widthPct+'%;background:'+metaColor(x.pctReal)+'&quot;></div></div>' +

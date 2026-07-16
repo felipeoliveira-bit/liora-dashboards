@@ -1005,7 +1005,7 @@ function noPeriodo(x, ini, fim){ const d = x.aprov_date || x.date; return d >= i
 
 // v2.42 — Meta to date: pro-rata por dia útil transcorrido até PROP_TODAY
 // Julho 2026: 23 dias úteis no mês. Hoje (PROP_TODAY) define quantos úteis passaram.
-const PROP_PER_MWH = { salvador:9.58, feira:9.58, spi:9.58, ribeirao:9.58, natal:9.20, ce:9.20, outras:9.4 }; // propostas por MWh (plano BP, conv ~15%)
+const PROP_PER_MWH = { salvador:9.58, feira:9.58, spi:9.58, ribeirao:9.58, natal:9.20, rninterior:9.20, ce:9.20, outras:9.4 }; // propostas por MWh (plano BP, conv ~15%)
 function getMetaToDateInfo(){
   const ref = new Date(PROP_TODAY + 'T00:00:00');
   const year = ref.getFullYear(), month = ref.getMonth(), dayRef = ref.getDate();
@@ -1812,7 +1812,7 @@ function openAgDocsModal(){
     byPraca[pk].vend[x.s].count++; byPraca[pk].vend[x.s].mwh += x.mwh;
     byPraca[pk].vend[x.s].clientes.push(x);
   });
-  const ordem = ['salvador','feira','natal','spi','ce','outras'];
+  const ordem = ['salvador','feira','natal','rninterior','spi','ribeirao','ce','outras'];
   const pracasOrd = Object.keys(byPraca).sort((a,b)=>{
     const ia=ordem.indexOf(a), ib=ordem.indexOf(b);
     return (ia<0?99:ia)-(ib<0?99:ib);
@@ -2726,7 +2726,7 @@ function renderPropostas() {
       <div class="rk-seg-btn ${propMetric==='tarefas'?'active':''}" onclick="setPropMetric('tarefas')"><span class="ic">🤝</span><span class="lb">Visitas</span></div>
     </div>
     <div class="rk-scope">
-      ${[['','Todas'],['salvador','Salvador'],['feira','Feira'],['natal','Natal'],['ce','CE'],['spi','Campinas SPI'],['ribeirao','Ribeirão SPI']].map(o=>`<div class="rk-chip ${rankScope===o[0]?'active':''}" onclick="setRankScope('${o[0]}')">${o[1]}</div>`).join('')}
+      ${[['','Todas'],['salvador','Salvador'],['feira','Feira'],['natal','RN Capital'],['rninterior','RN Interior'],['spi','Campinas SPI'],['ribeirao','Ribeirão SPI'],['ce','CE']].map(o=>`<div class="rk-chip ${rankScope===o[0]?'active':''}" onclick="setRankScope('${o[0]}')">${o[1]}</div>`).join('')}
     </div>`;
 
   // Filtra vendedores pela praça selecionada
@@ -3207,7 +3207,7 @@ function renderVendedoresList(showCurrentHighlight){
     if(!byPraca[v.praca]) byPraca[v.praca] = [];
     byPraca[v.praca].push(v);
   });
-  const order = ['Salvador','Feira de Santana','Natal','Campinas SPI','Ribeirão Preto SPI','CE','Outros'];
+  const order = ['Salvador','Feira de Santana','RN Capital','RN Interior','Campinas SPI','Ribeirão Preto SPI','CE','Outros'];
   const current = getCurrentVendedor();
   let html = '';
   order.forEach(pr => {
