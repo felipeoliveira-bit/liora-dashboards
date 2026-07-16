@@ -17,8 +17,13 @@ except Exception:
 # Deals duplicados a excluir de TODOS os recortes (mesmo cliente aberto p/
 # vendedores diferentes). Mantemos so o deal original. Espelha automacao/slice_base.py.
 EXCLUDE_DEALS = {
-    # (vazio) Carla Beserra/Bezerra: confirmado 25/06 que NAO era duplicata -
-    # 2 UCs distintas do mesmo CPF (faturas/consumo/contratos diferentes). As duas contam.
+    # Carla Beserra/Bezerra: confirmado 25/06 que NAO era duplicata - 2 UCs
+    # distintas do mesmo CPF. As duas contam (fora da lista de exclusao).
+    #
+    # Ruan Oliveira Leal (vend. Tiago Assis / 'Outras', Salvador, Coelba, 100d
+    # parado, "Cliente que se perdeu no funil") - pedido Felipe 15/07: vai virar
+    # perdido, tirar da lista ja. Remover quando a base marcar como lost.
+    '638a08a6-845f-4eab-a290-24366dfc131e',
 }
 
 MESES = {'janeiro':1,'fevereiro':2,'março':3,'marco':3,'abril':4,'maio':5,'junho':6,
