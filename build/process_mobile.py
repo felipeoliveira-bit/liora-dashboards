@@ -102,6 +102,7 @@ CONSUMPTION_OVERRIDE = {  # cliente (upper/strip) -> MWh; temp ate base corrigir
  'MÁRCIO PEREIRA PINTO': 5.866,  # aprovado manual, base mostra 1.3 (Felipe 10/07)
 }
 FORCE_APPROVED = {  # deal_id -> nota; contam como aprovado por decisao manual (pre-BGC)
+ 'b61609e9-835a-4ed2-896d-2de4fd55c4f9': '2026-07-16',  # Stefanny Karoline Martins - aprovado manual, Mirla/RN Interior (Felipe 16/07)
  '9ccf72c4-32d9-406f-b2c1-a533f486c8d1': '2026-07-14',  # Antonio Edmilson Leite - dup denied em BGC (Felipe 15/07)
  'a4a2cc08-a77e-4549-8306-ef13db2a3a95': '2026-07-10',  # Marcio Pereira pinto / Nicola Popovic (Felipe 10/07)
 }
@@ -109,6 +110,27 @@ LOST_IGNORE = {  # ignora lost_at/lost_reason (falso 'nao aceito pela distribuid
  'FRANCISCO ALDECI DE QUEIROZ FERNANDES',  # reprovado e erro; ignorar (Felipe 03/07)
  'ANTÔNIO EDMILSON LEITE',  # dup denied em BGC, forçado aprovado (Felipe 15/07)
 }
+# INJECT_DEALS: deals ausentes da base viva, adicionados manualmente (Felipe).
+INJECT_DEALS = [
+ {
+ 'deal_id':'b61609e9-835a-4ed2-896d-2de4fd55c4f9','deal_stage':'BACKGROUND_CHECKING','deal_lost_at':'','deal_lost_reason':'',
+ 'rd_station_crm_id':'','deal_created_at':'2026-07-16T00:00:00','current_client_cnpj':'','current_client_cpf':'',
+ 'current_client_name':'STEFANNY KAROLINE MARTINS DE S. MARTINS','client_phone_number':'',
+ 'current_client_state':'RN','current_client_city':'MOSSORÓ','distributor_short_name':'NEOENERGIA COSERN',
+ 'origin_campaign':'','origin_source':'','internal_sales_classification':'Direto','sales_team':'Field Sales',
+ 'sales_organization_name':'Liora','sales_channel_name':'','sales_person_name':'Mirla Albuquerque',
+ 'sales_person_email':'mirla.albuquerque@lioraenergia.com.br','current_total_bill_cost (R$)':'586.33',
+ 'rd_bill_cost (R$)':'586.33','under_minimal_flag':'0','rd_distributor':'NEOENERGIA COSERN',
+ 'current_consumption':'0.543','is_current_consumption_estimated':'false','current_consumption_filled':'0.543',
+ 'consumption_group':'2. <= 1.0 MWh','proposal_id':'','proposal_created_at':'','accepted_proposal':'true',
+ 'product_name':'','energy_retailer_name':'Liora Energia','has_valid_bill_uploaded':'false','bill_id':'',
+ 'latest_contract_id':'','latest_contract_created_at':'','latest_contract_signature_signed_at':'',
+ 'latest_risk_analysis_result':'','latest_risk_analysis_created_at':'2026-07-16T00:00:00',
+ 'latest_risk_analysis_comments':'','idle_days':'0','idle_days_group':'','cancelation_date':'',
+ 'ops_tt_status':'','ops_tt_status_reason':'','credit_product':'0',
+},
+]
+INJECT_UC = {'b61609e9-835a-4ed2-896d-2de4fd55c4f9':'5039298'}
 MES={'janeiro':1,'fevereiro':2,'março':3,'marco':3,'abril':4,'maio':5,'junho':6,'julho':7,'agosto':8,'setembro':9,'outubro':10,'novembro':11,'dezembro':12}
 DOW=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
 ANCHOR = datetime.date(2026,6,1)  # S0 = semana que contém o 1º do mês (junho/2026)
@@ -193,6 +215,9 @@ def build_rawData(deals_path, ag_path, prop_path=None, docs_map=None, uc_map=Non
             'docs':docs_map.get((r.get('latest_contract_id') or '').strip(),''),
         })
     for r in rows(deals_path): emit(r)
+    for r in INJECT_DEALS:
+        uc_map.setdefault(r['deal_id'], INJECT_UC.get(r['deal_id'],''))
+        emit(r)
     for r in rows(ag_path):    emit(r)
     if prop_path:                       # injeta aprovados manuais ausentes dos recortes
         for r in rows(prop_path):

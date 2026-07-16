@@ -87,6 +87,29 @@ def _load_uc(p):
 UC = _load_uc(f_uc); print('uc por deal:', len(UC), '|', os.path.basename(f_uc) if f_uc else 'sem arquivo')
 
 deals = rows(f_deals)
+# INJECT_DEALS: deals ausentes da base viva, adicionados manualmente (Felipe).
+# Remover quando a base do Metabase passar a refletir o cliente.
+INJECT_DEALS = [
+ {
+ 'deal_id':'b61609e9-835a-4ed2-896d-2de4fd55c4f9','deal_stage':'BACKGROUND_CHECKING','deal_lost_at':'','deal_lost_reason':'',
+ 'rd_station_crm_id':'','deal_created_at':'2026-07-16T00:00:00','current_client_cnpj':'','current_client_cpf':'',
+ 'current_client_name':'STEFANNY KAROLINE MARTINS DE S. MARTINS','client_phone_number':'',
+ 'current_client_state':'RN','current_client_city':'MOSSORÓ','distributor_short_name':'NEOENERGIA COSERN',
+ 'origin_campaign':'','origin_source':'','internal_sales_classification':'Direto','sales_team':'Field Sales',
+ 'sales_organization_name':'Liora','sales_channel_name':'','sales_person_name':'Mirla Albuquerque',
+ 'sales_person_email':'mirla.albuquerque@lioraenergia.com.br','current_total_bill_cost (R$)':'586.33',
+ 'rd_bill_cost (R$)':'586.33','under_minimal_flag':'0','rd_distributor':'NEOENERGIA COSERN',
+ 'current_consumption':'0.543','is_current_consumption_estimated':'false','current_consumption_filled':'0.543',
+ 'consumption_group':'2. <= 1.0 MWh','proposal_id':'','proposal_created_at':'','accepted_proposal':'true',
+ 'product_name':'','energy_retailer_name':'Liora Energia','has_valid_bill_uploaded':'false','bill_id':'',
+ 'latest_contract_id':'','latest_contract_created_at':'','latest_contract_signature_signed_at':'',
+ 'latest_risk_analysis_result':'','latest_risk_analysis_created_at':'2026-07-16T00:00:00',
+ 'latest_risk_analysis_comments':'','idle_days':'0','idle_days_group':'','cancelation_date':'',
+ 'ops_tt_status':'','ops_tt_status_reason':'','credit_product':'0',
+},
+]
+deals = deals + INJECT_DEALS
+UC['b61609e9-835a-4ed2-896d-2de4fd55c4f9'] = '5039298'  # Stefanny Karoline (instalacao da fatura)
 agu   = rows(f_agu)
 prop  = rows(f_prop)
 
@@ -216,6 +239,7 @@ LOST_IGNORE = { norm('FRANCISCO ALDECI DE QUEIROZ FERNANDES'), norm('ANTÔNIO ED
 # FORCE_APPROVED: deals que contam como aprovado por decisao manual (contrato assinado,
 # aguardando BGC). Chave = deal_id. Remover quando a base refletir BGC APPROVED.
 FORCE_APPROVED = {
+ 'b61609e9-835a-4ed2-896d-2de4fd55c4f9': '2026-07-16',  # Stefanny Karoline Martins - aprovado manual, Mirla/RN Interior (Felipe 16/07)
  '9ccf72c4-32d9-406f-b2c1-a533f486c8d1': '2026-07-14',  # Antonio Edmilson Leite - aprovado manual, dup denied em BGC (Felipe 15/07)
  'a4a2cc08-a77e-4549-8306-ef13db2a3a95': '2026-07-10',  # Marcio Pereira pinto / Nicola Popovic - aprovado manual (Felipe 10/07)
 }
