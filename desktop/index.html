@@ -6340,6 +6340,26 @@ window.addEventListener('load', () => {
     } catch(e) {}
   }, 1000);
 });
+
+// --- Rótulos de período com DATA concreta (evita confundir Hoje x Ontem) ---
+function _lioraStampPeriodDates(){
+  try{
+    var d=new Date(), y=new Date(Date.now()-86400000);
+    var f=function(x){return x.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});};
+    document.querySelectorAll('iframe').forEach(function(fr){
+      var doc; try{ doc=fr.contentDocument; }catch(e){ return; }
+      if(!doc) return;
+      doc.querySelectorAll('button').forEach(function(b){
+        var t=(b.textContent||'').trim();
+        if(t==='D0 (hoje)' || /^Hoje \u00b7/.test(t)) b.textContent='Hoje \u00b7 '+f(d);
+        else if(t==='D-1 (ontem)' || /^Ontem \u00b7/.test(t)) b.textContent='Ontem \u00b7 '+f(y);
+      });
+    });
+  }catch(e){}
+}
+window.addEventListener('load', function(){ [0,600,1500,3000].forEach(function(ms){ setTimeout(_lioraStampPeriodDates, ms); }); });
+try{ document.querySelectorAll('iframe').forEach(function(fr){ fr.addEventListener('load', function(){ setTimeout(_lioraStampPeriodDates,150); }); }); }catch(e){}
+setInterval(_lioraStampPeriodDates, 60000);
 </script>
 
 </body>
