@@ -242,6 +242,7 @@ FORCE_APPROVED = {
  'b61609e9-835a-4ed2-896d-2de4fd55c4f9': '2026-07-15',  # Stefanny Karoline Martins - aprovado manual, Mirla/RN Interior (Felipe 16/07)
  '9ccf72c4-32d9-406f-b2c1-a533f486c8d1': '2026-07-14',  # Antonio Edmilson Leite - aprovado manual, dup denied em BGC (Felipe 15/07)
  'a4a2cc08-a77e-4549-8306-ef13db2a3a95': '2026-07-10',  # Marcio Pereira pinto / Nicola Popovic - aprovado manual (Felipe 10/07)
+ '35ad764a-c6f8-4039-9bcc-9706c960c1a5': '2026-07-16',  # Larissa Cecilia Sampaio Tavares / Ederson Silva - risco APPROVED 16/07 pos-perdido em BGC_PARCEIRO (Felipe 17/07)
 }
 def mwh_of(client, raw):
     ov = CONSUMPTION_OVERRIDE.get(norm(client))
@@ -255,19 +256,21 @@ def mk_deal(r):
     # aprovado conta pela DATA DA ANÁLISE DE RISCO; sem risco (WAITING) usa criação
     d = pdate(r['latest_risk_analysis_created_at']) or pdate(r['deal_created_at'])
     if r['deal_id'] in FORCE_APPROVED and FORCE_APPROVED[r['deal_id']]: d = FORCE_APPROVED[r['deal_id']]  # data de aprovação manual
+    forced = r['deal_id'] in FORCE_APPROVED
+    out_stage = 'REQUEST_TITULARIDADE' if (forced and r['deal_stage'] in ('BGC_PARCEIRO','BACKGROUND_CHECKING')) else r['deal_stage']
     return {
       'c': r['current_client_name'],
       's': seller_of(r['sales_person_email'], r['current_client_name']),
       'op': op_of(r['sales_person_email'], r['current_client_name']),
       'risk': risk,
       'mwh': mwh_of(r['current_client_name'], r['current_consumption_filled']),
-      'stage': r['deal_stage'],
+      'stage': out_stage,
       'status': r['ops_tt_status'] or 'N/A',
       'idle': int(fnum(r['idle_days'])),
       'city': r['current_client_city'],
       'semana': semana(d),
-      'lost_at': ('' if norm(r['current_client_name']) in LOST_IGNORE else (r['deal_lost_at'] or '')),
-      'lost_reason': ('' if norm(r['current_client_name']) in LOST_IGNORE else (r['deal_lost_reason'] or '')),
+      'lost_at': ('' if (forced or norm(r['current_client_name']) in LOST_IGNORE) else (r['deal_lost_at'] or '')),
+      'lost_reason': ('' if (forced or norm(r['current_client_name']) in LOST_IGNORE) else (r['deal_lost_reason'] or '')),
       'motivo': (('CANCELADO — '+(r.get('deal_lost_reason') or '').strip()) if ((r.get('latest_risk_analysis_result') or '').strip()=='APPROVED' and (r.get('deal_lost_at') or '').strip() and r.get('deal_stage')=='BACKGROUND_CHECKING' and (r.get('deal_lost_reason') or '').strip().lower()!='troca de titularidade') else (r.get('latest_risk_analysis_comments') or '').strip()),
       'docs': DOCS.get((r.get('latest_contract_id') or '').strip(),''),
       'uc': UC.get(r['deal_id'],''),

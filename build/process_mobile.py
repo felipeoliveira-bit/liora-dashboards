@@ -105,6 +105,7 @@ FORCE_APPROVED = {  # deal_id -> nota; contam como aprovado por decisao manual (
  'b61609e9-835a-4ed2-896d-2de4fd55c4f9': '2026-07-15',  # Stefanny Karoline Martins - aprovado manual, Mirla/RN Interior (Felipe 16/07)
  '9ccf72c4-32d9-406f-b2c1-a533f486c8d1': '2026-07-14',  # Antonio Edmilson Leite - dup denied em BGC (Felipe 15/07)
  'a4a2cc08-a77e-4549-8306-ef13db2a3a95': '2026-07-10',  # Marcio Pereira pinto / Nicola Popovic (Felipe 10/07)
+ '35ad764a-c6f8-4039-9bcc-9706c960c1a5': '2026-07-16',  # Larissa Cecilia Sampaio Tavares / Ederson Silva - risco APPROVED 16/07 pos-perdido em BGC_PARCEIRO (Felipe 17/07)
 }
 LOST_IGNORE = {  # ignora lost_at/lost_reason (falso 'nao aceito pela distribuidora')
  'FRANCISCO ALDECI DE QUEIROZ FERNANDES',  # reprovado e erro; ignorar (Felipe 03/07)
@@ -204,12 +205,12 @@ def build_rawData(deals_path, ag_path, prop_path=None, docs_map=None, uc_map=Non
         except: idle=0
         out.append({
             'c':cli,'s':s,'mwh':CONSUMPTION_OVERRIDE.get((cli or '').strip().upper(), pfloat(r['current_consumption_filled'])),
-            'stage':r['deal_stage'],'status':r['ops_tt_status'],'idle':idle,
+            'stage':('REQUEST_TITULARIDADE' if (forced and r['deal_stage'] in ('BGC_PARCEIRO','BACKGROUND_CHECKING')) else r['deal_stage']),'status':r['ops_tt_status'],'idle':idle,
             'city':r['current_client_city'],'state':r['current_client_state'],
             'dist':DIST_MAP.get(r['distributor_short_name'], r['distributor_short_name']),
             'deal_id':did,'uc':uc_map.get(did,''),'tel':r['client_phone_number'],'cnpj':r['current_client_cnpj'],'cpf':r['current_client_cpf'],
             'fatura':pfloat(r['current_total_bill_cost (R$)']),'semana':semana(basis),
-            'lost_at':('' if (cli or '').strip().upper() in LOST_IGNORE else r['deal_lost_at']),'lost_reason':('' if (cli or '').strip().upper() in LOST_IGNORE else r['deal_lost_reason']),
+            'lost_at':('' if (forced or (cli or '').strip().upper() in LOST_IGNORE) else r['deal_lost_at']),'lost_reason':('' if (forced or (cli or '').strip().upper() in LOST_IGNORE) else r['deal_lost_reason']),
             'motivo':(('CANCELADO — '+(r.get('deal_lost_reason') or '').strip()) if ((r.get('latest_risk_analysis_result') or '').strip()=='APPROVED' and (r.get('deal_lost_at') or '').strip() and r.get('deal_stage')=='BACKGROUND_CHECKING' and (r.get('deal_lost_reason') or '').strip().lower()!='troca de titularidade') else (r.get('latest_risk_analysis_comments') or '').strip()),
             'date':iso(created),'aprov_date':aprov,
             'docs':docs_map.get((r.get('latest_contract_id') or '').strip(),''),
