@@ -1603,13 +1603,6 @@ const CAMP_CFG = {
     tiers:[ {v:10,label:'R$ 500',tier:3},{v:8,label:'R$ 350',tier:2},{v:5,label:'R$ 200',tier:1} ] }
 };
 let CAMP_VIEW = 'semana';
-const CAMP_LIDER = {
-  ini:'2026-07-17', end:'2026-07-26',
-  period:'17 a 26/07/2026 · 23h59 · pgto 27/07',
-  desc:'O líder ganha conforme a <b>% do seu time</b> que bater o alvo — <b>≥5 clientes ou ≥5 MWh</b> aprovados no período de 17/07 a 26/07. Pagamento no dia 27/07.',
-  pracas:['natal','spi','salvador','feira','ce'],
-  tiers:[ {v:100,label:'R$ 2.000',tier:3},{v:75,label:'R$ 1.500',tier:2},{v:50,label:'R$ 750',tier:1} ]
-};
 function setCampView(k){ CAMP_VIEW = k; renderCampanha(); }
 function campVal(cfg, deals){ return cfg.metric==='count' ? deals.length : deals.reduce((a,d)=>a+(d.mwh||0),0); }
 function campFmt(cfg, v){ return cfg.metric==='count' ? String(v) : v.toFixed(2); }
@@ -2469,71 +2462,13 @@ function renderCopa(){
   document.getElementById('s6-content').innerHTML = html;
 }
 
-// ── CAMPANHA DOS LÍDERES (Time no Alvo) ────────────────
-function liderTier(pct){ for(const t of CAMP_LIDER.tiers){ if(pct>=t.v) return t; } return null; }
-function liderNext(pct){ const asc=[...CAMP_LIDER.tiers].sort((a,b)=>a.v-b.v); for(const t of asc){ if(pct<t.v) return t; } return null; }
-function leaderCampData(){
-  const cfg=CAMP_LIDER; const cliC={}, mwhC={};
-  rawData.filter(x=>noPeriodo(x,cfg.ini,cfg.end)&&isAprovado(x)).forEach(x=>{ cliC[x.s]=(cliC[x.s]||0)+1; mwhC[x.s]=(mwhC[x.s]||0)+(x.mwh||0); });
-  const alvo = s => (cliC[s]||0)>=5 || (mwhC[s]||0)>=5;
-  const hidden = new Set(typeof RANK_HIDDEN!=='undefined'?RANK_HIDDEN:[]);
-  const teams={};
-  Object.keys(SELLER_PRACA).forEach(s=>{ const p=SELLER_PRACA[s]; if(!teams[p])teams[p]=[]; if(!hidden.has(s)) teams[p].push(s); });
-  return cfg.pracas.map(p=>{
-    const mem=teams[p]||[]; const hit=mem.filter(alvo);
-    const pct=mem.length?Math.round(100*hit.length/mem.length):0;
-    const lead=Object.keys(LIDERES).find(n=>LIDERES[n]===p)||p;
-    return {praca:p, lead, mem, hit, pct};
-  }).sort((a,b)=> b.pct-a.pct || b.hit.length-a.hit.length);
-}
-function renderLeaderView(){
-  const cfg=CAMP_LIDER; const rows=leaderCampData(); const medals=['\U0001F947','\U0001F948','\U0001F949'];
-  const totHit=rows.reduce((a,r)=>a+r.hit.length,0);
-  let html=`
-    <div class="camp-header">
-      <div class="camp-title">\U0001F451 Time no Alvo — Líderes</div>
-      <div class="camp-period">${cfg.period}</div>
-      <div class="camp-sub">Premiação por % do time no alvo · ${totHit} no alvo</div>
-    </div>
-    <div class="rules-card">
-      <div class="rules-title">\U0001F4CB Regras da Campanha</div>
-      <div class="rules-desc">${cfg.desc}</div>
-      <div class="tiers-grid three-col">
-        ${[...cfg.tiers].sort((a,b)=>a.v-b.v).map(t=>`<div class="tier tier-${t.tier}"><div class="tier-mwh">${t.v}% do time</div><div class="tier-prize">${t.label}</div></div>`).join('')}
-      </div>
-    </div>`;
-  rows.forEach((r,i)=>{
-    const tier=liderTier(r.pct); const has=r.pct>0;
-    const prizeInfo = tier ? `<span class="prize-badge b${tier.tier}">\U0001F3C6 ${tier.label}</span>`:'';
-    const next=liderNext(r.pct);
-    const nextInfo = next ? `<div class="prize-empty">Faltam ${Math.max(0,Math.ceil((next.v/100)*r.mem.length)-r.hit.length)} no alvo para ${next.label}</div>`:'';
-    const pracaLabel=(typeof PRACA_DEF!=='undefined'&&PRACA_DEF[r.praca]?PRACA_DEF[r.praca].label:r.praca);
-    const hitNames = r.hit.length? ('✅ '+r.hit.join(', ')) : 'ninguém no alvo ainda';
-    html+=`
-      <div class="rank-card">
-        <div class="rank-num ${i<3&&has?'top':''}">${i<3&&has?medals[i]:i+1}</div>
-        ${avatarImg(r.lead,'rank-avatar')}
-        <div class="rank-info">
-          <div class="rank-name">${r.lead}${prizeInfo}</div>
-          <div class="rank-praca">${pracaLabel} · ${r.hit.length}/${r.mem.length} no alvo</div>
-          <div class="prize-empty">${hitNames}</div>
-          ${nextInfo}
-        </div>
-        <div class="rank-right">
-          <div class="rank-mwh ${has?'':'zero'}">${r.pct}%</div>
-          <div class="rank-unit">do time</div>
-        </div>
-      </div>`;
-  });
-  return html;
-}
 function renderCampanha(){
-  const btnStyle = on => `flex:1;padding:9px 6px;border:none;border-radius:10px;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;${on?'background:var(--blue);color:#fff':'background:#EEF0F6;color:var(--muted)'}`;
-  let tabs = Object.values(CAMP_CFG).map(c => `<button onclick="setCampView('${c.key}')" style="${btnStyle(CAMP_VIEW===c.key)}">${c.btn}</button>`).join('');
-  tabs += `<button onclick="setCampView('lider')" style="${btnStyle(CAMP_VIEW==='lider')}">👑 Líderes</button>`;
-  const body = CAMP_VIEW==='lider' ? renderLeaderView() : renderCampaignView(CAMP_CFG[CAMP_VIEW]);
+  const tabs = Object.values(CAMP_CFG).map(c => {
+    const on = CAMP_VIEW===c.key;
+    return `<button onclick="setCampView('${c.key}')" style="flex:1;padding:9px 8px;border:none;border-radius:10px;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit;${on?'background:var(--blue);color:#fff':'background:#EEF0F6;color:var(--muted)'}">${c.btn}</button>`;
+  }).join('');
   document.getElementById('s3-content').innerHTML =
-    `<div style="display:flex;gap:8px;margin-bottom:12px">${tabs}</div>` + body;
+    `<div style="display:flex;gap:8px;margin-bottom:12px">${tabs}</div>` + renderCampaignView(CAMP_CFG[CAMP_VIEW]);
 }
 
 function renderCampaignView(cfg){
