@@ -1058,6 +1058,7 @@ function setScreen(s){
   document.getElementById('screen-title').textContent = TITLES[s];
   if(s==='resumo') 
 renderResumo();
+  if(s==='carteira') renderCarteira();
   if(s==='campanha') renderCampanha();
   if(s==='propostas') renderPropostas();
   if(s==='funil') renderFunil();
