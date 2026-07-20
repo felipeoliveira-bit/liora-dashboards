@@ -1075,9 +1075,23 @@ function renderResumo(){
     {key:'ribeirao',label:'Ribeirão Preto SPI',color:'#A78BFA',meta:15},
     {key:'ce',label:'CE (Fortaleza)',color:'#D4537E',meta:60},
   ];
-  // Praça do vendedor logado vem PRIMEIRO (não precisa caçar na lista)
-  const _meKey = SELLER_PRACA[(typeof getCurrentVendedor==='function'?getCurrentVendedor():'')] || '';
-  if(_meKey && _meKey!=='outras') pracas.sort((a,b)=> (b.key===_meKey) - (a.key===_meKey));
+  // Ordenação da lista de praças:
+  //  • Gestor (visão geral): por atingimento to-date, do melhor p/ o pior.
+  //  • Vendedor/Líder: a praça DELE vem PRIMEIRO; o resto na ordem padrão.
+  const _meName   = (typeof getCurrentVendedor==='function'?getCurrentVendedor():'');
+  const _meKey    = SELLER_PRACA[_meName] || '';
+  const _isGestor = (typeof isGestor_==='function') && isGestor_(_meName);
+  const _pracaPctTD = k => {
+    const p = pracas.find(pp=>pp.key===k); if(!p) return 0;
+    const aprovMwh = rawData.filter(x => x.praca.key===k && noMes(x) && isAprovado(x)).reduce((a,x)=>a+x.mwh,0);
+    const mtd = metaToDate(p.meta);
+    return mtd>0 ? (aprovMwh/mtd)*100 : 0;
+  };
+  if(_isGestor){
+    pracas.sort((a,b)=> _pracaPctTD(b.key) - _pracaPctTD(a.key));
+  } else if(_meKey && _meKey!=='outras'){
+    pracas.sort((a,b)=> (b.key===_meKey) - (a.key===_meKey));
+  }
 
   const totalAprov = rawData.filter(x => noMes(x) && isAprovado(x)).reduce((a,x)=>a+x.mwh,0);
   const totalMeta  = 357;
