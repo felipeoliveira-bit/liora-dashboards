@@ -4625,7 +4625,12 @@ function isAgDocs(x) {
 
 function isNegado(x) {
   if (x.stage === 'BGC_PARCEIRO') return !!x.lost_at && (x.lost_reason||'').trim() !== ''; // perdido na validação Antecipa (ex.: reprovado no crédito) = negado
-  if (x.stage !== 'BACKGROUND_CHECKING') return false;
+  if (x.stage !== 'BACKGROUND_CHECKING') {
+    // reprovado na análise de risco/crédito fora do BGC (ex.: BGC_PENDING_BILLS, PENDING_BILLS, WAITING_DOCUMENTS) — motivo em deal_lost_reason
+    if (isAprovado(x)) return false;
+    var rz = (x.lost_reason||'').trim().toLowerCase();
+    return !!x.lost_at && (rz.indexOf('análise de risco') >= 0 || rz.indexOf('analise de risco') >= 0 || rz.indexOf('reprovado') >= 0);
+  }
   if (x.status === 'NEGADO') return true;
   if ((x.lost_reason||'').trim() !== '') return true;
   return false;
