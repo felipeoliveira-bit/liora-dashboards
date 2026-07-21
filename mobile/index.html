@@ -1280,7 +1280,7 @@ const REM_RULES = {
 const REM_PRIZES = { sup: 3500, meta: 2000, min: 1000 };
 function getRemRules(seller){
   const praca = (SELLER_PRACA[seller] || '').toLowerCase();
-  const group = (praca === 'spi' || praca === 'ce' || praca === 'rninterior') ? 'defgh' : 'abc';
+  const group = (praca === 'spi' || praca === 'ce' || praca === 'rninterior' || praca === 'ribeirao') ? 'defgh' : 'abc';
   return REM_RULES[group];
 }
 
