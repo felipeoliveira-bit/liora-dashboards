@@ -210,6 +210,7 @@ def build_rawData(deals_path, ag_path, prop_path=None, docs_map=None, uc_map=Non
             'stage':('REQUEST_TITULARIDADE' if (forced and r['deal_stage'] in ('BGC_PARCEIRO','BACKGROUND_CHECKING')) else r['deal_stage']),'status':r['ops_tt_status'],'idle':idle,
             'city':r['current_client_city'],'state':r['current_client_state'],
             'dist':DIST_MAP.get(r['distributor_short_name'], r['distributor_short_name']),
+            'produto':(r.get('product_name') or '').strip(),
             'deal_id':did,'uc':uc_map.get(did,''),'tel':r['client_phone_number'],'cnpj':r['current_client_cnpj'],'cpf':r['current_client_cpf'],
             'fatura':pfloat(r['current_total_bill_cost (R$)']),'semana':semana(basis),
             'lost_at':('' if (forced or (cli or '').strip().upper() in LOST_IGNORE) else r['deal_lost_at']),'lost_reason':('' if (forced or (cli or '').strip().upper() in LOST_IGNORE) else r['deal_lost_reason']),

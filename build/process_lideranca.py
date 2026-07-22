@@ -270,6 +270,7 @@ def mk_deal(r):
       'status': r['ops_tt_status'] or 'N/A',
       'idle': int(fnum(r['idle_days'])),
       'city': r['current_client_city'],
+      'produto': (r.get('product_name') or '').strip(),
       'semana': semana(d),
       'lost_at': ('' if (forced or norm(r['current_client_name']) in LOST_IGNORE) else (r['deal_lost_at'] or '')),
       'lost_reason': ('' if (forced or norm(r['current_client_name']) in LOST_IGNORE) else (r['deal_lost_reason'] or '')),
@@ -311,6 +312,7 @@ for r in prop:
       'accepted_proposal': (r['accepted_proposal'] or '').strip().lower() == 'true',
       'praca': praca_of(r['sales_person_email'], r['current_client_name']),
       'uc': UC.get(r['deal_id'],''),
+      'produto': (r.get('product_name') or '').strip(),
       'det': {
         'CNPJ': r['current_client_cnpj'], 'CPF': r['current_client_cpf'],
         'Telefone': r['client_phone_number'], 'Cidade': r['current_client_city'],
