@@ -1425,7 +1425,7 @@ function renderCarteiraLider(seller){
   const pc  = pct>=70?'var(--green)':pct>=40?'var(--blue)':'var(--red)';
   const barW = Math.min(pct,100);
   const membros = VENDEDORES
-    .filter(v => (SELLER_PRACA[v.nome]||'').toLowerCase() === praca && v.nome !== seller)
+    .filter(v => (SELLER_PRACA[v.nome]||'').toLowerCase() === praca && v.nome !== seller && !isOculto_(v.nome))
     .map(v => ({
       nome: v.nome,
       mwh:  rawData.filter(x=>x.s===v.nome && noMes(x) && isAprovado(x)).reduce((a,x)=>a+x.mwh,0),
@@ -1614,6 +1614,8 @@ renderCarteira();
 // Gestores com visão geral (veem tudo, todas as praças) — v2.140
 const GESTORES = ['Felipe Oliveira','Ana Ribeiro','Raynara Silva'];
 function isGestor_(n){ return GESTORES.indexOf(n) !== -1; }
+const OCULTOS_TIME = ['Ananias Neto','Rosangela Mendes','Franciele Felix','Ana Ribeiro'];
+function isOculto_(n){ return OCULTOS_TIME.indexOf(n) !== -1; }
 const CAMP_CFG = {
   semana: { key:'semana', btn:'Campanha da Semana', title:'Campanha da Semana',
     ini:'2026-07-17', end:'2026-07-26', period:'17 a 26/07/2026 · 23h59 · pgto 28/07',
@@ -2710,7 +2712,7 @@ function renderPropostas() {
 
   // v2.104 — vendedores fora do time: somem da LISTA do ranking, mas os números
   // continuam somando nos totais de praça (pracas vem de `data`, não daqui).
-  const RANK_HIDDEN = ['Ananias Neto','Rosangela Mendes'];
+  const RANK_HIDDEN = OCULTOS_TIME;
   const topSellers = Object.entries(sellers)
     .filter(([name]) => !RANK_HIDDEN.includes(name))
     .sort((a,b)=>{
@@ -3230,6 +3232,7 @@ function renderVendedoresList(showCurrentHighlight){
   // Agrupa por praça
   const byPraca = {};
   VENDEDORES.forEach(v => {
+    if(isOculto_(v.nome)) return;
     if(!byPraca[v.praca]) byPraca[v.praca] = [];
     byPraca[v.praca].push(v);
   });
@@ -5508,9 +5511,9 @@ function renderFunilKanban(el){
       const praça = praçaLider;
       let time;
       if(isGestor_(me)){
-        time = VENDEDORES.filter(v=>v.praca!=='Outros');
+        time = VENDEDORES.filter(v=>v.praca!=='Outros' && !isOculto_(v.nome));
       } else {
-        time = VENDEDORES.filter(v=>(SELLER_PRACA[v.nome]||'').toLowerCase() === praça);
+        time = VENDEDORES.filter(v=>(SELLER_PRACA[v.nome]||'').toLowerCase() === praça && !isOculto_(v.nome));
       }
       const opts = time.map(v=>`<option value="${escapeHtml(v.nome)}" ${funilViewAs===v.nome?'selected':''}>${escapeHtml(v.nome)}</option>`).join('');
       const labelVendo = viewAs || 'Todo o time';
