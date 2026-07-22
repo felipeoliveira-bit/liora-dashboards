@@ -2227,7 +2227,7 @@ function openClienteDetalhes(dealId){
         <div class="cd-row"><div class="cd-row-k">🔌 Instalação (UC)</div><div class="cd-row-v">${lead.uc ? escapeHtml(lead.uc) : '—'}</div></div>
         <div class="cd-row"><div class="cd-row-k">📍 Cidade · Estado</div><div class="cd-row-v">${escapeHtml(lead.city||'—')}${lead.state ? ' · '+escapeHtml(lead.state) : ''}</div></div>
         <div class="cd-row"><div class="cd-row-k">⚡ Distribuidora</div><div class="cd-row-v">${escapeHtml(lead.dist||'—')}</div></div>
-        ${(lead.produto&&lead.produto.trim()) ? `<div class="cd-row"><div class="cd-row-k">📦 Produto</div><div class="cd-row-v">${escapeHtml(lead.produto)}</div></div>` : ''}
+        ${prettyProduto(lead.produto) ? `<div class="cd-row"><div class="cd-row-k">📦 Produto</div><div class="cd-row-v">${escapeHtml(prettyProduto(lead.produto))}</div></div>` : ''}
       </div>
 
       <div class="cd-section">
@@ -5917,6 +5917,8 @@ function moveLead(id, newStage){
 }
 
 const STAGE_DESC={'WAITING_DOCUMENTS':'Falta documento pra análise','BACKGROUND_CHECKING':'Em processo de análise do time de Ops','BACKGROUND CHECKING':'Em processo de análise do time de Ops','BGC_PARCEIRO':'Já aprovado na análise de risco; agora em análise do Antecipa (parte 2). Prazo de até 1,5 dia útil.','BGC_REVIEW':'Em processo de análise do time de Ops','REQUEST_TITULARIDADE':'Aprovado na análise, aguardando processo de troca de titularidade','TITULARIDADE_ONGOING':'Troca de titularidade solicitada, aguardando confirmação da distribuidora','TITULARIDADE ONGOING':'Troca de titularidade solicitada, aguardando confirmação da distribuidora','REGISTERING_DG':'Troca de titularidade aprovada, aguardando cadastro na DG para gerar a fatura','ACTIVE_MEMBER':'Troca aprovada e cliente cadastrado na DG para gerar faturas Liora','ACTIVE MEMBER':'Troca aprovada e cliente cadastrado na DG para gerar faturas Liora'};
+function prettyProdTitle(s){return s.split(/\s+/).filter(function(w){return w;}).map(function(w){var L=w.replace(/[^A-Za-zÀ-ÿ]/g,'');if(L.length<=4&&w===w.toUpperCase())return w;var lw=w.toLowerCase();return lw.replace(/([a-zà-ÿ])/,function(m){return m.toUpperCase();});}).join(' ');}
+function prettyProduto(raw){if(raw==null)return '';var s=String(raw).trim();if(!s)return '';var U=s.toUpperCase();if(U.indexOf('LIORA_ANTECIPA_PF')===0)return 'Antecipa PF';if(U.indexOf('LIORA_ANTECIPA_PJ')===0)return 'Antecipa PJ';if(U.indexOf('LIORA_B_')===0||U==='LIORA_B')return 'Liora Blindado';if(U.indexOf('LIORA_F_')===0||U==='LIORA_F')return 'Liora Flex';if(U.indexOf('BUNDLE')===0)return s;s=s.replace(/\s*-\s*.*$/,'');s=s.replace(/(_\d+(\.\d+)?)+$/,'');s=s.replace(/\s+\d+$/,'');if(s.indexOf('_')>-1){var parts=s.split('_').filter(function(x){return x.trim();});var forn=parts.shift();var dist=parts.join(' ').replace(/\s+/g,' ').trim();s=dist?(forn+' ('+dist+')'):forn;}return prettyProdTitle(s);}
 function escapeHtml(s){
   if(!s) return '';
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
