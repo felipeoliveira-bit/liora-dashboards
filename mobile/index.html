@@ -1102,7 +1102,9 @@ function renderResumo(){
   }
 
   const totalAprov = rawData.filter(x => noMes(x) && isAprovado(x)).reduce((a,x)=>a+x.mwh,0);
-  const totalMeta  = 357;
+  // ate set/2026: RN Interior e Ribeirao contam realizado, mas NAO entram na meta do Field
+  const META_EXCL_FIELD = ['rninterior','ribeirao'];
+  const totalMeta  = pracas.filter(p=>!META_EXCL_FIELD.includes(p.key)).reduce((a,p)=>a+p.meta,0);
   const totalPct   = Math.min((totalAprov/totalMeta)*100,100);
   const mtdFrac    = getMetaToDateInfo().fraction;
   const totalMetaTD = totalMeta * mtdFrac;
@@ -1166,7 +1168,7 @@ function renderResumo(){
     const falta = Math.max(0, p.meta - aprovMwh);
     const mwhDia = falta / diasRest;
     const propDia = mwhDia * (PROP_PER_MWH[p.key] || 9.5);
-    exMwhTot += mwhDia; exPropTot += propDia;
+    if(!META_EXCL_FIELD.includes(p.key)){ exMwhTot += mwhDia; exPropTot += propDia; }
     const ac = aprovCountByK[p.key]||0, pc = propCountByK[p.key]||0;
     aprovCTot += ac; propCTot += pc;
     const conv = pc>0 ? (ac/pc*100) : null;
