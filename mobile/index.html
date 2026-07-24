@@ -3126,6 +3126,7 @@ const FUNIL_STAGES = [
 const DISTRIBUIDORAS = ['Enel','Coelba','Cosern','CPFL Paulista'];
 // Distribuidora padrão por praça (pré-preenche o campo no cadastro pra ganhar tempo)
 const PRACA_DIST = { ce:'Enel', salvador:'Coelba', feira:'Coelba', spi:'CPFL Paulista', ribeirao:'CPFL Paulista', natal:'Cosern', rninterior:'Cosern' };
+const PRACA_UF   = { ce:'CE', salvador:'BA', feira:'BA', spi:'SP', ribeirao:'SP', natal:'RN', rninterior:'RN' };
 
 // ────────────────────────────────────────────────────
 // v2.3 — IDENTIDADE DO VENDEDOR
@@ -3775,6 +3776,7 @@ function renderFunilCadastro(el){
   // Distribuidora sugerida pela praça de quem cadastra (no cadastro; na edição usa a do dono do lead)
   const _distPracaKey = String((editing && leadBeingEdited) ? (SELLER_PRACA[canonicalVendedor(leadBeingEdited.vendedor||'')]||'') : (SELLER_PRACA[canonicalVendedor(me)]||'')).toLowerCase();
   const defaultDist = PRACA_DIST[_distPracaKey] || '';
+  const defaultUF   = PRACA_UF[_distPracaKey] || '';
   const canEdit = leadBeingEdited ? canEditLead(leadBeingEdited) : true;   // v2.156 dono/líder/gestor
   const readOnly = editing && !canEdit;
 
@@ -3858,10 +3860,9 @@ function renderFunilCadastro(el){
         <input class="form-input" id="lead-complemento" type="text" placeholder="Complemento (apto, bloco, ponto de referência)" autocomplete="off" style="margin-bottom:10px" />
         <input class="form-input" id="lead-bairro" type="text" placeholder="Bairro *" autocomplete="address-level3" style="margin-bottom:10px" oninput="updateSaveButtonState()" />
         <input class="form-input" id="lead-cep" type="text" placeholder="CEP (ex: 40000-000)" autocomplete="postal-code" inputmode="numeric" style="margin-bottom:10px" />
-        <div class="address-grid-3">
+        <div class="address-grid">
           <input class="form-input" id="lead-cidade" type="text" placeholder="Cidade *" autocomplete="address-level2" oninput="updateSaveButtonState()" />
-          <input class="form-input" id="lead-estado" type="text" placeholder="UF" autocomplete="address-level1" maxlength="2" style="text-transform:uppercase" />
-          <input class="form-input" id="lead-pais" type="text" placeholder="País" autocomplete="country-name" value="Brasil" />
+          <input class="form-input" id="lead-estado" type="text" placeholder="UF" autocomplete="address-level1" maxlength="2" style="text-transform:uppercase" value="${defaultUF}" />
         </div>
       </div>
 <div class="form-group">
@@ -3915,7 +3916,8 @@ function renderFunilCadastro(el){
         </select>
       </div>
       <div class="form-section-divider">
-        <button type="button" id="extra-toggle" onclick="toggleExtraFields()" style="width:100%;background:#F4F5FA;border:1px dashed #C9CDDE;border-radius:10px;padding:11px;font-size:11px;font-weight:800;color:var(--muted);cursor:pointer;font-family:inherit;text-transform:uppercase;letter-spacing:.05em">${editing ? '➖ 3 · Ocultar dados adicionais' : '➕ 3 · Mostrar dados adicionais (opcional)'}</button>
+        <button type="button" id="extra-toggle" onclick="toggleExtraFields()" style="width:100%;background:#F4F5FA;border:1px dashed #C9CDDE;border-radius:10px;padding:11px;font-size:11px;font-weight:800;color:var(--muted);cursor:pointer;font-family:inherit;text-transform:uppercase;letter-spacing:.05em">${editing ? '➖ 3 · Ocultar dados adicionais' : '➕ 3 · Preencher dados adicionais'}</button>
+      <div class="form-section-sub" style="text-align:center;margin-top:6px">Quanto mais informações, melhor a proposta e o atendimento</div>
       </div>
       <div id="extra-fields" style="display:${editing ? 'block' : 'none'}">
 <div class="form-group">
@@ -4083,8 +4085,7 @@ function renderFunilCadastro(el){
       setVal('lead-bairro',  e.bairro);
       setVal('lead-cep',     e.cep);
       setVal('lead-cidade',  e.cidade);
-      setVal('lead-estado',  e.estado);
-      setVal('lead-pais',    e.pais || 'Brasil');
+      if (e.estado) setVal('lead-estado', e.estado);  // vazio -> mantém padrão da praça
 
       // Restaura UI dos pills de qualificação
       if (leadBeingEdited.td === 'TDS') document.getElementById('td-tds')?.classList.add('active');
@@ -4500,7 +4501,7 @@ function toggleExtraFields(){
   if(!box) return;
   const willOpen = (box.style.display === 'none' || !box.style.display);
   box.style.display = willOpen ? 'block' : 'none';
-  if(btn) btn.textContent = willOpen ? '\u2796 3 \u00b7 Ocultar dados adicionais' : '\u2795 3 \u00b7 Mostrar dados adicionais (opcional)';
+  if(btn) btn.textContent = willOpen ? '\u2796 3 \u00b7 Ocultar dados adicionais' : '\u2795 3 \u00b7 Preencher dados adicionais';
 }
 
 function updateProposalButton(){
@@ -4584,7 +4585,7 @@ async function submitLead(){
   const cep    = (document.getElementById('lead-cep').value || '').trim();
   const cidade = (document.getElementById('lead-cidade').value || '').trim();
   const estado = (document.getElementById('lead-estado').value || '').trim().toUpperCase();
-  const pais   = (document.getElementById('lead-pais').value || '').trim() || 'Brasil';
+  const pais   = 'Brasil';
 
   const partes = [];
   if(rua) partes.push(rua + (numero ? ', ' + numero : ''));
@@ -4733,7 +4734,7 @@ async function updateLead(){
   const cep    = (document.getElementById('lead-cep').value || '').trim();
   const cidade = (document.getElementById('lead-cidade').value || '').trim();
   const estado = (document.getElementById('lead-estado').value || '').trim().toUpperCase();
-  const pais   = (document.getElementById('lead-pais').value || '').trim() || 'Brasil';
+  const pais   = 'Brasil';
 
   // Valida obrigatórios + desfecho (v2.22: mesma regra do cadastro)
   const missing = [];
@@ -4919,7 +4920,7 @@ async function gerarProposta(){
   const cep    = (document.getElementById('lead-cep').value || '').trim();
   const cidade = (document.getElementById('lead-cidade').value || '').trim();
   const estado = (document.getElementById('lead-estado').value || '').trim().toUpperCase();
-  const pais   = (document.getElementById('lead-pais').value || '').trim() || 'Brasil';
+  const pais   = 'Brasil';
 
   // ⭐ Validação clara: pra Gerar Proposta precisa de Nome + Tel + Fatura + Distribuidora + Cidade + Bairro
   const missing = [];
@@ -5315,7 +5316,6 @@ function usarMinhaLocalizacao(){
         if(cep) document.getElementById('lead-cep').value = cep;
         if(cidade) document.getElementById('lead-cidade').value = cidade;
         if(estado) document.getElementById('lead-estado').value = estado;
-        if(pais) document.getElementById('lead-pais').value = pais;
 
         status.className = 'geo-status ok';
         const filled = [rua, numero, bairro, cep, cidade, estado].filter(Boolean).length;
