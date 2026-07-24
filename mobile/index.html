@@ -1638,10 +1638,10 @@ const CAMP_CFG = {
 let CAMP_VIEW = 'semana';
 function setCampView(k){ CAMP_VIEW = k; renderCampanha(); }
 function campVal(cfg, deals){ return cfg.metric==='count' ? deals.length : deals.reduce((a,d)=>a+(d.mwh||0),0); }
-function campFmt(cfg, v){ return cfg.metric==='count' ? String(v) : v.toFixed(2); }
-function campTier(cfg, v){ const eps=cfg.metric==='count'?0:0.005; for(const t of cfg.tiers){ if(v>=t.v-eps) return t; } return null; }
-function campNext(cfg, v){ const eps=cfg.metric==='count'?0:0.005; const asc=[...cfg.tiers].sort((a,b)=>a.v-b.v); for(const t of asc){ if(v<t.v-eps) return t; } return null; }
-function campFaltaTxt(cfg, falta){ return cfg.metric==='count' ? (falta===1?'1 cliente':falta+' clientes') : falta.toFixed(2)+' MWh'; }
+function campFmt(cfg, v){ return cfg.metric==='count' ? String(v) : (Math.floor(v*100)/100).toFixed(2); }
+function campTier(cfg, v){ for(const t of cfg.tiers){ if(v>=t.v) return t; } return null; }
+function campNext(cfg, v){ const asc=[...cfg.tiers].sort((a,b)=>a.v-b.v); for(const t of asc){ if(v<t.v) return t; } return null; }
+function campFaltaTxt(cfg, falta){ return cfg.metric==='count' ? (falta===1?'1 cliente':falta+' clientes') : (Math.ceil(falta*100)/100).toFixed(2)+' MWh'; }
 
 // v2.104 — calcula prêmio atual e quanto falta pro próximo tier da campanha.
 
