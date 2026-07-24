@@ -3073,25 +3073,43 @@ function canonicalVendedor(name){
   return VENDEDOR_ALIASES[n] || n;
 }
 
-const SESSION_KEY  = 'liora.session.v1';   // sessionStorage — dura só enquanto a aba está aberta
+const SESSION_KEY  = 'liora.session.v1';   // legado (sessionStorage) — mantido só p/ compatibilidade
+const AUTH_KEY     = 'liora.auth.v1';      // localStorage — login PERSISTE entre reaberturas/deploys
+const AUTH_TTL_MS  = 90*24*60*60*1000;     // validade de 90 dias, renovada a cada abertura
+
+// login válido? novo: flag persistente em localStorage (com validade); compat: sessão desta aba
+function _authOk(){
+  try {
+    const raw = localStorage.getItem(AUTH_KEY);
+    if(raw){
+      const ts = parseInt(raw,10);
+      if(isNaN(ts)) return true;                       // valor antigo sem timestamp
+      if(Date.now()-ts < AUTH_TTL_MS) return true;
+      localStorage.removeItem(AUTH_KEY);               // expirou
+    }
+    if(sessionStorage.getItem(SESSION_KEY)) return true;  // compat: quem já estava logado nesta aba
+  } catch(e) {}
+  return false;
+}
+function _authTouch(){ try { localStorage.setItem(AUTH_KEY, String(Date.now())); } catch(e) {} }
 
 function getCurrentVendedor(){
-  // Só retorna se a sessão desta aba estiver autenticada
   try {
-    const unlocked = sessionStorage.getItem(SESSION_KEY);
-    if(!unlocked) return '';
+    if(!_authOk()) return '';
     return localStorage.getItem(IDENTITY_KEY) || '';
   } catch(e) { return ''; }
 }
 function setCurrentVendedor(name){
   try {
     localStorage.setItem(IDENTITY_KEY, name || '');
-    sessionStorage.setItem(SESSION_KEY, '1');   // marca sessão como autenticada
+    _authTouch();                                // persiste o login
+    sessionStorage.setItem(SESSION_KEY, '1');    // mantém compatibilidade
   } catch(e) {}
 }
 function clearCurrentVendedor(){
   try {
     localStorage.removeItem(IDENTITY_KEY);
+    localStorage.removeItem(AUTH_KEY);
     sessionStorage.removeItem(SESSION_KEY);
   } catch(e) {}
 }
@@ -3233,7 +3251,7 @@ function renderIdentityBadge(){
 
 // ── Tela cheia (sempre ao abrir o link — sessão não autenticada) ──
 function showIdentityFirstTime(){
-  if(sessionStorage.getItem(SESSION_KEY)) return; // já autenticado nesta aba
+  if(getCurrentVendedor()){ _authTouch(); return; } // já logado — login persiste entre reaberturas/deploys
   const overlay = document.createElement('div');
   overlay.className = 'identity-screen';
   overlay.id = 'identity-first';
