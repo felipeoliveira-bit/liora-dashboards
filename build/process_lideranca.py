@@ -248,6 +248,8 @@ FORCE_APPROVED = {
  'a4a2cc08-a77e-4549-8306-ef13db2a3a95': '2026-07-10',  # Marcio Pereira pinto / Nicola Popovic - aprovado manual (Felipe 10/07)
  '35ad764a-c6f8-4039-9bcc-9706c960c1a5': '2026-07-16',  # Larissa Cecilia Sampaio Tavares / Ederson Silva - risco APPROVED 16/07 pos-perdido em BGC_PARCEIRO (Felipe 17/07)
  'e28df401-8a74-494f-8b7a-2ad25904fdb7': '2026-07-22',  # Fabricio dos Reis Honorio / Ederson Silva - aprovado manual, BGC_PARCEIRO risco APPROVED_PENDING_CREDIT (Felipe 22/07)
+ '748b43ba-c7ea-480c-b139-89aca59a9124': '2026-07-24',  # Estefania ingret Alves de lima / Ederson Silva - BGC_PARCEIRO risco APPROVED_PENDING_CREDIT (Felipe 24/07)
+ 'c1304d70-452a-47cf-bbf4-cf82bb54a756': '2026-07-24',  # Nubia Silva de Souza / Maria Lucia - BACKGROUND_CHECKING, aprovado manual (Felipe 24/07)
 }
 def mwh_of(client, raw):
     ov = CONSUMPTION_OVERRIDE.get(norm(client))
