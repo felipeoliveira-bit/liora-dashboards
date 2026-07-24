@@ -5024,15 +5024,13 @@ function buildWhatsappMessage(lead){
   const primeiroNome = (lead.nome || '').split(/\s+/)[0] || lead.nome || '';
   const tel = lead.tel || '';
   const fat = String(lead.fatura || '');
-  // Item 4: Energia como crédito → "sim" SÓ se o cliente disse Sim; senão "não"
-  const credito = (lead.interesseCredito === 'Sim') ? 'sim' : 'não';
   const dist = lead.dist || '';
 
   return [
     `1) ${primeiroNome}`,
     `2) ${tel}`,
     `3) ${fat}`,
-    `4) ${credito}`,
+    `4) Field Sales Liora`,
     `5) ${dist}`,
   ].join('\n');
 }
