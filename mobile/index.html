@@ -3774,7 +3774,8 @@ function renderFunilCadastro(el){
   const me = getCurrentVendedor();
   const isOwner = leadBeingEdited ? (canonicalVendedor(leadBeingEdited.vendedor) === canonicalVendedor(me)) : true;
   // Distribuidora sugerida pela praça de quem cadastra (no cadastro; na edição usa a do dono do lead)
-  const _distPracaKey = String((editing && leadBeingEdited) ? (SELLER_PRACA[canonicalVendedor(leadBeingEdited.vendedor||'')]||'') : (SELLER_PRACA[canonicalVendedor(me)]||'')).toLowerCase();
+  const _pracaDe = (nm) => SELLER_PRACA[nm] || SELLER_PRACA[canonicalVendedor(nm||'')] || '';  // chaves podem ser Title Case ou minúsculas
+  const _distPracaKey = String((editing && leadBeingEdited) ? _pracaDe(leadBeingEdited.vendedor||'') : _pracaDe(me)).toLowerCase();
   const defaultDist = PRACA_DIST[_distPracaKey] || '';
   const defaultUF   = PRACA_UF[_distPracaKey] || '';
   const canEdit = leadBeingEdited ? canEditLead(leadBeingEdited) : true;   // v2.156 dono/líder/gestor
