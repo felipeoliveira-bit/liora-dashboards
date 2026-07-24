@@ -4569,6 +4569,8 @@ function updateProposalButton(){
 async function submitLead(){
   // ⭐ Guarda contra duplo-clique: se já está salvando, ignora
   if (window._submittingLead) return;
+  // Rede de segurança: se o form já é um lead salvo (ex.: gerou proposta antes), atualiza em vez de criar outro
+  if (editingLeadId) { return updateLead(); }
   window._submittingLead = true;
 
   // Pega o botão e troca pro estado "Cadastrando..."
@@ -4971,14 +4973,16 @@ async function gerarProposta(){
   if(cidade) partes.push(cidade + (estado ? '/' + estado : ''));
   const loc = partes.join(' · ') || (cidade + (estado ? '/' + estado : ''));
 
-  const id = 'L' + String(Date.now()).slice(-6);
+  // Se já existe um lead (editando/gerando proposta de um lead salvo), REUSA o id — evita duplicar
+  const _existing = editingLeadId ? window.leads.find(l => l.id === editingLeadId) : null;
+  const id = _existing ? _existing.id : ('L' + String(Date.now()).slice(-6));
   const q = window._leadQualif || {};
   const lead = {
     id, nome, tel, fatura: fat, dist, loc,
     endereco: { rua, numero, complemento, bairro, cep, cidade, estado, pais },
     coords: window._lastGeoCoords || null,
     stage: 'propostas',
-    createdAt: Date.now(),
+    createdAt: _existing ? (_existing.createdAt || Date.now()) : Date.now(),
     vendedor: getCurrentVendedor(),
     td: q.td || '',
     schedule: q.schedule || [],
@@ -4998,8 +5002,10 @@ async function gerarProposta(){
     }
   };
 
-  // Salva otimista (UI imediata + Sheets em background)
-  window.leads.push(lead);
+  // Salva otimista (UI imediata + Sheets em background) — upsert por id, nunca duplica
+  const _li = window.leads.findIndex(l => l.id === id);
+  if (_li >= 0) window.leads[_li] = lead; else window.leads.push(lead);
+  editingLeadId = id;   // o form passa a representar este lead (evita 2º registro se salvar de novo)
   lastCreatedId = id;
   window._lastGeoCoords = null;
   saveLead(lead).then(res => {
