@@ -3127,6 +3127,7 @@ const DISTRIBUIDORAS = ['Enel','Coelba','Cosern','CPFL Paulista'];
 // Distribuidora padrão por praça (pré-preenche o campo no cadastro pra ganhar tempo)
 const PRACA_DIST = { ce:'Enel', salvador:'Coelba', feira:'Coelba', spi:'CPFL Paulista', ribeirao:'CPFL Paulista', natal:'Cosern', rninterior:'Cosern' };
 const PRACA_UF   = { ce:'CE', salvador:'BA', feira:'BA', spi:'SP', ribeirao:'SP', natal:'RN', rninterior:'RN' };
+const PRACA_CIDADE = { ce:'Fortaleza', salvador:'Salvador', feira:'Feira de Santana', spi:'Campinas', ribeirao:'Ribeirão Preto', natal:'Natal', rninterior:'Mossoró' };
 
 // ────────────────────────────────────────────────────
 // v2.3 — IDENTIDADE DO VENDEDOR
@@ -3778,6 +3779,7 @@ function renderFunilCadastro(el){
   const _distPracaKey = String((editing && leadBeingEdited) ? _pracaDe(leadBeingEdited.vendedor||'') : _pracaDe(me)).toLowerCase();
   const defaultDist = PRACA_DIST[_distPracaKey] || '';
   const defaultUF   = PRACA_UF[_distPracaKey] || '';
+  const defaultCidade = PRACA_CIDADE[_distPracaKey] || '';
   const canEdit = leadBeingEdited ? canEditLead(leadBeingEdited) : true;   // v2.156 dono/líder/gestor
   const readOnly = editing && !canEdit;
 
@@ -3862,7 +3864,7 @@ function renderFunilCadastro(el){
         <input class="form-input" id="lead-bairro" type="text" placeholder="Bairro *" autocomplete="address-level3" style="margin-bottom:10px" oninput="updateSaveButtonState()" />
         <input class="form-input" id="lead-cep" type="text" placeholder="CEP (ex: 40000-000)" autocomplete="postal-code" inputmode="numeric" style="margin-bottom:10px" />
         <div class="address-grid">
-          <input class="form-input" id="lead-cidade" type="text" placeholder="Cidade *" autocomplete="address-level2" oninput="updateSaveButtonState()" />
+          <input class="form-input" id="lead-cidade" type="text" placeholder="Cidade *" autocomplete="address-level2" oninput="updateSaveButtonState()" value="${defaultCidade}" />
           <input class="form-input" id="lead-estado" type="text" placeholder="UF" autocomplete="address-level1" maxlength="2" style="text-transform:uppercase" value="${defaultUF}" />
         </div>
       </div>
@@ -4085,7 +4087,7 @@ function renderFunilCadastro(el){
       setVal('lead-complemento', e.complemento);
       setVal('lead-bairro',  e.bairro);
       setVal('lead-cep',     e.cep);
-      setVal('lead-cidade',  e.cidade);
+      if (e.cidade) setVal('lead-cidade', e.cidade);  // vazio -> mantém padrão da praça
       if (e.estado) setVal('lead-estado', e.estado);  // vazio -> mantém padrão da praça
 
       // Restaura UI dos pills de qualificação
