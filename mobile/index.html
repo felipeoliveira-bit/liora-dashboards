@@ -3828,11 +3828,15 @@ function renderFunilCadastro(el){
     ${reassignBox}
     ${toast}
     <div class="form-card">
-      <div class="form-group">
+            <div class="form-section-divider" style="border-top:none;margin-top:0;padding-top:2px">
+        <div class="form-section-title" style="color:#157A55">✅ 1 · Essencial</div>
+        <div class="form-section-sub">Obrigatório pra salvar o lead</div>
+      </div>
+<div class="form-group">
         <label class="form-label" for="lead-nome">Primeiro nome do cliente <span class="req">*</span></label>
         <input class="form-input" id="lead-nome" type="text" placeholder="Ex: Padaria São José" autocomplete="off" oninput="updateSaveButtonState()" />
       </div>
-      <div class="form-group">
+<div class="form-group">
         <label class="form-label">Localização <span class="req">*</span> <span style="font-weight:600;color:var(--muted);text-transform:none;letter-spacing:0">(bairro + cidade obrigatórios)</span></label>
         <button type="button" class="geo-btn" id="geo-btn" onclick="usarMinhaLocalizacao()">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4"/></svg>
@@ -3855,7 +3859,37 @@ function renderFunilCadastro(el){
           <input class="form-input" id="lead-pais" type="text" placeholder="País" autocomplete="country-name" value="Brasil" />
         </div>
       </div>
-      <div class="form-group">
+<div class="form-group">
+        <label class="form-label">Falou com o Tomador de Decisão? <span style="color:#B91C1C">*</span></label>
+        <div class="pill-group">
+          <button type="button" class="pill-btn" id="td-tds" onclick="setTD('TDS')">
+            <span class="pill-icon">✓</span> TDS
+          </button>
+          <button type="button" class="pill-btn" id="td-tdn" onclick="setTD('TDN')">
+            <span class="pill-icon">✗</span> TDN
+          </button>
+        </div>
+        <div class="form-hint">TDS = Tomador de Decisão SIM · TDN = Não</div>
+      </div>
+<div class="form-group">
+        <label class="form-label" for="lead-proxima-interacao">Data da próxima interação <span class="req">*</span></label>
+        <div class="form-hint" style="margin-bottom:6px">Quando você pretende voltar a falar com esse cliente? <b style="color:var(--blue)">Obrigatório informar a data OU marcar o lead como perdido (com motivo) abaixo.</b></div>
+        <input class="form-input" id="lead-proxima-interacao" type="date" autocomplete="off"
+               oninput="onProximaInteracaoInput(this)" />
+        <div id="proxima-interacao-hint" class="form-hint" style="margin-top:4px;color:var(--blue);font-weight:600;display:none"></div>
+      </div>
+<div class="form-group">
+        <label class="lost-toggle" id="lost-toggle" onclick="toggleLost(event)">
+          <input type="checkbox" id="lead-lost-chk" onclick="event.stopPropagation()" onchange="toggleLost()" />
+          <span class="lost-toggle-label">⚠️ Lead perdido?</span>
+        </label>
+        <div id="lost-reason-container"></div>
+      </div>
+      <div class="form-section-divider">
+        <div class="form-section-title" style="color:var(--blue)">⚡ 2 · Pra gerar proposta</div>
+        <div class="form-section-sub">Telefone, fatura e distribuidora — pra já sair proposta na hora</div>
+      </div>
+<div class="form-group">
         <label class="form-label" for="lead-tel">Telefone com DDD</label>
         <div class="tel-input-row">
           <input class="form-input" id="lead-tel" type="tel" placeholder="71 99876-1122" autocomplete="off" inputmode="tel" />
@@ -3863,31 +3897,42 @@ function renderFunilCadastro(el){
         </div>
         <div class="form-hint">Formato: DDD + número (ex: 41 9xxxx-xxxx)</div>
       </div>
-      <div class="form-group">
-        <label class="form-label" for="lead-email">E-mail do cliente</label>
-        <input class="form-input" id="lead-email" type="email" placeholder="cliente@email.com" autocomplete="off" inputmode="email" maxlength="120" autocapitalize="off" spellcheck="false" />
-        <div class="form-hint">Opcional · ajuda no envio de proposta e contrato</div>
-      </div>
-      <div class="form-group">
+<div class="form-group">
         <label class="form-label" for="lead-fatura">Valor médio da fatura</label>
         <input class="form-input" id="lead-fatura" type="number" placeholder="1200" inputmode="numeric" min="0" step="1" oninput="updateSaveButtonState()" />
         <div class="form-hint">Valor inteiro em R$ (aproximado)</div>
       </div>
-      <div class="form-group">
+<div class="form-group">
         <label class="form-label" for="lead-dist">Distribuidora</label>
         <select class="form-select" id="lead-dist">
           <option value="">Selecione...</option>
           ${DISTRIBUIDORAS.map(d => `<option value="${d}">${d}</option>`).join('')}
         </select>
       </div>
-
-      <!-- ──── v2.6: Perfil do cliente ──── -->
       <div class="form-section-divider">
-        <div class="form-section-title">Perfil do cliente</div>
-        <div class="form-section-sub">Opcional</div>
+        <button type="button" id="extra-toggle" onclick="toggleExtraFields()" style="width:100%;background:#F4F5FA;border:1px dashed #C9CDDE;border-radius:10px;padding:11px;font-size:11px;font-weight:800;color:var(--muted);cursor:pointer;font-family:inherit;text-transform:uppercase;letter-spacing:.05em">${editing ? '➖ 3 · Ocultar dados adicionais' : '➕ 3 · Mostrar dados adicionais (opcional)'}</button>
       </div>
-
-      <div class="form-group">
+      <div id="extra-fields" style="display:${editing ? 'block' : 'none'}">
+<div class="form-group">
+        <label class="form-label" for="lead-email">E-mail do cliente</label>
+        <input class="form-input" id="lead-email" type="email" placeholder="cliente@email.com" autocomplete="off" inputmode="email" maxlength="120" autocapitalize="off" spellcheck="false" />
+        <div class="form-hint">Opcional · ajuda no envio de proposta e contrato</div>
+      </div>
+<div class="form-group">
+        <label class="form-label">Temperatura da negociação</label>
+        <div class="pill-group">
+          <button type="button" class="pill-btn temp-frio" id="temp-frio" onclick="setTemp('Frio')">
+            <span class="pill-icon">🥶</span> Frio
+          </button>
+          <button type="button" class="pill-btn temp-morno" id="temp-morno" onclick="setTemp('Morno')">
+            <span class="pill-icon">🌤</span> Morno
+          </button>
+          <button type="button" class="pill-btn temp-quente" id="temp-quente" onclick="setTemp('Quente')">
+            <span class="pill-icon">🔥</span> Quente
+          </button>
+        </div>
+      </div>
+<div class="form-group">
         <label class="form-label">Cliente tem CNPJ?</label>
         <div class="pill-group">
           <button type="button" class="pill-btn" id="cnpj-sim" onclick="setTemCnpj('Sim')">
@@ -3899,8 +3944,7 @@ function renderFunilCadastro(el){
         </div>
         <div id="cnpj-input-container"></div>
       </div>
-
-      <div class="form-group">
+<div class="form-group">
         <label class="form-label">Cliente tem interesse no crédito?</label>
         <div class="pill-group">
           <button type="button" class="pill-btn" id="credito-sim" onclick="setInteresseCredito('Sim')">
@@ -3914,8 +3958,7 @@ function renderFunilCadastro(el){
           </button>
         </div>
       </div>
-
-      <div class="form-group">
+<div class="form-group">
         <label class="form-label">Falou com o cliente sobre nossos produtos?</label>
         <div class="form-hint" style="margin-bottom:8px">Marque os produtos que foram apresentados (pode marcar mais de um)</div>
         <div class="produto-group">
@@ -3937,27 +3980,7 @@ function renderFunilCadastro(el){
           </button>
         </div>
       </div>
-
-      <!-- ──── v2.4: Qualificação ──── -->
-      <div class="form-section-divider">
-        <div class="form-section-title">Qualificação</div>
-        <div class="form-section-sub">Opcional — ajuda no follow-up</div>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Falou com o Tomador de Decisão? <span style="color:#B91C1C">*</span></label>
-        <div class="pill-group">
-          <button type="button" class="pill-btn" id="td-tds" onclick="setTD('TDS')">
-            <span class="pill-icon">✓</span> TDS
-          </button>
-          <button type="button" class="pill-btn" id="td-tdn" onclick="setTD('TDN')">
-            <span class="pill-icon">✗</span> TDN
-          </button>
-        </div>
-        <div class="form-hint">TDS = Tomador de Decisão SIM · TDN = Não</div>
-      </div>
-
-      <div class="form-group">
+<div class="form-group">
         <label class="form-label">Quando o TD está no estabelecimento?</label>
         <table class="schedule-grid" id="schedule-grid">
           <thead>
@@ -3978,32 +4001,7 @@ function renderFunilCadastro(el){
         </table>
         <div class="schedule-hint">Toque nas células pra marcar quando o TD está disponível</div>
       </div>
-
-      <div class="form-group">
-        <label class="form-label">Temperatura da negociação</label>
-        <div class="pill-group">
-          <button type="button" class="pill-btn temp-frio" id="temp-frio" onclick="setTemp('Frio')">
-            <span class="pill-icon">🥶</span> Frio
-          </button>
-          <button type="button" class="pill-btn temp-morno" id="temp-morno" onclick="setTemp('Morno')">
-            <span class="pill-icon">🌤</span> Morno
-          </button>
-          <button type="button" class="pill-btn temp-quente" id="temp-quente" onclick="setTemp('Quente')">
-            <span class="pill-icon">🔥</span> Quente
-          </button>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label" for="lead-proxima-interacao">Data da próxima interação</label>
-        <div class="form-hint" style="margin-bottom:6px">Quando você pretende voltar a falar com esse cliente? <b style="color:var(--blue)">Obrigatório informar a data OU marcar o lead como perdido (com motivo) abaixo.</b></div>
-        <input class="form-input" id="lead-proxima-interacao" type="date" autocomplete="off"
-               oninput="onProximaInteracaoInput(this)" />
-        <div id="proxima-interacao-hint" class="form-hint" style="margin-top:4px;color:var(--blue);font-weight:600;display:none"></div>
-      </div>
-
-      <!-- v2.14: campo Obs aberto -->
-      <div class="form-group">
+<div class="form-group">
         <label class="form-label" for="lead-obs">Observações</label>
         <div class="form-hint" style="margin-bottom:6px">Algo importante sobre essa visita? (opcional)</div>
         <textarea class="form-input" id="lead-obs" rows="3" maxlength="500" autocomplete="off"
@@ -4011,13 +4009,6 @@ function renderFunilCadastro(el){
                   oninput="onObsInput(this)" style="resize:vertical;min-height:60px;font-family:inherit"></textarea>
         <div class="form-hint" id="obs-counter" style="margin-top:4px;text-align:right;color:var(--ink-soft)">0/500</div>
       </div>
-
-      <div class="form-group">
-        <label class="lost-toggle" id="lost-toggle" onclick="toggleLost(event)">
-          <input type="checkbox" id="lead-lost-chk" onclick="event.stopPropagation()" onchange="toggleLost()" />
-          <span class="lost-toggle-label">⚠️ Lead perdido?</span>
-        </label>
-        <div id="lost-reason-container"></div>
       </div>
 
       <!-- Preview da fase do funil (v2.5) -->
@@ -4496,6 +4487,15 @@ function updateStagePreview(){
       <b style="color:${stageInfo.color}">${stageInfo.label}</b>
     </div>
   `;
+}
+
+function toggleExtraFields(){
+  const box = document.getElementById('extra-fields');
+  const btn = document.getElementById('extra-toggle');
+  if(!box) return;
+  const willOpen = (box.style.display === 'none' || !box.style.display);
+  box.style.display = willOpen ? 'block' : 'none';
+  if(btn) btn.textContent = willOpen ? '\u2796 3 \u00b7 Ocultar dados adicionais' : '\u2795 3 \u00b7 Mostrar dados adicionais (opcional)';
 }
 
 function updateProposalButton(){
