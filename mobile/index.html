@@ -3124,6 +3124,8 @@ const FUNIL_STAGES = [
 ];
 
 const DISTRIBUIDORAS = ['Enel','Coelba','Cosern','CPFL Paulista'];
+// Distribuidora padrão por praça (pré-preenche o campo no cadastro pra ganhar tempo)
+const PRACA_DIST = { ce:'Enel', salvador:'Coelba', feira:'Coelba', spi:'CPFL Paulista', ribeirao:'CPFL Paulista', natal:'Cosern', rninterior:'Cosern' };
 
 // ────────────────────────────────────────────────────
 // v2.3 — IDENTIDADE DO VENDEDOR
@@ -3770,6 +3772,9 @@ function renderFunilCadastro(el){
   const leadBeingEdited = editing ? window.leads.find(l => l.id === editingLeadId) : null;
   const me = getCurrentVendedor();
   const isOwner = leadBeingEdited ? (canonicalVendedor(leadBeingEdited.vendedor) === canonicalVendedor(me)) : true;
+  // Distribuidora sugerida pela praça de quem cadastra (no cadastro; na edição usa a do dono do lead)
+  const _distPracaKey = String((editing && leadBeingEdited) ? (SELLER_PRACA[canonicalVendedor(leadBeingEdited.vendedor||'')]||'') : (SELLER_PRACA[canonicalVendedor(me)]||'')).toLowerCase();
+  const defaultDist = PRACA_DIST[_distPracaKey] || '';
   const canEdit = leadBeingEdited ? canEditLead(leadBeingEdited) : true;   // v2.156 dono/líder/gestor
   const readOnly = editing && !canEdit;
 
@@ -3906,7 +3911,7 @@ function renderFunilCadastro(el){
         <label class="form-label" for="lead-dist">Distribuidora</label>
         <select class="form-select" id="lead-dist">
           <option value="">Selecione...</option>
-          ${DISTRIBUIDORAS.map(d => `<option value="${d}">${d}</option>`).join('')}
+          ${DISTRIBUIDORAS.map(d => `<option value="${d}"${d===defaultDist?' selected':''}>${d}</option>`).join('')}
         </select>
       </div>
       <div class="form-section-divider">
@@ -4071,7 +4076,7 @@ function renderFunilCadastro(el){
       setVal('lead-tel',     leadBeingEdited.tel);
       setVal('lead-email',   leadBeingEdited.email);
       setVal('lead-fatura',  leadBeingEdited.fatura || '');
-      setVal('lead-dist',    leadBeingEdited.dist);
+      if (leadBeingEdited.dist) setVal('lead-dist', leadBeingEdited.dist);  // vazio -> mantém padrão da praça
       setVal('lead-rua',     e.rua);
       setVal('lead-numero',  e.numero);
       setVal('lead-complemento', e.complemento);
