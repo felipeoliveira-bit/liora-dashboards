@@ -3678,7 +3678,7 @@ function updateSaveButtonState(){
   const okResto  = !exigeResto || restoVal > 0;
   const okConc   = !exigeConc || !!concorrencia;
 
-  const canSave = !!nome && !!cidade && !!bairro && temDesfecho && temTD && okFatura && okResto && okConc;
+  const canSave = !!nome && !!cidade && temDesfecho && temTD && okFatura && okResto && okConc;
   btn.disabled = !canSave;
   btn.style.opacity = canSave ? '' : '0.45';
   btn.style.cursor = canSave ? '' : 'not-allowed';
@@ -3691,7 +3691,6 @@ function updateSaveButtonState(){
     } else {
       const faltam = [];
       if(!nome) faltam.push('Nome');
-      if(!bairro) faltam.push('Bairro');
       if(!cidade) faltam.push('Cidade');
       if(!temTD) faltam.push('Tomador de Decisão (TDS ou TDN)');
       if(!temDesfecho) faltam.push('próxima interação OU perdido + motivo');
@@ -3775,7 +3774,12 @@ function renderFunilCadastro(el){
   const me = getCurrentVendedor();
   const isOwner = leadBeingEdited ? (canonicalVendedor(leadBeingEdited.vendedor) === canonicalVendedor(me)) : true;
   // Distribuidora sugerida pela praça de quem cadastra (no cadastro; na edição usa a do dono do lead)
-  const _pracaDe = (nm) => SELLER_PRACA[nm] || SELLER_PRACA[canonicalVendedor(nm||'')] || '';  // chaves podem ser Title Case ou minúsculas
+  const _pracaDe = (nm) => {
+    const hit = SELLER_PRACA[nm] || SELLER_PRACA[canonicalVendedor(nm||'')];  // chaves podem ser Title Case ou minúsculas
+    if(hit) return hit;
+    if(canonicalVendedor(nm||'') === 'felipe oliveira') return 'spi';  // gestor sem praça: usa Campinas nos padrões do form
+    return '';
+  };
   const _distPracaKey = String((editing && leadBeingEdited) ? _pracaDe(leadBeingEdited.vendedor||'') : _pracaDe(me)).toLowerCase();
   const defaultDist = PRACA_DIST[_distPracaKey] || '';
   const defaultUF   = PRACA_UF[_distPracaKey] || '';
@@ -3847,7 +3851,7 @@ function renderFunilCadastro(el){
         <input class="form-input" id="lead-nome" type="text" placeholder="Ex: Padaria São José" autocomplete="off" oninput="updateSaveButtonState()" />
       </div>
 <div class="form-group">
-        <label class="form-label">Localização <span class="req">*</span> <span style="font-weight:600;color:var(--muted);text-transform:none;letter-spacing:0">(bairro + cidade obrigatórios)</span></label>
+        <label class="form-label">Localização <span class="req">*</span> <span style="font-weight:600;color:var(--muted);text-transform:none;letter-spacing:0">(cidade obrigatória)</span></label>
         <button type="button" class="geo-btn" id="geo-btn" onclick="usarMinhaLocalizacao()">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4"/></svg>
           Usar minha localização
@@ -3861,7 +3865,7 @@ function renderFunilCadastro(el){
           <input class="form-input" id="lead-numero" type="text" placeholder="Número" autocomplete="off" inputmode="numeric" />
         </div>
         <input class="form-input" id="lead-complemento" type="text" placeholder="Complemento (apto, bloco, ponto de referência)" autocomplete="off" style="margin-bottom:10px" />
-        <input class="form-input" id="lead-bairro" type="text" placeholder="Bairro *" autocomplete="address-level3" style="margin-bottom:10px" oninput="updateSaveButtonState()" />
+        <input class="form-input" id="lead-bairro" type="text" placeholder="Bairro" autocomplete="address-level3" style="margin-bottom:10px" oninput="updateSaveButtonState()" />
         <input class="form-input" id="lead-cep" type="text" placeholder="CEP (ex: 40000-000)" autocomplete="postal-code" inputmode="numeric" style="margin-bottom:10px" />
         <div class="address-grid">
           <input class="form-input" id="lead-cidade" type="text" placeholder="Cidade *" autocomplete="address-level2" oninput="updateSaveButtonState()" value="${defaultCidade}" />
@@ -4600,7 +4604,6 @@ async function submitLead(){
   const missing = [];
   if(!nome) missing.push('Nome');
   if(!cidade) missing.push('Cidade');
-  if(!bairro) missing.push('Bairro');
 
   // ⭐ v2.19/v2.22: além dos obrigatórios, o vendedor precisa sair com UM desfecho:
   //   (a) data da próxima interação OU (b) lead perdido com motivo cadastrado.
@@ -4743,7 +4746,6 @@ async function updateLead(){
   const missing = [];
   if(!nome) missing.push('Nome');
   if(!cidade) missing.push('Cidade');
-  if(!bairro) missing.push('Bairro');
   // v2.44: sincroniza TODOS os campos de qualificação direto do DOM antes de validar/salvar.
   syncQualifFromDOM();
   const d = syncDesfechoFromDOM();
@@ -4932,7 +4934,6 @@ async function gerarProposta(){
   if(!fat || fat <= 0) missing.push('Fatura');
   if(!dist)   missing.push('Distribuidora');
   if(!cidade) missing.push('Cidade');
-  if(!bairro) missing.push('Bairro');
   if(missing.length){
     alert('Pra gerar a proposta, preencha: ' + missing.join(', '));
     restoreBtn();
