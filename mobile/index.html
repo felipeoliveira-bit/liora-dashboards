@@ -4483,22 +4483,9 @@ function computeStageFromForm(){
   const estado = (document.getElementById('lead-estado')?.value || '').trim();
   const q      = window._leadQualif || {};
 
-  // 1) Lead perdido sobrescreve tudo
+  // Novo lead entra SEMPRE em Planejado — o avanço é explícito (gerar proposta) ou manual.
+  // (Antes, fatura>0 jogava direto pra Propostas, "pulando" o funil.) v2.16x
   if (q.lost) return 'perdido';
-
-  // 2) Fatura preenchida (> 0) → Propostas
-  if (fat > 0) return 'propostas';
-
-  // 3) Qualquer campo opcional preenchido → Qualificados
-  //    (Tel, Dist, Rua, Número, CEP, UF, TDS/TDN, horários, temperatura, CNPJ, crédito, produtos, próx. interação)
-  const hasQualif = !!tel || !!dist || !!rua || !!numero || !!cep || !!estado
-                  || !!q.td || (q.schedule && q.schedule.length > 0) || !!q.temperatura
-                  || !!q.temCnpj || !!q.interesseCredito
-                  || (q.produtos && q.produtos.length > 0)
-                  || !!q.proximaInteracao;
-  if (hasQualif) return 'qualificados';
-
-  // 4) Default — só obrigatórios preenchidos → Planejados
   return 'planejados';
 }
 
@@ -4793,9 +4780,12 @@ async function updateLead(){
   if(cidade) partes.push(cidade + (estado ? '/' + estado : ''));
   const loc = partes.join(' · ') || (cidade + (estado ? '/' + estado : ''));
 
-  // Calcula nova fase (mas só se a fase atual for uma das 4 automáticas)
-  const autoStages = ['planejados','qualificados','propostas','perdido'];
-  const newStage = autoStages.includes(lead.stage) ? computeStageFromForm() : lead.stage;
+  // v2.16x — editar NÃO reclassifica pelo preenchimento: mexer na data de retorno não move mais o lead.
+  // Só o desfecho muda o estágio: marcar perdido -> Perdido; desmarcar -> volta pra Planejados. Resto = movimento manual.
+  let newStage;
+  if (q.lost) newStage = 'perdido';
+  else if (lead.stage === 'perdido') newStage = 'planejados';
+  else newStage = lead.stage;
 
   Object.assign(lead, {
     nome, tel, email, fatura: fat, dist, loc,
@@ -4981,7 +4971,7 @@ async function gerarProposta(){
     id, nome, tel, fatura: fat, dist, loc,
     endereco: { rua, numero, complemento, bairro, cep, cidade, estado, pais },
     coords: window._lastGeoCoords || null,
-    stage: 'propostas',
+    stage: (_existing && (_existing.stage === 'fechamentos' || _existing.stage === 'contratos')) ? _existing.stage : 'propostas',
     createdAt: _existing ? (_existing.createdAt || Date.now()) : Date.now(),
     vendedor: getCurrentVendedor(),
     td: q.td || '',
