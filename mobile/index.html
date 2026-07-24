@@ -2533,7 +2533,7 @@ function renderCampaignView(cfg){
     const has = s.val > 0;
     const mesData = rawData.filter(x=>x.s===s.name&&noMes(x)&&isAprovado(x));
     const mes = mesData.reduce((a,x)=>a+x.mwh,0);
-    const pct = s.meta>0?Math.min((mes/s.meta)*100,100):0;
+    const pct = s.meta>0?(mes/s.meta)*100:0;  // atingimento real (pode passar de 100%); sem barra aqui, entao nao precisa cap (Felipe 24/07)
     const pc = pct>=70?'var(--green)':pct>=40?'var(--blue)':'var(--red)';
     const tier = campTier(cfg, s.val);
     const next = campNext(cfg, s.val);
