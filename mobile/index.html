@@ -824,7 +824,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
   <div class="copa-modal" id="copa-modal" onclick="closeCopaFig()"></div>
 
   <div style="position:fixed;bottom:78px;right:8px;font-size:9px;color:#aaa;background:rgba(255,255,255,.85);padding:2px 6px;border-radius:8px;z-index:99;font-family:monospace;pointer-events:none">
-    v2.159 · 15/07
+    v2.160 · 24/07
   </div>
 
   <!-- BOTTOM NAV -->
@@ -1312,9 +1312,16 @@ function renderRemProgress(seller, mwh){
   const premioTxt = i.premio > 0
     ? `<span style="color:var(--green);font-weight:800">R$ ${i.premio.toLocaleString('pt-BR')}</span> <span style="color:var(--muted)">(${i.premioNome})</span>`
     : `<span style="color:var(--muted)">Ainda sem prêmio do mês</span>`;
-  const faltaTxt = i.proximo
-    ? `Faltam <b>${i.falta.toFixed(1)} MWh</b> para ${i.proximo.nome} (R$ ${i.proximo.prize.toLocaleString('pt-BR')})`
-    : `🎉 Super Meta atingida!`;
+  let faltaTxt;
+  if(i.proximo){
+    faltaTxt = `Faltam <b>${i.falta.toFixed(1)} MWh</b> para ${i.proximo.nome} (R$ ${i.proximo.prize.toLocaleString('pt-BR')})`;
+  } else {
+    // v2.160 — Super Meta atingida: bônus +R$ 750 a cada 5 MWh adicionais (julho · temporário)
+    const rr = getRemRules(seller);
+    const sup = rr ? rr.sup : 0;
+    const faltaBonus = Math.max(5 - ((mwh - sup) % 5), 0);
+    faltaTxt = `🎉 Super Meta! Faltam <b>${faltaBonus.toFixed(1)} MWh</b> para ganhar <b>+R$ 750</b>`;
+  }
   return `
     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;padding-top:10px;border-top:1px solid #F0F0F5">
       <div style="font-size:13px;color:var(--ink)">${premioTxt}</div>
