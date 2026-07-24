@@ -4032,12 +4032,13 @@ function renderFunilCadastro(el){
           <button class="form-btn-sec" id="btn-save-lead" onclick="${editing ? 'updateLead()' : 'submitLead()'}">
             ${editing ? '💾 Atualizar Lead' : 'Cadastrar Lead'}
           </button>
-          <button class="form-btn-pri" id="btn-proposta" onclick="gerarProposta()" ${editing ? '' : 'disabled'}>
+          <button class="form-btn-pri" id="btn-proposta" onclick="gerarProposta()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
             Gerar Proposta
           </button>
         </div>
         <div class="form-actions-hint" id="form-actions-hint">${editing ? 'Edite os campos e clique em Atualizar' : 'Preencha Nome, Cidade, Fatura, Telefone e Distribuidora pra gerar uma proposta'}</div>
+        <div class="form-actions-hint" id="proposta-hint" style="display:none;color:#B91C1C;font-weight:700;margin-top:4px"></div>
 
         ${editing ? `
           <button onclick="deleteLead('${leadBeingEdited.id}')" style="width:100%;background:#FEF2F2;color:#B91C1C;border:1px solid #FCA5A5;border-radius:10px;padding:11px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:14px;display:flex;align-items:center;justify-content:center;gap:6px">
@@ -4506,19 +4507,31 @@ function updateProposalButton(){
 
   const ready = !!nome && !!tel && fat > 0 && !!dist && !!cidade;
   const btn   = document.getElementById('btn-proposta');
-  const hint  = document.getElementById('form-actions-hint');
-  if(btn) btn.disabled = !ready;
-  if(hint){
+  // Nunca desabilita o botao: sempre clicavel pra dar feedback do que falta (gerarProposta valida e avisa)
+  if(btn){
+    btn.disabled = false;
+    btn.style.opacity = ready ? '' : '0.6';
+    btn.title = ready ? '' : 'Faltam campos pra gerar a proposta';
+  }
+  // Dica dedicada da proposta (elemento proprio, nao conflita com o hint do botao Salvar)
+  const ph = document.getElementById('proposta-hint');
+  if(ph){
     if(ready){
-      hint.textContent = '✓ Tudo pronto — pode gerar a proposta';
-      hint.classList.add('ready');
+      ph.style.display = 'none';
+      ph.textContent = '';
     } else {
-      hint.textContent = 'Preencha todos os campos pra gerar uma proposta na hora';
-      hint.classList.remove('ready');
+      const falta = [];
+      if(!nome)   falta.push('Nome');
+      if(!tel)    falta.push('Telefone');
+      if(fat <= 0) falta.push('Fatura');
+      if(!dist)   falta.push('Distribuidora');
+      if(!cidade) falta.push('Cidade');
+      ph.textContent = 'Pra gerar proposta, falta: ' + falta.join(' \u00b7 ');
+      ph.style.display = 'block';
     }
   }
 
-  // ⭐ v2.5: atualiza também o preview da fase
+  // v2.5: atualiza tambem o preview da fase
   updateStagePreview();
 }
 
