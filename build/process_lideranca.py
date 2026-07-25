@@ -160,6 +160,7 @@ PRACA_TITLE = {  # email -> praça (Title) usada no RAW
  'lucas.santos@lioraenergia.com.br':'RN Interior',
  'mecenas.junior@lioraenergia.com.br':'Natal',
  'daniel.magnus@lioraenergia.com.br':'Natal',
+ 'thymacillo@hotmail.com':'Natal',  # Thiago Firmo (e-mail alternativo no CRM)
  'thiago.firmo@lioraenergia.com.br':'Natal','silvia.dias@lioraenergia.com.br':'Salvador',
  'adroaldo.bonfim@lioraenergia.com.br':'Salvador','ananias.neto@lioraenergia.com.br':'Natal',
  'antonio.mariano@lioraenergia.com.br':'Salvador','bruno.andrade@lioraenergia.com.br':'Natal',
@@ -187,6 +188,7 @@ EMAIL2NAME = {  # email -> nome canônico do vendedor (resolve nomes variáveis 
  'lucas.santos@lioraenergia.com.br':'Lucas Santos',
  'mecenas.junior@lioraenergia.com.br':'Mecenas Junior',
  'daniel.magnus@lioraenergia.com.br':'Daniel Magnus',
+ 'thymacillo@hotmail.com':'Thiago Firmo',  # mesmo vendedor, e-mail alternativo
  'thiago.firmo@lioraenergia.com.br':'Thiago Firmo','silvia.dias@lioraenergia.com.br':'Silvia Dias',
  'adroaldo.bonfim@lioraenergia.com.br':'Adroaldo Bonfim','ananias.neto@lioraenergia.com.br':'Ananias Neto',
  'antonio.mariano@lioraenergia.com.br':'Antonio Mariano','bruno.andrade@lioraenergia.com.br':'Bruno Andrade',

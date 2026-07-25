@@ -51,6 +51,7 @@ EMAIL_NOME = {
  'joao.santos@lioraenergia.com.br':'João Santos',
  'mecenas.junior@lioraenergia.com.br':'Mecenas Junior',
  'daniel.magnus@lioraenergia.com.br':'Daniel Magnus',
+ 'thymacillo@hotmail.com':'Thiago Firmo',  # mesmo vendedor, e-mail alternativo
  'thiago.firmo@lioraenergia.com.br':'Thiago Firmo','silvia.dias@lioraenergia.com.br':'Silvia Dias',
  'kelma.rangel@lioraenergia.com.br':'Kelma Rangel','lucileide.carlos@lioraenergia.com.br':'Lucileide Carlos',
  'rosangela.mendes@lioraenergia.com.br':'Rosangela Mendes','tiago.freitas@lioraenergia.com.br':'Tiago Freitas',
