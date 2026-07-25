@@ -1245,7 +1245,7 @@ function initSellerSelect(keepSelection){
     // Gestor: vê todos ordenados por praça
     const order = ['Salvador','Feira de Santana','RN Capital','RN Interior','Campinas SPI','Ribeirão Preto SPI','CE'];
     order.forEach(pr => {
-      const grupo = lista.filter(v => v.praca === pr);
+      const grupo = lista.filter(v => v.praca === pr && !isExTime_(v.nome));
       if(!grupo.length) return;
       const og = document.createElement('optgroup'); og.label = pr;
       grupo.forEach(v => { const o=document.createElement('option'); o.value=v.nome; o.textContent=v.nome; og.appendChild(o); });
@@ -1256,7 +1256,7 @@ function initSellerSelect(keepSelection){
     const lbl = wrap?.querySelector('label'); if(lbl) lbl.textContent = 'Visualizando vendedor';
   } else if(praça){
     // Líder: vê time da praça
-    const time = lista.filter(v => (SELLER_PRACA[v.nome]||'').toLowerCase() === praça);
+    const time = lista.filter(v => (SELLER_PRACA[v.nome]||'').toLowerCase() === praça && !isExTime_(v.nome));
     time.forEach(v => {
       const o = document.createElement('option'); o.value = v.nome; o.textContent = v.nome + (v.nome === me ? ' (eu)' : '');
       sel.appendChild(o);
@@ -1629,6 +1629,9 @@ renderCarteira();
 const GESTORES = ['Felipe Oliveira','Ana Ribeiro','Raynara Silva'];
 function isGestor_(n){ return GESTORES.indexOf(n) !== -1; }
 const OCULTOS_TIME = ['Ananias Neto','Rosangela Mendes','Franciele Felix','Ana Ribeiro','Ryan Trindade','Antonio Mariano'];
+// Ex-time (saíram da empresa, base HC) — removidos do seletor 'Visualizando vendedor'. Ryan/Ana continuam (ativos).
+const EX_TIME = ['Thiago Araujo França','Antonio Mariano','Rosangela Mendes','Franciele Felix','Ananias Neto'];
+function isExTime_(n){ return EX_TIME.indexOf(n) !== -1; }
 function isOculto_(n){ return OCULTOS_TIME.indexOf(n) !== -1; }
 const CAMP_CFG = {
   semana: { key:'semana', btn:'Campanha da Semana', title:'Campanha da Semana',
