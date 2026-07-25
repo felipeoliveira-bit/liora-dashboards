@@ -6049,6 +6049,7 @@ body { font-family: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif; back
 
 .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 14px; margin-bottom: 18px; }
 .lider-card { background: #fff; border-radius: 12px; padding: 16px 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); position: relative; overflow: hidden; }
+    .lc-patamares::-webkit-scrollbar { display: none; }
 .lider-card .accel-flag { position: absolute; top: 0; right: 0; background: var(--gold); color: #fff; font-size: 10px; font-weight: 700; padding: 4px 12px; border-bottom-left-radius: 10px; }
 .lc-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .badge-praca { font-size: 11px; padding: 3px 12px; border-radius: 11px; color: #fff; font-weight: 700; }
@@ -6237,7 +6238,7 @@ function render() {
     const isAccel = x.pctReal >= 105;
     const flag = isAccel ? '<div class=&quot;accel-flag&quot;>⚡ ACELERADOR</div>' : '';
     const PATS = [60,100,105,120,150,200];
-    const patStrip = '<div class=&quot;lc-patamares&quot; style=&quot;display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 2px&quot;>' +
+    const patStrip = '<div class=&quot;lc-patamares&quot; style=&quot;display:flex;flex-wrap:nowrap;gap:3px;margin:6px 0 2px;overflow-x:auto;scrollbar-width:none&quot;>' +
       PATS.map(function(pp){
         var alvo = x.metaMes*pp/100;
         var done = x.pctReal >= pp;
@@ -6245,7 +6246,7 @@ function render() {
         var nome = pp===60?'Piso':pp===100?'Meta':pp+'%';
         var bg = done?'var(--green)':isNext?'#378ADD':'#EEF0F4';
         var fg = (done||isNext)?'#fff':'var(--text3)';
-        return '<span style=&quot;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:'+bg+';color:'+fg+'&quot;>'+nome+' · '+fmtMwh(alvo)+'</span>';
+        return '<span style=&quot;flex:0 0 auto;white-space:nowrap;font-size:10px;font-weight:700;padding:2px 6px;border-radius:20px;background:'+bg+';color:'+fg+'&quot;>'+nome+' · '+fmtMwh(alvo)+'</span>';
       }).join('') + '</div>';
     html += '<div class=&quot;lider-card&quot;>' + flag +
       '<div class=&quot;lc-head&quot;><span class=&quot;badge-praca b-'+x.praca+'&quot;>'+(({Natal:'RN Capital',SPI:'Campinas SPI',Ribeirao:'Ribeirão SPI',RNInterior:'RN Interior'}[x.praca]||x.praca))+'</span>' +
