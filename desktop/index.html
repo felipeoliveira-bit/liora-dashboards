@@ -6238,16 +6238,22 @@ function render() {
     const isAccel = x.pctReal >= 105;
     const flag = isAccel ? '<div class=&quot;accel-flag&quot;>⚡ ACELERADOR</div>' : '';
     const PATS = [60,100,105,120,150,200];
-    const patStrip = '<div class=&quot;lc-patamares&quot; style=&quot;display:flex;flex-wrap:nowrap;gap:3px;margin:6px 0 2px;overflow-x:auto;scrollbar-width:none&quot;>' +
-      PATS.map(function(pp){
+    // So mostra patamares que ainda faltam atingir (os ja batidos somem). O 1o restante e o proximo.
+    const patRestantes = PATS.filter(function(pp){ return x.pctReal < pp; });
+    var patInner;
+    if (patRestantes.length === 0) {
+      patInner = '<span style=&quot;flex:0 0 auto;white-space:nowrap;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--green);color:#fff&quot;>🏆 Todos os patamares atingidos</span>';
+    } else {
+      patInner = patRestantes.map(function(pp){
         var alvo = x.metaMes*pp/100;
-        var done = x.pctReal >= pp;
-        var isNext = !done && x.pctReal < pp && x.pctReal >= (PATS[PATS.indexOf(pp)-1]||0);
+        var isNext = (pp === patRestantes[0]);
         var nome = pp===60?'Piso':pp===100?'Meta':pp+'%';
-        var bg = done?'var(--green)':isNext?'#378ADD':'#EEF0F4';
-        var fg = (done||isNext)?'#fff':'var(--text3)';
+        var bg = isNext?'#378ADD':'#EEF0F4';
+        var fg = isNext?'#fff':'var(--text3)';
         return '<span style=&quot;flex:0 0 auto;white-space:nowrap;font-size:10px;font-weight:700;padding:2px 6px;border-radius:20px;background:'+bg+';color:'+fg+'&quot;>'+nome+' · '+fmtMwh(alvo)+'</span>';
-      }).join('') + '</div>';
+      }).join('');
+    }
+    const patStrip = '<div class=&quot;lc-patamares&quot; style=&quot;display:flex;flex-wrap:nowrap;gap:3px;margin:6px 0 2px;overflow-x:auto;scrollbar-width:none&quot;>' + patInner + '</div>';
     html += '<div class=&quot;lider-card&quot;>' + flag +
       '<div class=&quot;lc-head&quot;><span class=&quot;badge-praca b-'+x.praca+'&quot;>'+(({Natal:'RN Capital',SPI:'Campinas SPI',Ribeirao:'Ribeirão SPI',RNInterior:'RN Interior'}[x.praca]||x.praca))+'</span>' +
         '<span class=&quot;lc-pct&quot; style=&quot;color:'+metaColor(x.pctReal)+'&quot;>'+x.pctReal.toFixed(0)+'%</span></div>' +
