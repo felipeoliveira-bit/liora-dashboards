@@ -277,7 +277,7 @@ PRACA_OF['Tais Santos'] = 'Salvador';
 const PRACAS = ['Salvador','Feira','Natal','SPI','Ribeirao','CE','RNInterior'];
 
 // Metas Safra julho 2026
-const METAS_SAFRA = { Salvador: 60, Feira: 60, Natal: 75, SPI: 72, Ribeirao: 15, CE: 60, RNInterior: 15 };
+const METAS_SAFRA = { Salvador: 60, Feira: 60, Natal: 60, SPI: 72, Ribeirao: 15, CE: 60, RNInterior: 15 };
 // Meta INDIVIDUAL por vendedor (da planilha de metas, mensal MWh)
 const META_IND = { Salvador: 19.0, Feira: 19.0, Natal: 19.0, SPI: 15.0, Ribeirao: 15.0, CE: 15.0, RNInterior: 15.0 };
 // Exceções de meta individual que diferem da praça (nome do vendedor → meta mensal MWh)
@@ -585,7 +585,7 @@ function bauColVal(x, col) {
 const OP_LIST = [
   {key:'todas', label:'Todas', color:'#0201F3', meta:357},
   {key:'salvador', label:'Salvador', color:'#1D9E75', meta:60},
-  {key:'natal', label:'RN Capital', color:'#378ADD', meta:75},
+  {key:'natal', label:'RN Capital', color:'#378ADD', meta:60},
   {key:'rninterior', label:'RN Interior', color:'#0EA5A5', meta:15},
   {key:'feira', label:'Feira', color:'#EF9F27', meta:60},
   {key:'spi', label:'Campinas SPI', color:'#7F77DD', meta:72},
@@ -607,8 +607,8 @@ function renderOpCards() {
     // meta to-date do mês (acumulada até hoje, proporcional aos dias úteis)
     let metaToDate, metaMes;
     if (op.key === 'todas') {
-      metaMes = PRACAS.filter(p=>p!=='Ribeirao'&&p!=='RNInterior').reduce((a,p)=>a+(METAS_SAFRA[p]||0),0);
-      metaToDate = PRACAS.filter(p=>p!=='Ribeirao'&&p!=='RNInterior').reduce((a,p)=>a+safraToDate(p), 0);
+      metaMes = PRACAS.filter(p=>p!=='Ribeirao').reduce((a,p)=>a+(METAS_SAFRA[p]||0),0);
+      metaToDate = PRACAS.filter(p=>p!=='Ribeirao').reduce((a,p)=>a+safraToDate(p), 0);
     } else {
       const praca = OP_TO_PRACA[op.key];
       metaMes = METAS_SAFRA[praca] || op.meta;
@@ -1224,7 +1224,7 @@ PRACA_OF['Camila Couto'] = 'Feira';
 PRACA_OF['Tais Santos'] = 'Salvador';
 
 const PRACAS = ['Salvador','Feira','Natal','SPI','Ribeirao','CE','RNInterior'];
-const METAS_SAFRA = { Salvador: 60, Feira: 60, Natal: 75, SPI: 72, Ribeirao: 15, CE: 60, RNInterior: 15 };
+const METAS_SAFRA = { Salvador: 60, Feira: 60, Natal: 60, SPI: 72, Ribeirao: 15, CE: 60, RNInterior: 15 };
 const META_IND = { Salvador: 19.0, Feira: 19.0, Natal: 19.0, SPI: 15.0, Ribeirao: 15.0, CE: 15.0, RNInterior: 15.0 };
 // Exceções de meta individual que diferem da praça (nome do vendedor → meta mensal MWh)
 const META_VEND_OVERRIDE = {};
@@ -4466,7 +4466,7 @@ const OPS_SAFRA = [
   { key:'todas',    label:'Todas',          meta:357, color:'#0201F3' },
   { key:'salvador', label:'Salvador',       meta:60,  color:'#1D9E75',
     cities:['SALVADOR','DIAS DAVILA',&quot;DIAS D'ÁVILA&quot;,'CAMAÇARI','CAMACAR','MATA DE SÃO JOÃO','MATA DE SAD JOAO','MATA DE SAO OAO','DIAS DAVIL','SIMÕES FILHO','SIMOES FILHO','SANTO AMARO'] },
-  { key:'natal',    label:'RN Capital',     meta:75,  color:'#378ADD',
+  { key:'natal',    label:'RN Capital',     meta:60,  color:'#378ADD',
     cities:['PARNAMIRIM','NATAL','EXTREMOZ'] },
   { key:'rninterior',label:'RN Interior',   meta:15,  color:'#0EA5A5',
     cities:['MOSSORÓ'] },
@@ -6102,7 +6102,7 @@ body { font-family: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif; back
 
 <script>
 const PRACAS = ['Salvador','Feira','Natal','SPI','Ribeirao','CE','RNInterior'];
-const METAS_SAFRA = { Salvador: 60, Feira: 60, Natal: 75, SPI: 72, Ribeirao: 15, CE: 60, RNInterior: 15 };
+const METAS_SAFRA = { Salvador: 60, Feira: 60, Natal: 60, SPI: 72, Ribeirao: 15, CE: 60, RNInterior: 15 };
 const BP_TODAY = '2026-07-24';
 const DAY = 86400000;
 function localISO(d) {
