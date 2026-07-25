@@ -6061,8 +6061,11 @@ body { font-family: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif; back
 .lc-bar { background: var(--bg); border-radius: 6px; height: 10px; overflow: hidden; position: relative; margin-bottom: 4px; }
 .lc-bar-fill { height: 100%; transition: width 0.4s; border-radius: 6px; }
 .lc-bar-marks { position: relative; height: 14px; margin-bottom: 12px; font-size: 8px; color: var(--text3); }
-.lc-mark { position: absolute; transform: translateX(-50%); }
-.lc-mark::before { content: ''; position: absolute; top: -16px; left: 50%; width: 1px; height: 12px; background: var(--border); }
+.lc-mark { position: absolute; top: 0; }
+    .lc-mark::before { content: ''; position: absolute; top: -16px; left: 0; width: 1px; height: 12px; background: var(--border); }
+    .lc-mark > b { font-weight: inherit; position: absolute; top: 0; left: 0; transform: translateX(-50%); white-space: nowrap; }
+    .lc-mark.m-left > b { transform: translateX(-100%); padding-right: 4px; }
+    .lc-mark.m-right > b { transform: translateX(0); padding-left: 4px; }
 .lc-todate { font-size: 10px; color: var(--text2); background: var(--bg); border-radius: 6px; padding: 6px 9px; margin-bottom: 12px; }
 .lc-rv { display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border); }
 .lc-rv-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.4px; }
@@ -6251,9 +6254,9 @@ function render() {
       patStrip +
       '<div class=&quot;lc-bar&quot;><div class=&quot;lc-bar-fill&quot; style=&quot;width:'+widthPct+'%;background:'+metaColor(x.pctReal)+'&quot;></div></div>' +
       '<div class=&quot;lc-bar-marks&quot;>' +
-        '<span class=&quot;lc-mark&quot; style=&quot;left:'+(60/130*100)+'%&quot;>60%</span>' +
-        '<span class=&quot;lc-mark&quot; style=&quot;left:'+(100/130*100)+'%&quot;>100%</span>' +
-        '<span class=&quot;lc-mark&quot; style=&quot;left:'+(105/130*100)+'%&quot;>105%</span>' +
+        '<span class=&quot;lc-mark&quot; style=&quot;left:'+(60/130*100)+'%&quot;><b>60%</b></span>' +
+        '<span class=&quot;lc-mark m-left&quot; style=&quot;left:'+(100/130*100)+'%&quot;><b>100%</b></span>' +
+        '<span class=&quot;lc-mark m-right&quot; style=&quot;left:'+(105/130*100)+'%&quot;><b>105%</b></span>' +
       '</div>' +
       '<div class=&quot;lc-todate&quot;>📈 Ritmo to-date: <strong>'+x.pctToDate.toFixed(0)+'%</strong> (de '+fmtMwh(x.metaToDate)+' MWh esperados hoje)</div>' +
       '<div class=&quot;lc-rv&quot;><div><div class=&quot;lc-rv-label&quot;>Remuneração Variável</div>' +
