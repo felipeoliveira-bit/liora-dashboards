@@ -6124,14 +6124,15 @@ function metaColor(pct) { if (pct>=125) return 'var(--gold)'; if (pct>=100) retu
 function workdaysInMonth(y, m1) { const last = new Date(y, m1, 0).getDate(); let c=0; for(let d=1;d<=last;d++){const w=new Date(y,m1-1,d).getDay(); if(w!==0&amp;&amp;w!==6)c++;} return c; }
 function workdaysToDate(iso) { const p=iso.split('-').map(Number); let c=0; for(let d=1;d<=p[2];d++){const w=new Date(p[0],p[1]-1,d).getDay(); if(w!==0&amp;&amp;w!==6)c++;} return c; }
 
-/* ===== REGRA DE RV DO LÍDER (do PPTX) =====
-   Base 100% = R$2.000. Defrator <70%. Proporcional 70-124%.
-   Aceleradores: 125%→R$3.000, 150%→R$4.000, 200%→R$6.000 */
+/* ===== REGRA DE RV DO LÍDER (do PPTX · atualizado 24/07) =====
+   Base 100% = R$2.000. Defrator <60%. Proporcional 60-104%.
+   Aceleradores: 105%→R$2.400, 120%→R$3.000, 150%→R$4.000, 200%→R$6.000 */
 const RV_BASE = 2000;
 function calcRV(pct) {
-  if (pct < 70)  return { valor: 0,    regra: 'Defrator — abaixo de 70% zera a RV' };
-  if (pct < 125) return { valor: RV_BASE * (pct/100), regra: 'Proporcional ao atingimento' };
-  if (pct < 150) return { valor: 3000, regra: 'Acelerador 125% — paga como 150%' };
+  if (pct < 60)  return { valor: 0,    regra: 'Defrator — abaixo de 60% zera a RV' };
+  if (pct < 105) return { valor: RV_BASE * (pct/100), regra: 'Proporcional ao atingimento' };
+  if (pct < 120) return { valor: 2400, regra: 'Acelerador 105% — paga como 120%' };
+  if (pct < 150) return { valor: 3000, regra: 'Acelerador 120% — paga como 150%' };
   if (pct < 200) return { valor: 4000, regra: 'Acelerador 150% — paga como 200%' };
   return { valor: 6000, regra: 'Acelerador 200% — paga como 300%' };
 }
@@ -6216,11 +6217,11 @@ function render() {
   const totMwh = data.reduce((a,x)=>a+x.mwh,0);
   const totMetaMes = data.reduce((a,x)=>a+x.metaMes,0);
   const mediaPctReal = totMetaMes>0 ? (totMwh/totMetaMes)*100 : 0;
-  const acima70 = data.filter(x=>x.pctReal>=70).length;
+  const acima60 = data.filter(x=>x.pctReal>=60).length;
   document.getElementById('summary-box').innerHTML =
     '<div class=&quot;summary&quot;>' +
     '<div class=&quot;item&quot;><div class=&quot;v&quot;>'+mediaPctReal.toFixed(0)+'%</div><div class=&quot;l&quot;>Atingimento real FIELD</div></div>' +
-    '<div class=&quot;item&quot;><div class=&quot;v&quot;>'+acima70+'/'+data.length+'</div><div class=&quot;l&quot;>Líderes acima de 70%</div></div>' +
+    '<div class=&quot;item&quot;><div class=&quot;v&quot;>'+acima60+'/'+data.length+'</div><div class=&quot;l&quot;>Líderes acima de 60%</div></div>' +
     '<div class=&quot;item&quot;><div class=&quot;v&quot;>'+fmtMwh(totMwh)+' / '+fmtMwh(totMetaMes)+'</div><div class=&quot;l&quot;>MWh aprovado / meta mensal</div></div>' +
     '</div>';
   
@@ -6230,17 +6231,29 @@ function render() {
   sorted.forEach(x => {
     const clamp = Math.min(x.pctReal, 130);
     const widthPct = (clamp/130)*100; // escala até 130% pra caber aceleradores visualmente
-    const isAccel = x.pctReal >= 125;
+    const isAccel = x.pctReal >= 105;
     const flag = isAccel ? '<div class=&quot;accel-flag&quot;>⚡ ACELERADOR</div>' : '';
+    const PATS = [60,100,105,120,150,200];
+    const patStrip = '<div class=&quot;lc-patamares&quot; style=&quot;display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 2px&quot;>' +
+      PATS.map(function(pp){
+        var alvo = x.metaMes*pp/100;
+        var done = x.pctReal >= pp;
+        var isNext = !done && x.pctReal < pp && x.pctReal >= (PATS[PATS.indexOf(pp)-1]||0);
+        var nome = pp===60?'Piso':pp===100?'Meta':pp+'%';
+        var bg = done?'var(--green)':isNext?'#378ADD':'#EEF0F4';
+        var fg = (done||isNext)?'#fff':'var(--text3)';
+        return '<span style=&quot;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:'+bg+';color:'+fg+'&quot;>'+nome+' · '+fmtMwh(alvo)+'</span>';
+      }).join('') + '</div>';
     html += '<div class=&quot;lider-card&quot;>' + flag +
       '<div class=&quot;lc-head&quot;><span class=&quot;badge-praca b-'+x.praca+'&quot;>'+(({Natal:'RN Capital',SPI:'Campinas SPI',Ribeirao:'Ribeirão SPI',RNInterior:'RN Interior'}[x.praca]||x.praca))+'</span>' +
         '<span class=&quot;lc-pct&quot; style=&quot;color:'+metaColor(x.pctReal)+'&quot;>'+x.pctReal.toFixed(0)+'%</span></div>' +
       '<div class=&quot;lc-metaline&quot;>'+fmtMwh(x.mwh)+' de '+fmtMwh(x.metaMes)+' MWh (meta mensal) · '+x.aprovados+' clientes</div>' +
+      patStrip +
       '<div class=&quot;lc-bar&quot;><div class=&quot;lc-bar-fill&quot; style=&quot;width:'+widthPct+'%;background:'+metaColor(x.pctReal)+'&quot;></div></div>' +
       '<div class=&quot;lc-bar-marks&quot;>' +
-        '<span class=&quot;lc-mark&quot; style=&quot;left:'+(70/130*100)+'%&quot;>70%</span>' +
+        '<span class=&quot;lc-mark&quot; style=&quot;left:'+(60/130*100)+'%&quot;>60%</span>' +
         '<span class=&quot;lc-mark&quot; style=&quot;left:'+(100/130*100)+'%&quot;>100%</span>' +
-        '<span class=&quot;lc-mark&quot; style=&quot;left:'+(125/130*100)+'%&quot;>125%</span>' +
+        '<span class=&quot;lc-mark&quot; style=&quot;left:'+(105/130*100)+'%&quot;>105%</span>' +
       '</div>' +
       '<div class=&quot;lc-todate&quot;>📈 Ritmo to-date: <strong>'+x.pctToDate.toFixed(0)+'%</strong> (de '+fmtMwh(x.metaToDate)+' MWh esperados hoje)</div>' +
       '<div class=&quot;lc-rv&quot;><div><div class=&quot;lc-rv-label&quot;>Remuneração Variável</div>' +
@@ -6254,9 +6267,10 @@ function render() {
   document.getElementById('legend').innerHTML =
     '<h4>📋 Como a RV é calculada (base 100% = R$ 2.000)</h4>' +
     '<table>' +
-    '<tr><td><span class=&quot;faixa-dot&quot; style=&quot;background:var(--red)&quot;></span>Abaixo de 70%</td><td>Defrator — zera a RV</td><td>R$ 0</td></tr>' +
-    '<tr><td><span class=&quot;faixa-dot&quot; style=&quot;background:var(--green)&quot;></span>70% a 124%</td><td>Proporcional ao atingimento</td><td>R$ 1.400 a R$ 2.480</td></tr>' +
-    '<tr><td><span class=&quot;faixa-dot&quot; style=&quot;background:var(--gold)&quot;></span>125% a 149%</td><td>Acelerador — paga como 150%</td><td>R$ 3.000</td></tr>' +
+    '<tr><td><span class=&quot;faixa-dot&quot; style=&quot;background:var(--red)&quot;></span>Abaixo de 60%</td><td>Defrator — zera a RV</td><td>R$ 0</td></tr>' +
+    '<tr><td><span class=&quot;faixa-dot&quot; style=&quot;background:var(--green)&quot;></span>60% a 104%</td><td>Proporcional ao atingimento</td><td>R$ 1.200 a R$ 2.080</td></tr>' +
+    '<tr><td><span class=&quot;faixa-dot&quot; style=&quot;background:var(--gold)&quot;></span>105% a 119%</td><td>Acelerador — paga como 120%</td><td>R$ 2.400</td></tr>' +
+    '<tr><td><span class=&quot;faixa-dot&quot; style=&quot;background:var(--gold)&quot;></span>120% a 149%</td><td>Acelerador — paga como 150%</td><td>R$ 3.000</td></tr>' +
     '<tr><td><span class=&quot;faixa-dot&quot; style=&quot;background:var(--gold)&quot;></span>150% a 199%</td><td>Acelerador — paga como 200%</td><td>R$ 4.000</td></tr>' +
     '<tr><td><span class=&quot;faixa-dot&quot; style=&quot;background:var(--gold)&quot;></span>200% ou mais</td><td>Acelerador — paga como 300%</td><td>R$ 6.000</td></tr>' +
     '</table>' +

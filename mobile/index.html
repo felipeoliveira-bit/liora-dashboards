@@ -1357,16 +1357,17 @@ function renderRemRulesCard(seller){
 
 // ===== v2.138 — Card de Metas do LÍDER (RV proporcional + aceleradores) =====
 // Atingimento do líder = MWh APROVADOS DO TIME (praça) ÷ meta do líder (aba "Time").
-// 100% = R$ 2.000. <70% defrator zera. 70–124% proporcional. 125/150/200 = aceleradores.
+// 100% = R$ 2.000. <60% defrator zera. 60–104% proporcional. 105/120/150/200 = aceleradores. (atualizado 24/07)
 const LIDER_BASE_RV = 2000;
 function liderRV(pct){
-  if(pct < 70)  return 0;
-  if(pct < 125) return Math.round(pct/100 * LIDER_BASE_RV);
+  if(pct < 60)  return 0;
+  if(pct < 105) return Math.round(pct/100 * LIDER_BASE_RV);
+  if(pct < 120) return 2400;
   if(pct < 150) return 3000;
   if(pct < 200) return 4000;
   return 6000;
 }
-function liderProxMarco(pct){ return [70,125,150,200].find(m => pct < m) || null; }
+function liderProxMarco(pct){ return [60,105,120,150,200].find(m => pct < m) || null; }
 function teamMwhAprovado(praca){
   return rawData
     .filter(x => (SELLER_PRACA[x.s]||'').toLowerCase() === praca && noMes(x) && isAprovado(x))
@@ -1377,7 +1378,7 @@ function renderRemProgressLider(seller, teamMwh, meta){
   const rv  = liderRV(pct);
   const rvTxt = rv>0
     ? `<span style="color:var(--green);font-weight:800">R$ ${rv.toLocaleString('pt-BR')}</span> <span style="color:var(--muted)">de RV</span>`
-    : `<span style="color:var(--muted)">Abaixo de 70% — RV zerada (defrator)</span>`;
+    : `<span style="color:var(--muted)">Abaixo de 60% — RV zerada (defrator)</span>`;
   const marco = liderProxMarco(pct);
   let faltaTxt;
   if(marco){
@@ -1393,7 +1394,12 @@ function renderRemProgressLider(seller, teamMwh, meta){
     </div>`;
 }
 function renderRemRulesCardLider(seller, pct){
-  const faixa = pct < 70 ? 'def' : pct < 125 ? 'prop' : pct < 150 ? 'a125' : pct < 200 ? 'a150' : 'a200';
+  const faixa = pct < 60 ? 'def' : pct < 105 ? 'prop' : pct < 120 ? 'a105' : pct < 150 ? 'a120' : pct < 200 ? 'a150' : 'a200';
+  const _lpraca = (typeof liderPraca==='function') ? liderPraca(seller) : '';
+  const _meta = (typeof PRACA_DEF!=='undefined' && PRACA_DEF[_lpraca] && PRACA_DEF[_lpraca].meta) ? PRACA_DEF[_lpraca].meta : (typeof METAS!=='undefined' ? (METAS[seller]||0) : 0);
+  const _fm = v => (+(v).toFixed(1)).toLocaleString('pt-BR');
+  const mwhTag = p => _meta>0 ? ` <span style="font-size:11px;color:var(--muted);font-weight:600">· ${_fm(_meta*p/100)} MWh</span>` : '';
+  const bandTag = (lo,hi) => _meta>0 ? ` <span style="font-size:11px;color:var(--muted);font-weight:600">· ${_fm(_meta*lo/100)}–${_fm(_meta*hi/100)} MWh</span>` : '';
   const rowL = (faixaTxt, mech, val, on, valColor) => `
     <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;${on?'background:#EEEDFE;':''}">
       <div style="width:3px;align-self:stretch;border-radius:3px;background:${on?'var(--blue)':'#ECECF3'}"></div>
@@ -1410,16 +1416,17 @@ function renderRemRulesCardLider(seller, pct){
   return `
     <div class="rem-rules-card">
       <div class="rem-rules-title">💰 Card de Metas — Líder</div>
-      <div style="font-size:12px;color:var(--muted);margin:3px 0 6px">100% de atingimento = <b style="color:var(--text)">R$ 2.000</b></div>
+      <div style="font-size:12px;color:var(--muted);margin:3px 0 6px">100% de atingimento = <b style="color:var(--text)">R$ 2.000</b>${_meta>0?` <span style="color:var(--muted)">(= ${_fm(_meta)} MWh)</span>`:''}</div>
       ${sec('Base')}
-      ${rowL('Abaixo de 70%', 'Defrator — zera a RV',         'R$ 0',            faixa==='def',  'var(--muted)')}
-      ${rowL('70% – 124%',    'Proporcional ao atingimento',  'R$ 1.400–2.480',  faixa==='prop', 'var(--text)')}
+      ${rowL('Abaixo de 60%'+mwhTag(60), 'Defrator — zera a RV',         'R$ 0',            faixa==='def',  'var(--muted)')}
+      ${rowL('60% – 104%'+bandTag(60,104), 'Proporcional ao atingimento',  'R$ 1.200–2.080',  faixa==='prop', 'var(--text)')}
       ${sec('Aceleradores')}
-      ${rowL('125%',          'Paga como 150%',               'R$ 3.000',        faixa==='a125', 'var(--blue)')}
-      ${rowL('150%',          'Paga como 200%',               'R$ 4.000',        faixa==='a150', 'var(--blue)')}
-      ${rowL('200%',          'Paga como 300%',               'R$ 6.000',        faixa==='a200', 'var(--blue)')}
+      ${rowL('105%'+mwhTag(105),          'Paga como 120%',               'R$ 2.400',        faixa==='a105', 'var(--blue)')}
+      ${rowL('120%'+mwhTag(120),          'Paga como 150%',               'R$ 3.000',        faixa==='a120', 'var(--blue)')}
+      ${rowL('150%'+mwhTag(150),          'Paga como 200%',               'R$ 4.000',        faixa==='a150', 'var(--blue)')}
+      ${rowL('200%'+mwhTag(200),          'Paga como 300%',               'R$ 6.000',        faixa==='a200', 'var(--blue)')}
       <div style="font-size:11px;color:var(--muted);margin-top:11px;padding-top:9px;border-top:1px solid var(--border);line-height:1.5">
-        Entre gatilhos paga o de baixo (135% paga como 150%). · 🗓️ RV no <b>1º dia útil do mês seguinte</b>.
+        Entre gatilhos paga o de baixo (115% paga como 120%). · 🗓️ RV no <b>1º dia útil do mês seguinte</b>.
       </div>
     </div>`;
 }
