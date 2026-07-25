@@ -6068,6 +6068,8 @@ body { font-family: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif; back
     .lc-mark.m-left > b { transform: translateX(-100%); padding-right: 4px; }
     .lc-mark.m-right > b { transform: translateX(0); padding-left: 4px; }
 .lc-todate { font-size: 10px; color: var(--text2); background: var(--bg); border-radius: 6px; padding: 6px 9px; margin-bottom: 12px; }
+    .lc-next { font-size: 11px; color: #1D4E89; background: #EAF2FC; border: 1px solid #CFE1F7; border-radius: 6px; padding: 6px 9px; margin-bottom: 8px; }
+    .lc-next strong { font-weight: 800; }
 .lc-rv { display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border); }
 .lc-rv-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.4px; }
 .lc-rv-val { font-size: 22px; font-weight: 800; }
@@ -6254,6 +6256,15 @@ function render() {
       }).join('');
     }
     const patStrip = '<div class=&quot;lc-patamares&quot; style=&quot;display:flex;flex-wrap:nowrap;gap:3px;margin:6px 0 2px;overflow-x:auto;scrollbar-width:none&quot;>' + patInner + '</div>';
+    // Info do proximo patamar: quanto falta em MWh + RV que sera paga ao atingi-lo.
+    var nextInfo = '';
+    if (patRestantes.length > 0) {
+      var np = patRestantes[0];
+      var npNome = np===60?'Piso':np===100?'Meta':np+'%';
+      var faltaMwh = Math.max(0, (x.metaMes*np/100) - x.mwh);
+      var rvNp = calcRV(np).valor;
+      nextInfo = '<div class=&quot;lc-next&quot;>🎯 Faltam <strong>'+fmtMwh(faltaMwh)+' MWh</strong> para o patamar <strong>'+npNome+'</strong> · RV <strong>'+fmtBRL(rvNp)+'</strong></div>';
+    }
     html += '<div class=&quot;lider-card&quot;>' + flag +
       '<div class=&quot;lc-head&quot;><span class=&quot;badge-praca b-'+x.praca+'&quot;>'+(({Natal:'RN Capital',SPI:'Campinas SPI',Ribeirao:'Ribeirão SPI',RNInterior:'RN Interior'}[x.praca]||x.praca))+'</span>' +
         '<span class=&quot;lc-pct&quot; style=&quot;color:'+metaColor(x.pctReal)+'&quot;>'+x.pctReal.toFixed(0)+'%</span></div>' +
@@ -6265,6 +6276,7 @@ function render() {
         '<span class=&quot;lc-mark m-left&quot; style=&quot;left:'+(100/130*100)+'%&quot;><b>100%</b></span>' +
         '<span class=&quot;lc-mark m-right&quot; style=&quot;left:'+(105/130*100)+'%&quot;><b>105%</b></span>' +
       '</div>' +
+      nextInfo +
       '<div class=&quot;lc-todate&quot;>📈 Ritmo to-date: <strong>'+x.pctToDate.toFixed(0)+'%</strong> (de '+fmtMwh(x.metaToDate)+' MWh esperados hoje)</div>' +
       '<div class=&quot;lc-rv&quot;><div><div class=&quot;lc-rv-label&quot;>Remuneração Variável</div>' +
         '<div class=&quot;lc-rv-rule&quot;>'+x.rvRegra+'</div></div>' +
