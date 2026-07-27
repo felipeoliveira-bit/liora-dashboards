@@ -879,6 +879,8 @@ try{(function(){var _id='c44c8529-0510-481e-a984-127d7d398665';if(!(rawData||[])
 try{(function(){var _id='f1ba8210-bfcc-4efa-a9e7-b6fb9fd8307c';if(!(rawData||[]).some(function(x){return x.deal_id===_id;})){rawData.push({c:'NATANAEL SIL VA DOS SANTOS',s:'Lucas Santos',mwh:0.25,stage:'REQUEST_TITULARIDADE',status:'',idle:0,city:'MOSSOR\u00d3',state:'RN',dist:'Cosern',produto:'LIORA_F_',deal_id:_id,uc:'',tel:'',cnpj:'',cpf:'',fatura:295.59,semana:'',lost_at:'',lost_reason:'',motivo:'Aprovado manual (Felipe)',date:'2026-07-25',aprov_date:'2026-07-25',docs:'',praca:{key:'rninterior',label:'RN Interior',color:'#0EA5A5',meta:15}});}})();}catch(e){}
 /* Ajuste data (Felipe 27/07): Francisco Rubens Firmino de Andrade / Neilon - aprovado 26/07 (nao 27/07). */
 try{(function(){var _id='e8c06252-65a6-4258-85c2-89364fac7796';(rawData||[]).forEach(function(x){if(x&&x.deal_id===_id){x.aprov_date='2026-07-26';}});})();}catch(e){}
+/* Ajuste (Felipe 27/07): Nicholas Pietro e Natanael Silva dos Santos -> dono Lucas Santos (RN Interior), aprovados 26/07. */
+try{(function(){var _rn={key:'rninterior',label:'RN Interior',color:'#0EA5A5',meta:15};var _ids=['a104478a-622a-4b19-9c49-fe11033f8904','1b690e63-bf80-4189-afff-0f61608a488a'];(rawData||[]).forEach(function(x){if(x&&_ids.indexOf(x.deal_id)>=0){x.s='Lucas Santos';x.praca=_rn;x.aprov_date='2026-07-26';}});})();}catch(e){}
 
 
 // ── REGRAS (idênticas ao desktop - fonte da verdade) ──────

@@ -99,6 +99,8 @@ CLIENT_OVERRIDE = {  # cliente (upper/strip) -> (seller canônico, praça label)
  'CARLA NUNCIA BESERRA':('Marcio Galvão','Natal'),  # 2a UC da Carla (mesma CPF) - é do Marcio, não do Ederson (Felipe 26/06)
  'MARIA SOARES RODRIGUES':('Rodrigo Ribeiro','Natal'),  # deal do Bruno -> Rodrigo (Felipe 03/07); base ainda nao atualizou
  'VALDEMARINA ALVES NABUCO':('Ettore Rossi','Salvador'),  # deal caiu no Adroaldo -> e do Rossi (Felipe 25/07)
+ 'NICHOLAS PIETRO RODRIGUES REGINALDO':('Lucas Santos','RN Interior'),  # dono -> Lucas (Felipe 27/07)
+ 'NATANAEL SILVA DOS SANTOS':('Lucas Santos','RN Interior'),  # dono -> Lucas (Felipe 27/07)
 }
 CONSUMPTION_OVERRIDE = {  # cliente (upper/strip) -> MWh; temp ate base corrigir
  'FRANCISCO ALDECI DE QUEIROZ FERNANDES': 5.86,  # base mostra 0.59 (Felipe 03/07)
@@ -118,6 +120,8 @@ FORCE_APPROVED = {  # deal_id -> nota; contam como aprovado por decisao manual (
  'c44c8529-0510-481e-a984-127d7d398665': '2026-07-26',  # ALENCAR JORGE VIEIRA / Maria Lucia - BACKGROUND_CHECKING, aprovado manual (Felipe 26/07)
  'f1ba8210-bfcc-4efa-a9e7-b6fb9fd8307c': '2026-07-25',  # NATANAEL SIL VA DOS SANTOS / Lucas Santos - BACKGROUND_CHECKING, aprovado manual (Felipe 26/07)
  'e8c06252-65a6-4258-85c2-89364fac7796': '2026-07-26',  # Francisco Rubens Firmino de Andrade / Neilon - ajuste data aprovacao p/ 26/07 (Felipe 27/07)
+ 'a104478a-622a-4b19-9c49-fe11033f8904': '2026-07-26',  # Nicholas Pietro / Lucas Santos - aprovado 26/07 (Felipe 27/07)
+ '1b690e63-bf80-4189-afff-0f61608a488a': '2026-07-26',  # Natanael Silva dos Santos / Lucas Santos - aprovado 26/07 (Felipe 27/07)
 }
 LOST_IGNORE = {  # ignora lost_at/lost_reason (falso 'nao aceito pela distribuidora')
  'FRANCISCO ALDECI DE QUEIROZ FERNANDES',  # reprovado e erro; ignorar (Felipe 03/07)
