@@ -3428,15 +3428,18 @@ const LEADS_CACHE_KEY = 'liora.leads_cache_v1';
 let leadsFromCache = false;   // true quando window.leads veio do cache (nao do sync vivo)
 let leadsCacheTs = 0;         // timestamp (ms) da carga em cache exibida
 function saveLeadsCache(leads){
+  // Cacheia só leads ATIVOS (exclui perdido). Perdidos sao ~70% do volume e nao precisam do
+  // fallback offline; assim o cache fica leve (~1,3MB) e cabe na cota do celular (plano B confiavel).
+  const ativos = (leads||[]).filter(l => l && l.stage !== 'perdido' && l.lost !== true);
   try {
-    localStorage.setItem(LEADS_CACHE_KEY, JSON.stringify({ ts: Date.now(), leads: leads }));
+    localStorage.setItem(LEADS_CACHE_KEY, JSON.stringify({ ts: Date.now(), leads: ativos, activeOnly: true }));
   } catch(e){
-    // quota estourou (base muito grande): guarda so os leads do vendedor logado como fallback minimo
+    // quota estourou mesmo assim: guarda so os leads do vendedor logado como fallback minimo
     try {
       const me = (typeof canonicalVendedor==='function' && typeof getCurrentVendedor==='function')
         ? canonicalVendedor(getCurrentVendedor()||'') : '';
-      const mine = me ? leads.filter(l => l && canonicalVendedor(l.vendedor||'')===me) : [];
-      localStorage.setItem(LEADS_CACHE_KEY, JSON.stringify({ ts: Date.now(), leads: mine, partial: true }));
+      const mine = me ? ativos.filter(l => l && canonicalVendedor(l.vendedor||'')===me) : [];
+      localStorage.setItem(LEADS_CACHE_KEY, JSON.stringify({ ts: Date.now(), leads: mine, partial: true, activeOnly: true }));
     } catch(_e){ /* desiste em silencio */ }
   }
 }
