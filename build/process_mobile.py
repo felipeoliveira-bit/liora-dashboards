@@ -115,6 +115,8 @@ FORCE_APPROVED = {  # deal_id -> nota; contam como aprovado por decisao manual (
  'e28df401-8a74-494f-8b7a-2ad25904fdb7': '2026-07-22',  # Fabricio dos Reis Honorio / Ederson Silva - aprovado manual, BGC_PARCEIRO (Felipe 22/07)
  '748b43ba-c7ea-480c-b139-89aca59a9124': '2026-07-24',  # Estefania ingret Alves de lima / Ederson Silva - BGC_PARCEIRO risco APPROVED_PENDING_CREDIT (Felipe 24/07)
  'c1304d70-452a-47cf-bbf4-cf82bb54a756': '2026-07-24',  # Nubia Silva de Souza / Maria Lucia - BACKGROUND_CHECKING, aprovado manual (Felipe 24/07)
+ 'c44c8529-0510-481e-a984-127d7d398665': '2026-07-26',  # ALENCAR JORGE VIEIRA / Maria Lucia - BACKGROUND_CHECKING, aprovado manual (Felipe 26/07)
+ 'f1ba8210-bfcc-4efa-a9e7-b6fb9fd8307c': '2026-07-25',  # NATANAEL SIL VA DOS SANTOS / Lucas Santos - BACKGROUND_CHECKING, aprovado manual (Felipe 26/07)
 }
 LOST_IGNORE = {  # ignora lost_at/lost_reason (falso 'nao aceito pela distribuidora')
  'FRANCISCO ALDECI DE QUEIROZ FERNANDES',  # reprovado e erro; ignorar (Felipe 03/07)
