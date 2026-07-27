@@ -255,6 +255,7 @@ FORCE_APPROVED = {
  'c1304d70-452a-47cf-bbf4-cf82bb54a756': '2026-07-24',  # Nubia Silva de Souza / Maria Lucia - BACKGROUND_CHECKING, aprovado manual (Felipe 24/07)
  'c44c8529-0510-481e-a984-127d7d398665': '2026-07-26',  # ALENCAR JORGE VIEIRA / Maria Lucia - BACKGROUND_CHECKING, aprovado manual (Felipe 26/07)
  'f1ba8210-bfcc-4efa-a9e7-b6fb9fd8307c': '2026-07-25',  # NATANAEL SIL VA DOS SANTOS / Lucas Santos - BACKGROUND_CHECKING, aprovado manual (Felipe 26/07)
+ 'e8c06252-65a6-4258-85c2-89364fac7796': '2026-07-26',  # Francisco Rubens Firmino de Andrade / Neilon - ajuste data aprovacao p/ 26/07 (Felipe 27/07)
 }
 def mwh_of(client, raw):
     ov = CONSUMPTION_OVERRIDE.get(norm(client))
