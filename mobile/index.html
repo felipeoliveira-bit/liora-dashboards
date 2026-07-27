@@ -5434,11 +5434,18 @@ function renderFunilKanban(el){
   const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
   const monthEndStr = monthEnd.toISOString().slice(0,10);
 
+  // v2.16x — perdidos COM retorno agendado no futuro entram na agenda (aparecem em Hoje/Amanhã/Semana/Mês),
+  // mas NÃO em Atrasados (perdido não vira tarefa atrasada). Feito a pedido do Felipe.
+  const agendaLeads = me ? myLeads.filter(l =>
+    (ACTIVE_STAGES.includes(l.stage) && !isLeadPerdido(l)) ||
+    (isLeadPerdido(l) && l.proximaInteracao && l.proximaInteracao >= todayStr)
+  ) : [];
+
   const visitCounts = {
-    today:    activeLeads.filter(l => l.proximaInteracao === todayStr).length,
-    tomorrow: activeLeads.filter(l => l.proximaInteracao === tomorrowStr).length,
-    week:     activeLeads.filter(l => l.proximaInteracao >= weekStartStr && l.proximaInteracao <= weekEndStr).length,
-    month:    activeLeads.filter(l => l.proximaInteracao >= monthStartStr && l.proximaInteracao <= monthEndStr).length,
+    today:    agendaLeads.filter(l => l.proximaInteracao === todayStr).length,
+    tomorrow: agendaLeads.filter(l => l.proximaInteracao === tomorrowStr).length,
+    week:     agendaLeads.filter(l => l.proximaInteracao >= weekStartStr && l.proximaInteracao <= weekEndStr).length,
+    month:    agendaLeads.filter(l => l.proximaInteracao >= monthStartStr && l.proximaInteracao <= monthEndStr).length,
     overdue:  activeLeads.filter(l => l.proximaInteracao && l.proximaInteracao < todayStr).length,
     // v2.59 — leads gerados hoje (todos os stages, inclusive perdido/contratos)
     createdToday: myLeads.filter(l => l.createdAt && new Date(l.createdAt).toISOString().slice(0,10) === todayStr).length
@@ -5786,11 +5793,17 @@ function getLeadsByVisitFilter(filterKey){
   const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
   const monthEndStr = monthEnd.toISOString().slice(0,10);
   const ACTIVE_STAGES = ['planejados','qualificados','propostas','fechamentos'];
-  const myLeads = getFunilScopedLeads().filter(l => ACTIVE_STAGES.includes(l.stage));
-  if (filterKey === 'today')    return { leads: myLeads.filter(l => l.proximaInteracao === todayStr), label: 'pra hoje' };
-  if (filterKey === 'tomorrow') return { leads: myLeads.filter(l => l.proximaInteracao === tomorrowStr), label: 'pra amanhã' };
-  if (filterKey === 'week')     return { leads: myLeads.filter(l => l.proximaInteracao >= weekStartStr && l.proximaInteracao <= weekEndStr), label: 'desta semana (S0)' };
-  if (filterKey === 'month')    return { leads: myLeads.filter(l => l.proximaInteracao >= monthStartStr && l.proximaInteracao <= monthEndStr), label: 'deste mês' };
+  const scoped = getFunilScopedLeads();
+  const myLeads = scoped.filter(l => ACTIVE_STAGES.includes(l.stage));   // ativos (usado no 'overdue')
+  // v2.16x — agenda = ativos + perdidos com retorno futuro (mesma regra do kanban)
+  const agenda = scoped.filter(l =>
+    (ACTIVE_STAGES.includes(l.stage) && !isLeadPerdido(l)) ||
+    (isLeadPerdido(l) && l.proximaInteracao && l.proximaInteracao >= todayStr)
+  );
+  if (filterKey === 'today')    return { leads: agenda.filter(l => l.proximaInteracao === todayStr), label: 'pra hoje' };
+  if (filterKey === 'tomorrow') return { leads: agenda.filter(l => l.proximaInteracao === tomorrowStr), label: 'pra amanhã' };
+  if (filterKey === 'week')     return { leads: agenda.filter(l => l.proximaInteracao >= weekStartStr && l.proximaInteracao <= weekEndStr), label: 'desta semana (S0)' };
+  if (filterKey === 'month')    return { leads: agenda.filter(l => l.proximaInteracao >= monthStartStr && l.proximaInteracao <= monthEndStr), label: 'deste mês' };
   if (filterKey === 'overdue')  return { leads: myLeads.filter(l => l.proximaInteracao && l.proximaInteracao < todayStr), label: 'atrasados' };
   // v2.59 — leads gerados hoje (todos os stages, não filtra por ACTIVE_STAGES)
   if (filterKey === 'created_today') {
@@ -5895,6 +5908,7 @@ function renderLeadCard(lead, stageIdx){
         ${escapeHtml(lead.nome)}
         <span style="float:right;color:var(--muted);font-size:13px;font-weight:400;opacity:.6">✏️</span>
       </div>
+      ${isLeadPerdido(lead) ? `<div style="margin:0 0 6px;display:inline-block;background:#FEF2F2;color:#B91C1C;border:1px solid #FCA5A5;border-radius:6px;padding:2px 8px;font-size:10px;font-weight:800">🔴 PERDIDO${lead.proximaInteracao ? ' · retomar' : ''}</div>` : ''}
       <div class="lead-meta">
         <span class="lead-meta-item">
           <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
