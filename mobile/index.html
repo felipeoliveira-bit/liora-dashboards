@@ -824,7 +824,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
   <div class="copa-modal" id="copa-modal" onclick="closeCopaFig()"></div>
 
   <div style="position:fixed;bottom:78px;right:8px;font-size:9px;color:#aaa;background:rgba(255,255,255,.85);padding:2px 6px;border-radius:8px;z-index:99;font-family:monospace;pointer-events:none">
-    v2.160 · 24/07
+    v2.161 · 27/07
   </div>
 
   <!-- BOTTOM NAV -->
@@ -1306,9 +1306,19 @@ function remProgressInfo(seller, mwh){
   let atual = null;
   for(const t of tiers){ if(mwh >= t.mwh) atual = t; }
   const proximo = tiers.find(t => t.mwh > mwh) || null;
+  // v2.161 — acima da Super Meta: SOMA +R$ 750 por bloco de 5 MWh adicionais ja conquistados (jul · temporario)
+  let premio = atual ? atual.prize : 0;
+  let premioNome = atual ? atual.nome : null;
+  if(atual && mwh >= r.sup){
+    const bonusCount = Math.floor((mwh - r.sup) / 5);
+    if(bonusCount > 0){
+      premio += bonusCount * 750;
+      premioNome = 'Super Meta + ' + bonusCount + '\u00d7 b\u00f4nus';
+    }
+  }
   return {
-    premio: atual ? atual.prize : 0,
-    premioNome: atual ? atual.nome : null,
+    premio,
+    premioNome,
     proximo,
     falta: proximo ? Math.max(proximo.mwh - mwh, 0) : 0,
   };
