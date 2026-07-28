@@ -79,6 +79,9 @@ docs = os.path.join(WORK,'docs_pendentes.csv')
 margs = [os.path.join(WORK,'deals.csv'), os.path.join(WORK,'aguardando_documentos.csv'), os.path.join(WORK,'propostas_geradas.csv')]
 if os.path.isfile(docs): margs.append(docs)
 run(['python3', os.path.join(BUILD,'process_mobile.py')]+margs, cwd=WORK, env={'UC_CSV': os.path.join(WORK,'uc_por_deal.csv')})
+# 4a) FOTOS: puxa a pasta do Drive (service account) e injeta no template mobile
+#     ANTES do swap. Fail-safe: sem key/erro sai 0 e preserva as fotos atuais.
+run(['python3', os.path.join(BUILD,'photos_drive_sync.py'), MOB])
 run(['python3', os.path.join(BUILD,'swap_mobile.py'), MOB, os.path.join(WORK,'out_mobile.html')], cwd=WORK)
 node_check_scripts(os.path.join(WORK,'out_mobile.html'), 'mobile')
 stamp(os.path.join(WORK,'out_mobile.html'))
