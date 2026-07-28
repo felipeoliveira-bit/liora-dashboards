@@ -6243,7 +6243,9 @@ function render() {
     const flag = isAccel ? '<div class=&quot;accel-flag&quot;>⚡ ACELERADOR</div>' : '';
     const PATS = [60,100,105,120,150,200];
     // So mostra patamares que ainda faltam atingir (os ja batidos somem). O 1o restante e o proximo.
-    const patRestantes = PATS.filter(function(pp){ return x.pctReal < pp; });
+    // Patamar conta como ATINGIDO quando o que falta arredonda p/ 0.0 MWh (mesma
+    // regra do display fmtMwh), pra ja apontar o proximo patamar assim que bate a meta.
+    const patRestantes = PATS.filter(function(pp){ return ((x.metaMes*pp/100) - x.mwh) >= 0.05; });
     var patInner;
     if (patRestantes.length === 0) {
       patInner = '<span style=&quot;flex:0 0 auto;white-space:nowrap;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--green);color:#fff&quot;>🏆 Todos os patamares atingidos</span>';
