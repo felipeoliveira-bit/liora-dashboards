@@ -431,7 +431,7 @@ function fmtBRL(n) {
   return 'R$ ' + Number(n).toLocaleString('pt-BR', {maximumFractionDigits: 0});
 }
 
-function canonName(n){ var A={'Antonio Carlos':'Antonio Mariano'}; return A[n]||n; }
+function canonName(n){ var A={'Antonio Carlos':'Antonio Mariano'}; n=(n||'').trim(); if(A[n])n=A[n]; try{ if(typeof PRACA_OF!=='undefined'){ if(PRACA_OF[n]!==undefined) return n; if(!canonName._lc){ canonName._lc={}; for(var k in PRACA_OF){ canonName._lc[k.toLowerCase()]=k; } } var h=canonName._lc[n.toLowerCase()]; if(h) return h; } }catch(e){} return n; }
 function normalizeStage(s) {
   if (!s) return 'leads';
   const k = String(s).trim().toLowerCase();
@@ -1269,7 +1269,7 @@ const TODAY_ISO = localISO(NOW);
 function pracaOf(item) { return PRACA_OF[item.vendedor || item.seller || item.s || ''] || '?'; }
 function fmtMwh(n) { return Number(n).toFixed(1); }
 
-function canonName(n){ var A={'Antonio Carlos':'Antonio Mariano'}; return A[n]||n; }
+function canonName(n){ var A={'Antonio Carlos':'Antonio Mariano'}; n=(n||'').trim(); if(A[n])n=A[n]; try{ if(typeof PRACA_OF!=='undefined'){ if(PRACA_OF[n]!==undefined) return n; if(!canonName._lc){ canonName._lc={}; for(var k in PRACA_OF){ canonName._lc[k.toLowerCase()]=k; } } var h=canonName._lc[n.toLowerCase()]; if(h) return h; } }catch(e){} return n; }
 function normalizeStage(s) {
   if (!s) return 'leads';
   const k = String(s).trim().toLowerCase();
@@ -2099,7 +2099,7 @@ function parseDate(v) {
   return null;
 }
 
-function canonName(n){ var A={'Antonio Carlos':'Antonio Mariano'}; return A[n]||n; }
+function canonName(n){ var A={'Antonio Carlos':'Antonio Mariano'}; n=(n||'').trim(); if(A[n])n=A[n]; try{ if(typeof PRACA_OF!=='undefined'){ if(PRACA_OF[n]!==undefined) return n; if(!canonName._lc){ canonName._lc={}; for(var k in PRACA_OF){ canonName._lc[k.toLowerCase()]=k; } } var h=canonName._lc[n.toLowerCase()]; if(h) return h; } }catch(e){} return n; }
 function normalizeStage(s) {
   if (!s) return 'leads';
   const k = String(s).trim().toLowerCase();
@@ -5856,7 +5856,7 @@ function hcDay(s){ if(!s) return ''; const str=String(s).trim(); const m=str.mat
 function hcRefDate(){ let mx=''; HC_PROP.forEach(p=>{ const d=p[0]; if(!d) return; const dt=new Date(d+'T12:00:00'); const dow=dt.getDay(); if(dow!==0 &amp;&amp; dow!==6 &amp;&amp; d>mx) mx=d; }); return mx; }
 function hcElapsedWd(ref){ if(!ref) return 1; var p=ref.split('-'); var y=+p[0], m=+p[1]-1, dd=+p[2], n=0; for(var d=1; d<=dd; d++){ if(!isWeekend(y,m,d)) n++; } return n||1; }
 function hcMonthAgg(){ var ref=hcRefDate(); var ym=ref.slice(0,7); var propM={}; HC_PROP.forEach(function(p){ if(p[0]<=ref &amp;&amp; p[0].slice(0,7)===ym) propM[p[1]]=(propM[p[1]]||0)+1; }); var taskM={}; (hcLeads||[]).forEach(function(x){ if(x.c &amp;&amp; x.c<=ref &amp;&amp; x.c.slice(0,7)===ym) taskM[x.v]=(taskM[x.v]||0)+1; if(x.p &amp;&amp; x.p<=ref &amp;&amp; x.p.slice(0,7)===ym) taskM[x.v]=(taskM[x.v]||0)+1; }); return { ref:ref, propM:propM, taskM:taskM, ewd:hcElapsedWd(ref) }; }
-function canonName(n){ var A={'Antonio Carlos':'Antonio Mariano'}; return A[n]||n; }
+function canonName(n){ var A={'Antonio Carlos':'Antonio Mariano'}; n=(n||'').trim(); if(A[n])n=A[n]; try{ if(typeof PRACA_OF!=='undefined'){ if(PRACA_OF[n]!==undefined) return n; if(!canonName._lc){ canonName._lc={}; for(var k in PRACA_OF){ canonName._lc[k.toLowerCase()]=k; } } var h=canonName._lc[n.toLowerCase()]; if(h) return h; } }catch(e){} return n; }
 var _hcTries = 0;
 function loadHCLeads(){
   fetch(LEADS_API_URL,{method:'POST',mode:'cors',redirect:'follow',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'list'})})
