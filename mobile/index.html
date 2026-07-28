@@ -824,7 +824,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
   <div class="copa-modal" id="copa-modal" onclick="closeCopaFig()"></div>
 
   <div style="position:fixed;bottom:78px;right:8px;font-size:9px;color:#aaa;background:rgba(255,255,255,.85);padding:2px 6px;border-radius:8px;z-index:99;font-family:monospace;pointer-events:none">
-    v2.161 · 27/07
+    v2.162 · 27/07
   </div>
 
   <!-- BOTTOM NAV -->
@@ -1644,7 +1644,7 @@ function renderCarteira(){
 renderCarteira();
 
 // ── SCREEN 3: CAMPANHA ────────────────────────────────────
-// v2.156 — Campanhas 09-16/07 (Semana MWh + Bateu Levou · individual · aprovados no período · pgto 17/07)
+// v2.162 — Campanhas 27-31/07 (Semana MWh 5/8/15→750/1500/2500 pgto 03/08 + Bateu Levou 5/8/10→200/350/500 pgto 04/08 · individual · aprovados no período)
 // 3 tiers: Aquecimento(5)/Pressão(8)/Gol(12) — matinal 24/06 Copa da Liora
 // Gestores com visão geral (veem tudo, todas as praças) — v2.140
 const GESTORES = ['Felipe Oliveira','Ana Ribeiro','Raynara Silva'];
@@ -1656,13 +1656,13 @@ function isExTime_(n){ return EX_TIME.indexOf(n) !== -1; }
 function isOculto_(n){ return OCULTOS_TIME.indexOf(n) !== -1; }
 const CAMP_CFG = {
   semana: { key:'semana', btn:'Campanha da Semana', title:'Campanha da Semana',
-    ini:'2026-07-17', end:'2026-07-26', period:'17 a 26/07/2026 · 23h59 · pgto 28/07',
-    desc:'Remuneração variável <b>individual</b> pelos MWh <b>aprovados</b> no período de 17/07 a 26/07. Pagamento no dia 28/07.',
+    ini:'2026-07-27', end:'2026-07-31', period:'27 a 31/07/2026 · 23h59 · pgto 03/08',
+    desc:'Remuneração variável <b>individual</b> pelos MWh <b>aprovados</b> no período de 27/07 a 31/07. Pagamento no dia 03/08.',
     metric:'mwh', unit:'MWh camp.', tierUnit:'MWh', totalWord:'Total acumulado',
-    tiers:[ {v:12,label:'R$ 2.000',tier:3},{v:8,label:'R$ 1.500',tier:2},{v:5,label:'R$ 750',tier:1} ] },
+    tiers:[ {v:15,label:'R$ 2.500',tier:3},{v:8,label:'R$ 1.500',tier:2},{v:5,label:'R$ 750',tier:1} ] },
   bateu: { key:'bateu', btn:'⚡ Bateu Levou', title:'⚡ Bateu Levou',
-    ini:'2026-07-17', end:'2026-07-26', period:'17 a 26/07/2026 · 23h59 · pgto 28/07',
-    desc:'Remuneração variável <b>individual</b> por <b>clientes aprovados</b> no período de 17/07 a 26/07. Pagamento no dia 28/07.',
+    ini:'2026-07-27', end:'2026-07-31', period:'27 a 31/07/2026 · 23h59 · pgto 04/08',
+    desc:'Remuneração variável <b>individual</b> por <b>clientes aprovados</b> no período de 27/07 a 31/07. Pagamento no dia 04/08.',
     metric:'count', unit:'aprovados', tierUnit:'clientes', totalWord:'Total',
     tiers:[ {v:10,label:'R$ 500',tier:3},{v:8,label:'R$ 350',tier:2},{v:5,label:'R$ 200',tier:1} ] }
 };
