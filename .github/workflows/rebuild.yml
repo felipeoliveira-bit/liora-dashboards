@@ -39,6 +39,7 @@ jobs:
         env:
           METABASE_URL: ${{ secrets.METABASE_URL }}
           METABASE_API_KEY: ${{ secrets.METABASE_API_KEY }}
+          GDRIVE_SA_KEY: ${{ secrets.GDRIVE_SA_KEY }}
         run: python3 build/ci_build.py
 
       - name: Commit & push (Netlify republica via webhook)
