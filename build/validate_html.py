@@ -60,9 +60,12 @@ def main():
             fail(f"node --check reprovou o bloco {i}: {rc.stderr.strip()[:300]}")
 
     # 5) marcadores obrigatorios (globais que precisam existir pra app renderizar)
-    required = ['const rawData', 'const RAW_PROP']
+    # marcadores por tipo: desktop usa 'const RAW ='; mobile usa 'const RAW_PROP' + CAMP_CFG
+    required = ['const rawData']
     if kind == 'mobile':
-        required += ['CAMP_CFG']
+        required += ['const RAW_PROP', 'CAMP_CFG']
+    else:
+        required += ['const RAW =']
     miss = [m for m in required if m not in html]
     if miss:
         fail(f"marcadores ausentes: {miss}")
