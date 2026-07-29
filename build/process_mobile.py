@@ -110,6 +110,10 @@ CONSUMPTION_OVERRIDE = {  # cliente (upper/strip) -> MWh; temp ate base corrigir
  'MÁRCIO PEREIRA PINTO': 5.866,  # aprovado manual, base mostra 1.3 (Felipe 10/07)
 }
 FORCE_APPROVED = {  # deal_id -> nota; contam como aprovado por decisao manual (pre-BGC)
+ '4b7c3c11-5fcd-4dc2-ad4c-f63015936b64': '2026-07-29',  # Ana Kalidja da Silva / Mirla, RN Interior (Mossoro) - risco APPROVED 29/07, card818 travado em BACKGROUND_CHECKING/MANUAL (Felipe 29/07)
+ '508558b6-fa50-4bae-8c65-ddcc6317df3d': '2026-07-29',  # Ricardo Ferreira de Moura / Diego Faria, Ribeirao Preto - risco APPROVED 29/07, card818 BACKGROUND_CHECKING/MANUAL (Felipe 29/07)
+ '4346fb04-2493-4311-8369-6bb57bbf494a': '2026-07-29',  # Jose Edilson Barbosa da Silva / Mecenas Junior, RN Interior (Goianinha) - risco APPROVED 29/07, card818 WAITING_DOCUMENTS/MANUAL (Felipe 29/07)
+ '01803f62-4bc8-47c3-9c61-921dde19269d': '2026-07-29',  # Edvaldo Luis Santos / Ettore Rossi Neto, Salvador (Simoes Filho) - risco APPROVED 29/07, card818 BACKGROUND_CHECKING (Felipe 29/07)
  'b61609e9-835a-4ed2-896d-2de4fd55c4f9': '2026-07-15',  # Stefanny Karoline Martins - aprovado manual, Mirla/RN Interior (Felipe 16/07)
  '9ccf72c4-32d9-406f-b2c1-a533f486c8d1': '2026-07-14',  # Antonio Edmilson Leite - dup denied em BGC (Felipe 15/07)
  'a4a2cc08-a77e-4549-8306-ef13db2a3a95': '2026-07-10',  # Marcio Pereira pinto / Nicola Popovic (Felipe 10/07)
