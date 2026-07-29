@@ -4,6 +4,7 @@
 # Sai !=0 (e imprime "FALHOU: ...") se o arquivo estiver quebrado. Sai 0 e imprime "OK" se passar.
 # Pega exatamente o bug que derrubou o CRM: <script> sem </script> / arquivo truncado.
 import sys, re, subprocess, tempfile, os
+from html import unescape
 
 def fail(msg):
     print("VALIDATE FALHOU:", msg)
@@ -47,8 +48,12 @@ def main():
     if not nonempty:
         fail("zero blocos de script inline com conteudo (regex nao casou) — NAO trate como OK")
     for i, s in enumerate(nonempty):
+        # desktop e srcdoc-based: o JS dentro do iframe vem HTML-escapado
+        # (&amp;&amp; = &&, &quot; = aspas). O navegador desconverte ao renderizar,
+        # entao aqui desconvertemos antes do node --check pra nao dar falso positivo.
+        src = unescape(s) if kind == 'desktop' else s
         tf = tempfile.NamedTemporaryFile('w', suffix='.js', delete=False, encoding='utf-8')
-        tf.write(s); tf.close()
+        tf.write(src); tf.close()
         rc = subprocess.run(['node','--check',tf.name], capture_output=True, text=True)
         os.unlink(tf.name)
         if rc.returncode != 0:
