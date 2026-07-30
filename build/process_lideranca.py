@@ -264,6 +264,13 @@ FORCE_APPROVED = {
  'e8c06252-65a6-4258-85c2-89364fac7796': '2026-07-26',  # Francisco Rubens Firmino de Andrade / Neilon - ajuste data aprovacao p/ 26/07 (Felipe 27/07)
  'a104478a-622a-4b19-9c49-fe11033f8904': '2026-07-26',  # Nicholas Pietro / Lucas Santos - aprovado 26/07 (Felipe 27/07)
  '1b690e63-bf80-4189-afff-0f61608a488a': '2026-07-26',  # Natanael Silva dos Santos / Lucas Santos - aprovado 26/07 (Felipe 27/07)
+ '515460ef-807c-48a3-973a-7c28aa1e9002': '2026-07-30',  # Gilvani Costa de Oliveira / Lucas Santos, RN - risco APPROVED 30/07, card818 sem analise ainda (Felipe 30/07)
+ 'e46ebb40-f505-4c8e-aa68-35e5a9c4d493': '2026-07-30',  # Flavio Augusto Almeida Pinto / Alberto Nascimento, Salvador BA - risco APPROVED 30/07, card818 sem analise (Felipe 30/07)
+ 'e2e745ea-d40d-4f5a-b221-1d781377c590': '2026-07-30',  # Ronivaldo Santos Lima / Alberto Nascimento, Salvador BA - risco APPROVED 30/07, card818 MANUAL antigo (Felipe 30/07)
+ '3377a89f-15a3-4e7a-a217-7a4c6f83c1a7': '2026-07-30',  # Solange Moreira dos Santos / Tais Santos, Salvador BA - risco APPROVED 30/07, card818 sem analise (Felipe 30/07)
+ '308d0b27-65fe-4730-a18b-e0508af249bd': '2026-07-30',  # Wedson Batista de Oliveira / Luciana Sobral, Salvador BA - risco APPROVED 30/07, card818 MANUAL antigo (Felipe 30/07)
+ '24852708-2453-48b1-a91e-d14f3d433a41': '2026-07-30',  # Alice Lourenco de Oliveira / Mirla Albuquerque, RN - risco APPROVED 30/07, card818 sem analise (Felipe 30/07)
+ 'd7b06439-9545-434c-8bb9-51bbabfce26f': '2026-07-30',  # Tamires Vieira de Oliveira / Ettore Rossi Neto, Salvador BA - risco APPROVED 30/07, card818 sem analise (Felipe 30/07)
 }
 def mwh_of(client, raw):
     ov = CONSUMPTION_OVERRIDE.get(norm(client))
