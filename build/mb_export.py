@@ -55,6 +55,29 @@ LEFT JOIN uploaded u ON u.contract_id=p.contract_id AND u.tag=p.tag
 GROUP BY wc.contract_id
 """
 
+RISK_SQL = r"""
+WITH contr AS (
+  SELECT c.id AS contract_id, dgp.deal_id
+  FROM `liora_silver.contracts` c
+  JOIN `liora_silver.distributed_generation_proposals` dgp
+    ON dgp.id = c.distributed_generation_proposal_id
+  WHERE c.deleted_at IS NULL
+),
+ra AS (
+  SELECT contract_id, result, created_at,
+         ROW_NUMBER() OVER (PARTITION BY contract_id ORDER BY created_at DESC) rn
+  FROM `liora_silver.risk_analysis`
+),
+best AS (
+  SELECT co.deal_id, r.result, r.created_at,
+         ROW_NUMBER() OVER (PARTITION BY co.deal_id ORDER BY r.created_at DESC) rn
+  FROM ra r JOIN contr co ON co.contract_id = r.contract_id WHERE r.rn = 1
+)
+SELECT deal_id, result AS real_result,
+       FORMAT_TIMESTAMP('%Y-%m-%dT%H:%M:%S', created_at) AS real_created
+FROM best WHERE rn = 1
+"""
+
 UC_SQL = r"""
 WITH deals_dedup AS (
   SELECT id AS deal_id FROM (
@@ -148,6 +171,15 @@ def main():
         try: os.remove(os.path.join(OUT, 'uc_por_deal.csv'))
         except Exception: pass
         print('aviso: uc_por_deal falhou (segue sem ele): %s' % e, file=sys.stderr)
+    # risco REAL (ultimo por deal, fonte liora_silver.risk_analysis) - corrige o
+    # atraso/vazio do campo latest_risk_analysis_result do card818 (opcional).
+    try:
+        rr = export_sql_csv(DATABASE_ID, RISK_SQL, os.path.join(OUT, 'risk_real.csv'))
+        print('risk_real.csv OK: %d linhas' % rr)
+    except Exception as e:
+        try: os.remove(os.path.join(OUT, 'risk_real.csv'))
+        except Exception: pass
+        print('aviso: risk_real falhou (segue sem ele): %s' % e, file=sys.stderr)
 
 if __name__ == '__main__':
     main()

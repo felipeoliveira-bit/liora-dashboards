@@ -45,6 +45,34 @@ PREV=(TODAY.year-1,12,1) if TODAY.month==1 else (TODAY.year,TODAY.month-1,1)
 def sig_recent(s):
     t=ymd(s); return t is not None and t>=PREV
 
+def load_risk_real(base_path):
+    # Mapa deal_id -> (result, created) do risco REAL (liora_silver.risk_analysis),
+    # exportado pelo mb_export.py como risk_real.csv na mesma pasta da base.
+    p=os.path.join(os.path.dirname(os.path.abspath(base_path)), 'risk_real.csv')
+    if not os.path.isfile(p): return {}
+    m={}
+    with open(p, encoding='utf-8-sig') as fh:
+        for r in csv.DictReader(fh):
+            did=(r.get('deal_id') or '').strip()
+            if did: m[did]=((r.get('real_result') or '').strip(), (r.get('real_created') or '').strip())
+    return m
+
+def apply_risk_real(base, real):
+    # Sobrescreve o resultado de risco do card818 pelo risco REAL (fonte de verdade).
+    # So preenche a DATA quando o card818 veio vazia (preserva atribuicao de mes/semana).
+    if not real: return 0
+    n=0
+    for r in base:
+        rr=real.get((r.get('deal_id') or '').strip())
+        if not rr: continue
+        res,created=rr
+        if not res: continue
+        if res != (r.get('latest_risk_analysis_result') or '').strip():
+            r['latest_risk_analysis_result']=res; n+=1
+        if not (r.get('latest_risk_analysis_created_at') or '').strip() and created:
+            r['latest_risk_analysis_created_at']=created
+    return n
+
 def main():
     base_path=sys.argv[1]; work=sys.argv[2]
     os.makedirs(work, exist_ok=True)
@@ -63,6 +91,8 @@ def main():
         if c not in fields: sys.exit('ABORT: coluna ausente: '+c)
     if len(set(r['deal_stage'] for r in base)) <= 1:
         sys.exit('ABORT: base com um unico deal_stage.')
+    ncorr=apply_risk_real(base, load_risk_real(base_path))
+    if ncorr: print('risco real: %d deal(s) com resultado corrigido vs card818' % ncorr)
     fs=[r for r in base if r['internal_sales_classification']=='FS_Liora']
     # Operacao de campo: deals de Field Sales as vezes vem com classificacao
     # 'Outro' (tag errada). Para APROVADOS/analisados contamos pela operacao
