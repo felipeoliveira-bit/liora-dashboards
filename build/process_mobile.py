@@ -112,57 +112,14 @@ CONSUMPTION_OVERRIDE = {  # cliente (upper/strip) -> MWh; temp ate base corrigir
  'CHEVROFOR COM PECAS E ACESSORIOS LTDA': 1.21,  # base mostra 0.50 (Felipe 07/07)
  'MÁRCIO PEREIRA PINTO': 5.866,  # aprovado manual, base mostra 1.3 (Felipe 10/07)
 }
-FORCE_APPROVED = {  # deal_id -> nota; contam como aprovado por decisao manual (pre-BGC)
-    '460707f5-492d-4c8b-bec0-3e6a3c6be5a8': '2026-07-31',  # Carlos Ferreira Dias / Tatiane Correia, Salvador - risco APPROVED 01/08; exibir aprovado 31/07 no CRM (Felipe 03/08)
- '4b7c3c11-5fcd-4dc2-ad4c-f63015936b64': '2026-07-29',  # Ana Kalidja da Silva / Mirla, RN Interior (Mossoro) - risco APPROVED 29/07, card818 travado em BACKGROUND_CHECKING/MANUAL (Felipe 29/07)
- '508558b6-fa50-4bae-8c65-ddcc6317df3d': '2026-07-29',  # Ricardo Ferreira de Moura / Diego Faria, Ribeirao Preto - risco APPROVED 29/07, card818 BACKGROUND_CHECKING/MANUAL (Felipe 29/07)
- '4346fb04-2493-4311-8369-6bb57bbf494a': '2026-07-29',  # Jose Edilson Barbosa da Silva / Mecenas Junior, RN Interior (Goianinha) - risco APPROVED 29/07, card818 WAITING_DOCUMENTS/MANUAL (Felipe 29/07)
- '01803f62-4bc8-47c3-9c61-921dde19269d': '2026-07-29',  # Edvaldo Luis Santos / Ettore Rossi Neto, Salvador (Simoes Filho) - risco APPROVED 29/07, card818 BACKGROUND_CHECKING (Felipe 29/07)
- 'b61609e9-835a-4ed2-896d-2de4fd55c4f9': '2026-07-15',  # Stefanny Karoline Martins - aprovado manual, Mirla/RN Interior (Felipe 16/07)
- '9ccf72c4-32d9-406f-b2c1-a533f486c8d1': '2026-07-14',  # Antonio Edmilson Leite - dup denied em BGC (Felipe 15/07)
- 'a4a2cc08-a77e-4549-8306-ef13db2a3a95': '2026-07-10',  # Marcio Pereira pinto / Nicola Popovic (Felipe 10/07)
- '35ad764a-c6f8-4039-9bcc-9706c960c1a5': '2026-07-16',  # Larissa Cecilia Sampaio Tavares / Ederson Silva - risco APPROVED 16/07 pos-perdido em BGC_PARCEIRO (Felipe 17/07)
- 'e28df401-8a74-494f-8b7a-2ad25904fdb7': '2026-07-22',  # Fabricio dos Reis Honorio / Ederson Silva - aprovado manual, BGC_PARCEIRO (Felipe 22/07)
- '748b43ba-c7ea-480c-b139-89aca59a9124': '2026-07-24',  # Estefania ingret Alves de lima / Ederson Silva - BGC_PARCEIRO risco APPROVED_PENDING_CREDIT (Felipe 24/07)
- 'c1304d70-452a-47cf-bbf4-cf82bb54a756': '2026-07-24',  # Nubia Silva de Souza / Maria Lucia - BACKGROUND_CHECKING, aprovado manual (Felipe 24/07)
- 'c44c8529-0510-481e-a984-127d7d398665': '2026-07-26',  # ALENCAR JORGE VIEIRA / Maria Lucia - BACKGROUND_CHECKING, aprovado manual (Felipe 26/07)
- 'f1ba8210-bfcc-4efa-a9e7-b6fb9fd8307c': '2026-07-25',  # NATANAEL SIL VA DOS SANTOS / Lucas Santos - BACKGROUND_CHECKING, aprovado manual (Felipe 26/07)
- 'e8c06252-65a6-4258-85c2-89364fac7796': '2026-07-26',  # Francisco Rubens Firmino de Andrade / Neilon - ajuste data aprovacao p/ 26/07 (Felipe 27/07)
- 'a104478a-622a-4b19-9c49-fe11033f8904': '2026-07-26',  # Nicholas Pietro / Lucas Santos - aprovado 26/07 (Felipe 27/07)
- '1b690e63-bf80-4189-afff-0f61608a488a': '2026-07-26',  # Natanael Silva dos Santos / Lucas Santos - aprovado 26/07 (Felipe 27/07)
- '515460ef-807c-48a3-973a-7c28aa1e9002': '2026-07-30',  # Gilvani Costa de Oliveira / Lucas Santos, RN - risco APPROVED 30/07, card818 sem analise ainda (Felipe 30/07)
- 'e46ebb40-f505-4c8e-aa68-35e5a9c4d493': '2026-07-30',  # Flavio Augusto Almeida Pinto / Alberto Nascimento, Salvador BA - risco APPROVED 30/07, card818 sem analise (Felipe 30/07)
- 'e2e745ea-d40d-4f5a-b221-1d781377c590': '2026-07-30',  # Ronivaldo Santos Lima / Alberto Nascimento, Salvador BA - risco APPROVED 30/07, card818 MANUAL antigo (Felipe 30/07)
- '3377a89f-15a3-4e7a-a217-7a4c6f83c1a7': '2026-07-30',  # Solange Moreira dos Santos / Tais Santos, Salvador BA - risco APPROVED 30/07, card818 sem analise (Felipe 30/07)
- '308d0b27-65fe-4730-a18b-e0508af249bd': '2026-07-30',  # Wedson Batista de Oliveira / Luciana Sobral, Salvador BA - risco APPROVED 30/07, card818 MANUAL antigo (Felipe 30/07)
- '24852708-2453-48b1-a91e-d14f3d433a41': '2026-07-30',  # Alice Lourenco de Oliveira / Mirla Albuquerque, RN - risco APPROVED 30/07, card818 sem analise (Felipe 30/07)
- 'd7b06439-9545-434c-8bb9-51bbabfce26f': '2026-07-30',  # Tamires Vieira de Oliveira / Ettore Rossi Neto, Salvador BA - risco APPROVED 30/07, card818 sem analise (Felipe 30/07)
-}
+FORCE_APPROVED = {}  # virada agosto 03/08: limpo (eram aprovacoes manuais de julho; gate do mes exclui julho)
 LOST_IGNORE = {  # ignora lost_at/lost_reason (falso 'nao aceito pela distribuidora')
  'FRANCISCO ALDECI DE QUEIROZ FERNANDES',  # reprovado e erro; ignorar (Felipe 03/07)
  'ANTÔNIO EDMILSON LEITE',  # dup denied em BGC, forçado aprovado (Felipe 15/07)
 }
 # INJECT_DEALS: deals ausentes da base viva, adicionados manualmente (Felipe).
-INJECT_DEALS = [
- {
- 'deal_id':'b61609e9-835a-4ed2-896d-2de4fd55c4f9','deal_stage':'BACKGROUND_CHECKING','deal_lost_at':'','deal_lost_reason':'',
- 'rd_station_crm_id':'','deal_created_at':'2026-07-15T00:00:00','current_client_cnpj':'','current_client_cpf':'',
- 'current_client_name':'STEFANNY KAROLINE MARTINS DE S. MARTINS','client_phone_number':'',
- 'current_client_state':'RN','current_client_city':'MOSSORÓ','distributor_short_name':'NEOENERGIA COSERN',
- 'origin_campaign':'','origin_source':'','internal_sales_classification':'Direto','sales_team':'Field Sales',
- 'sales_organization_name':'Liora','sales_channel_name':'','sales_person_name':'Mirla Albuquerque',
- 'sales_person_email':'mirla.albuquerque@lioraenergia.com.br','current_total_bill_cost (R$)':'586.33',
- 'rd_bill_cost (R$)':'586.33','under_minimal_flag':'0','rd_distributor':'NEOENERGIA COSERN',
- 'current_consumption':'0.543','is_current_consumption_estimated':'false','current_consumption_filled':'0.543',
- 'consumption_group':'2. <= 1.0 MWh','proposal_id':'','proposal_created_at':'','accepted_proposal':'true',
- 'product_name':'','energy_retailer_name':'Liora Energia','has_valid_bill_uploaded':'false','bill_id':'',
- 'latest_contract_id':'','latest_contract_created_at':'','latest_contract_signature_signed_at':'',
- 'latest_risk_analysis_result':'','latest_risk_analysis_created_at':'2026-07-15T00:00:00',
- 'latest_risk_analysis_comments':'','idle_days':'0','idle_days_group':'','cancelation_date':'',
- 'ops_tt_status':'','ops_tt_status_reason':'','credit_product':'0',
-},
-]
-INJECT_UC = {'b61609e9-835a-4ed2-896d-2de4fd55c4f9':'5039298'}
+INJECT_DEALS = []  # virada agosto 03/08: limpo (inject de julho)
+INJECT_UC = {}
 MES={'janeiro':1,'fevereiro':2,'março':3,'marco':3,'abril':4,'maio':5,'junho':6,'julho':7,'agosto':8,'setembro':9,'outubro':10,'novembro':11,'dezembro':12}
 DOW=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
 ANCHOR = datetime.date(2026,6,1)  # S0 = semana que contém o 1º do mês (junho/2026)
