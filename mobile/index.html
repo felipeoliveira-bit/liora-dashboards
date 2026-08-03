@@ -1311,13 +1311,13 @@ function remProgressInfo(seller, mwh){
   let atual = null;
   for(const t of tiers){ if(mwh >= t.mwh) atual = t; }
   const proximo = tiers.find(t => t.mwh > mwh) || null;
-  // v2.161 — acima da Super Meta: SOMA +R$ 750 por bloco de 5 MWh adicionais ja conquistados (jul · temporario)
+  // v2.161 — acima da Super Meta: SOMA +R$ 1000 por bloco de 5 MWh adicionais ja conquistados (ago · temporario)
   let premio = atual ? atual.prize : 0;
   let premioNome = atual ? atual.nome : null;
   if(atual && mwh >= r.sup){
     const bonusCount = Math.floor((mwh - r.sup) / 5);
     if(bonusCount > 0){
-      premio += bonusCount * 750;
+      premio += bonusCount * 1000;
       premioNome = 'Super Meta + ' + bonusCount + '\u00d7 b\u00f4nus';
     }
   }
@@ -1338,11 +1338,11 @@ function renderRemProgress(seller, mwh){
   if(i.proximo){
     faltaTxt = `Faltam <b>${i.falta.toFixed(1)} MWh</b> para ${i.proximo.nome} (R$ ${i.proximo.prize.toLocaleString('pt-BR')})`;
   } else {
-    // v2.160 — Super Meta atingida: bônus +R$ 750 a cada 5 MWh adicionais (julho · temporário)
+    // v2.160 — Super Meta atingida: bônus +R$ 1000 a cada 5 MWh adicionais (agosto · temporário)
     const rr = getRemRules(seller);
     const sup = rr ? rr.sup : 0;
     const faltaBonus = Math.max(5 - ((mwh - sup) % 5), 0);
-    faltaTxt = `🎉 Super Meta! Faltam <b>${faltaBonus.toFixed(1)} MWh</b> para ganhar <b>+R$ 750</b>`;
+    faltaTxt = `🎉 Super Meta! Faltam <b>${faltaBonus.toFixed(1)} MWh</b> para ganhar <b>+R$ 1.000</b>`;
   }
   return `
     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;padding-top:10px;border-top:1px solid #F0F0F5">
@@ -1372,7 +1372,7 @@ function renderRemRulesCard(seller){
       ${row('tier-min',  'Mínima',      80, r.min,  REM_PRIZES.min)}
       <div class="rem-extras">
         <div class="rem-prereq">✓ Pré-requisito: <b>15 visitas de venda por dia</b></div>
-        <div class="rem-bonus">🎁 Bônus: <b>+R$ 750</b> a cada 5 MWh adicionais <span style="font-weight:600;opacity:.75">(válida para julho · temporário)</span></div>
+        <div class="rem-bonus">🎁 Bônus: <b>+R$ 1.000</b> a cada 5 MWh adicionais <span style="font-weight:600;opacity:.75">(válida para agosto · temporário)</span></div>
       </div>
     </div>`;
 }
