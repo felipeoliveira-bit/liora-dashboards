@@ -1119,7 +1119,7 @@ function renderResumo(){
   }
 
   const totalAprov = rawData.filter(x => noMes(x) && isAprovado(x)).reduce((a,x)=>a+x.mwh,0);
-  // ate set/2026: RN Interior e Ribeirao contam realizado, mas NAO entram na meta do Field
+  // ago/2026 (Felipe 03/08): todas as pracas entram na meta do Field (total 414, inclui RN Interior e Ribeirao). Vazio = nao exclui ninguem.
   const META_EXCL_FIELD = [];
   const totalMeta  = pracas.filter(p=>!META_EXCL_FIELD.includes(p.key)).reduce((a,p)=>a+p.meta,0);
   const totalPct   = Math.min((totalAprov/totalMeta)*100,100);
