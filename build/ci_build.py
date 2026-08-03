@@ -10,6 +10,7 @@ try:
 except Exception:
     NOW = datetime.datetime.utcnow() - datetime.timedelta(hours=3)
 TS = NOW.strftime('%H:%M - %d/%m')
+STAMP_TS = TS  # sobrescrito pelo data_ts real (watermark) apos o export; cai no relogio se faltar
 
 ROOT = os.getcwd()
 BUILD = os.path.join(ROOT, 'build')
@@ -27,8 +28,8 @@ def run(cmd, cwd=None, env=None):
 
 def stamp(path):
     t = open(path, encoding='utf-8').read()
-    t = re.sub(r'(<span id="mb-ts">)[^<]*(</span>)', r'\g<1>'+TS+r'\g<2>', t)
-    t = re.sub(r"const MB_UPDATED = '[^']*';", "const MB_UPDATED = '"+TS+"';", t)
+    t = re.sub(r'(<span id="mb-ts">)[^<]*(</span>)', r'\g<1>'+STAMP_TS+r'\g<2>', t)
+    t = re.sub(r"const MB_UPDATED = '[^']*';", "const MB_UPDATED = '"+STAMP_TS+"';", t)
     open(path,'w',encoding='utf-8').write(t)
 
 def node_check_scripts(html_path, label):
@@ -60,6 +61,18 @@ shutil.rmtree(WORK, ignore_errors=True); os.makedirs(WORK)
 # 1) export Metabase (card 818 + docs_pendentes)
 run(['python3', os.path.join(BUILD,'mb_export.py'), WORK])
 
+# carimbo do header = horario REAL da ultima atualizacao da base (data_ts.txt do mb_export;
+# fonte: watermark do pipeline). Se ausente, mantem STAMP_TS = TS (relogio do build).
+_dtf = os.path.join(WORK, 'data_ts.txt')
+try:
+    if os.path.isfile(_dtf):
+        _v = open(_dtf, encoding='utf-8').read().strip()
+        if _v:
+            STAMP_TS = _v
+except Exception:
+    pass
+print('carimbo (data real) ->', STAMP_TS)
+
 # 2) slice nos 3 recortes
 run(['python3', os.path.join(BUILD,'slice_base_ci.py'), os.path.join(WORK,'base.csv'), WORK])
 
@@ -72,7 +85,7 @@ stamp(os.path.join(WORK,'out_desktop.html'))
 _minb = _min_bytes(DESK)
 run(['python3', os.path.join(BUILD,'validate_html.py'), os.path.join(WORK,'out_desktop.html'), '--kind','desktop','--min-bytes',str(_minb)])
 shutil.copy(os.path.join(WORK,'out_desktop.html'), DESK)
-print('   desktop carimbado ->', TS)
+print('   desktop carimbado ->', STAMP_TS)
 
 # 4) MOBILE: process_mobile -> swap_mobile -> validate -> stamp
 docs = os.path.join(WORK,'docs_pendentes.csv')
@@ -88,6 +101,6 @@ stamp(os.path.join(WORK,'out_mobile.html'))
 _minb = _min_bytes(MOB)
 run(['python3', os.path.join(BUILD,'validate_html.py'), os.path.join(WORK,'out_mobile.html'), '--kind','mobile','--min-bytes',str(_minb)])
 shutil.copy(os.path.join(WORK,'out_mobile.html'), MOB)
-print('   mobile carimbado ->', TS)
+print('   mobile carimbado ->', STAMP_TS)
 
-print('BUILD OK @ %s' % TS)
+print('BUILD OK @ %s (data %s)' % (TS, STAMP_TS))

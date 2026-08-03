@@ -108,6 +108,14 @@ joined AS (
 SELECT deal_id, uc FROM joined WHERE rn2 = 1
 """
 
+# horario REAL da ultima atualizacao da base = ultimo sucesso do pipeline de ingestao
+# (mesma fonte do card "Ultima deal gerado do Datalake" no Metabase da Liora).
+DATA_TS_SQL = r"""
+SELECT FORMAT_DATETIME('%H:%M - %d/%m', DATETIME(MAX(updated_at), 'America/Sao_Paulo')) AS ts
+FROM `liora-server-production.liora_bronze._ingestion_watermarks`
+WHERE source_system = 'cloudsql_liora_db'
+"""
+
 def _req(path, data=None, form=False):
     url = URL + path
     headers = {'x-api-key': KEY}
@@ -180,6 +188,18 @@ def main():
         try: os.remove(os.path.join(OUT, 'risk_real.csv'))
         except Exception: pass
         print('aviso: risk_real falhou (segue sem ele): %s' % e, file=sys.stderr)
+    # data_ts: HH:MM - DD/MM real da ultima atualizacao da base (watermark do pipeline).
+    # Grava data_ts.txt (valor unico). Se falhar, o build cai no relogio do proprio build.
+    try:
+        q = {'database': DATABASE_ID, 'type': 'native', 'native': {'query': DATA_TS_SQL}}
+        raw = _req('/api/dataset/csv', data={'query': json.dumps(q)}, form=True)
+        lines = raw.decode('utf-8', 'replace').splitlines()
+        val = lines[1].strip().strip('"') if len(lines) > 1 else ''
+        if val:
+            open(os.path.join(OUT, 'data_ts.txt'), 'w', encoding='utf-8').write(val)
+            print('data_ts.txt OK: %s' % val)
+    except Exception as e:
+        print('aviso: data_ts falhou (usa relogio do build): %s' % e, file=sys.stderr)
 
 if __name__ == '__main__':
     main()
