@@ -97,7 +97,8 @@ def main():
     # Operacao de campo: deals de Field Sales as vezes vem com classificacao
     # 'Outro' (tag errada). Para APROVADOS/analisados contamos pela operacao
     # (sales_team), nao so pela tag. Propostas/Aguardando seguem so FS_Liora.
-    fs_field=[r for r in base if r['internal_sales_classification']=='FS_Liora' or (r.get('sales_team') or '').strip()=='Field Sales']
+    fs_field=[r for r in base if r['internal_sales_classification']=='FS_Liora' or (r.get('sales_team') or '').strip()=='Field Sales'
+              or (r.get('sales_organization_name') or '').strip().upper()=='LIORA EVENTOS']  # Felipe 03/08: vendas LIORA EVENTOS (Joao Santos, vendedor Field mis-tagueado Inside) contam no resultado Field
     def dedup(rs):
         out=[]; seen=set()
         for r in rs:
