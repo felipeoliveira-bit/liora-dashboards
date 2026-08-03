@@ -207,7 +207,7 @@ table.bau tbody tr.field-row td:first-child { color: #fff; }
 <div class=&quot;section op-section&quot;>
   <div class=&quot;op-section-head&quot;>
     <span class=&quot;op-section-title&quot;>Operação</span>
-    <span style=&quot;font-size:11px;color:var(--text3)&quot;>Meta Safra: 414 MWh/mês</span>
+    <span style=&quot;font-size:11px;color:var(--text3)&quot;>Meta Safra: 398 MWh/mês</span>
   </div>
   <div class=&quot;op-cards&quot; id=&quot;bau-op-cards&quot;></div>
 </div>
@@ -583,14 +583,14 @@ function bauColVal(x, col) {
 }
 
 const OP_LIST = [
-  {key:'todas', label:'Todas', color:'#0201F3', meta:414},
+  {key:'todas', label:'Todas', color:'#0201F3', meta:398},
   {key:'salvador', label:'Salvador', color:'#1D9E75', meta:60},
   {key:'natal', label:'RN Capital', color:'#378ADD', meta:60},
   {key:'rninterior', label:'RN Interior', color:'#0EA5A5', meta:30},
   {key:'feira', label:'Feira', color:'#EF9F27', meta:60},
   {key:'spi', label:'Campinas SPI', color:'#7F77DD', meta:72},
   {key:'ribeirao', label:'Ribeirão Preto SPI', color:'#A78BFA', meta:48},
-  {key:'ce', label:'CE (Fortaleza)', color:'#D4537E', meta:84},
+  {key:'ce', label:'CE (Fortaleza)', color:'#D4537E', meta:68},
 ];
 const OP_TO_PRACA = {salvador:'Salvador', feira:'Feira', natal:'Natal', spi:'SPI', ribeirao:'Ribeirao', ce:'CE', rninterior:'RNInterior'};
 
@@ -4400,7 +4400,7 @@ td.fn-clk:hover{ text-decoration:underline; }
     onmouseover=&quot;this.style.background='#e0e8ff'&quot;
     onmouseout=&quot;this.style.background='#f0f4ff'&quot;>
     <span class=&quot;tmm-label&quot; style=&quot;font-size:11px;font-weight:700;color:#0201F3&quot;>Ver BP</span>
-    <span class=&quot;tmm-sub&quot; style=&quot;font-size:9px;color:#888;margin-top:1px&quot;>Meta: 414 MWh</span>
+    <span class=&quot;tmm-sub&quot; style=&quot;font-size:9px;color:#888;margin-top:1px&quot;>Meta: 398 MWh</span>
   </button>
 </div>
 <div class=&quot;op-cards&quot; id=&quot;op-cards&quot;></div>
@@ -4463,7 +4463,7 @@ td.fn-clk:hover{ text-decoration:underline; }
 
 <script>
 const OPS_SAFRA = [
-  { key:'todas',    label:'Todas',          meta:414, color:'#0201F3' },
+  { key:'todas',    label:'Todas',          meta:398, color:'#0201F3' },
   { key:'salvador', label:'Salvador',       meta:60,  color:'#1D9E75',
     cities:['SALVADOR','DIAS DAVILA',&quot;DIAS D'ÁVILA&quot;,'CAMAÇARI','CAMACAR','MATA DE SÃO JOÃO','MATA DE SAD JOAO','MATA DE SAO OAO','DIAS DAVIL','SIMÕES FILHO','SIMOES FILHO','SANTO AMARO'] },
   { key:'natal',    label:'RN Capital',     meta:60,  color:'#378ADD',
@@ -4475,7 +4475,7 @@ const OPS_SAFRA = [
   { key:'spi',      label:'Campinas SPI',     meta:72,  color:'#7F77DD',
     cities:['CAMPINAS','SUMARÉ','RIBEIRÃO PRETO','SÃO PAULO','HORTOLÂNDIA','HORTOLANDIA','PAULÍNIA','PAULINIA','BAURU'] },
   { key:'ribeirao', label:'Ribeirão Preto SPI', meta:48, color:'#A78BFA', cities:[] },
-  { key:'ce',       label:'CE (Fortaleza)', meta:84,  color:'#D4537E',
+  { key:'ce',       label:'CE (Fortaleza)', meta:68,  color:'#D4537E',
     cities:['FORTALEZA'] },
 ];
 const OPS_BP = [
@@ -4545,7 +4545,7 @@ function toggleMetaMode(btn) {
   META_MODE = META_MODE === 'safra' ? 'bp' : 'safra';
   OPS = META_MODE === 'safra' ? OPS_SAFRA : OPS_BP;
   const label = META_MODE === 'safra' ? 'Ver BP' : 'Ver Safra';
-  const sublabel = META_MODE === 'safra' ? 'Meta: 414 MWh' : 'Meta: 235 MWh';
+  const sublabel = META_MODE === 'safra' ? 'Meta: 398 MWh' : 'Meta: 235 MWh';
   btn.querySelector('.tmm-label').textContent = label;
   btn.querySelector('.tmm-sub').textContent = sublabel;
   buildOpCards(); refreshSummary();
@@ -5237,7 +5237,7 @@ function render() {
   const approvedMwh = d.filter(x => (isAprovado(x) || isPendenteOPS(x)) &amp;&amp; noMesAtual(x)).reduce((a,x)=>a+x.mwh,0);
   const urgMwh = d.filter(x=>x.status==='Pendente Vendas').reduce((a,x)=>a+x.mwh,0);
   const opObj = OPS.find(o=>o.key===currentOp);
-  const metaOp = opObj?.meta||414;
+  const metaOp = opObj?.meta||398;
 
   document.getElementById('metrics').innerHTML = `
     <div class=&quot;metric&quot; id=&quot;metric-todos&quot; onclick=&quot;metricClick('todos')&quot; title=&quot;Ver todos os clientes&quot;><div class=&quot;lbl&quot;>Clientes Assinados</div><div class=&quot;val&quot;>${d.length}</div></div>
