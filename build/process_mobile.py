@@ -110,6 +110,7 @@ CONSUMPTION_OVERRIDE = {  # cliente (upper/strip) -> MWh; temp ate base corrigir
  'MÁRCIO PEREIRA PINTO': 5.866,  # aprovado manual, base mostra 1.3 (Felipe 10/07)
 }
 FORCE_APPROVED = {  # deal_id -> nota; contam como aprovado por decisao manual (pre-BGC)
+    '460707f5-492d-4c8b-bec0-3e6a3c6be5a8': '2026-07-31',  # Carlos Ferreira Dias / Tatiane Correia, Salvador - risco APPROVED 01/08; exibir aprovado 31/07 no CRM (Felipe 03/08)
  '4b7c3c11-5fcd-4dc2-ad4c-f63015936b64': '2026-07-29',  # Ana Kalidja da Silva / Mirla, RN Interior (Mossoro) - risco APPROVED 29/07, card818 travado em BACKGROUND_CHECKING/MANUAL (Felipe 29/07)
  '508558b6-fa50-4bae-8c65-ddcc6317df3d': '2026-07-29',  # Ricardo Ferreira de Moura / Diego Faria, Ribeirao Preto - risco APPROVED 29/07, card818 BACKGROUND_CHECKING/MANUAL (Felipe 29/07)
  '4346fb04-2493-4311-8369-6bb57bbf494a': '2026-07-29',  # Jose Edilson Barbosa da Silva / Mecenas Junior, RN Interior (Goianinha) - risco APPROVED 29/07, card818 WAITING_DOCUMENTS/MANUAL (Felipe 29/07)
