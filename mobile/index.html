@@ -977,11 +977,11 @@ function getAcao(x){
 // ── PRAÇAS ────────────────────────────────────────────────
 const PRACA_DEF = {
   natal:    {key:'natal',label:'RN Capital',color:'#378ADD',meta:60},
-  rninterior:{key:'rninterior',label:'RN Interior',color:'#0EA5A5',meta:15},
+  rninterior:{key:'rninterior',label:'RN Interior',color:'#0EA5A5',meta:30},
   feira:    {key:'feira',label:'Feira',color:'#EF9F27',meta:60},
   spi:      {key:'spi',label:'Campinas SPI',color:'#7F77DD',meta:72},
-  ribeirao: {key:'ribeirao',label:'Ribeirão Preto SPI',color:'#A78BFA',meta:15},
-  ce:       {key:'ce',label:'CE (Fortaleza)',color:'#D4537E',meta:60},
+  ribeirao: {key:'ribeirao',label:'Ribeirão Preto SPI',color:'#A78BFA',meta:48},
+  ce:       {key:'ce',label:'CE (Fortaleza)',color:'#D4537E',meta:84},
   salvador: {key:'salvador',label:'Salvador',color:'#1D9E75',meta:60},
   outras:   {key:'outras',label:'Outras',color:'#999',meta:0},
 };
@@ -1120,7 +1120,7 @@ function renderResumo(){
 
   const totalAprov = rawData.filter(x => noMes(x) && isAprovado(x)).reduce((a,x)=>a+x.mwh,0);
   // ate set/2026: RN Interior e Ribeirao contam realizado, mas NAO entram na meta do Field
-  const META_EXCL_FIELD = ['ribeirao'];
+  const META_EXCL_FIELD = [];
   const totalMeta  = pracas.filter(p=>!META_EXCL_FIELD.includes(p.key)).reduce((a,p)=>a+p.meta,0);
   const totalPct   = Math.min((totalAprov/totalMeta)*100,100);
   const mtdFrac    = getMetaToDateInfo().fraction;

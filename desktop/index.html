@@ -207,7 +207,7 @@ table.bau tbody tr.field-row td:first-child { color: #fff; }
 <div class=&quot;section op-section&quot;>
   <div class=&quot;op-section-head&quot;>
     <span class=&quot;op-section-title&quot;>Operação</span>
-    <span style=&quot;font-size:11px;color:var(--text3)&quot;>Meta Safra: 357 MWh/mês</span>
+    <span style=&quot;font-size:11px;color:var(--text3)&quot;>Meta Safra: 414 MWh/mês</span>
   </div>
   <div class=&quot;op-cards&quot; id=&quot;bau-op-cards&quot;></div>
 </div>
@@ -276,8 +276,8 @@ PRACA_OF['Tais Santos'] = 'Salvador';
 
 const PRACAS = ['Salvador','Feira','Natal','SPI','Ribeirao','CE','RNInterior'];
 
-// Metas Safra julho 2026
-const METAS_SAFRA = { Salvador: 60, Feira: 60, Natal: 60, SPI: 72, Ribeirao: 15, CE: 60, RNInterior: 15 };
+// Metas Safra agosto 2026
+const METAS_SAFRA = { Salvador: 60, Feira: 60, Natal: 60, SPI: 72, Ribeirao: 48, CE: 84, RNInterior: 30 };
 // Meta INDIVIDUAL por vendedor (da planilha de metas, mensal MWh)
 const META_IND = { Salvador: 19.0, Feira: 19.0, Natal: 19.0, SPI: 15.0, Ribeirao: 15.0, CE: 15.0, RNInterior: 15.0 };
 // Exceções de meta individual que diferem da praça (nome do vendedor → meta mensal MWh)
@@ -583,14 +583,14 @@ function bauColVal(x, col) {
 }
 
 const OP_LIST = [
-  {key:'todas', label:'Todas', color:'#0201F3', meta:357},
+  {key:'todas', label:'Todas', color:'#0201F3', meta:414},
   {key:'salvador', label:'Salvador', color:'#1D9E75', meta:60},
   {key:'natal', label:'RN Capital', color:'#378ADD', meta:60},
-  {key:'rninterior', label:'RN Interior', color:'#0EA5A5', meta:15},
+  {key:'rninterior', label:'RN Interior', color:'#0EA5A5', meta:30},
   {key:'feira', label:'Feira', color:'#EF9F27', meta:60},
   {key:'spi', label:'Campinas SPI', color:'#7F77DD', meta:72},
-  {key:'ribeirao', label:'Ribeirão Preto SPI', color:'#A78BFA', meta:15},
-  {key:'ce', label:'CE (Fortaleza)', color:'#D4537E', meta:60},
+  {key:'ribeirao', label:'Ribeirão Preto SPI', color:'#A78BFA', meta:48},
+  {key:'ce', label:'CE (Fortaleza)', color:'#D4537E', meta:84},
 ];
 const OP_TO_PRACA = {salvador:'Salvador', feira:'Feira', natal:'Natal', spi:'SPI', ribeirao:'Ribeirao', ce:'CE', rninterior:'RNInterior'};
 
@@ -1224,7 +1224,7 @@ PRACA_OF['Camila Couto'] = 'Feira';
 PRACA_OF['Tais Santos'] = 'Salvador';
 
 const PRACAS = ['Salvador','Feira','Natal','SPI','Ribeirao','CE','RNInterior'];
-const METAS_SAFRA = { Salvador: 60, Feira: 60, Natal: 60, SPI: 72, Ribeirao: 15, CE: 60, RNInterior: 15 };
+const METAS_SAFRA = { Salvador: 60, Feira: 60, Natal: 60, SPI: 72, Ribeirao: 48, CE: 84, RNInterior: 30 };
 const META_IND = { Salvador: 19.0, Feira: 19.0, Natal: 19.0, SPI: 15.0, Ribeirao: 15.0, CE: 15.0, RNInterior: 15.0 };
 // Exceções de meta individual que diferem da praça (nome do vendedor → meta mensal MWh)
 const META_VEND_OVERRIDE = {};
@@ -5237,7 +5237,7 @@ function render() {
   const approvedMwh = d.filter(x => (isAprovado(x) || isPendenteOPS(x)) &amp;&amp; noMesAtual(x)).reduce((a,x)=>a+x.mwh,0);
   const urgMwh = d.filter(x=>x.status==='Pendente Vendas').reduce((a,x)=>a+x.mwh,0);
   const opObj = OPS.find(o=>o.key===currentOp);
-  const metaOp = opObj?.meta||357;
+  const metaOp = opObj?.meta||414;
 
   document.getElementById('metrics').innerHTML = `
     <div class=&quot;metric&quot; id=&quot;metric-todos&quot; onclick=&quot;metricClick('todos')&quot; title=&quot;Ver todos os clientes&quot;><div class=&quot;lbl&quot;>Clientes Assinados</div><div class=&quot;val&quot;>${d.length}</div></div>
@@ -6111,7 +6111,7 @@ body { font-family: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif; back
 
 <script>
 const PRACAS = ['Salvador','Feira','Natal','SPI','Ribeirao','CE','RNInterior'];
-const METAS_SAFRA = { Salvador: 60, Feira: 60, Natal: 60, SPI: 72, Ribeirao: 15, CE: 60, RNInterior: 15 };
+const METAS_SAFRA = { Salvador: 60, Feira: 60, Natal: 60, SPI: 72, Ribeirao: 48, CE: 84, RNInterior: 30 };
 const BP_TODAY = '2026-08-03';
 const DAY = 86400000;
 function localISO(d) {
