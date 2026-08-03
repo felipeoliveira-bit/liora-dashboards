@@ -172,7 +172,7 @@ PRACA_TITLE = {  # email -> praça (Title) usada no RAW
  'maria.lucia@lioraenergia.com.br':'Salvador','neilon.nascimento@lioraenergia.com.br':'CE','sabrina.tomazeti@lioraenergia.com.br':'CE',
  'nubia.andrade@lioraenergia.com.br':'Outras','odirley.costa@lioraenergia.com.br':'Outras',
  'rodrigo.ribeiro@lioraenergia.com.br':'Natal','rosangela.mendes@lioraenergia.com.br':'Feira',
- 'ryan.trindade@lioraenergia.com.br':'Feira','alberto.nascimento@lioraenergia.com.br':'Feira','tais.santos@lioraenergia.com.br':'Salvador',
+ 'ryan.trindade@lioraenergia.com.br':'Feira','alberto.nascimento@lioraenergia.com.br':'Feira','marcel.sousa@lioraenergia.com.br':'Feira','jefferson.fideli@lioraenergia.com.br':'RN Interior','phillip.faria@lioraenergia.com.br':'Ribeirao','tais.santos@lioraenergia.com.br':'Salvador',
  'tiago.freitas@lioraenergia.com.br':'Feira','thiago.araujo@lioraenergia.com.br':'Natal',
 }
 EMAIL2NAME = {  # email -> nome canônico do vendedor (resolve nomes variáveis do CRM)
@@ -200,7 +200,7 @@ EMAIL2NAME = {  # email -> nome canônico do vendedor (resolve nomes variáveis 
  'maria.lucia@lioraenergia.com.br':'Maria Lúcia','neilon.nascimento@lioraenergia.com.br':'Neilon Nascimento','sabrina.tomazeti@lioraenergia.com.br':'Sabrina Tomazeti',
  'nubia.andrade@lioraenergia.com.br':'Nubia  Andrade','odirley.costa@lioraenergia.com.br':'Odirley Costa',
  'rodrigo.ribeiro@lioraenergia.com.br':'Rodrigo Ribeiro','rosangela.mendes@lioraenergia.com.br':'Rosangela Mendes',
- 'ryan.trindade@lioraenergia.com.br':'Ryan Trindade','alberto.nascimento@lioraenergia.com.br':'Alberto Nascimento','tais.santos@lioraenergia.com.br':'Tais Santos',
+ 'ryan.trindade@lioraenergia.com.br':'Ryan Trindade','alberto.nascimento@lioraenergia.com.br':'Alberto Nascimento','marcel.sousa@lioraenergia.com.br':'Marcel Sousa','jefferson.fideli@lioraenergia.com.br':'Jefferson Fideli','phillip.faria@lioraenergia.com.br':'Phillip Faria','tais.santos@lioraenergia.com.br':'Tais Santos',
  'tiago.freitas@lioraenergia.com.br':'Tiago Freitas','thiago.araujo@lioraenergia.com.br':'Thiago Araujo França',
 }
 TITLE2OP = {'Salvador':'salvador','Feira':'feira','Natal':'natal','RN Interior':'rninterior','SPI':'spi','Ribeirao':'ribeirao','CE':'ce','Outras':'outras'}
