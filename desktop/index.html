@@ -4400,7 +4400,7 @@ td.fn-clk:hover{ text-decoration:underline; }
     onmouseover=&quot;this.style.background='#e0e8ff'&quot;
     onmouseout=&quot;this.style.background='#f0f4ff'&quot;>
     <span class=&quot;tmm-label&quot; style=&quot;font-size:11px;font-weight:700;color:#0201F3&quot;>Ver BP</span>
-    <span class=&quot;tmm-sub&quot; style=&quot;font-size:9px;color:#888;margin-top:1px&quot;>Meta: 357 MWh</span>
+    <span class=&quot;tmm-sub&quot; style=&quot;font-size:9px;color:#888;margin-top:1px&quot;>Meta: 414 MWh</span>
   </button>
 </div>
 <div class=&quot;op-cards&quot; id=&quot;op-cards&quot;></div>
@@ -4463,19 +4463,19 @@ td.fn-clk:hover{ text-decoration:underline; }
 
 <script>
 const OPS_SAFRA = [
-  { key:'todas',    label:'Todas',          meta:357, color:'#0201F3' },
+  { key:'todas',    label:'Todas',          meta:414, color:'#0201F3' },
   { key:'salvador', label:'Salvador',       meta:60,  color:'#1D9E75',
     cities:['SALVADOR','DIAS DAVILA',&quot;DIAS D'ÁVILA&quot;,'CAMAÇARI','CAMACAR','MATA DE SÃO JOÃO','MATA DE SAD JOAO','MATA DE SAO OAO','DIAS DAVIL','SIMÕES FILHO','SIMOES FILHO','SANTO AMARO'] },
   { key:'natal',    label:'RN Capital',     meta:60,  color:'#378ADD',
     cities:['PARNAMIRIM','NATAL','EXTREMOZ'] },
-  { key:'rninterior',label:'RN Interior',   meta:15,  color:'#0EA5A5',
+  { key:'rninterior',label:'RN Interior',   meta:30,  color:'#0EA5A5',
     cities:['MOSSORÓ'] },
   { key:'feira',    label:'Feira',          meta:60,  color:'#EF9F27',
     cities:['FEIRA DE SANTANA','SERRINHA','CONCEIÇÃO DA FEIRA','MURITIBA','SÃO FRANCISCO DO CONDE','FRANCISCO DO CONDE','CRUZ DAS ALMAS','CONCEIÇÃO DO COITÉ'] },
   { key:'spi',      label:'Campinas SPI',     meta:72,  color:'#7F77DD',
     cities:['CAMPINAS','SUMARÉ','RIBEIRÃO PRETO','SÃO PAULO','HORTOLÂNDIA','HORTOLANDIA','PAULÍNIA','PAULINIA','BAURU'] },
-  { key:'ribeirao', label:'Ribeirão Preto SPI', meta:15, color:'#A78BFA', cities:[] },
-  { key:'ce',       label:'CE (Fortaleza)', meta:60,  color:'#D4537E',
+  { key:'ribeirao', label:'Ribeirão Preto SPI', meta:48, color:'#A78BFA', cities:[] },
+  { key:'ce',       label:'CE (Fortaleza)', meta:84,  color:'#D4537E',
     cities:['FORTALEZA'] },
 ];
 const OPS_BP = [
@@ -4545,7 +4545,7 @@ function toggleMetaMode(btn) {
   META_MODE = META_MODE === 'safra' ? 'bp' : 'safra';
   OPS = META_MODE === 'safra' ? OPS_SAFRA : OPS_BP;
   const label = META_MODE === 'safra' ? 'Ver BP' : 'Ver Safra';
-  const sublabel = META_MODE === 'safra' ? 'Meta: 357 MWh' : 'Meta: 235 MWh';
+  const sublabel = META_MODE === 'safra' ? 'Meta: 414 MWh' : 'Meta: 235 MWh';
   btn.querySelector('.tmm-label').textContent = label;
   btn.querySelector('.tmm-sub').textContent = sublabel;
   buildOpCards(); refreshSummary();
