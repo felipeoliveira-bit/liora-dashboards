@@ -6270,6 +6270,11 @@ function render() {
       var rvNp = calcRV(np).valor;
       nextInfo = '<div class=&quot;lc-next&quot;>🎯 Faltam <strong>'+fmtMwh(faltaMwh)+' MWh</strong> para o patamar <strong>'+npNome+'</strong> · RV <strong>'+fmtBRL(rvNp)+'</strong></div>';
     }
+    var projRV = calcRV(x.pctToDate).valor;
+    var projColor = projRV>0 ? '#0B7A4B' : 'var(--red)';
+    var projTxt = projRV>0
+      ? '🚀 Mantendo esse pace, fecha o mês em <strong>~'+x.pctToDate.toFixed(0)+'%</strong> da meta → RV <strong>'+fmtBRL(projRV)+'</strong>'
+      : '⚠️ Nesse pace fecha em <strong>~'+x.pctToDate.toFixed(0)+'%</strong> — abaixo do Piso (RV R$ 0)';
     html += '<div class=&quot;lider-card&quot;>' + flag +
       '<div class=&quot;lc-head&quot;><span class=&quot;badge-praca b-'+x.praca+'&quot;>'+(({Natal:'RN Capital',SPI:'Campinas SPI',Ribeirao:'Ribeirão SPI',RNInterior:'RN Interior'}[x.praca]||x.praca))+'</span>' +
         '<span class=&quot;lc-pct&quot; style=&quot;color:'+metaColor(x.pctReal)+'&quot;>'+x.pctReal.toFixed(0)+'%</span></div>' +
@@ -6283,6 +6288,7 @@ function render() {
       '</div>' +
       nextInfo +
       '<div class=&quot;lc-todate&quot;>📈 Ritmo to-date: <strong>'+x.pctToDate.toFixed(0)+'%</strong> (de '+fmtMwh(x.metaToDate)+' MWh esperados hoje)</div>' +
+      '<div class=&quot;lc-todate-proj&quot; style=&quot;margin-top:5px;padding:6px 9px;border-radius:8px;font-size:11px;font-weight:700;line-height:1.4;background:'+(projRV>0?'#EAF8F0':'#FDECEC')+';color:'+projColor+'&quot;>'+projTxt+'</div>' +
       '<div class=&quot;lc-rv&quot;><div><div class=&quot;lc-rv-label&quot;>Remuneração Variável</div>' +
         '<div class=&quot;lc-rv-rule&quot;>'+x.rvRegra+'</div></div>' +
         '<div class=&quot;lc-rv-val&quot; style=&quot;color:'+(x.rv>0?'var(--green)':'var(--red)')+'&quot;>'+fmtBRL(x.rv)+'</div></div>' +
