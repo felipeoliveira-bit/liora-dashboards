@@ -230,7 +230,7 @@ CONSUMPTION_OVERRIDE = {
 LOST_IGNORE = { norm('FRANCISCO ALDECI DE QUEIROZ FERNANDES'), norm('ANTÔNIO EDMILSON LEITE') }  # 2º: dup denied em BGC, forçado aprovado (Felipe 15/07)
 # FORCE_APPROVED: deals que contam como aprovado por decisao manual (contrato assinado,
 # aguardando BGC). Chave = deal_id. Remover quando a base refletir BGC APPROVED.
-FORCE_APPROVED = {}  # virada agosto 03/08: limpo (aprovacoes manuais de julho)
+FORCE_APPROVED = {'cfb2500c-c323-4943-a7f8-e831a8f37b55': '2026-08-04'}  # PP FERREIRA DE SALES COMER DE COSMETICOS - aprovado manual SOS 15:32 04/08 (Aurivando/CE); card818+risk_real ainda MANUAL; remover quando base refletir
 def mwh_of(client, raw):
     ov = CONSUMPTION_OVERRIDE.get(norm(client))
     return ov if ov is not None else fnum(raw)
