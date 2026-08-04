@@ -224,6 +224,7 @@ CONSUMPTION_OVERRIDE = {
  norm('PERFECTA VIDROS E ALUMINIOS EIRELI'): 0.89,  # base mostra 0.19 (Felipe 07/07, ajuste p/ 0,890)
  norm('CHEVROFOR COM PECAS E ACESSORIOS LTDA'): 1.21,  # base mostra 0.50 (Felipe 07/07)
  norm('MÁRCIO PEREIRA PINTO'): 5.866,  # aprovado manual, base mostra 1.3 (Felipe 10/07)
+ norm('DRAX'): 4.311,  # deal f0418a1f DRAX CENTRO AUTOMOTIVO LTDA; base mostra 2.20 (Felipe 04/08)
 }
 # LOST_IGNORE: ignora lost_at/lost_reason (falso 'nao aceito pela distribuidora') p/ estes clientes.
 LOST_IGNORE = { norm('FRANCISCO ALDECI DE QUEIROZ FERNANDES'), norm('ANTÔNIO EDMILSON LEITE') }  # 2º: dup denied em BGC, forçado aprovado (Felipe 15/07)
