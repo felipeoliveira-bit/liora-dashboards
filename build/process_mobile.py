@@ -111,7 +111,7 @@ CONSUMPTION_OVERRIDE = {  # cliente (upper/strip) -> MWh; temp ate base corrigir
  'PERFECTA VIDROS E ALUMINIOS EIRELI': 0.89,  # base mostra 0.19 (Felipe 07/07, ajuste p/ 0,890)
  'CHEVROFOR COM PECAS E ACESSORIOS LTDA': 1.21,  # base mostra 0.50 (Felipe 07/07)
  'MÁRCIO PEREIRA PINTO': 5.866,  # aprovado manual, base mostra 1.3 (Felipe 10/07)
- 'DRAX': 4.311,  # deal f0418a1f DRAX CENTRO AUTOMOTIVO LTDA; base mostra 2.20 (Felipe 04/08)
+ 'DRAX CENTRO AUTOMOTIVO LTDA': 4.311,  # deal f0418a1f; base mostra 1.566 (Felipe 04/08)
 }
 FORCE_APPROVED = {}  # virada agosto 03/08: limpo (eram aprovacoes manuais de julho; gate do mes exclui julho)
 LOST_IGNORE = {  # ignora lost_at/lost_reason (falso 'nao aceito pela distribuidora')
