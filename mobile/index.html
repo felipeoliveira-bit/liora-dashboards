@@ -1379,15 +1379,15 @@ function renderRemRulesCard(seller){
 
 // ===== v2.138 — Card de Metas do LÍDER (RV proporcional + aceleradores) =====
 // Atingimento do líder = MWh APROVADOS DO TIME (praça) ÷ meta do líder (aba "Time").
-// 100% = R$ 2.000. <60% defrator zera. 60–104% proporcional. 105/120/150/200 = aceleradores. (atualizado 24/07)
+// 100% = R$ 2.000. <60% defrator zera. 60–104% proporcional. 105/120/150/200 = aceleradores. (atualizado 04/08: 150%→R$5.000/ref2.500, 200%→R$9.000/ref3.000)
 const LIDER_BASE_RV = 2000;
 function liderRV(pct){
   if(pct < 60)  return 0;
   if(pct < 105) return Math.round(pct/100 * LIDER_BASE_RV);
   if(pct < 120) return 2400;
   if(pct < 150) return 3000;
-  if(pct < 200) return 4000;
-  return 6000;
+  if(pct < 200) return 5000;
+  return 9000;
 }
 function liderProxMarco(pct){ return [60,105,120,150,200].find(m => pct < m) || null; }
 function teamMwhAprovado(praca){
@@ -1438,6 +1438,7 @@ function renderRemRulesCardLider(seller, pct){
   return `
     <div class="rem-rules-card">
       <div class="rem-rules-title">💰 Card de Metas — Líder</div>
+      <div style="margin:6px 0 2px;padding:8px 10px;background:#EAF8F0;border:1px solid #BFE8D2;border-radius:10px;font-size:11px;color:#0B7A4B;font-weight:700;line-height:1.45">🔥 Novo em agosto: 150% agora paga <b>R$ 5.000</b> (era 4.000) e 200% paga <b>R$ 9.000</b> (era 6.000) — referência maior nos aceleradores!</div>
       <div style="font-size:12px;color:var(--muted);margin:3px 0 6px">100% de atingimento = <b style="color:var(--text)">R$ 2.000</b>${_meta>0?` <span style="color:var(--muted)">(= ${_fm(_meta)} MWh)</span>`:''}</div>
       ${sec('Base')}
       ${rowL('Abaixo de 60%'+mwhTag(60), 'Defrator — zera a RV',         'R$ 0',            faixa==='def',  'var(--muted)')}
@@ -1445,8 +1446,8 @@ function renderRemRulesCardLider(seller, pct){
       ${sec('Aceleradores')}
       ${rowL('105%'+mwhTag(105),          'Paga como 120%',               'R$ 2.400',        faixa==='a105', 'var(--blue)')}
       ${rowL('120%'+mwhTag(120),          'Paga como 150%',               'R$ 3.000',        faixa==='a120', 'var(--blue)')}
-      ${rowL('150%'+mwhTag(150),          'Paga como 200%',               'R$ 4.000',        faixa==='a150', 'var(--blue)')}
-      ${rowL('200%'+mwhTag(200),          'Paga como 300%',               'R$ 6.000',        faixa==='a200', 'var(--blue)')}
+      ${rowL('150%'+mwhTag(150)+' <span style="font-size:9px;font-weight:800;color:#fff;background:var(--green);padding:1px 6px;border-radius:10px;margin-left:4px">NOVO ⬆</span>',          'Referência sobe p/ R$ 2.500 · paga como 200%',               '<span style="color:var(--muted);text-decoration:line-through;font-size:12px">R$ 4.000</span> <b style="color:var(--green)">R$ 5.000</b>',        faixa==='a150', 'var(--blue)')}
+      ${rowL('200%'+mwhTag(200)+' <span style="font-size:9px;font-weight:800;color:#fff;background:var(--green);padding:1px 6px;border-radius:10px;margin-left:4px">NOVO ⬆</span>',          'Referência sobe p/ R$ 3.000 · paga como 300%',               '<span style="color:var(--muted);text-decoration:line-through;font-size:12px">R$ 6.000</span> <b style="color:var(--green)">R$ 9.000</b>',        faixa==='a200', 'var(--blue)')}
       <div style="font-size:11px;color:var(--muted);margin-top:11px;padding-top:9px;border-top:1px solid var(--border);line-height:1.5">
         Entre gatilhos paga o de baixo (115% paga como 120%). · 🗓️ RV no <b>1º dia útil do mês seguinte</b>.
       </div>

@@ -6135,15 +6135,15 @@ function workdaysToDate(iso) { const p=iso.split('-').map(Number); let c=0; for(
 
 /* ===== REGRA DE RV DO LÍDER (do PPTX · atualizado 24/07) =====
    Base 100% = R$2.000. Defrator <60%. Proporcional 60-104%.
-   Aceleradores: 105%→R$2.400, 120%→R$3.000, 150%→R$4.000, 200%→R$6.000 */
+   Aceleradores: 105%→R$2.400, 120%→R$3.000, 150%→R$5.000 (ref R$2.500), 200%→R$9.000 (ref R$3.000). Atualizado 04/08 */
 const RV_BASE = 2000;
 function calcRV(pct) {
   if (pct < 60)  return { valor: 0,    regra: 'Defrator — abaixo de 60% zera a RV' };
   if (pct < 105) return { valor: RV_BASE * (pct/100), regra: 'Proporcional ao atingimento' };
   if (pct < 120) return { valor: 2400, regra: 'Acelerador 105% — paga como 120%' };
   if (pct < 150) return { valor: 3000, regra: 'Acelerador 120% — paga como 150%' };
-  if (pct < 200) return { valor: 4000, regra: 'Acelerador 150% — paga como 200%' };
-  return { valor: 6000, regra: 'Acelerador 200% — paga como 300%' };
+  if (pct < 200) return { valor: 5000, regra: 'Acelerador 150% — referência R$2.500 · paga como 200%' };
+  return { valor: 9000, regra: 'Acelerador 200% — referência R$3.000 · paga como 300%' };
 }
 
 /* ===== PERÍODO ===== */
@@ -6293,13 +6293,14 @@ function render() {
   // Legenda
   document.getElementById('legend').innerHTML =
     '<h4>📋 Como a RV é calculada (base 100% = R$ 2.000)</h4>' +
+    '<div style=&quot;margin:6px 0 8px;padding:9px 12px;background:#EAF8F0;border:1px solid #BFE8D2;border-radius:8px;font-size:11px;color:#0B7A4B;font-weight:700;line-height:1.45&quot;>🔥 Novo em agosto: a partir de 150% a referência sobe para R$ 2.500 (RV R$ 5.000) e em 200% sobe para R$ 3.000 (RV R$ 9.000) — acelerou pra cima!</div>' +
     '<table>' +
     '<tr><td><span class=&quot;faixa-dot&quot; style=&quot;background:var(--red)&quot;></span>Abaixo de 60%</td><td>Defrator — zera a RV</td><td>R$ 0</td></tr>' +
     '<tr><td><span class=&quot;faixa-dot&quot; style=&quot;background:var(--green)&quot;></span>60% a 104%</td><td>Proporcional ao atingimento</td><td>R$ 1.200 a R$ 2.080</td></tr>' +
     '<tr><td><span class=&quot;faixa-dot&quot; style=&quot;background:var(--gold)&quot;></span>105% a 119%</td><td>Acelerador — paga como 120%</td><td>R$ 2.400</td></tr>' +
     '<tr><td><span class=&quot;faixa-dot&quot; style=&quot;background:var(--gold)&quot;></span>120% a 149%</td><td>Acelerador — paga como 150%</td><td>R$ 3.000</td></tr>' +
-    '<tr><td><span class=&quot;faixa-dot&quot; style=&quot;background:var(--gold)&quot;></span>150% a 199%</td><td>Acelerador — paga como 200%</td><td>R$ 4.000</td></tr>' +
-    '<tr><td><span class=&quot;faixa-dot&quot; style=&quot;background:var(--gold)&quot;></span>200% ou mais</td><td>Acelerador — paga como 300%</td><td>R$ 6.000</td></tr>' +
+    '<tr style=&quot;background:#EAF8F0&quot;><td><span class=&quot;faixa-dot&quot; style=&quot;background:var(--gold)&quot;></span>150% a 199% <span style=&quot;font-size:9px;font-weight:800;color:#fff;background:var(--green);padding:1px 7px;border-radius:10px;margin-left:4px&quot;>NOVO ⬆</span></td><td>Acelerador — referência sobe p/ R$ 2.500 · paga como 200%</td><td><span style=&quot;color:var(--text3);text-decoration:line-through;font-size:11px&quot;>R$ 4.000</span> <b style=&quot;color:var(--green)&quot;>R$ 5.000</b></td></tr>' +
+    '<tr style=&quot;background:#EAF8F0&quot;><td><span class=&quot;faixa-dot&quot; style=&quot;background:var(--gold)&quot;></span>200% ou mais <span style=&quot;font-size:9px;font-weight:800;color:#fff;background:var(--green);padding:1px 7px;border-radius:10px;margin-left:4px&quot;>NOVO ⬆</span></td><td>Acelerador — referência sobe p/ R$ 3.000 · paga como 300%</td><td><span style=&quot;color:var(--text3);text-decoration:line-through;font-size:11px&quot;>R$ 6.000</span> <b style=&quot;color:var(--green)&quot;>R$ 9.000</b></td></tr>' +
     '</table>' +
     '<div style=&quot;margin-top:10px;font-size:10px;color:var(--text3)&quot;>💡 A RV considera o <strong>atingimento real</strong> (MWh aprovado ÷ meta mensal Safra cheia). O ritmo to-date é só referência de como a praça está em relação ao esperado para o dia. Pagamento no 1º dia útil do mês seguinte.</div>';
 }
