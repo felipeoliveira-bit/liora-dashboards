@@ -57,6 +57,66 @@ def load_risk_real(base_path):
             if did: m[did]=((r.get('real_result') or '').strip(), (r.get('real_created') or '').strip())
     return m
 
+
+# --- AUGMENTO FONTE-VIVA (funil sales_b_group) -------------------------------
+# Funde os deals Field FRESCOS do funil ao vivo (mb_export -> sbg_field.csv) na
+# base do card818, que atrasa umas horas (job de curadoria periodico). Corrige o
+# "aprovado do dia sumindo" SEM forcar na mao: linha ja existente -> atualiza so
+# os campos de estagio/risco (sbg e mais fresco); linha ausente -> anexa mapeando
+# colunas + derivando as poucas que faltam. So mexe em Field; nunca remove linha.
+_SBG_STAGE_FIELDS = ['deal_stage','deal_lost_at','deal_lost_reason','latest_risk_analysis_result',
+                     'latest_risk_analysis_created_at','latest_contract_id','latest_contract_signature_signed_at']
+def _sbg_idle(updated):
+    try:
+        d=datetime.date(int(updated[0:4]),int(updated[5:7]),int(updated[8:10]))
+        return str(max(0,(TODAY-d).days))
+    except Exception:
+        return ''
+def augment_from_sbg(base, fields, base_path):
+    p=os.path.join(os.path.dirname(os.path.abspath(base_path)),'sbg_field.csv')
+    if not os.path.isfile(p): return (0,0)
+    with open(p, encoding='utf-8-sig') as fh:
+        sbg=list(csv.DictReader(fh))
+    by_id={}
+    for r in base:
+        did=(r.get('deal_id') or '').strip()
+        if did: by_id[did]=r
+    npatch=napp=0
+    for s in sbg:
+        did=(s.get('deal_id') or '').strip()
+        if not did: continue
+        ch=(s.get('sales_channel_name') or '').strip()
+        cls='FS_Liora' if ch=='Field Sales Liora' else 'Outro'
+        if did in by_id:
+            r=by_id[did]
+            for f in _SBG_STAGE_FIELDS:
+                if f in r: r[f]=s.get(f,'') or ''
+            if not (r.get('latest_risk_analysis_comments') or '').strip() and (s.get('latest_risk_analysis_comments') or '').strip():
+                r['latest_risk_analysis_comments']=s['latest_risk_analysis_comments']
+            npatch+=1
+        else:
+            row={f:'' for f in fields}
+            direct=['deal_id','deal_stage','deal_lost_at','deal_lost_reason','deal_created_at',
+                    'current_client_cnpj','current_client_cpf','current_client_name','current_client_state',
+                    'current_client_city','client_phone_number','distributor_short_name','sales_channel_name',
+                    'sales_organization_name','energy_retailer_name','sales_person_name','sales_person_email',
+                    'proposal_id','proposal_created_at','product_name','latest_contract_id',
+                    'latest_contract_signature_signed_at','latest_risk_analysis_result',
+                    'latest_risk_analysis_created_at','latest_risk_analysis_comments','current_consumption',
+                    'has_valid_bill_uploaded']
+            for f in direct:
+                if f in row: row[f]=s.get(f,'') or ''
+            if 'current_total_bill_cost (R$)' in row: row['current_total_bill_cost (R$)']=s.get('current_total_bill_cost','') or ''
+            if 'current_consumption_filled' in row: row['current_consumption_filled']=s.get('current_consumption','') or ''
+            if 'internal_sales_classification' in row: row['internal_sales_classification']=cls
+            if 'sales_team' in row: row['sales_team']='Field Sales'
+            if 'accepted_proposal' in row: row['accepted_proposal']='true'
+            if 'ops_tt_status' in row: row['ops_tt_status']='N/A'
+            if 'idle_days' in row: row['idle_days']=_sbg_idle(s.get('deal_updated_at','') or '')
+            base.append(row); by_id[did]=row; napp+=1
+    return (npatch,napp)
+# -----------------------------------------------------------------------------
+
 def apply_risk_real(base, real):
     # Sobrescreve o resultado de risco do card818 pelo risco REAL (fonte de verdade).
     # So preenche a DATA quando o card818 veio vazia (preserva atribuicao de mes/semana).
@@ -91,6 +151,8 @@ def main():
         if c not in fields: sys.exit('ABORT: coluna ausente: '+c)
     if len(set(r['deal_stage'] for r in base)) <= 1:
         sys.exit('ABORT: base com um unico deal_stage.')
+    npatch,napp=augment_from_sbg(base, fields, base_path)
+    if npatch or napp: print('augmento funil vivo: %d atualizado(s), %d anexado(s)' % (npatch,napp))
     ncorr=apply_risk_real(base, load_risk_real(base_path))
     if ncorr: print('risco real: %d deal(s) com resultado corrigido vs card818' % ncorr)
     fs=[r for r in base if r['internal_sales_classification']=='FS_Liora']
