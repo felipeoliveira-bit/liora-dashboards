@@ -135,6 +135,7 @@ PRACA_TITLE = {  # email -> praça (Title) usada no RAW
  'nicola.popovic@lioraenergia.com.br':'SPI',
  'nha.negocios@gmail.com':'SPI',
  'anderson.correia@lioraenergia.com.br':'SPI',
+ 'percy.hormazabal@lioraenergia.com.br':'SPI',
  'monica.silveira@lioraenergia.com.br':'SPI',
  'ana.ribeiro@lioraenergia.com.br':'SPI',
  'jose.lima@lioraenergia.com.br':'SPI',
@@ -157,7 +158,7 @@ PRACA_TITLE = {  # email -> praça (Title) usada no RAW
  'nubia.andrade@lioraenergia.com.br':'Outras','odirley.costa@lioraenergia.com.br':'Outras',
  'rodrigo.ribeiro@lioraenergia.com.br':'Natal','rosangela.mendes@lioraenergia.com.br':'Feira',
  'ryan.trindade@lioraenergia.com.br':'Feira','alberto.nascimento@lioraenergia.com.br':'Feira','marcel.sousa@lioraenergia.com.br':'Feira','jefferson.fideli@lioraenergia.com.br':'RN Interior','phillip.faria@lioraenergia.com.br':'Ribeirao','tais.santos@lioraenergia.com.br':'Salvador',
- 'tiago.freitas@lioraenergia.com.br':'Feira','thiago.araujo@lioraenergia.com.br':'Natal',
+ 'tiago.freitas@lioraenergia.com.br':'Feira','tamires.costa@lioraenergia.com.br':'Feira','thiago.araujo@lioraenergia.com.br':'Natal',
 }
 EMAIL2NAME = {  # email -> nome canônico do vendedor (resolve nomes variáveis do CRM)
  'silmara.gomes@lioraenergia.com.br':'Silmara Gomes',
@@ -165,6 +166,7 @@ EMAIL2NAME = {  # email -> nome canônico do vendedor (resolve nomes variáveis 
  'nicola.popovic@lioraenergia.com.br':'Nicola Popovic',
  'nha.negocios@gmail.com':'Anderson Correia',
  'anderson.correia@lioraenergia.com.br':'Anderson Correia',
+ 'percy.hormazabal@lioraenergia.com.br':'Percy Hormazabal',
  'monica.silveira@lioraenergia.com.br':'Monica Silveira',
  'ana.ribeiro@lioraenergia.com.br':'Ana Ribeiro',
  'jose.lima@lioraenergia.com.br':'Rodrigo Lima',
@@ -187,7 +189,7 @@ EMAIL2NAME = {  # email -> nome canônico do vendedor (resolve nomes variáveis 
  'nubia.andrade@lioraenergia.com.br':'Nubia  Andrade','odirley.costa@lioraenergia.com.br':'Odirley Costa',
  'rodrigo.ribeiro@lioraenergia.com.br':'Rodrigo Ribeiro','rosangela.mendes@lioraenergia.com.br':'Rosangela Mendes',
  'ryan.trindade@lioraenergia.com.br':'Ryan Trindade','alberto.nascimento@lioraenergia.com.br':'Alberto Nascimento','marcel.sousa@lioraenergia.com.br':'Marcel Sousa','jefferson.fideli@lioraenergia.com.br':'Jefferson Fideli','phillip.faria@lioraenergia.com.br':'Phillip Faria','tais.santos@lioraenergia.com.br':'Tais Santos',
- 'tiago.freitas@lioraenergia.com.br':'Tiago Freitas','thiago.araujo@lioraenergia.com.br':'Thiago Araujo França',
+ 'tiago.freitas@lioraenergia.com.br':'Tiago Freitas','tamires.costa@lioraenergia.com.br':'Tamires Costa','thiago.araujo@lioraenergia.com.br':'Thiago Araujo França',
 }
 TITLE2OP = {'Salvador':'salvador','Feira':'feira','Natal':'natal','RN Interior':'rninterior','SPI':'spi','Ribeirao':'ribeirao','CE':'ce','Outras':'outras'}
 
