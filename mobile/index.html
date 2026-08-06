@@ -907,6 +907,7 @@ function isCoelba(x){ return distType(x) === 'coelba'; }
 // A data de aprovação (p/ mês/campanha) é essa mesma coluna. CPFL/Enel ainda em
 // proposta não têm essa coluna preenchida → não contam como aprovado (correto).
 function isAprovado(x){
+  if(x.credito_ok) return true; // Antecipa: crédito aprovado conta como aprovado (Felipe 06/08)
   if(x.stage === 'BGC_PARCEIRO') return false; // em validação Antecipa
   return !!x.aprov_date && (!x.lost_at || x.stage !== 'BACKGROUND_CHECKING' || (x.lost_reason||'').trim().toLowerCase() === 'troca de titularidade');
 }
@@ -925,6 +926,7 @@ function isNegado(x){
 }
 
 function isBGCCoelba(x){
+  if(x.credito_ok) return false; // Antecipa aprovado no crédito já conta como aprovado (Felipe 06/08)
   if(x.lost_at || x.lost_reason) return false;
   if(x.stage === 'BGC_PARCEIRO') return true;  // em validação Antecipa (qualquer distribuidora)
   if(x.stage === 'BACKGROUND_CHECKING') return true;
@@ -2284,6 +2286,7 @@ function openClienteDetalhes(dealId){
         <div class="cd-row"><div class="cd-row-k">📍 Cidade · Estado</div><div class="cd-row-v">${escapeHtml(lead.city||'—')}${lead.state ? ' · '+escapeHtml(lead.state) : ''}</div></div>
         <div class="cd-row"><div class="cd-row-k">⚡ Distribuidora</div><div class="cd-row-v">${escapeHtml(lead.dist||'—')}</div></div>
         ${prettyProduto(lead.produto) ? `<div class="cd-row"><div class="cd-row-k">📦 Produto</div><div class="cd-row-v">${escapeHtml(prettyProduto(lead.produto))}</div></div>` : ''}
+        ${lead.credito ? `<div class="cd-row"><div class="cd-row-k">💳 Situação Antecipa</div><div class="cd-row-v">${escapeHtml(lead.credito)}</div></div>` : ''}
       </div>
 
       <div class="cd-section">

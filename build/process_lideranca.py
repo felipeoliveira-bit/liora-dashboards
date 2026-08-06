@@ -241,10 +241,32 @@ def mwh_of(client, raw):
     ov = CONSUMPTION_OVERRIDE.get(norm(client))
     return ov if ov is not None else fnum(raw)
 
+# ---- Antecipa / credito (Felipe 06/08) -----------------------------------
+# Cliente do Antecipa com analise de CREDITO aprovada conta como aprovado no
+# resultado de Field (mesmo em BGC_PARCEIRO / risco APPROVED_PENDING_CREDIT).
+# deal_credit_stage traduzido p/ portugues p/ dar contexto da situacao.
+CREDIT_STAGE_PT = {
+ 'GATHERING_DEPOSIT_INFORMATION': 'COLETANDO_INFORMAÇÕES_DE_DEPÓSITO',
+ 'PAYMENT_SUCCEDED': 'PAGAMENTO_REALIZADO',
+ 'CREDIT_ANALISYS_REJECTED': 'ANÁLISE_DE_CRÉDITO_REJEITADA',
+ 'WAITING_CLIENT_CONFIRMATION': 'AGUARDANDO_CONFIRMAÇÃO_DO_CLIENTE',
+ 'WAITING_CLIENT_RESPONSE': 'AGUARDANDO_RESPOSTA_DO_CLIENTE',
+ 'WAITING_PAYMENT_APPROVAL': 'AGUARDANDO_APROVAÇÃO_DE_PAGAMENTO',
+ 'DISPATCH_RECOVERY_COMMS': 'ENVIO_DE_COMUNICADOS_DE_RECUPERAÇÃO',
+ 'PAYMENT_REJECTED': 'PAGAMENTO_REJEITADO',
+ 'PENDING': 'PENDENTE',
+}
+def credit_pt(s):
+    s = (s or '').strip()
+    return CREDIT_STAGE_PT.get(s, s)
+
 # ---- rawData (deals + aguardando, dedup por deal_id) ---------------------
 def mk_deal(r):
     risk = (r['latest_risk_analysis_result'] or '').strip()
     if r['deal_stage']=='BGC_PARCEIRO': risk=''  # em validação Antecipa: não conta como aprovado
+    credit = (r.get('latest_credit_analysis_result') or '').strip().lower()  # Antecipa
+    credito_ok = (credit == 'approved')
+    if credito_ok: risk='APPROVED'  # Felipe 06/08: crédito aprovado (Antecipa) conta como aprovado no Field
     if r['deal_id'] in FORCE_APPROVED: risk='APPROVED'  # aprovado manual
     # aprovado conta pela DATA DA ANÁLISE DE RISCO; sem risco (WAITING) usa criação
     d = pdate(r['latest_risk_analysis_created_at']) or pdate(r['deal_created_at'])
@@ -262,6 +284,8 @@ def mk_deal(r):
       'idle': int(fnum(r['idle_days'])),
       'city': r['current_client_city'],
       'produto': (r.get('product_name') or '').strip(),
+      'credito_ok': credito_ok,  # Antecipa: análise de crédito aprovada (Felipe 06/08)
+      'credito': credit_pt(r.get('deal_credit_stage')),  # situação do Antecipa (PT)
       'semana': semana(d),
       'lost_at': ('' if (forced or norm(r['current_client_name']) in LOST_IGNORE) else (r['deal_lost_at'] or '')),
       'lost_reason': ('' if (forced or norm(r['current_client_name']) in LOST_IGNORE) else (r['deal_lost_reason'] or '')),

@@ -102,6 +102,22 @@ SELLER_PRACA = {  # canônico -> label praça
  'Felipe Oliveira':'Outros',
 }
 DIST_MAP = {'NEOENERGIA COELBA':'Coelba','NEOENERGIA COSERN':'Cosern','CPFL PAULISTA':'CPFL','ENEL CE':'Enel'}
+# Antecipa / credito (Felipe 06/08): crédito aprovado conta como aprovado no Field;
+# deal_credit_stage traduzido p/ português p/ dar contexto da situação do cliente.
+CREDIT_STAGE_PT = {
+ 'GATHERING_DEPOSIT_INFORMATION':'COLETANDO_INFORMAÇÕES_DE_DEPÓSITO',
+ 'PAYMENT_SUCCEDED':'PAGAMENTO_REALIZADO',
+ 'CREDIT_ANALISYS_REJECTED':'ANÁLISE_DE_CRÉDITO_REJEITADA',
+ 'WAITING_CLIENT_CONFIRMATION':'AGUARDANDO_CONFIRMAÇÃO_DO_CLIENTE',
+ 'WAITING_CLIENT_RESPONSE':'AGUARDANDO_RESPOSTA_DO_CLIENTE',
+ 'WAITING_PAYMENT_APPROVAL':'AGUARDANDO_APROVAÇÃO_DE_PAGAMENTO',
+ 'DISPATCH_RECOVERY_COMMS':'ENVIO_DE_COMUNICADOS_DE_RECUPERAÇÃO',
+ 'PAYMENT_REJECTED':'PAGAMENTO_REJEITADO',
+ 'PENDING':'PENDENTE',
+}
+def credit_pt(s):
+    s=(s or '').strip()
+    return CREDIT_STAGE_PT.get(s, s)
 CLIENT_OVERRIDE = {  # cliente (upper/strip) -> (seller canônico, praça label)
  'NIVALDO GESTEIRA DE OLIVEIRA':('Maria Lúcia','Salvador'),
  'MANOEL ROQUE DA SILVA JUNIOR':('Lucileide Carlos','Feira de Santana'),
@@ -185,12 +201,14 @@ def build_rawData(deals_path, ag_path, prop_path=None, docs_map=None, uc_map=Non
         forced = did in FORCE_APPROVED
         _risk = (r['latest_risk_analysis_result'] or '').strip()
         _status = (r.get('ops_tt_status') or '').lower()
+        _credit = (r.get('latest_credit_analysis_result') or '').strip().lower()  # Antecipa
+        credito_ok = (_credit == 'approved')  # Felipe 06/08: crédito aprovado conta como aprovado
         # Alinha ao desktop (definição oficial isAprovado): conta como aprovado se risco
         # APPROVED, OU status "aprovado", OU stage REQUEST_TITULARIDADE (fallback p/ deal
         # que avançou sem risco APPROVED). Nunca conta DENIED nem BGC_PARCEIRO (validação
-        # Antecipa, ainda não aprovado).
+        # Antecipa, ainda não aprovado) — EXCETO quando o crédito do Antecipa já foi aprovado.
         _reached = (_risk=='APPROVED') or ('aprovado' in _status) or (r['deal_stage']=='REQUEST_TITULARIDADE')
-        approved = forced or (_reached and _risk!='DENIED' and r['deal_stage']!='BGC_PARCEIRO')
+        approved = forced or credito_ok or (_reached and _risk!='DENIED' and r['deal_stage']!='BGC_PARCEIRO')
         aprov = (iso(pdate(r['latest_risk_analysis_created_at']) or pdate(r['deal_created_at'])) if approved else '')
         created = pdate(r['deal_created_at'])
         basis = (pdate(r['latest_risk_analysis_created_at']) or created) if approved else created
@@ -204,6 +222,7 @@ def build_rawData(deals_path, ag_path, prop_path=None, docs_map=None, uc_map=Non
             'city':r['current_client_city'],'state':r['current_client_state'],
             'dist':DIST_MAP.get(r['distributor_short_name'], r['distributor_short_name']),
             'produto':(r.get('product_name') or '').strip(),
+            'credito_ok':credito_ok,'credito':credit_pt(r.get('deal_credit_stage')),
             'deal_id':did,'uc':uc_map.get(did,''),'tel':r['client_phone_number'],'cnpj':r['current_client_cnpj'],'cpf':r['current_client_cpf'],
             'fatura':pfloat(r['current_total_bill_cost (R$)']),'semana':semana(basis),
             'lost_at':('' if (forced or (cli or '').strip().upper() in LOST_IGNORE) else r['deal_lost_at']),'lost_reason':('' if (forced or (cli or '').strip().upper() in LOST_IGNORE) else r['deal_lost_reason']),

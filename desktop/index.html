@@ -743,6 +743,7 @@ function renderPropostas() {
 // SEÇÃO 3: CLIENTES APROVADOS (com atingimento de meta + campanha)
 // ============================================================
 function isAprovado(x) {
+  if (x.credito_ok) return true; // Antecipa: crédito aprovado conta como aprovado (Felipe 06/08)
   if (x.stage === 'BGC_PARCEIRO') return false;
   if (x.lost_at) { if (x.stage === 'BACKGROUND_CHECKING') { if ((x.lost_reason||'').trim().toLowerCase() !== 'troca de titularidade') return false; } }
   if (x.risk === 'DENIED') return false;
@@ -1498,7 +1499,7 @@ function aggPropostas() {
   });
   return Object.values(byV);
 }
-function isAprovado(x) { if(x.stage==='BGC_PARCEIRO') return false; if(x.lost_at){ if(x.stage==='BACKGROUND_CHECKING'){ if((x.lost_reason||'').trim().toLowerCase() !== 'troca de titularidade') return false; } } if(x.risk==='DENIED') return false; if(x.risk==='APPROVED') return true; const s=(x.status||'').toLowerCase(); if(s.includes('aprovado')) return true; if(x.stage==='REQUEST_TITULARIDADE') return true; return false; }
+function isAprovado(x) { if(x.credito_ok) return true; if(x.stage==='BGC_PARCEIRO') return false; if(x.lost_at){ if(x.stage==='BACKGROUND_CHECKING'){ if((x.lost_reason||'').trim().toLowerCase() !== 'troca de titularidade') return false; } } if(x.risk==='DENIED') return false; if(x.risk==='APPROVED') return true; const s=(x.status||'').toLowerCase(); if(s.includes('aprovado')) return true; if(x.stage==='REQUEST_TITULARIDADE') return true; return false; }
 function isPendenteOPS(x) { const s=x.status||''; return s==='Pendente OPS'||s==='Aguardando período'||s==='Mudando Titularidade'; }
 function aggAprovados() {
   const byV = {};
@@ -4616,6 +4617,7 @@ function isCoelba(x) { return distType(x) === 'coelba'; }
 function isCpflEnel(x) { return distType(x) === 'cpfl_enel'; }
 
 function isBGCCoelba(x) {
+  if (x.credito_ok) return false; // Antecipa aprovado no crédito já conta como aprovado (Felipe 06/08)
   if (x.lost_at || x.lost_reason) return false;
   if (x.stage === 'BGC_PARCEIRO' &amp;&amp; isCoelba(x)) return true;
   if (x.stage === 'BACKGROUND_CHECKING') return true;
@@ -4641,6 +4643,7 @@ function isNegado(x) {
 
 const VENDEDORES_OCULTOS = []; // saíram do time: ocultar linha individual, mas resultado continua somando na praça
 const isAprovado = x => {
+  if (x.credito_ok) return true; // Antecipa: crédito aprovado conta como aprovado (Felipe 06/08)
   if (x.stage === 'BGC_PARCEIRO') return false;
   if (x.lost_at) { if (x.stage === 'BACKGROUND_CHECKING') { if ((x.lost_reason||'').trim().toLowerCase() !== 'troca de titularidade') return false; } }
   if (x.risk === 'DENIED') return false;        // analise de risco negada
@@ -6179,7 +6182,7 @@ function metaPracaPeriodo(praca) {
 }
 
 /* ===== REGRAS ===== */
-function isAprovado(x) { if(x.stage==='BGC_PARCEIRO') return false; if(x.lost_at){ if(x.stage==='BACKGROUND_CHECKING'){ if((x.lost_reason||'').trim().toLowerCase() !== 'troca de titularidade') return false; } } if(x.risk==='DENIED') return false; if(x.risk==='APPROVED') return true; if((x.status||'').toLowerCase().includes('aprovado')) return true; if(x.stage==='REQUEST_TITULARIDADE') return true; return false; }
+function isAprovado(x) { if(x.credito_ok) return true; if(x.stage==='BGC_PARCEIRO') return false; if(x.lost_at){ if(x.stage==='BACKGROUND_CHECKING'){ if((x.lost_reason||'').trim().toLowerCase() !== 'troca de titularidade') return false; } } if(x.risk==='DENIED') return false; if(x.risk==='APPROVED') return true; if((x.status||'').toLowerCase().includes('aprovado')) return true; if(x.stage==='REQUEST_TITULARIDADE') return true; return false; }
 function isPendenteOPS(x) { const s=x.status||''; return s==='Pendente OPS'||s==='Aguardando período'||s==='Mudando Titularidade'; }
 
 /* ===== DADOS via bridge ===== */
