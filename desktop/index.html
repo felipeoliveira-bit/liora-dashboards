@@ -2233,13 +2233,11 @@ function setPeriodoMes(sel){
 function populateMesSel(){
   const sel = document.getElementById('tarefaMesSel');
   if (!sel) return;
-  const meses = {};
-  leads.forEach(l => {
-    if (l.createdAt) { const ds = localISO(new Date(l.createdAt)); if (ds) meses[ds.slice(0,7)] = true; }
-    if (l.proximaInteracao) meses[String(l.proximaInteracao).slice(0,7)] = true;
-  });
+  // Sempre: mes atual + 2 anteriores (ex.: ago, jul, jun)
   const curMon = localISO(new Date()).slice(0,7);
-  const keys = Object.keys(meses).filter(m => /^\d{4}-\d{2}$/.test(m) &amp;&amp; m < curMon).sort().reverse();
+  const cy = parseInt(curMon.slice(0,4),10), cm = parseInt(curMon.slice(5,7),10);
+  const keys = [];
+  for (let i=0;i<3;i++){ let y=cy, mo=cm-i; while(mo<=0){mo+=12;y--;} keys.push(y+'-'+String(mo).padStart(2,'0')); }
   const NOMES = ['','jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
   const prev = sel.value;
   sel.innerHTML = '<option value=&quot;&quot;>Mês específico…</option>' + keys.map(m => {
