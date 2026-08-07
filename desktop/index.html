@@ -608,8 +608,8 @@ function renderOpCards() {
     // meta to-date do mês (acumulada até hoje, proporcional aos dias úteis)
     let metaToDate, metaMes;
     if (op.key === 'todas') {
-      metaMes = PRACAS.filter(p=>p!=='Ribeirao').reduce((a,p)=>a+(METAS_SAFRA[p]||0),0);
-      metaToDate = PRACAS.filter(p=>p!=='Ribeirao').reduce((a,p)=>a+safraToDate(p), 0);
+      metaMes = PRACAS.reduce((a,p)=>a+(METAS_SAFRA[p]||0),0);
+      metaToDate = PRACAS.reduce((a,p)=>a+safraToDate(p), 0);
     } else {
       const praca = OP_TO_PRACA[op.key];
       metaMes = METAS_SAFRA[praca] || op.meta;
