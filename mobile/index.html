@@ -2701,10 +2701,7 @@ function tarefaInPeriod(ds){
 
 function renderPropostas() {
   const el = document.getElementById('s4-content');
-  // v2.117 — garante que os leads (visitas/tarefas) estejam carregados; re-renderiza quando chegarem
-  if (!leadsLoaded) {
-    loadLeads().then(() => { const e = document.getElementById('s4-content'); if (e && e.offsetParent !== null) renderPropostas(); });
-  }
+  // v2.167 — Propostas/Ranking nao usam mais leads (Visitas saiu); nao forca load de leads aqui.
 
   // v2.104 — Ranking é sempre do time todo (não filtra pela identidade/seller-select).
   let data = RAW_PROP;
@@ -2743,29 +2740,8 @@ function renderPropostas() {
     sellers[r.seller].aprovCount += 1;
   });
 
-  // v2.137 — Tarefas de Venda: MESMA lógica/recorte do desktop (Tarefas de Vendas — Por Vendedor).
-  // Conta = leads CRIADOS no período OU com PRÓXIMA INTERAÇÃO no período (stage ativo, exclui ganho/perdido).
-  // Respeita o período selecionado (D0/D-1/Semana/Mês) no fuso de Brasília — antes ficava fixo em "hoje".
-  const brDateMs = ms => { try { return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo'}).format(new Date(ms)); } catch(e){ return ''; } };
-  // stages que o desktop normaliza p/ ganho/perdido (normalizeStage) e portanto NÃO contam como tarefa agendada ativa
-  const INACTIVE_STAGES = ['ganho','won','signing_contract','active_member','perdido','lost'];
-  (window.leads||[])
-    .filter(l => String((l&&l.stage)||'').trim().toLowerCase() !== 'excluido')
-    .forEach(l=>{
-      const st = String((l&&l.stage)||'').trim().toLowerCase();
-      const stageActive = INACTIVE_STAGES.indexOf(st) === -1;
-      const createdISO = l.createdAt ? brDateMs(l.createdAt) : '';
-      const criInPeriod = !!createdISO && tarefaInPeriod(createdISO);            // criados: qualquer stage (= criadosHoje do desktop)
-      const proxISO = l.proximaInteracao ? String(l.proximaInteracao).slice(0,10) : '';
-      const agInPeriod  = !!proxISO && tarefaInPeriod(proxISO) && stageActive;   // agendados: só stage ativo (= agHoje do desktop)
-      if(criInPeriod || agInPeriod){
-        const v = canonicalVendedor(l.vendedor||'');
-        // resolve para nome canônico via EMAIL_NAME reverso
-        const nome = Object.entries(CREDENTIALS).find(([,c])=>canonicalVendedor(c.nome)===v)?.[1]?.nome || l.vendedor;
-        if(!sellers[nome]) sellers[nome]={prop:0,mwh:0,aprov:0,aprovCount:0,tarefas:0};
-        sellers[nome].tarefas++;
-      }
-    });
+  // v2.167 — ranking de Visitas removido: dependia dos leads de TODOS os vendedores
+  // (payload pesado no celular). Ranking usa so RAW_PROP/rawData (ja embutidos).
 
   // v2.104 — vendedores fora do time: somem da LISTA do ranking, mas os números
   // continuam somando nos totais de praça (pracas vem de `data`, não daqui).
@@ -2775,7 +2751,6 @@ function renderPropostas() {
     .sort((a,b)=>{
     if(propMetric === 'aprovado') return b[1].aprov - a[1].aprov;
     if(propMetric === 'qtd')      return b[1].aprovCount - a[1].aprovCount;
-    if(propMetric === 'tarefas')  return b[1].tarefas - a[1].tarefas;
     return b[1].prop - a[1].prop;
   });
 
@@ -2807,7 +2782,6 @@ function renderPropostas() {
       <div class="rk-seg-btn ${propMetric==='aprovado'?'active':''}" onclick="setPropMetric('aprovado')"><span class="ic">⚡</span><span class="lb">MWh aprov.</span></div>
       <div class="rk-seg-btn ${propMetric==='qtd'?'active':''}" onclick="setPropMetric('qtd')"><span class="ic">👥</span><span class="lb">Clientes</span></div>
       <div class="rk-seg-btn ${propMetric==='propostas'?'active':''}" onclick="setPropMetric('propostas')"><span class="ic">📋</span><span class="lb">Propostas</span></div>
-      <div class="rk-seg-btn ${propMetric==='tarefas'?'active':''}" onclick="setPropMetric('tarefas')"><span class="ic">🤝</span><span class="lb">Visitas</span></div>
     </div>
     <div class="rk-scope">
       ${[['','Todas'],['salvador','Salvador'],['feira','Feira'],['natal','RN Capital'],['rninterior','RN Interior'],['spi','Campinas SPI'],['ribeirao','Ribeirão SPI'],['ce','CE']].map(o=>`<div class="rk-chip ${rankScope===o[0]?'active':''}" onclick="setRankScope('${o[0]}')">${o[1]}</div>`).join('')}
@@ -2825,16 +2799,13 @@ function renderPropostas() {
     let mainVal, mainUnit, subInfo;
     if(propMetric === 'aprovado'){
       mainVal = d.aprov.toFixed(1); mainUnit = 'MWh aprov.';
-      subInfo = `✅ ${d.aprovCount} aprov · 📋 ${d.prop} props · 🤝 ${d.tarefas} visitas`;
+      subInfo = `✅ ${d.aprovCount} aprov · 📋 ${d.prop} props`;
     } else if(propMetric === 'qtd'){
       mainVal = d.aprovCount; mainUnit = d.aprovCount===1?'aprovado':'aprovados';
-      subInfo = `⚡ ${d.aprov.toFixed(1)} MWh · 📋 ${d.prop} props · 🤝 ${d.tarefas} visitas`;
-    } else if(propMetric === 'tarefas'){
-      mainVal = d.tarefas; mainUnit = 'visitas';
-      subInfo = `📋 ${d.prop} props · ⚡ ${d.aprov.toFixed(1)} MWh aprov.`;
+      subInfo = `⚡ ${d.aprov.toFixed(1)} MWh · 📋 ${d.prop} props`;
     } else {
       mainVal = d.prop; mainUnit = 'props';
-      subInfo = `🤝 ${d.tarefas} visitas · ⚡ ${d.aprov.toFixed(1)} MWh aprov.`;
+      subInfo = `⚡ ${d.aprov.toFixed(1)} MWh aprov.`;
     }
     const hasMwh = d.aprov > 0;
     const cardClass = (hasMwh ? 'rank-card clickable' : 'rank-card') + (isMe ? ' rank-me' : '');
@@ -3533,6 +3504,31 @@ function resetLeadsAutoRetry(){
   _leadsRetryCount = 0;
 }
 
+// v2.167 - escopo server-side: cada usuario baixa so os leads do seu escopo.
+// vendedor = so os proprios; lider = a praca dele; gestor = tudo. Derruba o payload
+// (antes vinha a base inteira e o app filtrava no cliente = lentidao no celular).
+// Backend compat: se 'scope' vier ausente/all, devolve tudo (cliente antigo segue ok).
+function _leadsListPayload(){
+  try{
+    var me = getCurrentVendedor();
+    if(!me || isGestor_(me)) return { scope:{all:true}, aliases: VENDEDOR_ALIASES };
+    var names = [me];
+    if(isLider(me)){
+      var pk = liderPraca(me);
+      Object.keys(SELLER_PRACA).forEach(function(n){ if(SELLER_PRACA[n]===pk) names.push(n); });
+    }
+    var keys = {};
+    names.forEach(function(n){ keys[canonicalVendedor(n)] = true; });
+    try {
+      Object.keys(CREDENTIALS||{}).forEach(function(em){
+        var c = CREDENTIALS[em]; var cn = (c && c.nome) ? canonicalVendedor(c.nome) : '';
+        if(cn && keys[cn]) keys[String(em).trim().toLowerCase()] = true;
+      });
+    } catch(e){}
+    return { scope:{ keys: Object.keys(keys) }, aliases: VENDEDOR_ALIASES };
+  }catch(e){ return { scope:{all:true}, aliases: VENDEDOR_ALIASES }; }
+}
+
 async function loadLeads(){
   if (leadsLoaded) return;
   if (!LEADS_API_ENABLED) {
@@ -3547,7 +3543,7 @@ async function loadLeads(){
     let data, lastErr=null;
     const _pauses=[900,1800];
     for (let attempt=1; attempt<=3; attempt++){
-      try { data = await apiCall('list', null, { timeoutMs: attempt===1 ? 45000 : 60000 }); lastErr=null; break; }
+      try { data = await apiCall('list', _leadsListPayload(), { timeoutMs: attempt===1 ? 45000 : 60000 }); lastErr=null; break; }
       catch(e){ lastErr=e; if(attempt<3) await new Promise(r=>setTimeout(r,_pauses[attempt-1])); }
     }
     if (lastErr) throw lastErr;
