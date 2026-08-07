@@ -134,7 +134,8 @@ CONSUMPTION_OVERRIDE = {  # cliente (upper/strip) -> MWh; temp ate base corrigir
  'PERFECTA VIDROS E ALUMINIOS EIRELI': 0.89,  # base mostra 0.19 (Felipe 07/07, ajuste p/ 0,890)
  'CHEVROFOR COM PECAS E ACESSORIOS LTDA': 1.21,  # base mostra 0.50 (Felipe 07/07)
  'MÁRCIO PEREIRA PINTO': 5.866,  # aprovado manual, base mostra 1.3 (Felipe 10/07)
- 'DRAX CENTRO AUTOMOTIVO LTDA': 4.311,  # deal f0418a1f; base mostra 1.566 (Felipe 04/08)
+ 'DRAX CENTRO AUTOMOTIVO LTDA': 4.311,
+ 'MW SAFETY LTDA': 0.632,  # base mostra 0.05; fatura R$800 (Felipe 07/08); remover qdo base corrigir  # deal f0418a1f; base mostra 1.566 (Felipe 04/08)
 }
 FORCE_APPROVED = {'cfb2500c-c323-4943-a7f8-e831a8f37b55': '2026-08-04'}  # PP FERREIRA DE SALES COMER DE COSMETICOS - aprovado manual SOS 15:32 04/08 (Aurivando/CE); card818+risk_real ainda MANUAL; remover quando base refletir
 LOST_IGNORE = {  # ignora lost_at/lost_reason (falso 'nao aceito pela distribuidora')
