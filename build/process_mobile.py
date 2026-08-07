@@ -128,6 +128,9 @@ CLIENT_OVERRIDE = {  # cliente (upper/strip) -> (seller canônico, praça label)
  'NATANAEL SILVA DOS SANTOS':('Lucas Santos','RN Interior'),  # dono -> Lucas (Felipe 27/07)
  'MARIA FRAUZINA CAMILO':('Anderson Correia','SPI'),  # aprovado 06/08 do Anderson; base trocou p/ Lucas 07/08 -> volta p/ Anderson (Felipe 07/08); remover qdo base corrigir
 }
+CONSUMPTION_OVERRIDE_BY_ID = {  # deal_id -> MWh; export do card818 congelou (mostra 0.632; base viva=1.636); remover qdo CI destravar
+ '35f26046-9c78-4c2b-a7fe-04f7e7564c38': 1.636,  # Mw Safety Ltda / Joao Santos (Felipe 07/08)
+}
 CONSUMPTION_OVERRIDE = {  # cliente (upper/strip) -> MWh; temp ate base corrigir
  'FRANCISCO ALDECI DE QUEIROZ FERNANDES': 5.86,  # base mostra 0.59 (Felipe 03/07)
  'GABRIEL LUCHIARI ALBERTO': 0.567,  # base mostra 0.13; fatura R$526/615 SP CPFL (Felipe 08/07)
@@ -219,7 +222,7 @@ def build_rawData(deals_path, ag_path, prop_path=None, docs_map=None, uc_map=Non
         try: idle=int(float(r['idle_days'])) if r['idle_days'].strip()!='' else 0
         except: idle=0
         out.append({
-            'c':cli,'s':s,'mwh':CONSUMPTION_OVERRIDE.get((cli or '').strip().upper(), pfloat(r['current_consumption_filled'])),
+            'c':cli,'s':s,'mwh':CONSUMPTION_OVERRIDE_BY_ID.get(r['deal_id'], CONSUMPTION_OVERRIDE.get((cli or '').strip().upper(), pfloat(r['current_consumption_filled']))),
             'stage':('REQUEST_TITULARIDADE' if (forced and r['deal_stage'] in ('BGC_PARCEIRO','BACKGROUND_CHECKING')) else r['deal_stage']),'status':r['ops_tt_status'],'idle':idle,
             'city':r['current_client_city'],'state':r['current_client_state'],
             'dist':DIST_MAP.get(r['distributor_short_name'], r['distributor_short_name']),
@@ -257,7 +260,7 @@ def build_RAW_PROP(prop_path):
             'dayofweek':(DOW[d.weekday()] if d else ''),
             'sales_person_name':r['sales_person_name'],'seller':seller,
             'bill_cost':pfloat(r['current_total_bill_cost (R$)']),
-            'consumption_mwh':CONSUMPTION_OVERRIDE.get((cli or '').strip().upper(), pfloat(r['current_consumption_filled'])),
+            'consumption_mwh':CONSUMPTION_OVERRIDE_BY_ID.get(r['deal_id'], CONSUMPTION_OVERRIDE.get((cli or '').strip().upper(), pfloat(r['current_consumption_filled']))),
             'current_client_name':cli,'current_client_state':r['current_client_state'],
             'deal_stage':r['deal_stage'],'accepted_proposal':(str(r['accepted_proposal']).strip().lower()=='true'),
             'praca':praca,
