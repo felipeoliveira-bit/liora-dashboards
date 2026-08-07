@@ -225,6 +225,9 @@ def praca_of(email, client):
     return PRACA_TITLE.get(em, 'Outras')
 
 # CONSUMPTION_OVERRIDE: corrige MWh na fonte enquanto a base nao atualiza (temp).
+CONSUMPTION_OVERRIDE_BY_ID = {  # deal_id -> MWh; ganha do override por nome. card818 congelado (0.632) e nome 'MW SAFETY LTDA' forca 0.632 em todas as UCs; este id e' 1.636 (Felipe 07/08); remover qdo CI destravar
+ '35f26046-9c78-4c2b-a7fe-04f7e7564c38': 1.636,  # Mw Safety Ltda / Joao Santos (Ribeirao)
+}
 CONSUMPTION_OVERRIDE = {
  norm('FRANCISCO ALDECI DE QUEIROZ FERNANDES'): 5.86,  # base mostra 0.59 (Felipe 03/07)
  norm('GABRIEL LUCHIARI ALBERTO'): 0.567,  # base mostra 0.13; fatura R$526/615 SP CPFL (Felipe 08/07)
@@ -239,7 +242,10 @@ LOST_IGNORE = { norm('FRANCISCO ALDECI DE QUEIROZ FERNANDES'), norm('ANTÔNIO ED
 # FORCE_APPROVED: deals que contam como aprovado por decisao manual (contrato assinado,
 # aguardando BGC). Chave = deal_id. Remover quando a base refletir BGC APPROVED.
 FORCE_APPROVED = {'cfb2500c-c323-4943-a7f8-e831a8f37b55': '2026-08-04'}  # PP FERREIRA DE SALES COMER DE COSMETICOS - aprovado manual SOS 15:32 04/08 (Aurivando/CE); card818+risk_real ainda MANUAL; remover quando base refletir
-def mwh_of(client, raw):
+def mwh_of(client, raw, did=None):
+    if did is not None:
+        ovid = CONSUMPTION_OVERRIDE_BY_ID.get(did)
+        if ovid is not None: return ovid
     ov = CONSUMPTION_OVERRIDE.get(norm(client))
     return ov if ov is not None else fnum(raw)
 
@@ -280,7 +286,7 @@ def mk_deal(r):
       's': seller_of(r['sales_person_email'], r['current_client_name']),
       'op': op_of(r['sales_person_email'], r['current_client_name']),
       'risk': risk,
-      'mwh': mwh_of(r['current_client_name'], r['current_consumption_filled']),
+      'mwh': mwh_of(r['current_client_name'], r['current_consumption_filled'], r['deal_id']),
       'stage': out_stage,
       'status': r['ops_tt_status'] or 'N/A',
       'idle': int(fnum(r['idle_days'])),
@@ -322,7 +328,7 @@ for r in prop:
       'sales_person_name': r['sales_person_name'],
       'seller': seller_of(r['sales_person_email'], r['current_client_name']),
       'bill_cost': round(fnum(r['current_total_bill_cost (R$)']), 2),  # R$ CRU (sem /1000!)
-      'consumption_mwh': mwh_of(r['current_client_name'], r['current_consumption_filled']),
+      'consumption_mwh': mwh_of(r['current_client_name'], r['current_consumption_filled'], r['deal_id']),
       'current_client_name': r['current_client_name'],
       'current_client_state': r['current_client_state'],
       'deal_stage': r['deal_stage'],
