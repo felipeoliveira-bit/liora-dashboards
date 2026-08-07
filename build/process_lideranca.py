@@ -203,6 +203,7 @@ CLIENT_OVERRIDE = {
  norm('VALDEMARINA ALVES NABUCO'): ('Ettore Rossi','salvador','Salvador'),  # deal caiu no Adroaldo -> e do Rossi (Felipe 25/07)
  norm('NICHOLAS PIETRO RODRIGUES REGINALDO'): ('Lucas Santos','rninterior','RN Interior'),  # dono -> Lucas (Felipe 27/07)
  norm('NATANAEL SILVA DOS SANTOS'): ('Lucas Santos','rninterior','RN Interior'),  # dono -> Lucas (Felipe 27/07)
+ norm('MARIA FRAUZINA CAMILO'): ('Anderson Correia','spi','SPI'),  # aprovado 06/08 do Anderson; base trocou p/ Lucas 07/08 -> volta p/ Anderson (Felipe 07/08); remover qdo base corrigir
 }
 
 unknown = set()

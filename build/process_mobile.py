@@ -126,6 +126,7 @@ CLIENT_OVERRIDE = {  # cliente (upper/strip) -> (seller canônico, praça label)
  'VALDEMARINA ALVES NABUCO':('Ettore Rossi','Salvador'),  # deal caiu no Adroaldo -> e do Rossi (Felipe 25/07)
  'NICHOLAS PIETRO RODRIGUES REGINALDO':('Lucas Santos','RN Interior'),  # dono -> Lucas (Felipe 27/07)
  'NATANAEL SILVA DOS SANTOS':('Lucas Santos','RN Interior'),  # dono -> Lucas (Felipe 27/07)
+ 'MARIA FRAUZINA CAMILO':('Anderson Correia','SPI'),  # aprovado 06/08 do Anderson; base trocou p/ Lucas 07/08 -> volta p/ Anderson (Felipe 07/08); remover qdo base corrigir
 }
 CONSUMPTION_OVERRIDE = {  # cliente (upper/strip) -> MWh; temp ate base corrigir
  'FRANCISCO ALDECI DE QUEIROZ FERNANDES': 5.86,  # base mostra 0.59 (Felipe 03/07)
