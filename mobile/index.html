@@ -824,7 +824,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
   <div class="copa-modal" id="copa-modal" onclick="closeCopaFig()"></div>
 
   <div style="position:fixed;bottom:78px;right:8px;font-size:9px;color:#aaa;background:rgba(255,255,255,.85);padding:2px 6px;border-radius:8px;z-index:99;font-family:monospace;pointer-events:none">
-    v2.165 · 03/08
+    v2.166 · 07/08
   </div>
 
   <!-- BOTTOM NAV -->
@@ -3584,13 +3584,84 @@ async function loadLeads(){
   }
 }
 
+// v2.166 — FILA DE GRAVACAO PERSISTENTE ------------------------------------
+// Em rede de rua o 'create' as vezes estoura o timeout. Antes o lead ficava so
+// em memoria e sumia ao recarregar ("nao salvou cliente"). Agora todo cadastro
+// entra numa fila em localStorage ANTES de tentar subir; se falha, fica pendente
+// e o app reenvia sozinho (ao voltar a conexao, ao focar o app, a cada 45s) ate o
+// servidor confirmar. Upsert por id no backend => reenviar nunca duplica.
+const WRITE_QUEUE_KEY = 'liora.write_queue_v1';
+let _flushingQueue = false;
+function _readQueue(){
+  try { const r = localStorage.getItem(WRITE_QUEUE_KEY); const a = r ? JSON.parse(r) : []; return Array.isArray(a) ? a : []; }
+  catch(e){ return []; }
+}
+function _writeQueue(arr){
+  try { localStorage.setItem(WRITE_QUEUE_KEY, JSON.stringify(arr || [])); } catch(e){}
+}
+function writeQueueCount(){ return _readQueue().length; }
+function enqueueWrite(lead){
+  if(!lead || !lead.id) return;
+  const q = _readQueue();
+  const i = q.findIndex(x => x && x.id === lead.id);
+  if(i >= 0) q[i] = lead; else q.push(lead);   // upsert por id
+  _writeQueue(q);
+  updateQueueBadge();
+}
+function dequeueWrite(id){
+  _writeQueue(_readQueue().filter(x => x && x.id !== id));
+  updateQueueBadge();
+}
+// Reenvia os pendentes em ordem; para no primeiro que falhar (rede ainda ruim) e
+// tenta de novo no proximo gatilho. Nao roda em paralelo consigo mesmo.
+async function flushWriteQueue(){
+  if(_flushingQueue || !LEADS_API_ENABLED) return;
+  const q = _readQueue();
+  if(!q.length){ updateQueueBadge(); return; }
+  _flushingQueue = true;
+  try {
+    for(const lead of q){
+      try { await apiCall('create', { lead }, { timeoutMs: 30000 }); dequeueWrite(lead.id); }
+      catch(e){ break; }   // mantem na fila; tenta na proxima
+    }
+  } finally { _flushingQueue = false; updateQueueBadge(); }
+}
+// Selo discreto "sincronizando N" no rodape; some quando a fila zera.
+function updateQueueBadge(){
+  try {
+    const n = _readQueue().length;
+    let el = document.getElementById('sync-badge');
+    if(n <= 0){ if(el) el.remove(); return; }
+    if(!el){
+      el = document.createElement('div');
+      el.id = 'sync-badge';
+      el.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);bottom:14px;z-index:9999;background:#1f2937;color:#fff;font:600 12px/1.2 inherit;padding:8px 14px;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,.25);opacity:.95';
+      document.body.appendChild(el);
+    }
+    el.textContent = '↑ sincronizando ' + n + ' cadastro' + (n>1?'s':'') + '…';
+  } catch(e){}
+}
+// Gatilhos de reenvio (barato: so age quando ha pendentes).
+if(typeof window !== 'undefined' && !window._writeQueueBound){
+  window._writeQueueBound = true;
+  window.addEventListener('online', flushWriteQueue);
+  window.addEventListener('focus', flushWriteQueue);
+  setInterval(function(){ if(_readQueue().length) flushWriteQueue(); }, 45000);
+  setTimeout(function(){ try { updateQueueBadge(); flushWriteQueue(); } catch(e){} }, 3000);
+}
+
 async function saveLead(lead){
   if (!LEADS_API_ENABLED) return { ok: true, offline: true };
+  enqueueWrite(lead);                       // v2.166 — duravel ANTES de tentar subir
   try {
     await apiCall('create', { lead });
+    dequeueWrite(lead.id);                   // subiu: tira da fila
     return { ok: true };
   } catch (err) {
-    return { ok: false, error: err.message };
+    // v2.166 — falhou: fica na fila e o app reenvia sozinho. Do ponto de vista do
+    // usuario o cliente esta salvo (nao se perde) => ok:true + queued.
+    setTimeout(flushWriteQueue, 4000);
+    return { ok: true, queued: true, error: err.message };
   }
 }
 
@@ -4746,6 +4817,8 @@ async function submitLead(){
   const stageLabel = stageInfo ? stageInfo.label : stage;
   if (res.offline) {
     cadastroToast = `Lead "${nome}" salvo localmente em ${stageLabel} (modo offline)`;
+  } else if (res.queued) {
+    cadastroToast = `✓ Lead "${nome}" salvo em ${stageLabel} — sincronizando…`;
   } else if (!res.ok) {
     cadastroToast = `⚠️ Lead "${nome}" salvo local — erro ao sincronizar: ${res.error}`;
   } else {
