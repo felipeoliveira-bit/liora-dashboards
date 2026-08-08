@@ -227,6 +227,7 @@ def praca_of(email, client):
 # CONSUMPTION_OVERRIDE: corrige MWh na fonte enquanto a base nao atualiza (temp).
 CONSUMPTION_OVERRIDE_BY_ID = {  # deal_id -> MWh; ganha do override por nome. card818 congelado (0.632) e nome 'MW SAFETY LTDA' forca 0.632 em todas as UCs; este id e' 1.636 (Felipe 07/08); remover qdo CI destravar
  '35f26046-9c78-4c2b-a7fe-04f7e7564c38': 1.636,  # Mw Safety Ltda / Joao Santos (Ribeirao)
+ 'a8216055-6fa2-491f-a651-0d70ad461f08': 0.632,  # a8216055 fatura R$47,90; Felipe mantem 0.632 (07/08)
 }
 CONSUMPTION_OVERRIDE = {
  norm('FRANCISCO ALDECI DE QUEIROZ FERNANDES'): 5.86,  # base mostra 0.59 (Felipe 03/07)
@@ -235,7 +236,6 @@ CONSUMPTION_OVERRIDE = {
  norm('CHEVROFOR COM PECAS E ACESSORIOS LTDA'): 1.21,  # base mostra 0.50 (Felipe 07/07)
  norm('MÁRCIO PEREIRA PINTO'): 5.866,  # aprovado manual, base mostra 1.3 (Felipe 10/07)
  norm('DRAX CENTRO AUTOMOTIVO LTDA'): 4.311,
- norm('MW SAFETY LTDA'): 0.632,  # base mostra 0.05; fatura R$800 (Felipe 07/08); remover qdo base corrigir  # deal f0418a1f; base mostra 1.566 (Felipe 04/08)
 }
 # LOST_IGNORE: ignora lost_at/lost_reason (falso 'nao aceito pela distribuidora') p/ estes clientes.
 LOST_IGNORE = { norm('FRANCISCO ALDECI DE QUEIROZ FERNANDES'), norm('ANTÔNIO EDMILSON LEITE') }  # 2º: dup denied em BGC, forçado aprovado (Felipe 15/07)
