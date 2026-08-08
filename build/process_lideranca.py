@@ -155,7 +155,7 @@ PRACA_TITLE = {  # email -> praça (Title) usada no RAW
  'franciele.felix@lioraenergia.com.br':'SPI','kelma.rangel@lioraenergia.com.br':'Feira',
  'lucileide.carlos@lioraenergia.com.br':'Feira','marcio.galvao@lioraenergia.com.br':'Natal',
  'maria.lucia@lioraenergia.com.br':'Salvador','neilon.nascimento@lioraenergia.com.br':'CE','sabrina.tomazeti@lioraenergia.com.br':'CE',
- 'nubia.andrade@lioraenergia.com.br':'Outras','odirley.costa@lioraenergia.com.br':'Outras',
+ 'nubia.andrade@lioraenergia.com.br':'CE','odirley.costa@lioraenergia.com.br':'CE',  # Felipe 07/08: sao CE (alinha ao CRM); antes 'Outras'
  'rodrigo.ribeiro@lioraenergia.com.br':'Natal','rosangela.mendes@lioraenergia.com.br':'Feira',
  'ryan.trindade@lioraenergia.com.br':'Feira','alberto.nascimento@lioraenergia.com.br':'Feira','marcel.sousa@lioraenergia.com.br':'Feira','jefferson.fideli@lioraenergia.com.br':'RN Interior','phillip.faria@lioraenergia.com.br':'Ribeirao','tais.santos@lioraenergia.com.br':'Salvador',
  'tiago.freitas@lioraenergia.com.br':'Feira','tamires.costa@lioraenergia.com.br':'Feira','thiago.araujo@lioraenergia.com.br':'Natal',
