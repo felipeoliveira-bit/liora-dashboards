@@ -57,6 +57,7 @@ payload = {
  'rawData': json.load(open('new_rawData.json')),
  'RAW':     json.load(open('new_RAW.json')),
  'HC_PROP': json.load(open('new_HC_PROP.json')),
+ 'ANTECIPA': json.load(open('new_ANTECIPA.json')),
 }
 
 report=[]

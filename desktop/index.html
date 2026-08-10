@@ -54,6 +54,7 @@ html, body { height: 100%; font-family: 'Inter', sans-serif; background: #f4f5f8
     <div class="nav-tab" onclick="switchFrame('rankings')" id="nav-rankings">🏆 Rankings</div>
     <div class="nav-tab" onclick="switchFrame('tarefas')" id="nav-tarefas">📋 Tarefas</div>
     <div class="nav-tab" onclick="switchFrame('propostas')" id="nav-propostas">📈 Propostas</div>
+    <div class="nav-tab" onclick="switchFrame('antecipa')" id="nav-antecipa">⚡ Antecipa</div>
     <div class="nav-tab" onclick="switchFrame('funil')" id="nav-funil">✅ Vendas</div>
     <div class="nav-tab" onclick="switchFrame('pessoas')" id="nav-pessoas">👥 Pessoas</div>
     <div class="nav-tab" onclick="switchFrame('lider')" id="nav-lider">🎯 Meta Líder</div>
@@ -6335,6 +6336,308 @@ loadAll();
 </body>
 </html>
 "></iframe>
+<iframe id="frame-antecipa" name="frame-antecipa" srcdoc="<!DOCTYPE html>
+<html lang=&quot;pt-BR&quot;>
+<head>
+<meta charset=&quot;UTF-8&quot;>
+<meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;>
+<link href=&quot;https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap&quot; rel=&quot;stylesheet&quot;>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;background:#E3EAE8;color:#1a1a2e;padding:20px 22px 60px}
+  .hd{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+  .hd h1{font-size:22px;font-weight:800;color:#0201F3;letter-spacing:-.02em}
+  .hd .sub{font-size:12.5px;color:#4A4A4A;margin-top:3px}
+  .hd .mon{background:#0201F3;color:#fff;font-size:12px;font-weight:700;padding:6px 12px;border-radius:20px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
+  .kpi{background:#fff;border-radius:14px;padding:14px 16px;box-shadow:0 2px 10px rgba(2,1,243,.06)}
+  .kpi .lbl{font-size:11px;font-weight:600;color:#4A4A4A;text-transform:uppercase;letter-spacing:.04em}
+  .kpi .val{font-size:26px;font-weight:800;color:#0201F3;line-height:1.1;margin-top:4px}
+  .kpi .foot{font-size:11.5px;color:#6b6b7b;margin-top:2px}
+  .kpi.accent .val{color:#CC86D6}
+  .grid2{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;margin-bottom:18px}
+  @media(max-width:860px){.grid2{grid-template-columns:1fr}}
+  .card{background:#fff;border-radius:14px;padding:16px 18px;box-shadow:0 2px 10px rgba(2,1,243,.06)}
+  .card h2{font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:12px;display:flex;align-items:center;gap:7px}
+  .card h2 .cnt{font-size:11.5px;font-weight:600;color:#4A4A4A}
+  .bar-row{display:grid;grid-template-columns:150px 1fr 44px;align-items:center;gap:10px;margin-bottom:7px;font-size:12.5px}
+  .bar-row .nm{color:#4A4A4A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bar-track{background:#eef0f6;border-radius:6px;height:16px;overflow:hidden}
+  .bar-fill{height:100%;border-radius:6px;background:#0201F3;min-width:2px}
+  .bar-fill.lil{background:#CC86D6}
+  .bar-row .n{text-align:right;font-weight:700;color:#1a1a2e}
+  .twocol{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:560px){.twocol{grid-template-columns:1fr}}
+  .filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center}
+  .filters input,.filters select{font-family:inherit;font-size:12.5px;padding:7px 10px;border:1px solid #d6dae6;border-radius:8px;background:#fff;color:#1a1a2e}
+  .filters input[type=text]{flex:1;min-width:150px}
+  .chk{display:flex;align-items:center;gap:6px;font-size:12.5px;color:#4A4A4A;cursor:pointer;user-select:none}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th{text-align:left;padding:8px 8px;border-bottom:2px solid #E3EAE8;color:#4A4A4A;font-weight:600;cursor:pointer;white-space:nowrap;position:sticky;top:0;background:#fff}
+  th:hover{color:#0201F3}
+  td{padding:7px 8px;border-bottom:1px solid #f0f1f5}
+  tr:hover td{background:#f7f8fc}
+  .num{text-align:right;font-variant-numeric:tabular-nums}
+  .pill{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap}
+  .pill.ok{background:#e4f7ec;color:#1a8a4a}
+  .pill.no{background:#f2f3f7;color:#8a8a99}
+  .pill.pf{background:#eceafd;color:#0201F3}
+  .pill.pj{background:#f7ecfa;color:#a24bb5}
+  .tbl-wrap{max-height:460px;overflow:auto;border-radius:10px}
+  .empty{text-align:center;color:#8a8a99;padding:40px 0;font-size:14px}
+  .lst-cnt{font-size:11.5px;color:#4A4A4A;margin-top:8px}
+</style>
+</head>
+<body>
+  <div class=&quot;hd&quot;>
+    <div>
+      <h1>⚡ Antecipa — Propostas geradas</h1>
+      <div class=&quot;sub&quot;>Produto de crédito Antecipa (Inside Sales) · a economia da fatura vira crédito</div>
+    </div>
+    <div class=&quot;mon&quot; id=&quot;ant-mon&quot;>—</div>
+  </div>
+  <div class=&quot;kpis&quot; id=&quot;ant-kpis&quot;></div>
+  <div class=&quot;grid2&quot;>
+    <div class=&quot;card&quot;>
+      <h2>🔻 Funil por estágio <span class=&quot;cnt&quot; id=&quot;ant-funil-cnt&quot;></span></h2>
+      <div id=&quot;ant-funil&quot;></div>
+    </div>
+    <div>
+      <div class=&quot;twocol&quot;>
+        <div class=&quot;card&quot;>
+          <h2>🏢 Distribuidora</h2>
+          <div id=&quot;ant-dist&quot;></div>
+        </div>
+        <div class=&quot;card&quot;>
+          <h2>📍 UF</h2>
+          <div id=&quot;ant-uf&quot;></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class=&quot;card&quot;>
+    <h2>📋 Propostas <span class=&quot;cnt&quot; id=&quot;ant-lista-cnt&quot;></span></h2>
+    <div class=&quot;filters&quot;>
+      <input type=&quot;text&quot; id=&quot;f-busca&quot; placeholder=&quot;Buscar cliente, cidade...&quot;>
+      <select id=&quot;f-uf&quot;><option value=&quot;&quot;>UF (todas)</option></select>
+      <select id=&quot;f-dist&quot;><option value=&quot;&quot;>Distribuidora (todas)</option></select>
+      <select id=&quot;f-stage&quot;><option value=&quot;&quot;>Estágio (todos)</option></select>
+      <select id=&quot;f-tipo&quot;><option value=&quot;&quot;>PF/PJ</option><option value=&quot;PF&quot;>PF</option><option value=&quot;PJ&quot;>PJ</option></select>
+      <label class=&quot;chk&quot;><input type=&quot;checkbox&quot; id=&quot;f-acc&quot;> só aceitas</label>
+    </div>
+    <div class=&quot;tbl-wrap&quot;>
+      <table>
+        <thead><tr>
+          <th data-k=&quot;c&quot;>Cliente</th>
+          <th data-k=&quot;local&quot;>Cidade/UF</th>
+          <th data-k=&quot;dist&quot;>Distribuidora</th>
+          <th data-k=&quot;tipo&quot;>Tipo</th>
+          <th data-k=&quot;bill&quot; class=&quot;num&quot;>Fatura</th>
+          <th data-k=&quot;mwh&quot; class=&quot;num&quot;>MWh</th>
+          <th data-k=&quot;stage&quot;>Estágio</th>
+          <th data-k=&quot;acc&quot;>Aceite</th>
+          <th data-k=&quot;date&quot;>Data</th>
+        </tr></thead>
+        <tbody id=&quot;ant-tbody&quot;></tbody>
+      </table>
+    </div>
+    <div class=&quot;lst-cnt&quot; id=&quot;ant-lista-foot&quot;></div>
+  </div>
+
+<script>
+const ANTECIPA = [{&quot;_ph&quot;:1}];
+const DATA = ANTECIPA.filter(function(x){return !x._ph;});
+
+const STAGE_ORDER = [
+  [&quot;COLLECTING INFORMATION&quot;,&quot;Coletando informações&quot;],
+  [&quot;PROPOSAL GENERATED&quot;,&quot;Proposta gerada&quot;],
+  [&quot;CONFIRMING FINANCIAL REPRESENTATIVE&quot;,&quot;Confirmando representante&quot;],
+  [&quot;GENERATING CONTRACT&quot;,&quot;Gerando contrato&quot;],
+  [&quot;SIGNING CONTRACT&quot;,&quot;Assinando contrato&quot;],
+  [&quot;BACKGROUND_CHECKING&quot;,&quot;Análise de risco (BGC)&quot;],
+  [&quot;BGC_PARCEIRO&quot;,&quot;BGC parceiro&quot;],
+  [&quot;BGC_PENDING_BILLS&quot;,&quot;BGC · faturas pendentes&quot;],
+  [&quot;WAITING_DOCUMENTS&quot;,&quot;Aguardando documentos&quot;],
+  [&quot;REQUEST_TITULARIDADE&quot;,&quot;Solicitação de titularidade&quot;],
+  [&quot;SCHEDULED_TITULARIDADE&quot;,&quot;Titularidade agendada&quot;],
+  [&quot;TITULARIDADE_ONGOING&quot;,&quot;Titularidade em andamento&quot;],
+  [&quot;REGISTERING_DG&quot;,&quot;Registrando GD&quot;],
+  [&quot;ACTIVE_MEMBER&quot;,&quot;Cliente ativo&quot;],
+];
+const STAGE_LBL = {};
+STAGE_ORDER.forEach(function(p){ STAGE_LBL[p[0]] = p[1]; });
+const MESES = [&quot;janeiro&quot;,&quot;fevereiro&quot;,&quot;março&quot;,&quot;abril&quot;,&quot;maio&quot;,&quot;junho&quot;,&quot;julho&quot;,&quot;agosto&quot;,&quot;setembro&quot;,&quot;outubro&quot;,&quot;novembro&quot;,&quot;dezembro&quot;];
+
+function brl(n){ return &quot;R$ &quot; + (n||0).toLocaleString(&quot;pt-BR&quot;,{minimumFractionDigits:0,maximumFractionDigits:0}); }
+function pct(a,b){ return b>0 ? Math.round(a/b*100) : 0; }
+function ddmm(iso){ if(!iso||iso.length<10) return &quot;—&quot;; return iso.slice(8,10)+&quot;/&quot;+iso.slice(5,7); }
+function stLbl(s){ return STAGE_LBL[s] || (s||&quot;—&quot;); }
+function el(id){ return document.getElementById(id); }
+function esc(s){ return (s==null?&quot;&quot;:String(s)).replace(/&amp;/g,&quot;&amp;amp;&quot;).replace(/</g,&quot;&amp;lt;&quot;).replace(/>/g,&quot;&amp;gt;&quot;); }
+
+let sortKey = &quot;date&quot;, sortDir = -1;
+
+function monthLabel(){
+  const ds = DATA.map(function(x){return x.date;}).filter(Boolean).sort();
+  if(!ds.length) return &quot;—&quot;;
+  const last = ds[ds.length-1];
+  const y = last.slice(0,4), m = parseInt(last.slice(5,7),10);
+  return (MESES[m-1]||&quot;&quot;) + &quot;/&quot; + y;
+}
+
+function bars(container, pairs, lil){
+  const max = Math.max.apply(null, pairs.map(function(p){return p[1];}).concat([1]));
+  container.innerHTML = pairs.map(function(p){
+    const w = Math.max(2, Math.round(p[1]/max*100));
+    return '<div class=&quot;bar-row&quot;><span class=&quot;nm&quot; title=&quot;'+esc(p[0])+'&quot;>'+esc(p[0])+'</span>'
+      + '<div class=&quot;bar-track&quot;><div class=&quot;bar-fill'+(lil?&quot; lil&quot;:&quot;&quot;)+'&quot; style=&quot;width:'+w+'%&quot;></div></div>'
+      + '<span class=&quot;n&quot;>'+p[1]+'</span></div>';
+  }).join(&quot;&quot;) || '<div class=&quot;empty&quot; style=&quot;padding:14px 0&quot;>sem dados</div>';
+}
+
+function renderKpis(){
+  const tot = DATA.length;
+  const acc = DATA.filter(function(x){return x.acc;}).length;
+  const apr = DATA.filter(function(x){return x.risk===&quot;APPROVED&quot;;}).length;
+  const pf = DATA.filter(function(x){return x.tipo===&quot;PF&quot;;}).length;
+  const pj = DATA.filter(function(x){return x.tipo===&quot;PJ&quot;;}).length;
+  const bills = DATA.map(function(x){return x.bill||0;}).filter(function(v){return v>0;});
+  const ticket = bills.length ? bills.reduce(function(a,b){return a+b;},0)/bills.length : 0;
+  const k = [
+    [&quot;Propostas geradas&quot;, tot, &quot;no mês&quot;, false],
+    [&quot;Aceitas&quot;, acc, pct(acc,tot)+&quot;% do total&quot;, true],
+    [&quot;Aprovadas no risco&quot;, apr, pct(apr,tot)+&quot;% do total&quot;, false],
+    [&quot;Ticket médio (fatura)&quot;, brl(ticket), &quot;por proposta&quot;, false],
+    [&quot;PF / PJ&quot;, pf+&quot; / &quot;+pj, &quot;pessoa física / jurídica&quot;, false],
+  ];
+  el(&quot;ant-kpis&quot;).innerHTML = k.map(function(x){
+    return '<div class=&quot;kpi'+(x[3]?&quot; accent&quot;:&quot;&quot;)+'&quot;><div class=&quot;lbl&quot;>'+x[0]+'</div>'
+      +'<div class=&quot;val&quot;>'+x[1]+'</div><div class=&quot;foot&quot;>'+x[2]+'</div></div>';
+  }).join(&quot;&quot;);
+}
+
+function renderFunil(){
+  const counts = {};
+  DATA.forEach(function(x){ counts[x.stage] = (counts[x.stage]||0)+1; });
+  const seen = {};
+  const ordered = [];
+  STAGE_ORDER.forEach(function(p){ if(counts[p[0]]){ ordered.push([p[1], counts[p[0]]]); seen[p[0]]=1; } });
+  Object.keys(counts).forEach(function(s){ if(!seen[s]) ordered.push([stLbl(s), counts[s]]); });
+  bars(el(&quot;ant-funil&quot;), ordered, false);
+  el(&quot;ant-funil-cnt&quot;).textContent = DATA.length + &quot; propostas&quot;;
+}
+
+function renderBreak(){
+  function top(key){
+    const c = {};
+    DATA.forEach(function(x){ const v=x[key]||&quot;—&quot;; c[v]=(c[v]||0)+1; });
+    return Object.keys(c).map(function(k){return [k,c[k]];}).sort(function(a,b){return b[1]-a[1];});
+  }
+  bars(el(&quot;ant-dist&quot;), top(&quot;dist&quot;).slice(0,8), false);
+  bars(el(&quot;ant-uf&quot;), top(&quot;uf&quot;), true);
+}
+
+function fillSelect(id, key){
+  const s = el(id);
+  const vals = {};
+  DATA.forEach(function(x){ const v=x[key]; if(v) vals[v]=1; });
+  Object.keys(vals).sort().forEach(function(v){
+    const o = document.createElement(&quot;option&quot;); o.value=v; o.textContent=v; s.appendChild(o);
+  });
+}
+function fillStageSelect(){
+  const s = el(&quot;f-stage&quot;);
+  const seen = {};
+  const list = [];
+  STAGE_ORDER.forEach(function(p){ if(DATA.some(function(x){return x.stage===p[0];})){ list.push([p[0],p[1]]); seen[p[0]]=1; } });
+  DATA.forEach(function(x){ if(x.stage &amp;&amp; !seen[x.stage]){ list.push([x.stage, stLbl(x.stage)]); seen[x.stage]=1; } });
+  list.forEach(function(p){ const o=document.createElement(&quot;option&quot;); o.value=p[0]; o.textContent=p[1]; s.appendChild(o); });
+}
+
+function currentRows(){
+  const q = (el(&quot;f-busca&quot;).value||&quot;&quot;).toLowerCase().trim();
+  const fuf = el(&quot;f-uf&quot;).value, fdist = el(&quot;f-dist&quot;).value, fst = el(&quot;f-stage&quot;).value, ftipo = el(&quot;f-tipo&quot;).value;
+  const facc = el(&quot;f-acc&quot;).checked;
+  let rows = DATA.filter(function(x){
+    if(fuf &amp;&amp; x.uf!==fuf) return false;
+    if(fdist &amp;&amp; x.dist!==fdist) return false;
+    if(fst &amp;&amp; x.stage!==fst) return false;
+    if(ftipo &amp;&amp; x.tipo!==ftipo) return false;
+    if(facc &amp;&amp; !x.acc) return false;
+    if(q){
+      const hay = ((x.c||&quot;&quot;)+&quot; &quot;+(x.city||&quot;&quot;)+&quot; &quot;+(x.uf||&quot;&quot;)+&quot; &quot;+(x.dist||&quot;&quot;)).toLowerCase();
+      if(hay.indexOf(q)<0) return false;
+    }
+    return true;
+  });
+  rows.sort(function(a,b){
+    let va, vb;
+    if(sortKey===&quot;local&quot;){ va=(a.uf||&quot;&quot;)+(a.city||&quot;&quot;); vb=(b.uf||&quot;&quot;)+(b.city||&quot;&quot;); }
+    else if(sortKey===&quot;stage&quot;){ va=stLbl(a.stage); vb=stLbl(b.stage); }
+    else if(sortKey===&quot;acc&quot;){ va=a.acc?1:0; vb=b.acc?1:0; }
+    else { va=a[sortKey]; vb=b[sortKey]; }
+    if(typeof va===&quot;number&quot; &amp;&amp; typeof vb===&quot;number&quot;) return (va-vb)*sortDir;
+    return String(va==null?&quot;&quot;:va).localeCompare(String(vb==null?&quot;&quot;:vb),&quot;pt-BR&quot;)*sortDir;
+  });
+  return rows;
+}
+
+function renderList(){
+  const rows = currentRows();
+  const body = el(&quot;ant-tbody&quot;);
+  if(!rows.length){ body.innerHTML = '<tr><td colspan=&quot;9&quot; class=&quot;empty&quot;>nenhuma proposta com esses filtros</td></tr>'; }
+  else {
+    body.innerHTML = rows.map(function(x){
+      const tipoCls = x.tipo===&quot;PJ&quot;?&quot;pj&quot;:&quot;pf&quot;;
+      const accHtml = x.acc ? '<span class=&quot;pill ok&quot;>aceita</span>' : '<span class=&quot;pill no&quot;>—</span>';
+      return &quot;<tr>&quot;
+        + &quot;<td>&quot;+esc(x.c||&quot;—&quot;)+&quot;</td>&quot;
+        + &quot;<td>&quot;+esc((x.city||&quot;—&quot;)+(x.uf?&quot; / &quot;+x.uf:&quot;&quot;))+&quot;</td>&quot;
+        + &quot;<td>&quot;+esc(x.dist||&quot;—&quot;)+&quot;</td>&quot;
+        + '<td><span class=&quot;pill '+tipoCls+'&quot;>'+esc(x.tipo||&quot;-&quot;)+&quot;</span></td>&quot;
+        + '<td class=&quot;num&quot;>'+brl(x.bill)+&quot;</td>&quot;
+        + '<td class=&quot;num&quot;>'+(x.mwh||0).toLocaleString(&quot;pt-BR&quot;,{minimumFractionDigits:2,maximumFractionDigits:2})+&quot;</td>&quot;
+        + &quot;<td>&quot;+esc(stLbl(x.stage))+&quot;</td>&quot;
+        + &quot;<td>&quot;+accHtml+&quot;</td>&quot;
+        + &quot;<td>&quot;+ddmm(x.date)+&quot;</td>&quot;
+        + &quot;</tr>&quot;;
+    }).join(&quot;&quot;);
+  }
+  el(&quot;ant-lista-cnt&quot;).textContent = rows.length + &quot; de &quot; + DATA.length;
+  el(&quot;ant-lista-foot&quot;).textContent = &quot;Mostrando &quot; + rows.length + &quot; proposta(s).&quot;;
+}
+
+function render(){
+  el(&quot;ant-mon&quot;).textContent = monthLabel();
+  if(!DATA.length){
+    el(&quot;ant-kpis&quot;).innerHTML = '<div class=&quot;empty&quot; style=&quot;grid-column:1/-1&quot;>Sem propostas Antecipa no mês corrente.</div>';
+    return;
+  }
+  renderKpis(); renderFunil(); renderBreak();
+  fillSelect(&quot;f-uf&quot;,&quot;uf&quot;); fillSelect(&quot;f-dist&quot;,&quot;dist&quot;); fillStageSelect();
+  renderList();
+  [&quot;f-busca&quot;,&quot;f-uf&quot;,&quot;f-dist&quot;,&quot;f-stage&quot;,&quot;f-tipo&quot;].forEach(function(id){
+    el(id).addEventListener(&quot;input&quot;, renderList);
+    el(id).addEventListener(&quot;change&quot;, renderList);
+  });
+  el(&quot;f-acc&quot;).addEventListener(&quot;change&quot;, renderList);
+  document.querySelectorAll(&quot;th[data-k]&quot;).forEach(function(th){
+    th.addEventListener(&quot;click&quot;, function(){
+      const k = th.getAttribute(&quot;data-k&quot;);
+      if(sortKey===k) sortDir = -sortDir; else { sortKey=k; sortDir = (k===&quot;bill&quot;||k===&quot;mwh&quot;||k===&quot;date&quot;)?-1:1; }
+      renderList();
+    });
+  });
+}
+
+if(document.readyState===&quot;loading&quot;) document.addEventListener(&quot;DOMContentLoaded&quot;, render);
+else render();
+</script>
+</body>
+</html>
+"></iframe>
+
+
 </div>
 
 <script>

@@ -172,6 +172,12 @@ def main():
     agu  =dedup([r for r in fs if r['deal_stage']=='WAITING_DOCUMENTS'
                  and not (r['deal_lost_at'] or '').strip()
                  and sig_recent(r['latest_contract_signature_signed_at'])])
+    # Recorte Antecipa (Inside Sales / produto de credito LIORA_ANTECIPA_PF|PJ):
+    # todas as propostas do produto Antecipa geradas no mes corrente (sem dedup,
+    # sem filtro FS_Liora). Alimenta a aba "Antecipa" do desktop.
+    antecipa=[r for r in base
+              if (r.get('product_name') or '').strip().upper().startswith('LIORA_ANTECIPA')
+              and in_cur_month(r.get('proposal_created_at'))]
     if not deals or not prop or not agu:
         sys.exit('ABORT: recorte vazio (deals=%d prop=%d agu=%d).' % (len(deals),len(prop),len(agu)))
     def write(name, rs):
@@ -179,7 +185,8 @@ def main():
         with open(p,'w',newline='',encoding='utf-8') as fh:
             w=csv.DictWriter(fh, fieldnames=fields); w.writeheader(); w.writerows(rs)
     write('deals', deals); write('propostas_geradas', prop); write('aguardando_documentos', agu)
-    print('mes %04d-%02d | deals=%d propostas=%d aguardando=%d' % (TODAY.year,TODAY.month,len(deals),len(prop),len(agu)))
+    if antecipa: write('antecipa_geradas', antecipa)
+    print('mes %04d-%02d | deals=%d propostas=%d aguardando=%d antecipa=%d' % (TODAY.year,TODAY.month,len(deals),len(prop),len(agu),len(antecipa)))
 
 if __name__=='__main__':
     main()

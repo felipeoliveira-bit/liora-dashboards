@@ -75,6 +75,7 @@ print('aguardando:', os.path.basename(f_agu))
 print('propostas:', os.path.basename(f_prop))
 DOCS = load_docs(f_docs); print('docs pendentes:', len(DOCS), '|', os.path.basename(f_docs) if f_docs else 'sem arquivo')
 f_uc = (sorted(glob.glob(os.path.join(UP,'uc_por_deal*.csv'))) or [None])[-1]
+f_ant = (sorted(glob.glob(os.path.join(UP,'antecipa_geradas*.csv'))) or [None])[-1]
 def _load_uc(p):
     m={}
     if not p: return m
@@ -347,6 +348,45 @@ for r in prop:
         'E-mail vendedor': r['sales_person_email'], 'Proposta ID': r['proposal_id'],
       },
     })
+
+# ---- ANTECIPA (propostas do produto de credito Antecipa, mes corrente) ---
+# Recorte proprio (Inside Sales / Retool), independente do FS_Liora. Alimenta a
+# aba "Antecipa" do desktop: total, aceites, funil por estagio, distribuidora/UF
+# e lista de clientes. Os agregados sao calculados no proprio frame (JS).
+ANT_DIST = {
+ 'NEOENERGIA COELBA':'Coelba','NEOENERGIA COSERN':'Cosern','ENEL CE':'Enel CE',
+ 'CPFL PAULISTA':'CPFL','COPEL-DIS':'Copel','EQUATORIAL CEA':'Equatorial CEA',
+ 'ENEL RJ':'Enel RJ','NEOENERGIA ELEKTRO':'Elektro','Amazonas Energia':'Amazonas',
+ 'EQUATORIAL GO':'Equatorial GO','ENEL SP':'Enel SP','LIGHT':'Light',
+}
+def _ant_tipo(prod):
+    p=(prod or '').strip().upper()
+    if p.endswith('PJ'): return 'PJ'
+    if p.endswith('PF'): return 'PF'
+    return '-'
+ANTECIPA = []
+if f_ant:
+    for r in rows(f_ant):
+        d = pdate(r.get('proposal_created_at')) or pdate(r.get('deal_created_at'))
+        dist_raw = (r.get('distributor_short_name') or '').strip()
+        ANTECIPA.append({
+          'c': (r.get('current_client_name') or '').strip(),
+          'city': (r.get('current_client_city') or '').strip(),
+          'uf': (r.get('current_client_state') or '').strip(),
+          'dist': ANT_DIST.get(dist_raw, dist_raw.title() if dist_raw else '-'),
+          'bill': round(fnum(r.get('current_total_bill_cost (R$)')), 2),
+          'mwh': round(fnum(r.get('current_consumption_filled')), 3),
+          'stage': (r.get('deal_stage') or '').strip(),
+          'acc': (r.get('accepted_proposal') or '').strip().lower()=='true',
+          'risk': (r.get('latest_risk_analysis_result') or '').strip(),
+          'credito': (r.get('latest_credit_analysis_result') or '').strip(),
+          'tipo': _ant_tipo(r.get('product_name')),
+          'signed': bool((r.get('latest_contract_signature_signed_at') or '').strip()),
+          'date': d or '',
+        })
+ANTECIPA.sort(key=lambda x: x['date'], reverse=True)
+io.open('new_ANTECIPA.json','w').write(json.dumps(ANTECIPA, ensure_ascii=False))
+print('antecipa:', len(ANTECIPA), '|', (os.path.basename(f_ant) if f_ant else 'sem arquivo'))
 
 # ---- HC_PROP = [[date, seller]] (1:1 com RAW) ----------------------------
 HC_PROP = [[r['date'], r['seller']] for r in RAW]
