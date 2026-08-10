@@ -4643,6 +4643,7 @@ function isNegado(x) {
 
 const VENDEDORES_OCULTOS = []; // saíram do time: ocultar linha individual, mas resultado continua somando na praça
 const isAprovado = x => {
+  if(x.credito_ok) return true;/*credito aprovado (Antecipa) conta mesmo em BGC_PARCEIRO - alinha CRM 06/08*/
   if (x.stage === 'BGC_PARCEIRO') return false;
   if (x.lost_at) { if (x.stage === 'BACKGROUND_CHECKING') { if ((x.lost_reason||'').trim().toLowerCase() !== 'troca de titularidade') return false; } }
   if (x.risk === 'DENIED') return false;        // analise de risco negada
