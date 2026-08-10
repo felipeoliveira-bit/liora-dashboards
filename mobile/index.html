@@ -1613,12 +1613,12 @@ function renderCarteira(){
       ${renderCampProgress(CAMP_CFG.semana, campValSemana)}
     </div>
     <div class="summary-bar">
-      <div class="summary-row"><span class="summary-key">⚡ Bateu Levou</span><span class="summary-val" style="color:var(--blue)">${campValBateu} aprovados</span></div>
-      ${renderCampProgress(CAMP_CFG.bateu, campValBateu)}
-    </div>
-    <div class="summary-bar">
       <div class="summary-row"><span class="summary-key">⚡ Antecipa</span><span class="summary-val" style="color:var(--blue)">${campValAntecipa} antecipa</span></div>
       ${renderCampProgress(CAMP_CFG.antecipa, campValAntecipa)}
+    </div>
+    <div class="summary-bar">
+      <div class="summary-row"><span class="summary-key">⚡ Bateu Levou</span><span class="summary-val" style="color:var(--blue)">${campValBateu} aprovados</span></div>
+      ${renderCampProgress(CAMP_CFG.bateu, campValBateu)}
     </div>
     ${renderRemRulesCard(seller)}
     <div class="section-head">Sua Carteira (${myDeals.length} clientes)</div>`;
@@ -1679,21 +1679,21 @@ const EX_TIME = ['Thiago Araujo França','Antonio Mariano','Rosangela Mendes','F
 function isExTime_(n){ return EX_TIME.indexOf(n) !== -1; }
 function isOculto_(n){ return OCULTOS_TIME.indexOf(n) !== -1; }
 const CAMP_CFG = {
-  semana: { key:'semana', btn:'Campanha da Semana', title:'Campanha da Semana',
+  semana: { key:'semana', btn:'MWh', title:'Campanha da Semana',
     ini:'2026-08-10', end:'2026-08-16', period:'10 a 16/08/2026 · 23h59 · pgto 18/08',
     desc:'Remuneração variável <b>individual</b> pelos MWh <b>aprovados</b> no período de 10/08 a 16/08. Pagamento no dia 18/08.',
     metric:'mwh', unit:'MWh camp.', tierUnit:'MWh', totalWord:'Total acumulado',
     tiers:[ {v:15,label:'R$ 2.500',tier:3},{v:8,label:'R$ 1.500',tier:2},{v:5,label:'R$ 750',tier:1} ] },
-  bateu: { key:'bateu', btn:'⚡ Bateu Levou', title:'⚡ Bateu Levou',
-    ini:'2026-08-10', end:'2026-08-16', period:'10 a 16/08/2026 · 23h59 · pgto 18/08',
-    desc:'Remuneração variável <b>individual</b> por <b>clientes aprovados</b> no período de 10/08 a 16/08. Pagamento no dia 18/08.',
-    metric:'count', unit:'aprovados', tierUnit:'clientes', totalWord:'Total',
-    tiers:[ {v:10,label:'R$ 350',tier:3},{v:8,label:'R$ 250',tier:2},{v:5,label:'R$ 120',tier:1} ] },
   antecipa: { key:'antecipa', btn:'⚡ Antecipa', title:'⚡ Antecipa vale mais',
     ini:'2026-08-10', end:'2026-08-16', period:'10 a 16/08/2026 · 23h59 · pgto 18/08',
     desc:'Remuneração variável <b>individual</b> por <b>clientes com produto Antecipa vigente</b> (crédito aprovado) no período de 10/08 a 16/08. Pagamento no dia 18/08.',
     metric:'count', unit:'antecipa', tierUnit:'clientes', totalWord:'Total',
-    tiers:[ {v:10,label:'R$ 750',tier:3},{v:8,label:'R$ 500',tier:2},{v:5,label:'R$ 250',tier:1} ] }
+    tiers:[ {v:10,label:'R$ 750',tier:3},{v:8,label:'R$ 500',tier:2},{v:5,label:'R$ 250',tier:1} ] },
+  bateu: { key:'bateu', btn:'⚡ Bateu Levou', title:'⚡ Bateu Levou',
+    ini:'2026-08-10', end:'2026-08-16', period:'10 a 16/08/2026 · 23h59 · pgto 18/08',
+    desc:'Remuneração variável <b>individual</b> por <b>clientes aprovados</b> no período de 10/08 a 16/08. Pagamento no dia 18/08.',
+    metric:'count', unit:'aprovados', tierUnit:'clientes', totalWord:'Total',
+    tiers:[ {v:10,label:'R$ 350',tier:3},{v:8,label:'R$ 250',tier:2},{v:5,label:'R$ 120',tier:1} ] }
 };
 let CAMP_VIEW = 'semana';
 function setCampView(k){ CAMP_VIEW = k; renderCampanha(); }
@@ -2736,7 +2736,7 @@ function renderPropostas() {
   // By seller — ordena pela métrica selecionada
   const sellers = {};
   data.forEach(r=>{
-    if(!sellers[r.seller]) sellers[r.seller]={prop:0,mwh:0,aprov:0,aprovCount:0,tarefas:0};
+    if(!sellers[r.seller]) sellers[r.seller]={prop:0,mwh:0,aprov:0,aprovCount:0,tarefas:0,antecipa:0};
     sellers[r.seller].prop++;
     sellers[r.seller].mwh+=r.consumption_mwh;
   });
@@ -2747,9 +2747,18 @@ function renderPropostas() {
     .filter(x => isAprovado(x))
     .map(x => ({ seller: x.s, mwh: x.mwh, date: x.aprov_date }));
   filterPropByPeriod(aprovBase, propPeriod).forEach(r=>{
-    if(!sellers[r.seller]) sellers[r.seller]={prop:0,mwh:0,aprov:0,aprovCount:0,tarefas:0};
+    if(!sellers[r.seller]) sellers[r.seller]={prop:0,mwh:0,aprov:0,aprovCount:0,tarefas:0,antecipa:0};
     sellers[r.seller].aprov += r.mwh;
     sellers[r.seller].aprovCount += 1;
+  });
+
+  // v2.168 — ranking Antecipa: clientes com produto Antecipa vigente (crédito aprovado)
+  const antecipaBase = rawData
+    .filter(x => isAprovado(x) && campMatch(CAMP_CFG.antecipa, x))
+    .map(x => ({ seller: x.s, date: x.aprov_date }));
+  filterPropByPeriod(antecipaBase, propPeriod).forEach(r=>{
+    if(!sellers[r.seller]) sellers[r.seller]={prop:0,mwh:0,aprov:0,aprovCount:0,tarefas:0,antecipa:0};
+    sellers[r.seller].antecipa = (sellers[r.seller].antecipa||0) + 1;
   });
 
   // v2.167 — ranking de Visitas removido: dependia dos leads de TODOS os vendedores
@@ -2763,6 +2772,7 @@ function renderPropostas() {
     .sort((a,b)=>{
     if(propMetric === 'aprovado') return b[1].aprov - a[1].aprov;
     if(propMetric === 'qtd')      return b[1].aprovCount - a[1].aprovCount;
+    if(propMetric === 'antecipa') return (b[1].antecipa||0) - (a[1].antecipa||0);
     return b[1].prop - a[1].prop;
   });
 
@@ -2792,6 +2802,7 @@ function renderPropostas() {
   html += `<div class="section-head">Ranking por Vendedor</div>
     <div class="rk-seg">
       <div class="rk-seg-btn ${propMetric==='aprovado'?'active':''}" onclick="setPropMetric('aprovado')"><span class="ic">⚡</span><span class="lb">MWh aprov.</span></div>
+      <div class="rk-seg-btn ${propMetric==='antecipa'?'active':''}" onclick="setPropMetric('antecipa')"><span class="ic">💳</span><span class="lb">Antecipa</span></div>
       <div class="rk-seg-btn ${propMetric==='qtd'?'active':''}" onclick="setPropMetric('qtd')"><span class="ic">👥</span><span class="lb">Clientes</span></div>
       <div class="rk-seg-btn ${propMetric==='propostas'?'active':''}" onclick="setPropMetric('propostas')"><span class="ic">📋</span><span class="lb">Propostas</span></div>
     </div>
@@ -2814,6 +2825,9 @@ function renderPropostas() {
       subInfo = `✅ ${d.aprovCount} aprov · 📋 ${d.prop} props`;
     } else if(propMetric === 'qtd'){
       mainVal = d.aprovCount; mainUnit = d.aprovCount===1?'aprovado':'aprovados';
+      subInfo = `⚡ ${d.aprov.toFixed(1)} MWh · 📋 ${d.prop} props`;
+    } else if(propMetric === 'antecipa'){
+      mainVal = (d.antecipa||0); mainUnit = 'antecipa';
       subInfo = `⚡ ${d.aprov.toFixed(1)} MWh · 📋 ${d.prop} props`;
     } else {
       mainVal = d.prop; mainUnit = 'props';
