@@ -6566,7 +6566,7 @@ function bars(container, pairs, lil){
 
 function renderKpis(rows){
   const tot = rows.length;
-  const acc = rows.filter(function(x){return x.acc;}).length;
+  const sig = rows.filter(function(x){return x.signed;}).length;
   const apr = rows.filter(function(x){return x.risk===&quot;APPROVED&quot;;}).length;
   const pf = rows.filter(function(x){return x.tipo===&quot;PF&quot;;}).length;
   const pj = rows.filter(function(x){return x.tipo===&quot;PJ&quot;;}).length;
@@ -6574,7 +6574,7 @@ function renderKpis(rows){
   const ticket = bills.length ? bills.reduce(function(a,b){return a+b;},0)/bills.length : 0;
   const k = [
     [&quot;Propostas geradas&quot;, tot, &quot;field sales&quot;, false],
-    [&quot;Aceitas&quot;, acc, pct(acc,tot)+&quot;% do total&quot;, true],
+    [&quot;Assinadas&quot;, sig, pct(sig,tot)+&quot;% do total&quot;, true],
     [&quot;Aprovadas no risco&quot;, apr, pct(apr,tot)+&quot;% do total&quot;, false],
     [&quot;Ticket médio (fatura)&quot;, brl(ticket), &quot;por proposta&quot;, false],
     [&quot;PF / PJ&quot;, pf+&quot; / &quot;+pj, &quot;pessoa física / jurídica&quot;, false],
@@ -6607,12 +6607,12 @@ function renderPracaBreak(rows){
   if(!keys.length){ el(&quot;ant-praca&quot;).innerHTML = '<div class=&quot;empty&quot; style=&quot;padding:14px 0&quot;>sem dados</div>'; return; }
   const tot = {ger:0, ace:0, ass:0, apr:0};
   keys.forEach(function(k){ tot.ger+=agg[k].ger; tot.ace+=agg[k].ace; tot.ass+=agg[k].ass; tot.apr+=agg[k].apr; });
-  let html = '<table class=&quot;ptbl&quot;><thead><tr><th>Praça</th><th>Geradas</th><th>Aceitas</th><th>Assinadas</th><th>Aprovadas</th></tr></thead><tbody>';
+  let html = '<table class=&quot;ptbl&quot;><thead><tr><th>Praça</th><th>Geradas</th><th>Assinadas</th><th>Aprovadas</th></tr></thead><tbody>';
   keys.forEach(function(k){
     const a = agg[k];
-    html += &quot;<tr><td>&quot;+pracaBadge(k)+&quot;</td><td>&quot;+a.ger+&quot;</td><td>&quot;+a.ace+&quot;</td><td>&quot;+a.ass+&quot;</td><td>&quot;+a.apr+&quot;</td></tr>&quot;;
+    html += &quot;<tr><td>&quot;+pracaBadge(k)+&quot;</td><td>&quot;+a.ger+&quot;</td><td>&quot;+a.ass+&quot;</td><td>&quot;+a.apr+&quot;</td></tr>&quot;;
   });
-  html += '<tr class=&quot;tot&quot;><td>Total</td><td>'+tot.ger+'</td><td>'+tot.ace+'</td><td>'+tot.ass+'</td><td>'+tot.apr+'</td></tr>';
+  html += '<tr class=&quot;tot&quot;><td>Total</td><td>'+tot.ger+'</td><td>'+tot.ass+'</td><td>'+tot.apr+'</td></tr>';
   html += &quot;</tbody></table>&quot;;
   el(&quot;ant-praca&quot;).innerHTML = html;
 }
