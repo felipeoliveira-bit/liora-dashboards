@@ -6393,6 +6393,13 @@ loadAll();
   .pill.pj{background:#f7ecfa;color:#a24bb5}
   .badge-praca{font-size:10px;padding:2px 8px;border-radius:10px;color:#fff;font-weight:600;display:inline-block;white-space:nowrap}
   .b-Salvador{background:#1D9E75}.b-Feira{background:#EF9F27}.b-Natal{background:#378ADD}.b-RNInterior{background:#0EA5A5}.b-SPI{background:#7F77DD}.b-Ribeirao{background:#A78BFA}.b-CE{background:#D4537E}.b-Outras{background:#9aa3b5}
+  .ptbl{width:100%;border-collapse:collapse;font-size:12.5px}
+  .ptbl th{text-align:right;padding:7px 8px;border-bottom:2px solid #E3EAE8;color:#4A4A4A;font-weight:600;cursor:default;position:static;background:transparent;white-space:nowrap}
+  .ptbl th:first-child{text-align:left}
+  .ptbl td{padding:8px 8px;border-bottom:1px solid #f0f1f5;text-align:right;font-variant-numeric:tabular-nums}
+  .ptbl td:first-child{text-align:left}
+  .ptbl tr:hover td{background:#f7f8fc}
+  .ptbl .tot td{font-weight:800;border-top:2px solid #E3EAE8;border-bottom:none;background:#f4f5fb}
   .tbl-wrap{max-height:460px;overflow:auto;border-radius:10px}
   .empty{text-align:center;color:#8a8a99;padding:40px 0;font-size:14px}
   .lst-cnt{font-size:11.5px;color:#4A4A4A;margin-top:8px}
@@ -6587,11 +6594,27 @@ function renderVend(rows){
 }
 
 function renderPracaBreak(rows){
-  const c = {};
-  rows.forEach(function(x){ const k=x.praca||&quot;Outras&quot;; c[k]=(c[k]||0)+1; });
-  const pairs = Object.keys(c).sort(function(a,b){ return PRACA_SORT.indexOf(a)-PRACA_SORT.indexOf(b); })
-    .map(function(k){ return [pracaLbl(k), c[k], PRACA_COLOR[k]||'#0201F3']; });
-  bars(el(&quot;ant-praca&quot;), pairs, false);
+  const agg = {};
+  rows.forEach(function(x){
+    const k = x.praca||&quot;Outras&quot;;
+    if(!agg[k]) agg[k] = {ger:0, ace:0, ass:0, apr:0};
+    agg[k].ger++;
+    if(x.acc) agg[k].ace++;
+    if(x.signed) agg[k].ass++;
+    if(x.risk===&quot;APPROVED&quot;) agg[k].apr++;
+  });
+  const keys = Object.keys(agg).sort(function(a,b){ return PRACA_SORT.indexOf(a)-PRACA_SORT.indexOf(b); });
+  if(!keys.length){ el(&quot;ant-praca&quot;).innerHTML = '<div class=&quot;empty&quot; style=&quot;padding:14px 0&quot;>sem dados</div>'; return; }
+  const tot = {ger:0, ace:0, ass:0, apr:0};
+  keys.forEach(function(k){ tot.ger+=agg[k].ger; tot.ace+=agg[k].ace; tot.ass+=agg[k].ass; tot.apr+=agg[k].apr; });
+  let html = '<table class=&quot;ptbl&quot;><thead><tr><th>Praça</th><th>Geradas</th><th>Aceitas</th><th>Assinadas</th><th>Aprovadas</th></tr></thead><tbody>';
+  keys.forEach(function(k){
+    const a = agg[k];
+    html += &quot;<tr><td>&quot;+pracaBadge(k)+&quot;</td><td>&quot;+a.ger+&quot;</td><td>&quot;+a.ace+&quot;</td><td>&quot;+a.ass+&quot;</td><td>&quot;+a.apr+&quot;</td></tr>&quot;;
+  });
+  html += '<tr class=&quot;tot&quot;><td>Total</td><td>'+tot.ger+'</td><td>'+tot.ace+'</td><td>'+tot.ass+'</td><td>'+tot.apr+'</td></tr>';
+  html += &quot;</tbody></table>&quot;;
+  el(&quot;ant-praca&quot;).innerHTML = html;
 }
 
 function renderPracaPills(){
