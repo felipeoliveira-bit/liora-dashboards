@@ -364,13 +364,26 @@ def _ant_tipo(prod):
     if p.endswith('PJ'): return 'PJ'
     if p.endswith('PF'): return 'PF'
     return '-'
+# Chave de praca no formato usado pelos frames (badge/pilulas): 'RN Interior'->'RNInterior'
+_ANT_PRACA_KEY = {'Salvador':'Salvador','Feira':'Feira','Natal':'Natal','RN Interior':'RNInterior',
+                  'SPI':'SPI','Ribeirao':'Ribeirao','CE':'CE','Outras':'Outras'}
 ANTECIPA = []
 if f_ant:
     for r in rows(f_ant):
+        # SO Field Sales (Felipe 10/08): a aba Antecipa passa a mostrar apenas as
+        # propostas do time de campo; ignora Inside Sales / Performance / Retool.
+        _team = (r.get('sales_team') or '').strip()
+        _chan = (r.get('sales_channel_name') or '').strip().upper()
+        if _team != 'Field Sales' and not _chan.startswith('[FS]'):
+            continue
         d = pdate(r.get('proposal_created_at')) or pdate(r.get('deal_created_at'))
         dist_raw = (r.get('distributor_short_name') or '').strip()
+        _cli = (r.get('current_client_name') or '').strip()
+        _em = r.get('sales_person_email')
         ANTECIPA.append({
-          'c': (r.get('current_client_name') or '').strip(),
+          'c': _cli,
+          's': seller_of(_em, _cli),
+          'praca': _ANT_PRACA_KEY.get(praca_of(_em, _cli), 'Outras'),
           'city': (r.get('current_client_city') or '').strip(),
           'uf': (r.get('current_client_state') or '').strip(),
           'dist': ANT_DIST.get(dist_raw, dist_raw.title() if dist_raw else '-'),
