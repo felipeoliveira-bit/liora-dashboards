@@ -6423,24 +6423,6 @@ loadAll();
   <div class=&quot;kpis&quot; id=&quot;ant-kpis&quot;></div>
   <div class=&quot;grid2&quot;>
     <div class=&quot;card&quot;>
-      <h2>🔻 Funil por estágio <span class=&quot;cnt&quot; id=&quot;ant-funil-cnt&quot;></span></h2>
-      <div id=&quot;ant-funil&quot;></div>
-    </div>
-    <div>
-      <div class=&quot;twocol&quot;>
-        <div class=&quot;card&quot;>
-          <h2>🏢 Distribuidora</h2>
-          <div id=&quot;ant-dist&quot;></div>
-        </div>
-        <div class=&quot;card&quot;>
-          <h2>📍 UF</h2>
-          <div id=&quot;ant-uf&quot;></div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class=&quot;grid2&quot;>
-    <div class=&quot;card&quot;>
       <h2>👤 Por vendedor <span class=&quot;cnt&quot; id=&quot;ant-vend-cnt&quot;></span></h2>
       <div id=&quot;ant-vend&quot;></div>
     </div>
@@ -6596,27 +6578,6 @@ function renderKpis(rows){
   }).join(&quot;&quot;);
 }
 
-function renderFunil(rows){
-  const counts = {};
-  rows.forEach(function(x){ counts[x.stage] = (counts[x.stage]||0)+1; });
-  const seen = {};
-  const ordered = [];
-  STAGE_ORDER.forEach(function(p){ if(counts[p[0]]){ ordered.push([p[1], counts[p[0]]]); seen[p[0]]=1; } });
-  Object.keys(counts).forEach(function(s){ if(!seen[s]) ordered.push([stLbl(s), counts[s]]); });
-  bars(el(&quot;ant-funil&quot;), ordered, false);
-  el(&quot;ant-funil-cnt&quot;).textContent = rows.length + &quot; propostas&quot;;
-}
-
-function renderBreak(rows){
-  function top(key){
-    const c = {};
-    rows.forEach(function(x){ const v=x[key]||&quot;—&quot;; c[v]=(c[v]||0)+1; });
-    return Object.keys(c).map(function(k){return [k,c[k]];}).sort(function(a,b){return b[1]-a[1];});
-  }
-  bars(el(&quot;ant-dist&quot;), top(&quot;dist&quot;).slice(0,8), false);
-  bars(el(&quot;ant-uf&quot;), top(&quot;uf&quot;), true);
-}
-
 function renderVend(rows){
   const c = {};
   rows.forEach(function(x){ const v=x.s||&quot;—&quot;; c[v]=(c[v]||0)+1; });
@@ -6742,7 +6703,7 @@ function renderAll(){
     return;
   }
   renderPracaPills();
-  renderKpis(base); renderFunil(base); renderBreak(base); renderVend(base); renderPracaBreak(base);
+  renderKpis(base); renderVend(base); renderPracaBreak(base);
   fillSelect(&quot;f-uf&quot;,&quot;uf&quot;,base); fillSelect(&quot;f-dist&quot;,&quot;dist&quot;,base); fillStageSelect(base);
   renderList();
 }
