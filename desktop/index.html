@@ -6412,6 +6412,7 @@ loadAll();
       <button class=&quot;fbtn-sm&quot; data-ant-per=&quot;today&quot; onclick=&quot;setAntPer('today',this)&quot;>D0 (hoje)</button>
       <button class=&quot;fbtn-sm&quot; data-ant-per=&quot;yesterday&quot; onclick=&quot;setAntPer('yesterday',this)&quot;>D-1 (ontem)</button>
       <button class=&quot;fbtn-sm&quot; data-ant-per=&quot;week&quot; onclick=&quot;setAntPer('week',this)&quot;>Semana</button>
+      <button class=&quot;fbtn-sm&quot; data-ant-per=&quot;lastweek&quot; onclick=&quot;setAntPer('lastweek',this)&quot;>S-1</button>
       <button class=&quot;fbtn-sm active&quot; data-ant-per=&quot;month&quot; onclick=&quot;setAntPer('month',this)&quot;>Mês</button>
     </div>
     <span class=&quot;fbar-label&quot; style=&quot;margin-left:8px&quot;>Praça</span>
@@ -6526,10 +6527,13 @@ function localISO(d){
 const DAY = 86400000;
 const TODAY_ISO = localISO(new Date());
 const YESTERDAY_ISO = localISO(new Date(Date.now()-DAY));
-function weekStartISO(){
+function weekRange(weeksAgo){
+  // Semana sempre de Domingo a Sábado (Felipe 10/08)
   const ref = new Date(TODAY_ISO+'T12:00:00');
-  const dow = ref.getDay(); const off = (dow===0?6:dow-1);
-  return localISO(new Date(ref.getTime()-off*DAY));
+  const dow = ref.getDay(); // 0=Dom .. 6=Sab
+  const sun = new Date(ref.getTime() - (dow + 7*weeksAgo)*DAY);
+  const sat = new Date(sun.getTime() + 6*DAY);
+  return [localISO(sun), localISO(sat)];
 }
 let antPer = 'month', antPraca = 'all', antPessoa = 'all';
 function inAntPeriod(ds){
@@ -6537,7 +6541,8 @@ function inAntPeriod(ds){
   if(antPer==='month')     return ds.slice(0,7)===TODAY_ISO.slice(0,7);
   if(antPer==='today')     return ds===TODAY_ISO;
   if(antPer==='yesterday') return ds===YESTERDAY_ISO;
-  if(antPer==='week')      return ds>=weekStartISO() &amp;&amp; ds<=TODAY_ISO;
+  if(antPer==='week'){     const w=weekRange(0); return ds>=w[0] &amp;&amp; ds<=w[1]; }
+  if(antPer==='lastweek'){ const w=weekRange(1); return ds>=w[0] &amp;&amp; ds<=w[1]; }
   return true;
 }
 function baseRows(){
@@ -6748,6 +6753,11 @@ function initEvents(){
     el(id).addEventListener(&quot;change&quot;, renderList);
   });
   el(&quot;f-acc&quot;).addEventListener(&quot;change&quot;, renderList);
+  (function stampWeekTitles(){
+    var w0=weekRange(0), w1=weekRange(1);
+    var s=document.querySelector('[data-ant-per=&quot;week&quot;]'); if(s) s.title='Semana atual (dom '+ddmm(w0[0])+' a sáb '+ddmm(w0[1])+')';
+    var s1=document.querySelector('[data-ant-per=&quot;lastweek&quot;]'); if(s1) s1.title='Semana passada (dom '+ddmm(w1[0])+' a sáb '+ddmm(w1[1])+')';
+  })();
   document.querySelectorAll(&quot;th[data-k]&quot;).forEach(function(th){
     th.addEventListener(&quot;click&quot;, function(){
       const k = th.getAttribute(&quot;data-k&quot;);
