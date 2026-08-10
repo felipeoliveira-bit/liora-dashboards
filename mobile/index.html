@@ -1575,6 +1575,7 @@ function renderCarteira(){
   const myPend = myDeals.filter(x=>!isAprovado(x)&&!isNegado(x)).reduce((a,x)=>a+x.mwh,0);
   const campValSemana = campVal(CAMP_CFG.semana, myDeals.filter(x=>noPeriodo(x,CAMP_CFG.semana.ini,CAMP_CFG.semana.end)&&isAprovado(x)));
   const campValBateu  = campVal(CAMP_CFG.bateu,  myDeals.filter(x=>noPeriodo(x,CAMP_CFG.bateu.ini,CAMP_CFG.bateu.end)&&isAprovado(x)));
+  const campValAntecipa = campVal(CAMP_CFG.antecipa, myDeals.filter(x=>noPeriodo(x,CAMP_CFG.antecipa.ini,CAMP_CFG.antecipa.end)&&isAprovado(x)&&campMatch(CAMP_CFG.antecipa,x)));
   const VIS_PREREQ = 15;
   let visitasBlock;
   if(!leadsLoaded){
@@ -1614,6 +1615,10 @@ function renderCarteira(){
     <div class="summary-bar">
       <div class="summary-row"><span class="summary-key">⚡ Bateu Levou</span><span class="summary-val" style="color:var(--blue)">${campValBateu} aprovados</span></div>
       ${renderCampProgress(CAMP_CFG.bateu, campValBateu)}
+    </div>
+    <div class="summary-bar">
+      <div class="summary-row"><span class="summary-key">⚡ Antecipa</span><span class="summary-val" style="color:var(--blue)">${campValAntecipa} antecipa</span></div>
+      ${renderCampProgress(CAMP_CFG.antecipa, campValAntecipa)}
     </div>
     ${renderRemRulesCard(seller)}
     <div class="section-head">Sua Carteira (${myDeals.length} clientes)</div>`;
@@ -1663,7 +1668,7 @@ function renderCarteira(){
 renderCarteira();
 
 // ── SCREEN 3: CAMPANHA ────────────────────────────────────
-// v2.162 — Campanhas 27-31/07 (Semana MWh 5/8/15→750/1500/2500 pgto 03/08 + Bateu Levou 5/8/10→200/350/500 pgto 04/08 · individual · aprovados no período)
+// v2.163 — Campanhas 10-16/08 (Semana MWh 5/8/15→750/1500/2500 · Bateu Levou clientes 5/8/10→120/250/350 · Antecipa (produto antecipa vigente) clientes 5/8/10→250/500/750 · pgto 18/08 · individual)
 // 3 tiers: Aquecimento(5)/Pressão(8)/Gol(12) — matinal 24/06 Copa da Liora
 // Gestores com visão geral (veem tudo, todas as praças) — v2.140
 const GESTORES = ['Felipe Oliveira','Ana Ribeiro','Raynara Silva'];
@@ -1675,19 +1680,25 @@ function isExTime_(n){ return EX_TIME.indexOf(n) !== -1; }
 function isOculto_(n){ return OCULTOS_TIME.indexOf(n) !== -1; }
 const CAMP_CFG = {
   semana: { key:'semana', btn:'Campanha da Semana', title:'Campanha da Semana',
-    ini:'2026-08-01', end:'2026-08-09', period:'01 a 09/08/2026 · 23h59 · pgto 10/08',
-    desc:'Remuneração variável <b>individual</b> pelos MWh <b>aprovados</b> no período de 01/08 a 09/08. Pagamento no dia 10/08.',
+    ini:'2026-08-10', end:'2026-08-16', period:'10 a 16/08/2026 · 23h59 · pgto 18/08',
+    desc:'Remuneração variável <b>individual</b> pelos MWh <b>aprovados</b> no período de 10/08 a 16/08. Pagamento no dia 18/08.',
     metric:'mwh', unit:'MWh camp.', tierUnit:'MWh', totalWord:'Total acumulado',
     tiers:[ {v:15,label:'R$ 2.500',tier:3},{v:8,label:'R$ 1.500',tier:2},{v:5,label:'R$ 750',tier:1} ] },
   bateu: { key:'bateu', btn:'⚡ Bateu Levou', title:'⚡ Bateu Levou',
-    ini:'2026-08-01', end:'2026-08-09', period:'01 a 09/08/2026 · 23h59 · pgto 10/08',
-    desc:'Remuneração variável <b>individual</b> por <b>clientes aprovados</b> no período de 01/08 a 09/08. Pagamento no dia 10/08.',
+    ini:'2026-08-10', end:'2026-08-16', period:'10 a 16/08/2026 · 23h59 · pgto 18/08',
+    desc:'Remuneração variável <b>individual</b> por <b>clientes aprovados</b> no período de 10/08 a 16/08. Pagamento no dia 18/08.',
     metric:'count', unit:'aprovados', tierUnit:'clientes', totalWord:'Total',
-    tiers:[ {v:10,label:'R$ 500',tier:3},{v:8,label:'R$ 350',tier:2},{v:5,label:'R$ 200',tier:1} ] }
+    tiers:[ {v:10,label:'R$ 350',tier:3},{v:8,label:'R$ 250',tier:2},{v:5,label:'R$ 120',tier:1} ] },
+  antecipa: { key:'antecipa', btn:'⚡ Antecipa', title:'⚡ Antecipa vale mais',
+    ini:'2026-08-10', end:'2026-08-16', period:'10 a 16/08/2026 · 23h59 · pgto 18/08',
+    desc:'Remuneração variável <b>individual</b> por <b>clientes com produto Antecipa vigente</b> (crédito aprovado) no período de 10/08 a 16/08. Pagamento no dia 18/08.',
+    metric:'count', unit:'antecipa', tierUnit:'clientes', totalWord:'Total',
+    tiers:[ {v:10,label:'R$ 750',tier:3},{v:8,label:'R$ 500',tier:2},{v:5,label:'R$ 250',tier:1} ] }
 };
 let CAMP_VIEW = 'semana';
 function setCampView(k){ CAMP_VIEW = k; renderCampanha(); }
 function campVal(cfg, deals){ return cfg.metric==='count' ? deals.length : deals.reduce((a,d)=>a+(d.mwh||0),0); }
+function campMatch(cfg, x){ if(cfg && cfg.key==='antecipa'){ return !!x.credito_ok && /ANTECIPA/i.test(x.produto||''); } return true; }
 function campFmt(cfg, v){ return cfg.metric==='count' ? String(v) : (Math.floor(v*100)/100).toFixed(2); }
 function campTier(cfg, v){ for(const t of cfg.tiers){ if(v>=t.v) return t; } return null; }
 function campNext(cfg, v){ const asc=[...cfg.tiers].sort((a,b)=>a.v-b.v); for(const t of asc){ if(v<t.v) return t; } return null; }
@@ -1718,7 +1729,7 @@ function renderCampProgress(cfg, val){
 // ════════════════════════════════════════════════════
 function openCampDetails(vendedor, type){
   const cfg = CAMP_CFG[type] || CAMP_CFG[CAMP_VIEW];
-  const deals = rawData.filter(x => x.s === vendedor && noPeriodo(x, cfg.ini, cfg.end) && isAprovado(x));
+  const deals = rawData.filter(x => x.s === vendedor && noPeriodo(x, cfg.ini, cfg.end) && isAprovado(x) && campMatch(cfg, x));
   const periodLabel = cfg.period.split(' · ')[0];
   const val = campVal(cfg, deals);
   const tier = campTier(cfg, val);
@@ -2557,7 +2568,7 @@ function renderCampanha(){
 }
 
 function renderCampaignView(cfg){
-  const campData = rawData.filter(x=>noPeriodo(x,cfg.ini,cfg.end)&&isAprovado(x));
+  const campData = rawData.filter(x=>noPeriodo(x,cfg.ini,cfg.end)&&isAprovado(x)&&campMatch(cfg,x));
   const byS = {};
   campData.forEach(x=>{ byS[x.s]=(byS[x.s]||0)+(cfg.metric==='count'?1:(x.mwh||0)); });
   const allCampSellers = [...new Set([...Object.keys(byS), ...Object.keys(METAS)])];
