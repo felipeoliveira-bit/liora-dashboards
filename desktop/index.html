@@ -6461,7 +6461,6 @@ loadAll();
           <th data-k=&quot;bill&quot; class=&quot;num&quot;>Fatura</th>
           <th data-k=&quot;mwh&quot; class=&quot;num&quot;>MWh</th>
           <th data-k=&quot;stage&quot;>Estágio</th>
-          <th data-k=&quot;acc&quot;>Aceite</th>
           <th data-k=&quot;date&quot;>Data</th>
         </tr></thead>
         <tbody id=&quot;ant-tbody&quot;></tbody>
@@ -6709,7 +6708,7 @@ function currentRows(){
 function renderList(){
   const rows = currentRows();
   const body = el(&quot;ant-tbody&quot;);
-  if(!rows.length){ body.innerHTML = '<tr><td colspan=&quot;11&quot; class=&quot;empty&quot;>nenhuma proposta com esses filtros</td></tr>'; }
+  if(!rows.length){ body.innerHTML = '<tr><td colspan=&quot;10&quot; class=&quot;empty&quot;>nenhuma proposta com esses filtros</td></tr>'; }
   else {
     body.innerHTML = rows.map(function(x){
       const tipoCls = x.tipo===&quot;PJ&quot;?&quot;pj&quot;:&quot;pf&quot;;
@@ -6724,7 +6723,6 @@ function renderList(){
         + '<td class=&quot;num&quot;>'+brl(x.bill)+&quot;</td>&quot;
         + '<td class=&quot;num&quot;>'+(x.mwh||0).toLocaleString(&quot;pt-BR&quot;,{minimumFractionDigits:2,maximumFractionDigits:2})+&quot;</td>&quot;
         + &quot;<td>&quot;+esc(stLbl(x.stage))+&quot;</td>&quot;
-        + &quot;<td>&quot;+accHtml+&quot;</td>&quot;
         + &quot;<td>&quot;+ddmm(x.date)+&quot;</td>&quot;
         + &quot;</tr>&quot;;
     }).join(&quot;&quot;);

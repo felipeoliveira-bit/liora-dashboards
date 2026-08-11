@@ -244,7 +244,8 @@ CONSUMPTION_OVERRIDE = {
 LOST_IGNORE = { norm('FRANCISCO ALDECI DE QUEIROZ FERNANDES'), norm('ANTÔNIO EDMILSON LEITE') }  # 2º: dup denied em BGC, forçado aprovado (Felipe 15/07)
 # FORCE_APPROVED: deals que contam como aprovado por decisao manual (contrato assinado,
 # aguardando BGC). Chave = deal_id. Remover quando a base refletir BGC APPROVED.
-FORCE_APPROVED = {'cfb2500c-c323-4943-a7f8-e831a8f37b55': '2026-08-04'}  # PP FERREIRA DE SALES COMER DE COSMETICOS - aprovado manual SOS 15:32 04/08 (Aurivando/CE); card818+risk_real ainda MANUAL; remover quando base refletir
+FORCE_APPROVED = {'cfb2500c-c323-4943-a7f8-e831a8f37b55': '2026-08-04',  # PP FERREIRA DE SALES COMER DE COSMETICOS - aprovado manual SOS 15:32 04/08 (Aurivando/CE); card818+risk_real ainda MANUAL; remover quando base refletir
+                  '42d73385-cf0f-4a56-bdb6-0d81161087f2': '2026-08-11'}  # MAIZA PEREIRA DA SILVA (Antecipa PF, Bruno Borges/CE) - aprovado manual (Felipe 11/08); base risco MANUAL/credito vazio; remover quando base refletir
 def mwh_of(client, raw, did=None):
     if did is not None:
         ovid = CONSUMPTION_OVERRIDE_BY_ID.get(did)
@@ -367,6 +368,17 @@ def _ant_tipo(prod):
 # Chave de praca no formato usado pelos frames (badge/pilulas): 'RN Interior'->'RNInterior'
 _ANT_PRACA_KEY = {'Salvador':'Salvador','Feira':'Feira','Natal':'Natal','RN Interior':'RNInterior',
                   'SPI':'SPI','Ribeirao':'Ribeirao','CE':'CE','Outras':'Outras'}
+# ANT_APPROVE: aprovacoes manuais da aba Antecipa (Felipe). Forca risk=APPROVED p/ o deal
+# (por deal_id) e injeta o registro se o card818 ainda nao o trouxe (o augmento do funil
+# vivo traz com risco MANUAL). Remover quando a base refletir a aprovacao.
+ANT_APPROVE = {
+ '42d73385-cf0f-4a56-bdb6-0d81161087f2': {  # MAIZA PEREIRA DA SILVA - Bruno Borges/CE - aprovado manual (Felipe 11/08)
+   'c':'Maiza pereira da Silva','s':'Bruno Borges','praca':'CE','city':'','uf':'CE',
+   'dist':'Enel CE','bill':692.0,'mwh':0.0,'stage':'BGC_PENDING_BILLS','acc':True,
+   'tipo':'PF','signed':True,'date':'2026-08-11',
+ },
+}
+_seen_ant = set()
 ANTECIPA = []
 if f_ant:
     for r in rows(f_ant):
@@ -380,6 +392,8 @@ if f_ant:
         dist_raw = (r.get('distributor_short_name') or '').strip()
         _cli = (r.get('current_client_name') or '').strip()
         _em = r.get('sales_person_email')
+        _did = (r.get('deal_id') or '').strip()
+        _seen_ant.add(_did)
         ANTECIPA.append({
           'c': _cli,
           's': seller_of(_em, _cli),
@@ -391,12 +405,16 @@ if f_ant:
           'mwh': round(fnum(r.get('current_consumption_filled')), 3),
           'stage': (r.get('deal_stage') or '').strip(),
           'acc': (r.get('accepted_proposal') or '').strip().lower()=='true',
-          'risk': (r.get('latest_risk_analysis_result') or '').strip(),
-          'credito': (r.get('latest_credit_analysis_result') or '').strip(),
+          'risk': ('APPROVED' if _did in ANT_APPROVE else (r.get('latest_risk_analysis_result') or '').strip()),
+          'credito': ('approved' if _did in ANT_APPROVE else (r.get('latest_credit_analysis_result') or '').strip()),
           'tipo': _ant_tipo(r.get('product_name')),
           'signed': bool((r.get('latest_contract_signature_signed_at') or '').strip()),
           'date': d or '',
         })
+for _did, _rec in ANT_APPROVE.items():
+    if _did not in _seen_ant:
+        _r = dict(_rec); _r['risk'] = 'APPROVED'; _r.setdefault('credito','approved')
+        ANTECIPA.append(_r)
 ANTECIPA.sort(key=lambda x: x['date'], reverse=True)
 io.open('new_ANTECIPA.json','w').write(json.dumps(ANTECIPA, ensure_ascii=False))
 print('antecipa:', len(ANTECIPA), '|', (os.path.basename(f_ant) if f_ant else 'sem arquivo'))
