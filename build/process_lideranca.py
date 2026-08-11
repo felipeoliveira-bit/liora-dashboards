@@ -417,6 +417,27 @@ for _did, _rec in ANT_APPROVE.items():
         ANTECIPA.append(_r)
 ANTECIPA.sort(key=lambda x: x['date'], reverse=True)
 io.open('new_ANTECIPA.json','w').write(json.dumps(ANTECIPA, ensure_ascii=False))
+# ---- ANT_FIELD: propostas do FIELD do mes (GD FS_Liora + Antecipa Field) com flags
+# sig(assinado)/apr(aprovado risco) p/ calcular a fatia do Antecipa nos KPIs da aba. ----
+def _gd_apr(r):
+    risk=(r.get('latest_risk_analysis_result') or '').strip()
+    if (r.get('deal_stage') or '')=='BGC_PARCEIRO': risk=''
+    if (r.get('latest_credit_analysis_result') or '').strip().lower()=='approved': risk='APPROVED'
+    if (r.get('deal_id') or '').strip() in FORCE_APPROVED: risk='APPROVED'
+    return risk=='APPROVED'
+ANT_FIELD=[]
+for r in prop:  # GD field (FS_Liora)
+    _cli=(r.get('current_client_name') or '').strip(); _em=r.get('sales_person_email')
+    _d=pdate(r.get('proposal_created_at')) or pdate(r.get('deal_created_at'))
+    ANT_FIELD.append({'date':_d or '','praca':_ANT_PRACA_KEY.get(praca_of(_em,_cli),'Outras'),
+                      's':seller_of(_em,_cli),
+                      'sig':bool((r.get('latest_contract_signature_signed_at') or '').strip()),
+                      'apr':_gd_apr(r)})
+for _x in ANTECIPA:  # Antecipa Field (mesma definicao do numerador da aba)
+    ANT_FIELD.append({'date':_x['date'],'praca':_x['praca'],'s':_x['s'],
+                      'sig':bool(_x.get('signed')),'apr':(_x.get('risk')=='APPROVED')})
+io.open('new_ANT_FIELD.json','w').write(json.dumps(ANT_FIELD, ensure_ascii=False))
+print('ant_field:', len(ANT_FIELD))
 print('antecipa:', len(ANTECIPA), '|', (os.path.basename(f_ant) if f_ant else 'sem arquivo'))
 
 # ---- HC_PROP = [[date, seller]] (1:1 com RAW) ----------------------------
