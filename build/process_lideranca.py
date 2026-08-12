@@ -373,16 +373,6 @@ _ANT_PRACA_KEY = {'Salvador':'Salvador','Feira':'Feira','Natal':'Natal','RN Inte
 # (por deal_id) e injeta o registro se o card818 ainda nao o trouxe (o augmento do funil
 # vivo traz com risco MANUAL). Remover quando a base refletir a aprovacao.
 ANT_APPROVE = {
- '42d73385-cf0f-4a56-bdb6-0d81161087f2': {  # MAIZA PEREIRA DA SILVA - Bruno Borges/CE - aprovado manual (Felipe 11/08)
-   'c':'Maiza pereira da Silva','s':'Bruno Borges','praca':'CE','city':'','uf':'CE',
-   'dist':'Enel CE','bill':692.0,'mwh':0.0,'stage':'BGC_PENDING_BILLS','acc':True,
-   'tipo':'PF','signed':True,'date':'2026-08-11',
- },
- '83bf2289-52be-43e8-bd76-a1b8e9c9e734': {  # DGN STORE & ESTACIONAMENTO LTDA - Percy Hormazabal/SPI - Antecipa PJ; base ja tem credito=approved mas a aba Antecipa conta risco; forca APPROVED (Felipe 11/08); remover quando a logica honrar credito
-   'c':'DGN STORE & ESTACIONAMENTO LTDA','s':'Percy Hormazabal','praca':'SPI','city':'CAMPINAS','uf':'SP',
-   'dist':'CPFL','bill':703.35,'mwh':0.743,'stage':'BGC_PARCEIRO','acc':True,
-   'tipo':'PJ','signed':True,'date':'2026-08-10',
- },
  'f9cf93c9-5348-4586-acdb-5a2b1dd49f60': {  # ISMAEL RODRIGUES SILVA - Phillip Faria/Ribeirao SPI - Antecipa PF - aprovado manual (Felipe 12/08)
    'c':'ISMAEL RODRIGUES SILVA','s':'Phillip Faria','praca':'Ribeirao','city':'SERTAOZINHO','uf':'SP',
    'dist':'CPFL','bill':460.09,'mwh':0.206,'stage':'BGC_PENDING_BILLS','acc':True,
