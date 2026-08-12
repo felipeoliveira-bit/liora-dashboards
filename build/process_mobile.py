@@ -72,7 +72,7 @@ EMAIL_NOME = {
  'mirla.albuquerque@lioraenergia.com.br':'Mirla Albuquerque',
  'lucas.santos@lioraenergia.com.br':'Lucas Santos',
  'ananias.neto@lioraenergia.com.br':'Ananias Neto','ananias.oliveira@lioraenergia.com.br':'Ananias Neto',
- 'thiago.araujo@lioraenergia.com.br':'Thiago Araujo França',
+ 'thiago.araujo@lioraenergia.com.br':'Thiago Araujo França','camila.couto@lioraenergia.com.br':'Camila Couto',
 }
 NAME_MAP = {  # fallback quando não há email reconhecido (nome cru -> canônico)
  'antonio carlos':'Antonio Mariano','bruno rodrigues':'Bruno Andrade','ananias oliveira':'Ananias Neto',
@@ -97,7 +97,7 @@ SELLER_PRACA = {  # canônico -> label praça
  'Thiago Firmo':'Natal',
  'Adroaldo Bonfim':'Salvador','Ettore Rossi':'Salvador','Tatiane Correia':'Salvador','Maria Lúcia':'Salvador','Tais Santos':'Salvador','Antonio Mariano':'Salvador','Silvia Dias':'Salvador',
  'Kelma Rangel':'Feira de Santana','Lucileide Carlos':'Feira de Santana','Rosangela Mendes':'Feira de Santana','Tiago Freitas':'Feira de Santana','Ryan Trindade':'Feira de Santana','Alberto Nascimento':'Feira de Santana','Tamires Costa':'Feira de Santana',
- 'Bruno Andrade':'Natal','Marcio Galvão':'Natal','Rodrigo Ribeiro':'Natal','Ananias Neto':'Natal','Thiago Araujo França':'Natal',
+ 'Bruno Andrade':'Natal','Marcio Galvão':'Natal','Rodrigo Ribeiro':'Natal','Ananias Neto':'Natal','Thiago Araujo França':'Natal','Camila Couto':'Feira de Santana',
  'Caio Lannes':'SPI','Monica Silveira':'SPI','Franciele Felix':'SPI','Ederson Silva':'SPI','Diego Faria':'SPI',
  'Bruno Borges':'CE','Neilon Nascimento':'CE','Sabrina Tomazeti':'CE','Odirley Costa':'CE','Núbia Andrade':'CE',
  'Briel Barbosa':'SPI','Olímpio Filho':'Ribeirão Preto SPI','Fábio Rodrigues':'Ribeirão Preto SPI',  # novos 10/08

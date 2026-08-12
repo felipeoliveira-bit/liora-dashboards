@@ -987,6 +987,7 @@ const PRACA_DEF = {
 // identidade canônica normalizada via email no processamento (EMAIL_TO_NAME do process.py),
 // então SELLER_PRACA é, na prática, o mapa email→praça do vendedor (planilha metas/aba Vendedor).
 let SELLER_PRACA = {
+  'Camila Couto':'feira',
   'Silmara Gomes':'ce',
   'Luciana Campos':'salvador',
   'Nicola Popovic':'spi',
@@ -1673,7 +1674,7 @@ renderCarteira();
 // Gestores com visão geral (veem tudo, todas as praças) — v2.140
 const GESTORES = ['Felipe Oliveira','Ana Ribeiro','Raynara Silva'];
 function isGestor_(n){ return GESTORES.indexOf(n) !== -1; }
-const OCULTOS_TIME = ['Ananias Neto','Rosangela Mendes','Franciele Felix','Ana Ribeiro','Ryan Trindade','Antonio Mariano'];
+const OCULTOS_TIME = ['Ananias Neto','Rosangela Mendes','Franciele Felix','Ana Ribeiro','Ryan Trindade','Antonio Mariano','Camila Couto'];
 // Ex-time (saíram da empresa, base HC) — removidos do seletor 'Visualizando vendedor'. Ryan/Ana continuam (ativos).
 const EX_TIME = ['Thiago Araujo França','Antonio Mariano','Rosangela Mendes','Franciele Felix','Ananias Neto'];
 function isExTime_(n){ return EX_TIME.indexOf(n) !== -1; }

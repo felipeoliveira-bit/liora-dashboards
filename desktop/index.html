@@ -239,7 +239,7 @@ table.bau tbody tr.field-row td:first-child { color: #fff; }
 const LEADS_API_URL = 'https://script.google.com/macros/s/AKfycbyk_rqDKe49ZOCtLJkXYNvITqF5wQBjs5Uu1-9-U5HadPsP_tyzulBaCpyeuLpaqokL1w/exec';
 
 // Vendedores ativos agosto 2026
-const VENDEDORES_OCULTOS = []; // saíram do time
+const VENDEDORES_OCULTOS = ['Camila Couto']; // saíram do time
 const VENDEDORES = [
   {nome:'Silmara Gomes',praca:'CE'},
   {nome:'Luciana Campos',praca:'Salvador'},
@@ -1200,7 +1200,7 @@ td.rk-clk:hover{ text-decoration:underline; }
 <script>
 const LEADS_API_URL = 'https://script.google.com/macros/s/AKfycbyk_rqDKe49ZOCtLJkXYNvITqF5wQBjs5Uu1-9-U5HadPsP_tyzulBaCpyeuLpaqokL1w/exec';
 
-const VENDEDORES_OCULTOS = []; // saiu do time: conta no total/FIELD da praça, mas não renderiza linha individual
+const VENDEDORES_OCULTOS = ['Camila Couto']; // saiu do time: conta no total/FIELD da praça, mas não renderiza linha individual
 const VENDEDORES = [
   {nome:'Silmara Gomes',praca:'CE'},
   {nome:'Luciana Campos',praca:'Salvador'},
@@ -1928,7 +1928,7 @@ tbody tr:hover { background: #fafbff; }
 const LEADS_API_URL = 'https://script.google.com/macros/s/AKfycbyk_rqDKe49ZOCtLJkXYNvITqF5wQBjs5Uu1-9-U5HadPsP_tyzulBaCpyeuLpaqokL1w/exec';
 
 // ===== VENDEDORES (com novos de junho + aliases) =====
-const VENDEDORES_OCULTOS = []; // saíram do time: ocultar linha individual, total da praça mantém
+const VENDEDORES_OCULTOS = ['Camila Couto']; // saíram do time: ocultar linha individual, total da praça mantém
 function vExib(l){ return VENDEDORES_OCULTOS.includes(l.vendedor) ? 'Natal' : (l.vendedor||'—'); }
 const VENDEDORES = [
   {nome:'Silmara Gomes',praca:'CE'},
@@ -4645,7 +4645,7 @@ function isNegado(x) {
   return false;
 }
 
-const VENDEDORES_OCULTOS = []; // saíram do time: ocultar linha individual, mas resultado continua somando na praça
+const VENDEDORES_OCULTOS = ['Camila Couto']; // saíram do time: ocultar linha individual, mas resultado continua somando na praça
 const isAprovado = x => {
   if(x.credito_ok) return true;/*credito aprovado (Antecipa) conta mesmo em BGC_PARCEIRO - alinha CRM 06/08*/
   if (x.stage === 'BGC_PARCEIRO') return false;
@@ -5576,7 +5576,7 @@ table.matrix tbody tr.praca-header td { background: #f0f1f5; font-size: 10px; fo
 const LEADS_API_URL = 'https://script.google.com/macros/s/AKfycbyk_rqDKe49ZOCtLJkXYNvITqF5wQBjs5Uu1-9-U5HadPsP_tyzulBaCpyeuLpaqokL1w/exec';
 
 // 20 vendedores ativos em junho 2026 (Camila Couto removida em 29/05)
-const VENDEDORES_OCULTOS = []; // saíram do time
+const VENDEDORES_OCULTOS = ['Camila Couto']; // saíram do time
 const VENDEDORES = [
   {nome:'Silmara Gomes',praca:'CE'},
   {nome:'Luciana Campos',praca:'Salvador'},

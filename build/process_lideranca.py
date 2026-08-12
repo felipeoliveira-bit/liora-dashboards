@@ -159,7 +159,7 @@ PRACA_TITLE = {  # email -> praça (Title) usada no RAW
  'nubia.andrade@lioraenergia.com.br':'CE','odirley.costa@lioraenergia.com.br':'CE',  # Felipe 07/08: sao CE (alinha ao CRM); antes 'Outras'
  'rodrigo.ribeiro@lioraenergia.com.br':'Natal','rosangela.mendes@lioraenergia.com.br':'Feira',
  'ryan.trindade@lioraenergia.com.br':'Feira','alberto.nascimento@lioraenergia.com.br':'Feira','marcel.sousa@lioraenergia.com.br':'Feira','jefferson.fideli@lioraenergia.com.br':'RN Interior','phillip.faria@lioraenergia.com.br':'Ribeirao','tais.santos@lioraenergia.com.br':'Salvador',
- 'tiago.freitas@lioraenergia.com.br':'Feira','tamires.costa@lioraenergia.com.br':'Feira','thiago.araujo@lioraenergia.com.br':'Natal',
+ 'tiago.freitas@lioraenergia.com.br':'Feira','tamires.costa@lioraenergia.com.br':'Feira','thiago.araujo@lioraenergia.com.br':'Natal','camila.couto@lioraenergia.com.br':'Feira',
  'briel.barbosa@lioraenergia.com.br':'SPI','olimpio.filho@lioraenergia.com.br':'Ribeirao','fabio.rodrigues@lioraenergia.com.br':'Ribeirao',  # novos 10/08
 }
 EMAIL2NAME = {  # email -> nome canônico do vendedor (resolve nomes variáveis do CRM)
@@ -192,7 +192,7 @@ EMAIL2NAME = {  # email -> nome canônico do vendedor (resolve nomes variáveis 
  'nubia.andrade@lioraenergia.com.br':'Nubia  Andrade','odirley.costa@lioraenergia.com.br':'Odirley Costa',
  'rodrigo.ribeiro@lioraenergia.com.br':'Rodrigo Ribeiro','rosangela.mendes@lioraenergia.com.br':'Rosangela Mendes',
  'ryan.trindade@lioraenergia.com.br':'Ryan Trindade','alberto.nascimento@lioraenergia.com.br':'Alberto Nascimento','marcel.sousa@lioraenergia.com.br':'Marcel Sousa','jefferson.fideli@lioraenergia.com.br':'Jefferson Fideli','phillip.faria@lioraenergia.com.br':'Phillip Faria','tais.santos@lioraenergia.com.br':'Tais Santos',
- 'tiago.freitas@lioraenergia.com.br':'Tiago Freitas','tamires.costa@lioraenergia.com.br':'Tamires Costa','thiago.araujo@lioraenergia.com.br':'Thiago Araujo França',
+ 'tiago.freitas@lioraenergia.com.br':'Tiago Freitas','tamires.costa@lioraenergia.com.br':'Tamires Costa','thiago.araujo@lioraenergia.com.br':'Thiago Araujo França','camila.couto@lioraenergia.com.br':'Camila Couto',
 }
 TITLE2OP = {'Salvador':'salvador','Feira':'feira','Natal':'natal','RN Interior':'rninterior','SPI':'spi','Ribeirao':'ribeirao','CE':'ce','Outras':'outras'}
 
