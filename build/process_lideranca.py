@@ -416,7 +416,10 @@ if f_ant:
           'mwh': round(fnum(r.get('current_consumption_filled')), 3),
           'stage': (r.get('deal_stage') or '').strip(),
           'acc': (r.get('accepted_proposal') or '').strip().lower()=='true',
-          'risk': ('APPROVED' if _did in ANT_APPROVE else (r.get('latest_risk_analysis_result') or '').strip()),
+          # Felipe 12/08: a aba Antecipa passa a honrar credito aprovado (mesma regra 06/08 do resto):
+          # credito=='approved' conta como APPROVED aqui tambem (antes so risco APPROVED contava, e
+          # deals com credito approved + risco APPROVED_PENDING_CREDIT sumiam da aba). Ver memoria antecipa.
+          'risk': ('APPROVED' if (_did in ANT_APPROVE or (r.get('latest_credit_analysis_result') or '').strip().lower()=='approved') else (r.get('latest_risk_analysis_result') or '').strip()),
           'credito': ('approved' if _did in ANT_APPROVE else (r.get('latest_credit_analysis_result') or '').strip()),
           'tipo': _ant_tipo(r.get('product_name')),
           'signed': bool((r.get('latest_contract_signature_signed_at') or '').strip()),
