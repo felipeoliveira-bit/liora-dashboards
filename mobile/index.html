@@ -2276,6 +2276,19 @@ function openClienteDetalhes(dealId){
        </div>`
     : '';
 
+  // Situação Antecipa (crédito) — bloco explicado, só p/ deals do Antecipa
+  const creditBlock = lead.credito ? (function(){
+    var info = CREDIT_DESC[lead.credito];
+    var label = info ? info[0]
+      : lead.credito.charAt(0) + lead.credito.slice(1).toLowerCase().replace(/_/g,' ');
+    var desc = info ? info[1] : '';
+    return `<div class="cd-section">
+         <div class="cd-section-title">💳 Situação Antecipa</div>
+         <div class="cd-row"><div class="cd-row-k">Etapa</div><div class="cd-row-v">${escapeHtml(label)}</div></div>
+         ${desc ? `<div class="cd-row"><div class="cd-row-k">O que significa</div><div class="cd-row-v" style="color:#1D9E75;font-weight:500">${escapeHtml(desc)}</div></div>` : ''}
+       </div>`;
+  })() : '';
+
   overlay.innerHTML = `
     <div class="modal-sheet cd-sheet">
       <div class="modal-handle"></div>
@@ -2298,7 +2311,6 @@ function openClienteDetalhes(dealId){
         <div class="cd-row"><div class="cd-row-k">📍 Cidade · Estado</div><div class="cd-row-v">${escapeHtml(lead.city||'—')}${lead.state ? ' · '+escapeHtml(lead.state) : ''}</div></div>
         <div class="cd-row"><div class="cd-row-k">⚡ Distribuidora</div><div class="cd-row-v">${escapeHtml(lead.dist||'—')}</div></div>
         ${prettyProduto(lead.produto) ? `<div class="cd-row"><div class="cd-row-k">📦 Produto</div><div class="cd-row-v">${escapeHtml(prettyProduto(lead.produto))}</div></div>` : ''}
-        ${lead.credito ? `<div class="cd-row"><div class="cd-row-k">💳 Situação Antecipa</div><div class="cd-row-v">${escapeHtml(lead.credito)}</div></div>` : ''}
       </div>
 
       <div class="cd-section">
@@ -2315,6 +2327,8 @@ function openClienteDetalhes(dealId){
         ${STAGE_DESC[(lead.stage||'').trim()]?`<div class="cd-row"><div class="cd-row-k">O que significa</div><div class="cd-row-v" style="color:#1D9E75;font-weight:500">${escapeHtml(STAGE_DESC[(lead.stage||'').trim()])}</div></div>`:''}
         ${lead.semana ? `<div class="cd-row"><div class="cd-row-k">Semana</div><div class="cd-row-v">${escapeHtml(lead.semana)}</div></div>` : ''}
       </div>
+
+      ${creditBlock}
 
       <div class="cd-section">
         <div class="cd-section-title">🎯 Próxima ação</div>
@@ -6147,6 +6161,7 @@ function moveLead(id, newStage){
 }
 
 const STAGE_DESC={'WAITING_DOCUMENTS':'Falta documento pra análise','BACKGROUND_CHECKING':'Em processo de análise do time de Ops','BACKGROUND CHECKING':'Em processo de análise do time de Ops','BGC_PARCEIRO':'Já aprovado na análise de risco; agora em análise do Antecipa (parte 2). Prazo de até 1,5 dia útil.','BGC_REVIEW':'Em processo de análise do time de Ops','REQUEST_TITULARIDADE':'Aprovado na análise, aguardando processo de troca de titularidade','TITULARIDADE_ONGOING':'Troca de titularidade solicitada, aguardando confirmação da distribuidora','TITULARIDADE ONGOING':'Troca de titularidade solicitada, aguardando confirmação da distribuidora','REGISTERING_DG':'Troca de titularidade aprovada, aguardando cadastro na DG para gerar a fatura','ACTIVE_MEMBER':'Troca aprovada e cliente cadastrado na DG para gerar faturas Liora','ACTIVE MEMBER':'Troca aprovada e cliente cadastrado na DG para gerar faturas Liora'};
+const CREDIT_DESC={'PENDENTE':['Em análise de crédito','Ainda em análise de crédito. Alta taxa de aprovação, mas pode eventualmente ser negado.'],'ANÁLISE_DE_CRÉDITO_REJEITADA':['Crédito rejeitado','Reprovado na análise de crédito — entra uma análise de risco negada por cima.'],'COLETANDO_INFORMAÇÕES_DE_DEPÓSITO':['Preparando o pagamento','Puxando as informações para lançar o pagamento.'],'AGUARDANDO_APROVAÇÃO_DE_PAGAMENTO':['Aguardando o pagamento','Pagamento já cadastrado — aguardando aprovação e/ou execução do desembolso.'],'PAGAMENTO_REALIZADO':['Pagamento realizado','Desembolso feito — entra a aprovação final por cima.'],'AGUARDANDO_CONFIRMAÇÃO_DO_CLIENTE':['Aguardando o cliente','Aguardando confirmação do cliente.'],'AGUARDANDO_RESPOSTA_DO_CLIENTE':['Aguardando o cliente','Aguardando resposta do cliente.']};
 function prettyProdTitle(s){return s.split(/\s+/).filter(function(w){return w;}).map(function(w){var L=w.replace(/[^A-Za-zÀ-ÿ]/g,'');if(L.length<=4&&w===w.toUpperCase())return w;var lw=w.toLowerCase();return lw.replace(/([a-zà-ÿ])/,function(m){return m.toUpperCase();});}).join(' ');}
 function prettyProduto(raw){if(raw==null)return '';var s=String(raw).trim();if(!s)return '';var U=s.toUpperCase();if(U.indexOf('LIORA_ANTECIPA_PF')===0)return 'Antecipa PF';if(U.indexOf('LIORA_ANTECIPA_PJ')===0)return 'Antecipa PJ';if(U.indexOf('LIORA_B_')===0||U==='LIORA_B')return 'Liora Blindado';if(U.indexOf('LIORA_F_')===0||U==='LIORA_F')return 'Liora Flex';if(U.indexOf('BUNDLE')===0)return s;s=s.replace(/\s*-\s*.*$/,'');s=s.replace(/(_\d+(\.\d+)?)+$/,'');s=s.replace(/\s+\d+$/,'');if(s.indexOf('_')>-1){var parts=s.split('_').filter(function(x){return x.trim();});var forn=parts.shift();var dist=parts.join(' ').replace(/\s+/g,' ').trim();s=dist?(forn+' ('+dist+')'):forn;}return prettyProdTitle(s);}
 function escapeHtml(s){
