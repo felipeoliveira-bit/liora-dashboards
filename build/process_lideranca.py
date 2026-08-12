@@ -377,6 +377,11 @@ ANT_APPROVE = {
    'dist':'Enel CE','bill':692.0,'mwh':0.0,'stage':'BGC_PENDING_BILLS','acc':True,
    'tipo':'PF','signed':True,'date':'2026-08-11',
  },
+ '83bf2289-52be-43e8-bd76-a1b8e9c9e734': {  # DGN STORE & ESTACIONAMENTO LTDA - Percy Hormazabal/SPI - Antecipa PJ; base ja tem credito=approved mas a aba Antecipa conta risco; forca APPROVED (Felipe 11/08); remover quando a logica honrar credito
+   'c':'DGN STORE & ESTACIONAMENTO LTDA','s':'Percy Hormazabal','praca':'SPI','city':'CAMPINAS','uf':'SP',
+   'dist':'CPFL','bill':703.35,'mwh':0.743,'stage':'BGC_PARCEIRO','acc':True,
+   'tipo':'PJ','signed':True,'date':'2026-08-10',
+ },
 }
 _seen_ant = set()
 ANTECIPA = []
