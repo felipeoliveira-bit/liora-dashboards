@@ -6599,22 +6599,23 @@ function renderVend(rows){
   const agg = {};
   rows.forEach(function(x){
     const k = x.s||&quot;—&quot;;
-    if(!agg[k]) agg[k] = {ger:0, ass:0, apr:0};
+    if(!agg[k]) agg[k] = {ger:0, ass:0, apr:0, billSum:0, billN:0};
     agg[k].ger++;
     if(x.signed) agg[k].ass++;
     if(x.risk===&quot;APPROVED&quot;) agg[k].apr++;
+    if((x.bill||0)>0){ agg[k].billSum+=x.bill; agg[k].billN++; }
   });
   const keys = Object.keys(agg).sort(function(a,b){ return agg[b].ger-agg[a].ger || a.localeCompare(b,&quot;pt-BR&quot;); });
   el(&quot;ant-vend-cnt&quot;).textContent = keys.length + &quot; vendedor(es)&quot;;
   if(!keys.length){ el(&quot;ant-vend&quot;).innerHTML = '<div class=&quot;empty&quot; style=&quot;padding:14px 0&quot;>sem dados</div>'; return; }
-  const tot = {ger:0, ass:0, apr:0};
-  keys.forEach(function(k){ tot.ger+=agg[k].ger; tot.ass+=agg[k].ass; tot.apr+=agg[k].apr; });
-  let html = '<table class=&quot;ptbl&quot;><thead><tr><th>Vendedor</th><th>Geradas</th><th>Assinadas</th><th>Aprovadas</th></tr></thead><tbody>';
+  const tot = {ger:0, ass:0, apr:0, billSum:0, billN:0};
+  keys.forEach(function(k){ tot.ger+=agg[k].ger; tot.ass+=agg[k].ass; tot.apr+=agg[k].apr; tot.billSum+=agg[k].billSum; tot.billN+=agg[k].billN; });
+  let html = '<table class=&quot;ptbl&quot;><thead><tr><th>Vendedor</th><th>Geradas</th><th>Assinadas</th><th>Aprovadas</th><th>Ticket médio</th></tr></thead><tbody>';
   keys.forEach(function(k){
     const a = agg[k];
-    html += &quot;<tr><td>&quot;+esc(k)+&quot;</td><td>&quot;+a.ger+&quot;</td><td>&quot;+a.ass+&quot;</td><td>&quot;+a.apr+&quot;</td></tr>&quot;;
+    html += &quot;<tr><td>&quot;+esc(k)+&quot;</td><td>&quot;+a.ger+&quot;</td><td>&quot;+a.ass+&quot;</td><td>&quot;+a.apr+&quot;</td><td>&quot;+brl(a.billN?a.billSum/a.billN:0)+&quot;</td></tr>&quot;;
   });
-  html += '<tr class=&quot;tot&quot;><td>Total</td><td>'+tot.ger+'</td><td>'+tot.ass+'</td><td>'+tot.apr+'</td></tr>';
+  html += '<tr class=&quot;tot&quot;><td>Total</td><td>'+tot.ger+'</td><td>'+tot.ass+'</td><td>'+tot.apr+'</td><td>'+brl(tot.billN?tot.billSum/tot.billN:0)+'</td></tr>';
   html += &quot;</tbody></table>&quot;;
   el(&quot;ant-vend&quot;).innerHTML = html;
 }
@@ -6623,22 +6624,23 @@ function renderPracaBreak(rows){
   const agg = {};
   rows.forEach(function(x){
     const k = x.praca||&quot;Outras&quot;;
-    if(!agg[k]) agg[k] = {ger:0, ace:0, ass:0, apr:0};
+    if(!agg[k]) agg[k] = {ger:0, ace:0, ass:0, apr:0, billSum:0, billN:0};
     agg[k].ger++;
     if(x.acc) agg[k].ace++;
     if(x.signed) agg[k].ass++;
     if(x.risk===&quot;APPROVED&quot;) agg[k].apr++;
+    if((x.bill||0)>0){ agg[k].billSum+=x.bill; agg[k].billN++; }
   });
   const keys = Object.keys(agg).sort(function(a,b){ return PRACA_SORT.indexOf(a)-PRACA_SORT.indexOf(b); });
   if(!keys.length){ el(&quot;ant-praca&quot;).innerHTML = '<div class=&quot;empty&quot; style=&quot;padding:14px 0&quot;>sem dados</div>'; return; }
-  const tot = {ger:0, ace:0, ass:0, apr:0};
-  keys.forEach(function(k){ tot.ger+=agg[k].ger; tot.ace+=agg[k].ace; tot.ass+=agg[k].ass; tot.apr+=agg[k].apr; });
-  let html = '<table class=&quot;ptbl&quot;><thead><tr><th>Praça</th><th>Geradas</th><th>Assinadas</th><th>Aprovadas</th></tr></thead><tbody>';
+  const tot = {ger:0, ace:0, ass:0, apr:0, billSum:0, billN:0};
+  keys.forEach(function(k){ tot.ger+=agg[k].ger; tot.ace+=agg[k].ace; tot.ass+=agg[k].ass; tot.apr+=agg[k].apr; tot.billSum+=agg[k].billSum; tot.billN+=agg[k].billN; });
+  let html = '<table class=&quot;ptbl&quot;><thead><tr><th>Praça</th><th>Geradas</th><th>Assinadas</th><th>Aprovadas</th><th>Ticket médio</th></tr></thead><tbody>';
   keys.forEach(function(k){
     const a = agg[k];
-    html += &quot;<tr><td>&quot;+pracaBadge(k)+&quot;</td><td>&quot;+a.ger+&quot;</td><td>&quot;+a.ass+&quot;</td><td>&quot;+a.apr+&quot;</td></tr>&quot;;
+    html += &quot;<tr><td>&quot;+pracaBadge(k)+&quot;</td><td>&quot;+a.ger+&quot;</td><td>&quot;+a.ass+&quot;</td><td>&quot;+a.apr+&quot;</td><td>&quot;+brl(a.billN?a.billSum/a.billN:0)+&quot;</td></tr>&quot;;
   });
-  html += '<tr class=&quot;tot&quot;><td>Total</td><td>'+tot.ger+'</td><td>'+tot.ass+'</td><td>'+tot.apr+'</td></tr>';
+  html += '<tr class=&quot;tot&quot;><td>Total</td><td>'+tot.ger+'</td><td>'+tot.ass+'</td><td>'+tot.apr+'</td><td>'+brl(tot.billN?tot.billSum/tot.billN:0)+'</td></tr>';
   html += &quot;</tbody></table>&quot;;
   el(&quot;ant-praca&quot;).innerHTML = html;
 }
