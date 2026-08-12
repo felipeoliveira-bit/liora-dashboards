@@ -2276,6 +2276,13 @@ function openClienteDetalhes(dealId){
        </div>`
     : '';
 
+  // "O que significa" do estágio: se o crédito Antecipa já foi aprovado (credito_ok),
+  // a descrição de risco (ex.: BGC_PARCEIRO "parte 2") fica ambígua — mostra só "Aprovado".
+  const _stageDesc = STAGE_DESC[(lead.stage||'').trim()];
+  const stageMeaning = lead.credito_ok ? 'Aprovado' : (_stageDesc || '');
+  const stageMeaningBlock = stageMeaning
+    ? `<div class="cd-row"><div class="cd-row-k">O que significa</div><div class="cd-row-v" style="color:#1D9E75;font-weight:500">${escapeHtml(stageMeaning)}</div></div>`
+    : '';
   // Situação Antecipa (crédito) — bloco explicado, só p/ deals do Antecipa
   const creditBlock = lead.credito ? (function(){
     var info = CREDIT_DESC[lead.credito];
@@ -2324,7 +2331,7 @@ function openClienteDetalhes(dealId){
         <div class="cd-row"><div class="cd-row-k">Criação do deal</div><div class="cd-row-v">${_fmtDate(lead.date)}</div></div>
         <div class="cd-row"><div class="cd-row-k">Aprovação (risco)</div><div class="cd-row-v">${lead.aprov_date ? _fmtDate(lead.aprov_date) : '—'}</div></div>
         <div class="cd-row"><div class="cd-row-k">Estágio atual</div><div class="cd-row-v">${escapeHtml(lead.stage||'—')}</div></div>
-        ${STAGE_DESC[(lead.stage||'').trim()]?`<div class="cd-row"><div class="cd-row-k">O que significa</div><div class="cd-row-v" style="color:#1D9E75;font-weight:500">${escapeHtml(STAGE_DESC[(lead.stage||'').trim()])}</div></div>`:''}
+        ${stageMeaningBlock}
         ${lead.semana ? `<div class="cd-row"><div class="cd-row-k">Semana</div><div class="cd-row-v">${escapeHtml(lead.semana)}</div></div>` : ''}
       </div>
 
