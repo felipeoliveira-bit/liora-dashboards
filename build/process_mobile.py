@@ -143,7 +143,8 @@ CONSUMPTION_OVERRIDE = {  # cliente (upper/strip) -> MWh; temp ate base corrigir
  'DRAX CENTRO AUTOMOTIVO LTDA': 4.311,
 }
 FORCE_APPROVED = {'cfb2500c-c323-4943-a7f8-e831a8f37b55': '2026-08-04',  # PP FERREIRA DE SALES COMER DE COSMETICOS - aprovado manual SOS 15:32 04/08 (Aurivando/CE); card818+risk_real ainda MANUAL; remover quando base refletir
-                  '42d73385-cf0f-4a56-bdb6-0d81161087f2': '2026-08-11'}  # MAIZA PEREIRA DA SILVA (Antecipa PF, Bruno Borges/CE) - aprovado manual (Felipe 11/08); base risco MANUAL/credito vazio; remover quando base refletir
+                  '42d73385-cf0f-4a56-bdb6-0d81161087f2': '2026-08-11',  # MAIZA PEREIRA DA SILVA (Antecipa PF, Bruno Borges/CE) - aprovado manual (Felipe 11/08); base risco MANUAL/credito vazio; remover quando base refletir
+                  'f9cf93c9-5348-4586-acdb-5a2b1dd49f60': '2026-08-12'}  # ISMAEL RODRIGUES SILVA (Antecipa PF, Phillip Faria/Ribeirao SPI) - aprovado manual (Felipe 12/08); base risco MANUAL; remover quando base refletir
 LOST_IGNORE = {  # ignora lost_at/lost_reason (falso 'nao aceito pela distribuidora')
  'FRANCISCO ALDECI DE QUEIROZ FERNANDES',  # reprovado e erro; ignorar (Felipe 03/07)
  'ANTÔNIO EDMILSON LEITE',  # dup denied em BGC, forçado aprovado (Felipe 15/07)

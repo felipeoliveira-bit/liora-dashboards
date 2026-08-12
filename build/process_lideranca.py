@@ -245,7 +245,8 @@ LOST_IGNORE = { norm('FRANCISCO ALDECI DE QUEIROZ FERNANDES'), norm('ANTÔNIO ED
 # FORCE_APPROVED: deals que contam como aprovado por decisao manual (contrato assinado,
 # aguardando BGC). Chave = deal_id. Remover quando a base refletir BGC APPROVED.
 FORCE_APPROVED = {'cfb2500c-c323-4943-a7f8-e831a8f37b55': '2026-08-04',  # PP FERREIRA DE SALES COMER DE COSMETICOS - aprovado manual SOS 15:32 04/08 (Aurivando/CE); card818+risk_real ainda MANUAL; remover quando base refletir
-                  '42d73385-cf0f-4a56-bdb6-0d81161087f2': '2026-08-11'}  # MAIZA PEREIRA DA SILVA (Antecipa PF, Bruno Borges/CE) - aprovado manual (Felipe 11/08); base risco MANUAL/credito vazio; remover quando base refletir
+                  '42d73385-cf0f-4a56-bdb6-0d81161087f2': '2026-08-11',  # MAIZA PEREIRA DA SILVA (Antecipa PF, Bruno Borges/CE) - aprovado manual (Felipe 11/08); base risco MANUAL/credito vazio; remover quando base refletir
+                  'f9cf93c9-5348-4586-acdb-5a2b1dd49f60': '2026-08-12'}  # ISMAEL RODRIGUES SILVA (Antecipa PF, Phillip Faria/Ribeirao SPI) - aprovado manual (Felipe 12/08); base risco MANUAL; remover quando base refletir
 def mwh_of(client, raw, did=None):
     if did is not None:
         ovid = CONSUMPTION_OVERRIDE_BY_ID.get(did)
@@ -381,6 +382,11 @@ ANT_APPROVE = {
    'c':'DGN STORE & ESTACIONAMENTO LTDA','s':'Percy Hormazabal','praca':'SPI','city':'CAMPINAS','uf':'SP',
    'dist':'CPFL','bill':703.35,'mwh':0.743,'stage':'BGC_PARCEIRO','acc':True,
    'tipo':'PJ','signed':True,'date':'2026-08-10',
+ },
+ 'f9cf93c9-5348-4586-acdb-5a2b1dd49f60': {  # ISMAEL RODRIGUES SILVA - Phillip Faria/Ribeirao SPI - Antecipa PF - aprovado manual (Felipe 12/08)
+   'c':'ISMAEL RODRIGUES SILVA','s':'Phillip Faria','praca':'Ribeirao','city':'SERTAOZINHO','uf':'SP',
+   'dist':'CPFL','bill':460.09,'mwh':0.206,'stage':'BGC_PENDING_BILLS','acc':True,
+   'tipo':'PF','signed':True,'date':'2026-08-12',
  },
 }
 _seen_ant = set()
