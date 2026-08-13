@@ -245,7 +245,8 @@ LOST_IGNORE = { norm('FRANCISCO ALDECI DE QUEIROZ FERNANDES'), norm('ANTÔNIO ED
 # FORCE_APPROVED: deals que contam como aprovado por decisao manual (contrato assinado,
 # aguardando BGC). Chave = deal_id. Remover quando a base refletir BGC APPROVED.
 FORCE_APPROVED = {'cfb2500c-c323-4943-a7f8-e831a8f37b55': '2026-08-04',  # PP FERREIRA DE SALES COMER DE COSMETICOS - aprovado manual SOS 15:32 04/08 (Aurivando/CE); card818+risk_real ainda MANUAL; remover quando base refletir
-                  'f9cf93c9-5348-4586-acdb-5a2b1dd49f60': '2026-08-12'}  # ISMAEL RODRIGUES SILVA (Antecipa PF, Phillip Faria/Ribeirao SPI) - aprovado manual (Felipe 12/08); base risco MANUAL; remover quando base refletir
+                  'f9cf93c9-5348-4586-acdb-5a2b1dd49f60': '2026-08-12',  # ISMAEL RODRIGUES SILVA (Antecipa PF, Phillip Faria/Ribeirao SPI) - aprovado manual (Felipe 12/08); base risco MANUAL; remover quando base refletir
+                  '77a56fa5-9c4e-476c-b71d-ac08534d6745': '2026-08-13'}  # DILEUDA CORINGA DA FONSECA DA SILVA (Antecipa PF, Thiago Macillo/Natal RN) - aprovado manual (Felipe 13/08); risco APPROVED_PENDING_CREDIT + credito PENDING; remover quando base refletir
 def mwh_of(client, raw, did=None):
     if did is not None:
         ovid = CONSUMPTION_OVERRIDE_BY_ID.get(did)
@@ -375,6 +376,11 @@ ANT_APPROVE = {
  'f9cf93c9-5348-4586-acdb-5a2b1dd49f60': {  # ISMAEL RODRIGUES SILVA - Phillip Faria/Ribeirao SPI - Antecipa PF - aprovado manual (Felipe 12/08)
    'c':'ISMAEL RODRIGUES SILVA','s':'Phillip Faria','praca':'Ribeirao','city':'SERTAOZINHO','uf':'SP',
    'dist':'CPFL','bill':460.09,'mwh':0.206,'stage':'BGC_PENDING_BILLS','acc':True,
+   'tipo':'PF','signed':True,'date':'2026-08-12',
+ },
+ '77a56fa5-9c4e-476c-b71d-ac08534d6745': {  # DILEUDA CORINGA DA FONSECA DA SILVA - Thiago Macillo/Natal RN - Antecipa PF - aprovado manual (Felipe 13/08); risco APPROVED_PENDING_CREDIT + credito PENDING; remover quando base refletir
+   'c':'DILEUDA CORINGA DA FONSECA DA SILVA','s':'Thiago Macillo','praca':'Natal','city':'NATAL','uf':'RN',
+   'dist':'Cosern','bill':758.16,'mwh':0.49,'stage':'BGC_PARCEIRO','acc':True,
    'tipo':'PF','signed':True,'date':'2026-08-12',
  },
 }
