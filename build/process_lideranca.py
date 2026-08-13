@@ -246,7 +246,9 @@ LOST_IGNORE = { norm('FRANCISCO ALDECI DE QUEIROZ FERNANDES'), norm('ANTÔNIO ED
 # aguardando BGC). Chave = deal_id. Remover quando a base refletir BGC APPROVED.
 FORCE_APPROVED = {'cfb2500c-c323-4943-a7f8-e831a8f37b55': '2026-08-04',  # PP FERREIRA DE SALES COMER DE COSMETICOS - aprovado manual SOS 15:32 04/08 (Aurivando/CE); card818+risk_real ainda MANUAL; remover quando base refletir
                   'f9cf93c9-5348-4586-acdb-5a2b1dd49f60': '2026-08-12',  # ISMAEL RODRIGUES SILVA (Antecipa PF, Phillip Faria/Ribeirao SPI) - aprovado manual (Felipe 12/08); base risco MANUAL; remover quando base refletir
-                  '77a56fa5-9c4e-476c-b71d-ac08534d6745': '2026-08-13'}  # DILEUDA CORINGA DA FONSECA DA SILVA (Antecipa PF, Thiago Macillo/Natal RN) - aprovado manual (Felipe 13/08); risco APPROVED_PENDING_CREDIT + credito PENDING; remover quando base refletir
+                  '77a56fa5-9c4e-476c-b71d-ac08534d6745': '2026-08-13',  # DILEUDA CORINGA DA FONSECA DA SILVA (Antecipa PF, Thiago Macillo/Natal RN) - aprovado manual (Felipe 13/08); risco APPROVED_PENDING_CREDIT + credito PENDING; remover quando base refletir
+                  'b4e7eacc-8dc9-445e-9a37-d83cb3ecff80': '2026-08-13',  # DANILO FERREIRA DE LACERDA (Antecipa PF, Fabio Rodrigues/Ribeirao) - BGC_PARCEIRO risco APPROVED_PENDING_CREDIT + credito PENDING; aprovado manual (Felipe 13/08); remover quando base refletir
+                  '1d00bb47-a942-4407-8216-98df676b41e9': '2026-08-13'}  # ALESSANDRA DELFINO (Antecipa PF, Phillip Faria/Ribeirao) - BGC_PARCEIRO risco APPROVED_PENDING_CREDIT + credito PENDING; aprovado manual (Felipe 13/08); remover quando base refletir
 def mwh_of(client, raw, did=None):
     if did is not None:
         ovid = CONSUMPTION_OVERRIDE_BY_ID.get(did)
@@ -382,6 +384,16 @@ ANT_APPROVE = {
    'c':'DILEUDA CORINGA DA FONSECA DA SILVA','s':'Thiago Macillo','praca':'Natal','city':'NATAL','uf':'RN',
    'dist':'Cosern','bill':758.16,'mwh':0.49,'stage':'BGC_PARCEIRO','acc':True,
    'tipo':'PF','signed':True,'date':'2026-08-12',
+ },
+ 'b4e7eacc-8dc9-445e-9a37-d83cb3ecff80': {  # DANILO FERREIRA DE LACERDA - Fabio Rodrigues/Ribeirao - Antecipa PF - aprovado manual (Felipe 13/08); BGC_PARCEIRO risco APPROVED_PENDING_CREDIT + credito PENDING; remover quando base refletir
+   'c':'DANILO FERREIRA DE LACERDA','s':'Fabio Rodrigues','praca':'Ribeirao','city':'RIBEIRAO PRETO','uf':'SP',
+   'dist':'CPFL','bill':470.11,'mwh':0.45,'stage':'BGC_PARCEIRO','acc':True,
+   'tipo':'PF','signed':True,'date':'2026-08-13',
+ },
+ '1d00bb47-a942-4407-8216-98df676b41e9': {  # ALESSANDRA DELFINO - Phillip Faria/Ribeirao - Antecipa PF - aprovado manual (Felipe 13/08); BGC_PARCEIRO risco APPROVED_PENDING_CREDIT + credito PENDING; remover quando base refletir
+   'c':'ALESSANDRA DELFINO','s':'Phillip Faria','praca':'Ribeirao','city':'RIBEIRAO PRETO','uf':'SP',
+   'dist':'CPFL','bill':204.9,'mwh':0.207,'stage':'BGC_PARCEIRO','acc':True,
+   'tipo':'PF','signed':True,'date':'2026-08-13',
  },
 }
 _seen_ant = set()
