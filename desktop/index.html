@@ -6529,6 +6529,7 @@ function weekRange(weeksAgo){
   return [localISO(sun), localISO(sat)];
 }
 let antPer = 'month', antPraca = 'all', antPessoa = 'all';
+let vendSort={k:'ger',dir:-1}, pracaSort={k:null,dir:-1};
 function inAntPeriod(ds){
   ds = String(ds||'').slice(0,10); if(!ds) return false;
   if(antPer==='month')     return ds.slice(0,7)===TODAY_ISO.slice(0,7);
@@ -6561,6 +6562,16 @@ function apprRows(){
 function setAntPer(p, elm){ antPer=p; document.querySelectorAll('[data-ant-per]').forEach(function(b){b.classList.remove('active');}); if(elm) elm.classList.add('active'); renderAll(); }
 function setAntPraca(p, elm){ antPraca=p; document.querySelectorAll('[data-ant-praca]').forEach(function(b){b.classList.remove('active');}); if(elm) elm.classList.add('active'); renderAll(); }
 function setAntPessoa(v){ antPessoa=v; renderAll(); }
+function setVendSort(k){ if(vendSort.k===k){ vendSort.dir=-vendSort.dir; } else { vendSort={k:k, dir:(k==='name'?1:-1)}; } renderAll(); }
+function setPracaSort(k){ if(pracaSort.k===k){ pracaSort.dir=-pracaSort.dir; } else { pracaSort={k:k, dir:(k==='name'||k==='reg'?1:-1)}; } renderAll(); }
+function _antHead(fn, st, cols){
+  var h='<thead><tr>';
+  cols.forEach(function(c){
+    var car = st.k===c[0] ? (st.dir===1?' ▲':' ▼') : '';
+    h += '<th style=&quot;cursor:pointer;user-select:none&quot; onclick=&quot;'+fn+'(\''+c[0]+'\')&quot;>'+c[1]+car+'</th>';
+  });
+  return h+'</tr></thead>';
+}
 
 function monthLabel(){
   const ds = DATA.map(function(x){return x.date;}).filter(Boolean).sort();
@@ -6601,11 +6612,14 @@ function renderKpis(rows){
   }).length;
   const bills = rows.map(function(x){return x.bill||0;}).filter(function(v){return v>0;});
   const ticket = bills.length ? bills.reduce(function(a,b){return a+b;},0)/bills.length : 0;
+  const abills = apprRows().map(function(x){return x.bill||0;}).filter(function(v){return v>0;});
+  const tapr = abills.length ? abills.reduce(function(a,b){return a+b;},0)/abills.length : 0;
   const k = [
     [&quot;Propostas geradas&quot;, tot, pct(tot,fieldP)+&quot;% do field&quot;, false],
     [&quot;Assinadas&quot;, sig, pct(sig,fieldS)+&quot;% do field&quot;, true],
     [&quot;Aprovadas no risco&quot;, apr, pct(apr,fieldA)+&quot;% do field&quot;, false],
-    [&quot;Ticket médio (fatura)&quot;, brl(ticket), &quot;por proposta&quot;, false],
+    [&quot;Ticket médio propostas&quot;, brl(ticket), &quot;por proposta&quot;, false],
+    [&quot;Ticket médio aprovados&quot;, brl(tapr), &quot;por aprovado&quot;, false],
   ];
   el(&quot;ant-kpis&quot;).innerHTML = k.map(function(x){
     return '<div class=&quot;kpi'+(x[3]?&quot; accent&quot;:&quot;&quot;)+'&quot;><div class=&quot;lbl&quot;>'+x[0]+'</div>'
@@ -6624,12 +6638,17 @@ function renderVend(rows){
   });
   // Aprovadas: por DATA de aprovacao no periodo (independe da geracao); une chaves (Felipe 12/08).
   apprRows().forEach(function(x){ _slot(x.s||&quot;—&quot;).apr++; });
-  const keys = Object.keys(agg).sort(function(a,b){ return agg[b].ger-agg[a].ger || a.localeCompare(b,&quot;pt-BR&quot;); });
+  const keys = Object.keys(agg).sort(function(a,b){
+    if(vendSort.k==='name'){ return vendSort.dir===1?a.localeCompare(b,'pt-BR'):b.localeCompare(a,'pt-BR'); }
+    function _v(n){ var z=agg[n]; if(vendSort.k==='ass')return z.ass; if(vendSort.k==='apr')return z.apr; if(vendSort.k==='tk')return z.billN?z.billSum/z.billN:0; return z.ger; }
+    var d = vendSort.dir===1 ? (_v(a)-_v(b)) : (_v(b)-_v(a));
+    return d || a.localeCompare(b,'pt-BR');
+  });
   el(&quot;ant-vend-cnt&quot;).textContent = keys.length + &quot; vendedor(es)&quot;;
   if(!keys.length){ el(&quot;ant-vend&quot;).innerHTML = '<div class=&quot;empty&quot; style=&quot;padding:14px 0&quot;>sem dados</div>'; return; }
   const tot = {ger:0, ass:0, apr:0, billSum:0, billN:0};
   keys.forEach(function(k){ tot.ger+=agg[k].ger; tot.ass+=agg[k].ass; tot.apr+=agg[k].apr; tot.billSum+=agg[k].billSum; tot.billN+=agg[k].billN; });
-  let html = '<table class=&quot;ptbl&quot;><thead><tr><th>Vendedor</th><th>Geradas</th><th>Assinadas</th><th>Aprovadas</th><th>Ticket médio</th></tr></thead><tbody>';
+  let html = '<table class=&quot;ptbl&quot;>' + _antHead('setVendSort', vendSort, [['name','Vendedor'],['ger','Geradas'],['ass','Assinadas'],['apr','Aprovadas'],['tk','Ticket médio']]) + '<tbody>';
   keys.forEach(function(k){
     const a = agg[k];
     html += &quot;<tr><td>&quot;+esc(k)+&quot;</td><td>&quot;+a.ger+&quot;</td><td>&quot;+a.ass+&quot;</td><td>&quot;+a.apr+&quot;</td><td>&quot;+brl(a.billN?a.billSum/a.billN:0)+&quot;</td></tr>&quot;;
@@ -6651,11 +6670,18 @@ function renderPracaBreak(rows){
   });
   // Aprovadas: por DATA de aprovacao no periodo; une chaves de praca (Felipe 12/08).
   apprRows().forEach(function(x){ _slotP(x.praca||&quot;Outras&quot;).apr++; });
-  const keys = Object.keys(agg).sort(function(a,b){ return PRACA_SORT.indexOf(a)-PRACA_SORT.indexOf(b); });
+  const keys = Object.keys(agg).sort(function(a,b){
+    if(pracaSort.k===null){ return PRACA_SORT.indexOf(a)-PRACA_SORT.indexOf(b); }
+    if(pracaSort.k==='reg'){ var r=PRACA_SORT.indexOf(a)-PRACA_SORT.indexOf(b); return pracaSort.dir===1?r:-r; }
+    if(pracaSort.k==='name'){ return pracaSort.dir===1?a.localeCompare(b,'pt-BR'):b.localeCompare(a,'pt-BR'); }
+    function _v(n){ var z=agg[n]; if(pracaSort.k==='ass')return z.ass; if(pracaSort.k==='apr')return z.apr; if(pracaSort.k==='tk')return z.billN?z.billSum/z.billN:0; return z.ger; }
+    var d = pracaSort.dir===1 ? (_v(a)-_v(b)) : (_v(b)-_v(a));
+    return d || (PRACA_SORT.indexOf(a)-PRACA_SORT.indexOf(b));
+  });
   if(!keys.length){ el(&quot;ant-praca&quot;).innerHTML = '<div class=&quot;empty&quot; style=&quot;padding:14px 0&quot;>sem dados</div>'; return; }
   const tot = {ger:0, ace:0, ass:0, apr:0, billSum:0, billN:0};
   keys.forEach(function(k){ tot.ger+=agg[k].ger; tot.ace+=agg[k].ace; tot.ass+=agg[k].ass; tot.apr+=agg[k].apr; tot.billSum+=agg[k].billSum; tot.billN+=agg[k].billN; });
-  let html = '<table class=&quot;ptbl&quot;><thead><tr><th>Praça</th><th>Geradas</th><th>Assinadas</th><th>Aprovadas</th><th>Ticket médio</th></tr></thead><tbody>';
+  let html = '<table class=&quot;ptbl&quot;>' + _antHead('setPracaSort', pracaSort, [['reg','Praça'],['ger','Geradas'],['ass','Assinadas'],['apr','Aprovadas'],['tk','Ticket médio']]) + '<tbody>';
   keys.forEach(function(k){
     const a = agg[k];
     html += &quot;<tr><td>&quot;+pracaBadge(k)+&quot;</td><td>&quot;+a.ger+&quot;</td><td>&quot;+a.ass+&quot;</td><td>&quot;+a.apr+&quot;</td><td>&quot;+brl(a.billN?a.billSum/a.billN:0)+&quot;</td></tr>&quot;;
