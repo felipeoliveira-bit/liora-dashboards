@@ -394,6 +394,9 @@ if f_ant:
         _em = r.get('sales_person_email')
         _did = (r.get('deal_id') or '').strip()
         _seen_ant.add(_did)
+        # adate = data da APROVACAO (analise de risco). Usada p/ contar aprovados
+        # pela data em que foram aprovados dentro do filtro (Felipe 12/08), nao pela geracao.
+        _adate = pdate(r.get('latest_risk_analysis_created_at')) or (d or '')
         ANTECIPA.append({
           'c': _cli,
           's': seller_of(_em, _cli),
@@ -413,10 +416,11 @@ if f_ant:
           'tipo': _ant_tipo(r.get('product_name')),
           'signed': bool((r.get('latest_contract_signature_signed_at') or '').strip()),
           'date': d or '',
+          'adate': _adate,
         })
 for _did, _rec in ANT_APPROVE.items():
     if _did not in _seen_ant:
-        _r = dict(_rec); _r['risk'] = 'APPROVED'; _r.setdefault('credito','approved')
+        _r = dict(_rec); _r['risk'] = 'APPROVED'; _r.setdefault('credito','approved'); _r.setdefault('adate', _r.get('date',''))
         ANTECIPA.append(_r)
 ANTECIPA.sort(key=lambda x: x['date'], reverse=True)
 io.open('new_ANTECIPA.json','w').write(json.dumps(ANTECIPA, ensure_ascii=False))
@@ -432,12 +436,12 @@ ANT_FIELD=[]
 for r in prop:  # GD field (FS_Liora)
     _cli=(r.get('current_client_name') or '').strip(); _em=r.get('sales_person_email')
     _d=pdate(r.get('proposal_created_at')) or pdate(r.get('deal_created_at'))
-    ANT_FIELD.append({'date':_d or '','praca':_ANT_PRACA_KEY.get(praca_of(_em,_cli),'Outras'),
+    ANT_FIELD.append({'date':_d or '','adate':(pdate(r.get('latest_risk_analysis_created_at')) or (_d or '')),'praca':_ANT_PRACA_KEY.get(praca_of(_em,_cli),'Outras'),
                       's':seller_of(_em,_cli),
                       'sig':bool((r.get('latest_contract_signature_signed_at') or '').strip()),
                       'apr':_gd_apr(r)})
 for _x in ANTECIPA:  # Antecipa Field (mesma definicao do numerador da aba)
-    ANT_FIELD.append({'date':_x['date'],'praca':_x['praca'],'s':_x['s'],
+    ANT_FIELD.append({'date':_x['date'],'adate':_x.get('adate',_x['date']),'praca':_x['praca'],'s':_x['s'],
                       'sig':bool(_x.get('signed')),'apr':(_x.get('risk')=='APPROVED')})
 io.open('new_ANT_FIELD.json','w').write(json.dumps(ANT_FIELD, ensure_ascii=False))
 print('ant_field:', len(ANT_FIELD))

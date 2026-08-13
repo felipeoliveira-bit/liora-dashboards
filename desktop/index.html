@@ -6546,6 +6546,18 @@ function baseRows(){
     return true;
   });
 }
+// apprRows: linhas APROVADAS cuja data de APROVACAO (adate) cai no periodo do filtro
+// (+ praca/pessoa). Base da coluna/KPI "Aprovadas": conta aprovado no dia do filtro,
+// nao na geracao (Felipe 12/08). Fallback p/ x.date se adate ausente.
+function apprRows(){
+  return DATA.filter(function(x){
+    if(x.risk!==&quot;APPROVED&quot;) return false;
+    if(!inAntPeriod(x.adate||x.date)) return false;
+    if(antPraca!=='all' &amp;&amp; (x.praca||'Outras')!==antPraca) return false;
+    if(antPessoa!=='all' &amp;&amp; (x.s||'')!==antPessoa) return false;
+    return true;
+  });
+}
 function setAntPer(p, elm){ antPer=p; document.querySelectorAll('[data-ant-per]').forEach(function(b){b.classList.remove('active');}); if(elm) elm.classList.add('active'); renderAll(); }
 function setAntPraca(p, elm){ antPraca=p; document.querySelectorAll('[data-ant-praca]').forEach(function(b){b.classList.remove('active');}); if(elm) elm.classList.add('active'); renderAll(); }
 function setAntPessoa(v){ antPessoa=v; renderAll(); }
@@ -6571,7 +6583,7 @@ function bars(container, pairs, lil){
 function renderKpis(rows){
   const tot = rows.length;
   const sig = rows.filter(function(x){return x.signed;}).length;
-  const apr = rows.filter(function(x){return x.risk===&quot;APPROVED&quot;;}).length;
+  const apr = apprRows().length; // aprovados por DATA de aprovacao no periodo (Felipe 12/08)
   const _FF = ANT_FIELD.filter(function(x){return !x._ph;}).filter(function(x){
     if(!inAntPeriod(x.date)) return false;
     if(antPraca!=='all' &amp;&amp; (x.praca||'Outras')!==antPraca) return false;
@@ -6580,7 +6592,13 @@ function renderKpis(rows){
   });
   const fieldP = _FF.length;
   const fieldS = _FF.filter(function(x){return x.sig;}).length;
-  const fieldA = _FF.filter(function(x){return x.apr;}).length;
+  const fieldA = ANT_FIELD.filter(function(x){return !x._ph;}).filter(function(x){
+    if(!x.apr) return false;
+    if(!inAntPeriod(x.adate||x.date)) return false;
+    if(antPraca!=='all' &amp;&amp; (x.praca||'Outras')!==antPraca) return false;
+    if(antPessoa!=='all' &amp;&amp; (x.s||'')!==antPessoa) return false;
+    return true;
+  }).length;
   const bills = rows.map(function(x){return x.bill||0;}).filter(function(v){return v>0;});
   const ticket = bills.length ? bills.reduce(function(a,b){return a+b;},0)/bills.length : 0;
   const k = [
@@ -6597,14 +6615,15 @@ function renderKpis(rows){
 
 function renderVend(rows){
   const agg = {};
+  function _slot(k){ if(!agg[k]) agg[k] = {ger:0, ass:0, apr:0, billSum:0, billN:0}; return agg[k]; }
   rows.forEach(function(x){
-    const k = x.s||&quot;—&quot;;
-    if(!agg[k]) agg[k] = {ger:0, ass:0, apr:0, billSum:0, billN:0};
-    agg[k].ger++;
-    if(x.signed) agg[k].ass++;
-    if(x.risk===&quot;APPROVED&quot;) agg[k].apr++;
-    if((x.bill||0)>0){ agg[k].billSum+=x.bill; agg[k].billN++; }
+    const a = _slot(x.s||&quot;—&quot;);
+    a.ger++;
+    if(x.signed) a.ass++;
+    if((x.bill||0)>0){ a.billSum+=x.bill; a.billN++; }
   });
+  // Aprovadas: por DATA de aprovacao no periodo (independe da geracao); une chaves (Felipe 12/08).
+  apprRows().forEach(function(x){ _slot(x.s||&quot;—&quot;).apr++; });
   const keys = Object.keys(agg).sort(function(a,b){ return agg[b].ger-agg[a].ger || a.localeCompare(b,&quot;pt-BR&quot;); });
   el(&quot;ant-vend-cnt&quot;).textContent = keys.length + &quot; vendedor(es)&quot;;
   if(!keys.length){ el(&quot;ant-vend&quot;).innerHTML = '<div class=&quot;empty&quot; style=&quot;padding:14px 0&quot;>sem dados</div>'; return; }
@@ -6622,15 +6641,16 @@ function renderVend(rows){
 
 function renderPracaBreak(rows){
   const agg = {};
+  function _slotP(k){ if(!agg[k]) agg[k] = {ger:0, ace:0, ass:0, apr:0, billSum:0, billN:0}; return agg[k]; }
   rows.forEach(function(x){
-    const k = x.praca||&quot;Outras&quot;;
-    if(!agg[k]) agg[k] = {ger:0, ace:0, ass:0, apr:0, billSum:0, billN:0};
-    agg[k].ger++;
-    if(x.acc) agg[k].ace++;
-    if(x.signed) agg[k].ass++;
-    if(x.risk===&quot;APPROVED&quot;) agg[k].apr++;
-    if((x.bill||0)>0){ agg[k].billSum+=x.bill; agg[k].billN++; }
+    const a = _slotP(x.praca||&quot;Outras&quot;);
+    a.ger++;
+    if(x.acc) a.ace++;
+    if(x.signed) a.ass++;
+    if((x.bill||0)>0){ a.billSum+=x.bill; a.billN++; }
   });
+  // Aprovadas: por DATA de aprovacao no periodo; une chaves de praca (Felipe 12/08).
+  apprRows().forEach(function(x){ _slotP(x.praca||&quot;Outras&quot;).apr++; });
   const keys = Object.keys(agg).sort(function(a,b){ return PRACA_SORT.indexOf(a)-PRACA_SORT.indexOf(b); });
   if(!keys.length){ el(&quot;ant-praca&quot;).innerHTML = '<div class=&quot;empty&quot; style=&quot;padding:14px 0&quot;>sem dados</div>'; return; }
   const tot = {ger:0, ace:0, ass:0, apr:0, billSum:0, billN:0};
