@@ -42,6 +42,19 @@ def in_cur_month(s):
     t=ymd(s); return t is not None and t[0]==TODAY.year and t[1]==TODAY.month
 
 PREV=(TODAY.year-1,12,1) if TODAY.month==1 else (TODAY.year,TODAY.month-1,1)
+
+# Janela do HISTORICO por vendedor: 3 meses fechados + o mes corrente (aba
+# "Historico" do desktop). Espelha automacao/slice_base.py.
+HIST_MESES=4
+def _mes_janela(n):
+    y,m=TODAY.year,TODAY.month; out=[]
+    for _ in range(n):
+        out.append('%04d-%02d'%(y,m)); m-=1
+        if m==0: y,m=y-1,12
+    return set(out)
+HIST_JANELA=_mes_janela(HIST_MESES)
+def in_hist_window(s):
+    t=ymd(s); return t is not None and ('%04d-%02d'%(t[0],t[1])) in HIST_JANELA
 def sig_recent(s):
     t=ymd(s); return t is not None and t>=PREV
 
@@ -178,6 +191,10 @@ def main():
     antecipa=[r for r in base
               if (r.get('product_name') or '').strip().upper().startswith('LIORA_ANTECIPA')
               and in_cur_month(r.get('proposal_created_at'))]
+    # Recorte HISTORICO: propostas do FIELD (GD + Antecipa de campo) dos ultimos
+    # HIST_MESES meses, coorte pela data da proposta. Aba "Historico" do desktop.
+    historico=[r for r in fs_field if in_hist_window(r.get('proposal_created_at'))]
+
     if not deals or not prop or not agu:
         sys.exit('ABORT: recorte vazio (deals=%d prop=%d agu=%d).' % (len(deals),len(prop),len(agu)))
     def write(name, rs):
@@ -186,7 +203,8 @@ def main():
             w=csv.DictWriter(fh, fieldnames=fields); w.writeheader(); w.writerows(rs)
     write('deals', deals); write('propostas_geradas', prop); write('aguardando_documentos', agu)
     if antecipa: write('antecipa_geradas', antecipa)
-    print('mes %04d-%02d | deals=%d propostas=%d aguardando=%d antecipa=%d' % (TODAY.year,TODAY.month,len(deals),len(prop),len(agu),len(antecipa)))
+    if historico: write('historico_vendedor', historico)
+    print('mes %04d-%02d | deals=%d propostas=%d aguardando=%d antecipa=%d historico=%d (%s)' % (TODAY.year,TODAY.month,len(deals),len(prop),len(agu),len(antecipa),len(historico),' '.join(sorted(HIST_JANELA))))
 
 if __name__=='__main__':
     main()

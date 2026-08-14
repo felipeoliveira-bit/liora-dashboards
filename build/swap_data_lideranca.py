@@ -61,6 +61,7 @@ payload = {
  'ANT_FIELD': json.load(open('new_ANT_FIELD.json')),
  'MISSAO': json.load(open('new_MISSAO.json')),
  'MISSAO_ROSTER': json.load(open('new_MISSAO_ROSTER.json')),
+ 'HIST':    json.load(open('new_HIST.json')),
 }
 
 report=[]

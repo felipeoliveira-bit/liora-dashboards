@@ -501,6 +501,69 @@ io.open('new_ANT_FIELD.json','w').write(json.dumps(ANT_FIELD, ensure_ascii=False
 print('ant_field:', len(ANT_FIELD))
 print('antecipa:', len(ANTECIPA), '|', (os.path.basename(f_ant) if f_ant else 'sem arquivo'))
 
+# ---- HIST: historico de performance por vendedor (aba "Historico") -------
+# Fonte: recorte historico_vendedor*.csv (3 meses fechados + mes corrente).
+# COORTE PELA DATA DA PROPOSTA: todas as etapas seguem a proposta gerada no mes,
+# e' o que faz as conversoes fecharem entre as linhas (Anexo A do Frame de
+# Feedback do Field). Propostas contam por linha (igual a aba Propostas);
+# gerados/assinados/aprovados contam por deal unico dentro do mes.
+f_hist = (sorted(glob.glob(os.path.join(UP,'historico_vendedor*.csv'))) or [None])[-1]
+
+def _hist_aprovado(x):
+    # Espelho EXATO do isAprovado do HTML (nao alterar sem alterar o JS).
+    if x.get('credito_ok'): return True
+    if x['stage'] == 'BGC_PARCEIRO': return False
+    if x['lost_at'] and x['stage'] == 'BACKGROUND_CHECKING' \
+       and (x['lost_reason'] or '').strip().lower() != 'troca de titularidade': return False
+    if x['risk'] == 'DENIED': return False
+    if x['risk'] == 'APPROVED': return True
+    if 'aprovado' in (x['status'] or '').lower(): return True
+    if x['stage'] == 'REQUEST_TITULARIDADE': return True
+    return False
+
+HIST = []
+_unk_snap = set(unknown)  # mk_deal() no historico ve ex-vendedores: nao alerta por eles
+if f_hist:
+    _agg = {}; _seen_hd = set()
+    for r in rows(f_hist):
+        _d = pdate(r.get('proposal_created_at'))
+        if not _d: continue
+        _cli = (r.get('current_client_name') or '').strip(); _em = r.get('sales_person_email')
+        # ex-vendedores aparecem no historico (meses passados) e nao estao nos mapas:
+        # usa o nome do CRM como fallback SEM sujar o alerta de e-mail desconhecido.
+        _e = (_em or '').strip().lower()
+        _s = (CLIENT_OVERRIDE.get(norm(_cli)) or [None])[0] or EMAIL2NAME.get(_e) \
+             or (r.get('sales_person_name') or _e or '?').strip()
+        _pr = _ANT_PRACA_KEY.get(praca_of(_em, _cli), 'Outras')
+        _k = (_s, _pr, _d[:7])
+        _a = _agg.setdefault(_k, {'s':_s,'praca':_pr,'m':_d[:7],'p':0,'g':0,'a':0,'ap':0,'mwh':0.0,
+                                  'pa':0,'ga':0,'aa':0,'apa':0,'mwha':0.0})
+        _ant = (r.get('product_name') or '').strip().upper().startswith('LIORA_ANTECIPA')
+        _a['p'] += 1
+        if _ant: _a['pa'] += 1
+        _did = (r.get('deal_id') or '').strip()
+        if _did:
+            if (_k, _did) in _seen_hd: continue
+            _seen_hd.add((_k, _did))
+        _x = mk_deal(r)
+        if (r.get('latest_contract_created_at') or '').strip():
+            _a['g'] += 1
+            if _ant: _a['ga'] += 1
+        if (r.get('latest_contract_signature_signed_at') or '').strip():
+            _a['a'] += 1
+            if _ant: _a['aa'] += 1
+        if _hist_aprovado(_x):
+            _a['ap'] += 1; _a['mwh'] += _x['mwh']
+            if _ant:
+                _a['apa'] += 1; _a['mwha'] += _x['mwh']
+    for _v in _agg.values():
+        _v['mwh'] = round(_v['mwh'], 3); _v['mwha'] = round(_v['mwha'], 3)
+    HIST = sorted(_agg.values(), key=lambda z: (z['praca'], z['s'], z['m']))
+unknown.clear(); unknown.update(_unk_snap)
+io.open('new_HIST.json','w').write(json.dumps(HIST, ensure_ascii=False))
+print('historico:', len(HIST), 'linhas vendedor x mes |',
+      (os.path.basename(f_hist) if f_hist else 'sem arquivo'))
+
 # ---- HC_PROP = [[date, seller]] (1:1 com RAW) ----------------------------
 HC_PROP = [[r['date'], r['seller']] for r in RAW]
 
