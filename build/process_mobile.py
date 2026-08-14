@@ -50,6 +50,7 @@ EMAIL_NOME = {
  'percy.hormazabal@lioraenergia.com.br':'Percy Hormazabal',
  'ana.ribeiro@lioraenergia.com.br':'Ana Ribeiro',
  'jose.lima@lioraenergia.com.br':'Rodrigo Lima',
+ 'jose.monteiro@lioraenergia.com.br':'Rodrigo Lima',  # e-mail novo (14/08)
  'daniel.junior@lioraenergia.com.br':'Daniel Junior',
  'joao.santos@lioraenergia.com.br':'João Santos',
  'mecenas.junior@lioraenergia.com.br':'Mecenas Junior',

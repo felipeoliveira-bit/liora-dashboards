@@ -142,6 +142,7 @@ PRACA_TITLE = {  # email -> praça (Title) usada no RAW
  'monica.silveira@lioraenergia.com.br':'SPI',
  'ana.ribeiro@lioraenergia.com.br':'SPI',
  'jose.lima@lioraenergia.com.br':'SPI',
+ 'jose.monteiro@lioraenergia.com.br':'SPI',  # Rodrigo Lima trocou de e-mail 14/08 (o antigo jose.lima virou jose.lima1 = outra pessoa)
  'daniel.junior@lioraenergia.com.br':'SPI',
  'joao.santos@lioraenergia.com.br':'Ribeirao',
  'mirla.albuquerque@lioraenergia.com.br':'RN Interior',
@@ -175,6 +176,7 @@ EMAIL2NAME = {  # email -> nome canônico do vendedor (resolve nomes variáveis 
  'monica.silveira@lioraenergia.com.br':'Monica Silveira',
  'ana.ribeiro@lioraenergia.com.br':'Ana Ribeiro',
  'jose.lima@lioraenergia.com.br':'Rodrigo Lima',
+ 'jose.monteiro@lioraenergia.com.br':'Rodrigo Lima',  # e-mail novo (14/08); o antigo fica pelos deals ja criados
  'daniel.junior@lioraenergia.com.br':'Daniel Junior',
  'joao.santos@lioraenergia.com.br':'João Santos',
  'mirla.albuquerque@lioraenergia.com.br':'Mirla Albuquerque',
@@ -587,9 +589,9 @@ if f_hist:
         # usa o nome do CRM como fallback SEM sujar o alerta de e-mail desconhecido.
         _e = (_em or '').strip().lower()
         _ros = ROSTER_ATIVO.get(_e)
-        if not _ros:
+        if not _ros or _ros[0] == 'lider':
             _fora.add(_e or '(sem email)')
-            continue          # so os ATIVOS entram na aba (Felipe 14/08)
+            continue          # so os ATIVOS e NAO-LIDERES entram na aba (Felipe 14/08)
         _s = (CLIENT_OVERRIDE.get(norm(_cli)) or [None])[0] or EMAIL2NAME.get(_e) \
              or (r.get('sales_person_name') or _e or '?').strip()
         _pr = _ANT_PRACA_KEY.get(praca_of(_em, _cli), 'Outras')
@@ -620,7 +622,7 @@ if f_hist:
     HIST = sorted(_agg.values(), key=lambda z: (z['praca'], z['s'], z['m']))
 unknown.clear(); unknown.update(_unk_snap)
 if _fora:
-    print('historico: fora do roster ativo (nao entram na aba):', ', '.join(sorted(_fora)))
+    print('historico: fora da aba (inativo ou lider):', ', '.join(sorted(_fora)))
 io.open('new_HIST.json','w').write(json.dumps(HIST, ensure_ascii=False))
 print('historico:', len(HIST), 'linhas vendedor x mes |',
       (os.path.basename(f_hist) if f_hist else 'sem arquivo'))
