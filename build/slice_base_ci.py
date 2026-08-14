@@ -132,18 +132,27 @@ def augment_from_sbg(base, fields, base_path):
 
 def apply_risk_real(base, real):
     # Sobrescreve o resultado de risco do card818 pelo risco REAL (fonte de verdade).
-    # So preenche a DATA quando o card818 veio vazia (preserva atribuicao de mes/semana).
+    # DATA (Felipe 14/08): quando o override CORRIGE o resultado e a data real e' mais
+    # recente que a do card, a data tambem anda - senao o aprovado de hoje fica
+    # carimbado no dia da analise velha e sai do resultado do dia. Quando o resultado
+    # NAO muda, a data do card manda (preserva atribuicao de mes/semana).
+    # real_created vem em America/Sao_Paulo (ver RISK_SQL no mb_export.py).
     if not real: return 0
-    n=0
+    n=0; nd=0
     for r in base:
         rr=real.get((r.get('deal_id') or '').strip())
         if not rr: continue
         res,created=rr
         if not res: continue
-        if res != (r.get('latest_risk_analysis_result') or '').strip():
+        card_dt=(r.get('latest_risk_analysis_created_at') or '').strip()
+        changed = res != (r.get('latest_risk_analysis_result') or '').strip()
+        if changed:
             r['latest_risk_analysis_result']=res; n+=1
-        if not (r.get('latest_risk_analysis_created_at') or '').strip() and created:
+        if not card_dt and created:
             r['latest_risk_analysis_created_at']=created
+        elif changed and created and created[:10] > card_dt[:10]:
+            r['latest_risk_analysis_created_at']=created; nd+=1
+    if nd: print('risco real: %d deal(s) com DATA de aprovacao movida p/ a analise real' % nd)
     return n
 
 def main():

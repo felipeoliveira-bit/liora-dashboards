@@ -74,28 +74,34 @@ best AS (
   FROM ra r JOIN contr co ON co.contract_id = r.contract_id WHERE r.rn = 1
 )
 SELECT deal_id, result AS real_result,
-       FORMAT_TIMESTAMP('%Y-%m-%dT%H:%M:%S', created_at) AS real_created
+       FORMAT_TIMESTAMP('%Y-%m-%dT%H:%M:%S', created_at, 'America/Sao_Paulo') AS real_created
 FROM best WHERE rn = 1
 """
 
 SBG_SQL = r"""
 SELECT
-  deal_id, deal_stage, deal_lost_at, deal_lost_reason, deal_created_at,
+  deal_id, deal_stage, deal_lost_reason,
+  FORMAT_DATETIME('%Y-%m-%dT%H:%M:%S', DATETIME(TIMESTAMP(deal_lost_at),'America/Sao_Paulo')) AS deal_lost_at,
+  FORMAT_DATETIME('%Y-%m-%dT%H:%M:%S', DATETIME(TIMESTAMP(deal_created_at),'America/Sao_Paulo')) AS deal_created_at,
   current_client_cnpj, current_client_cpf, current_client_name,
   current_client_state, current_client_city, client_phone_number,
   distributor_short_name, sales_channel_name, sales_organization_name, energy_retailer_name,
   TRIM(CONCAT(COALESCE(sales_person_first_name,''), ' ', COALESCE(sales_person_last_name,''))) AS sales_person_name,
   sales_person_email,
   current_total_bill_cost, current_consumption,
-  proposal_id, proposal_created_at, product_name,
-  latest_contract_id, latest_contract_signature_signed_at,
-  latest_risk_analysis_result, latest_risk_analysis_created_at, latest_risk_analysis_comments,
+  proposal_id, product_name,
+  FORMAT_DATETIME('%Y-%m-%dT%H:%M:%S', DATETIME(TIMESTAMP(proposal_created_at),'America/Sao_Paulo')) AS proposal_created_at,
+  latest_contract_id,
+  FORMAT_DATETIME('%Y-%m-%dT%H:%M:%S', DATETIME(TIMESTAMP(latest_contract_signature_signed_at),'America/Sao_Paulo')) AS latest_contract_signature_signed_at,
+  latest_risk_analysis_result, latest_risk_analysis_comments,
+  FORMAT_DATETIME('%Y-%m-%dT%H:%M:%S', DATETIME(TIMESTAMP(latest_risk_analysis_created_at),'America/Sao_Paulo')) AS latest_risk_analysis_created_at,
   CAST(has_valid_bill_uploaded AS STRING) AS has_valid_bill_uploaded,
-  funnel_stage_index, deal_updated_at
+  funnel_stage_index,
+  FORMAT_DATETIME('%Y-%m-%dT%H:%M:%S', DATETIME(TIMESTAMP(deal_updated_at),'America/Sao_Paulo')) AS deal_updated_at
 FROM `liora_gold.sales_b_group`
 WHERE (sales_channel_name LIKE 'Field Sales%' OR sales_channel_name LIKE '[FS]%')
-  AND ( DATE(proposal_created_at) >= DATE_TRUNC(CURRENT_DATE('America/Sao_Paulo'), MONTH)
-     OR DATE(latest_risk_analysis_created_at) >= DATE_TRUNC(CURRENT_DATE('America/Sao_Paulo'), MONTH) )
+  AND ( DATE(DATETIME(TIMESTAMP(proposal_created_at),'America/Sao_Paulo')) >= DATE_TRUNC(CURRENT_DATE('America/Sao_Paulo'), MONTH)
+     OR DATE(DATETIME(TIMESTAMP(latest_risk_analysis_created_at),'America/Sao_Paulo')) >= DATE_TRUNC(CURRENT_DATE('America/Sao_Paulo'), MONTH) )
 """
 
 UC_SQL = r"""
