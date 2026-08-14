@@ -7110,8 +7110,10 @@ render();
   --blue: #0201F3;
   --green: #1D9E75;
   --orange: #EF9F27;
-  --lightblue: #378ADD;
   --purple: #7F77DD;
+  --lilas: #C9A6E9;
+  --lilas-bg: #E6D6F5;
+  --lilas-tx: #6B3FA0;
   --pink: #D4537E;
   --text1: #1a1f36;
   --text2: #4a5070;
@@ -7120,82 +7122,113 @@ render();
   --bg: #f4f5f8;
 }
 * { box-sizing: border-box; margin:0; padding:0; }
-body { font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text1); font-size: 13px; padding: 14px 18px; }
+body { font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text1); font-size: 13px; padding: 14px 18px 30px; }
 h1 { font-size: 17px; font-weight: 800; }
 .sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
 .header { margin-bottom: 12px; }
-.bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; margin-bottom: 14px; }
+
+.bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; margin-bottom: 16px; }
 .bar .lbl { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .4px; }
-.bar select { font-family: inherit; font-size: 12px; font-weight: 600; color: var(--text1); background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: 6px 10px; cursor: pointer; min-width: 150px; }
+.bar select { font-family: inherit; font-size: 13px; font-weight: 700; color: var(--text1); background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: 7px 10px; cursor: pointer; min-width: 170px; }
 .bar .chk { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text2); cursor: pointer; }
-.btn { margin-left: auto; background: var(--blue); color: #fff; border: none; border-radius: 8px; padding: 8px 14px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.btn { margin-left: auto; background: var(--blue); color: #fff; border: none; border-radius: 8px; padding: 9px 16px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
 .btn:hover { background: #0100c5; }
-.btn.ghost { background: #fff; color: var(--blue); border: 1px solid var(--blue); margin-left: 0; }
-.card { background: #fff; border-radius: 10px; padding: 16px 18px; margin-bottom: 14px; }
-.card-t { font-size: 14px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-.card-t .tag { font-size: 11px; font-weight: 700; color: #fff; background: var(--purple); border-radius: 999px; padding: 2px 9px; }
-.empty { color: var(--text3); font-size: 13px; padding: 26px; text-align: center; }
 
-table.h { width: 100%; border-collapse: collapse; }
-table.h thead th { background: var(--blue); color: #fff; padding: 9px 10px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .3px; text-align: center; }
-table.h thead th:first-child { text-align: left; }
-table.h tbody td { padding: 10px; border-bottom: 1px solid var(--border); font-size: 13px; text-align: center; }
-table.h tbody td:first-child { text-align: left; font-weight: 700; }
-table.h tbody .big { font-size: 16px; font-weight: 800; display: block; line-height: 1.2; }
-table.h tbody .conv { font-size: 11px; color: var(--text3); }
-table.h tbody tr.cur { background: #f7f9ff; }
-table.h tbody tr.exp { background: #f4f3fd; color: var(--purple); }
-table.h tbody tr.exp td { border-top: 2px solid var(--purple); border-bottom: none; color: var(--purple); font-weight: 700; }
-table.h tbody tr.exp .big, table.h tbody tr.exp .conv { color: var(--purple); }
-table.h tbody tr.team td { background: #fafbfd; color: var(--text2); }
-table.h tbody tr.team .big { font-size: 14px; font-weight: 700; color: var(--text2); }
-.chip { font-size: 10px; font-weight: 700; border-radius: 999px; padding: 1px 7px; margin-left: 6px; vertical-align: middle; }
-.chip.curso { background: #fff3e0; color: var(--orange); }
-.chip.lider { background: #eef0ff; color: var(--blue); }
+.card { background: #fff; border-radius: 12px; padding: 20px 22px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(26,31,54,.06); }
+
+/* ---------- cabeçalho do vendedor ---------- */
+.vhead { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+.avatar { width: 46px; height: 46px; border-radius: 50%; background: var(--blue); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 800; flex-shrink: 0; }
+.vname { font-size: 20px; font-weight: 800; line-height: 1.2; }
+.vsub { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.chip { font-size: 10px; font-weight: 700; border-radius: 999px; padding: 2px 8px; margin-left: 8px; vertical-align: middle; white-space: nowrap; }
+.chip.praca { background: #eef0ff; color: var(--blue); }
 .chip.novo { background: #eaf7f1; color: var(--green); }
-.dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 5px; }
-.dot.ok { background: var(--green); }
-.dot.bad { background: var(--pink); }
-.dot.mid { background: var(--orange); }
+.chip.curso { background: #fff3e0; color: var(--orange); }
 
-.leitura { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-.li { background: var(--bg); border-radius: 9px; padding: 12px 14px; }
-.li .t { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 5px; }
-.li .v { font-size: 15px; font-weight: 800; }
-.li .d { font-size: 11px; color: var(--text2); margin-top: 3px; line-height: 1.45; }
-.up { color: var(--green); }
-.down { color: var(--pink); }
-.flat { color: var(--text2); }
+/* ---------- KPIs ---------- */
+.kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
+.kpi { background: var(--bg); border-radius: 11px; padding: 15px 17px; }
+.kpi .k { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .5px; }
+.kpi .v { font-size: 28px; font-weight: 800; line-height: 1.15; margin: 6px 0 2px; }
+.kpi .v small { font-size: 14px; font-weight: 700; color: var(--text3); }
+.kpi .d { font-size: 11px; color: var(--text2); line-height: 1.5; }
+.kpi .track { background: #dfe3ea; border-radius: 4px; height: 7px; overflow: hidden; margin: 8px 0 6px; }
+.kpi .fill { height: 100%; border-radius: 4px; transition: width .35s; }
+.up { color: var(--green); } .down { color: var(--pink); } .flat { color: var(--text2); }
 
+/* ---------- tabela do funil (Anexo A) ---------- */
+.tt { font-size: 12px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase; color: var(--lilas-tx); margin: 4px 0 12px; }
+table.h { width: 100%; border-collapse: separate; border-spacing: 0; border-radius: 10px; overflow: hidden; }
+table.h thead th { background: var(--blue); color: #fff; padding: 12px 10px; font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; text-align: center; }
+table.h thead th:first-child { text-align: left; padding-left: 18px; }
+table.h tbody td { padding: 14px 10px; text-align: center; vertical-align: middle; }
+table.h tbody td:first-child { text-align: left; padding-left: 18px; font-weight: 800; font-size: 13.5px; }
+table.h tbody tr.alt td { background: #eef1f4; }
+table.h tbody .big { font-size: 21px; font-weight: 800; display: block; line-height: 1.15; }
+table.h tbody .conv { font-size: 11px; color: var(--lilas-tx); opacity: .75; font-weight: 600; }
+table.h tbody tr.exp td { background: var(--lilas); color: #fff; font-weight: 800; }
+table.h tbody tr.exp .big { color: #fff; }
+table.h tbody tr.exp .conv { color: #fff; opacity: .9; }
+table.h tbody tr.exp td:first-child { font-size: 14px; }
+table.h tbody tr.team td { background: #eef1f4; }
+table.h tbody tr.team .big { font-size: 17px; color: var(--text2); }
+table.h tbody tr.team td:first-child { font-weight: 700; }
+.dash { font-size: 21px; font-weight: 800; color: rgba(255,255,255,.85); }
+
+/* ---------- barras por mês ---------- */
+.bars { margin-top: 22px; }
+.bars-t { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; color: var(--text3); margin-bottom: 12px; }
+.brow { display: flex; align-items: center; gap: 12px; margin-bottom: 9px; }
+.brow .m { width: 58px; font-size: 12px; font-weight: 700; color: var(--text2); flex-shrink: 0; }
+.brow .track { position: relative; flex: 1; background: #eef1f4; border-radius: 6px; height: 26px; overflow: hidden; }
+.brow .fill { height: 100%; background: linear-gradient(90deg, #4340f7, var(--blue)); border-radius: 6px; }
+.brow .fill.cur { background: linear-gradient(90deg, #8f8bff, #4340f7); }
+.brow .meta { position: absolute; top: 0; bottom: 0; width: 3px; background: var(--lilas); }
+.brow .val { width: 96px; font-size: 13px; font-weight: 800; text-align: right; flex-shrink: 0; }
+.brow .val small { font-weight: 600; color: var(--text3); font-size: 11px; }
+.legend { font-size: 11px; color: var(--text3); margin-top: 10px; }
+.legend b { color: var(--lilas-tx); }
+
+/* ---------- lista do time ---------- */
+.lst-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.lst-head .t { font-size: 15px; font-weight: 800; }
+.lst-head .tag { font-size: 11px; font-weight: 700; color: #fff; background: var(--purple); border-radius: 999px; padding: 3px 10px; }
+.lst-head .hint { margin-left: auto; font-size: 11px; color: var(--text3); }
 table.lst { width: 100%; border-collapse: collapse; }
-table.lst thead th { background: #fff; color: var(--text3); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .3px; padding: 8px 10px; border-bottom: 2px solid var(--border); text-align: center; }
+table.lst thead th { color: var(--text3); font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; padding: 8px 10px; border-bottom: 2px solid var(--border); text-align: center; }
 table.lst thead th:first-child { text-align: left; }
-table.lst tbody td { padding: 9px 10px; border-bottom: 1px solid var(--border); font-size: 12px; text-align: center; }
-table.lst tbody td:first-child { text-align: left; font-weight: 700; }
-table.lst tbody tr { cursor: pointer; }
-table.lst tbody tr:hover { background: #f7f9ff; }
+table.lst tbody td { padding: 11px 10px; border-bottom: 1px solid var(--border); font-size: 12.5px; text-align: center; }
+table.lst tbody td:first-child { text-align: left; }
+table.lst tbody tr { cursor: pointer; transition: background .12s; }
+table.lst tbody tr:hover { background: #f5f7ff; }
+.nm { font-weight: 700; font-size: 13px; }
 .pr { font-size: 11px; color: var(--text3); font-weight: 500; }
-.trend { font-size: 11px; font-weight: 700; }
+.spark { display: inline-flex; align-items: flex-end; gap: 3px; height: 26px; }
+.spark i { width: 9px; background: #c9cddb; border-radius: 2px 2px 0 0; display: block; }
+.spark i.last { background: var(--blue); }
+.trend { font-size: 12px; font-weight: 800; }
+.empty { color: var(--text3); font-size: 13px; padding: 30px; text-align: center; }
 
+/* ---------- folha de impressão ---------- */
 .papel { display: none; }
 .papel h2 { font-size: 18px; font-weight: 800; margin-bottom: 2px; }
 .papel .ps { font-size: 12px; color: var(--text3); margin-bottom: 14px; }
-.papel .bloco { margin-top: 16px; page-break-inside: avoid; }
-.papel .bloco-t { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; color: var(--blue); margin-bottom: 7px; }
-.papel ul { margin-left: 16px; font-size: 12px; line-height: 1.75; }
-.papel .linha { border-bottom: 1px solid #c9ced9; height: 22px; }
-.papel .fr { font-size: 12px; line-height: 1.7; color: var(--text2); }
+.papel .bloco { margin-top: 15px; page-break-inside: avoid; }
+.papel .bloco-t { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; color: var(--blue); margin-bottom: 6px; }
+.papel ul { margin-left: 16px; font-size: 12px; line-height: 1.7; }
+.papel .linha { border-bottom: 1px solid #c9ced9; height: 21px; }
+.papel .fr { font-size: 12px; line-height: 1.65; color: var(--text2); }
 .papel .fr b { color: var(--text1); }
 
 @media print {
   body { background: #fff; padding: 0; font-size: 12px; }
   .header, .bar, .no-print { display: none !important; }
   .papel { display: block !important; }
-  .card { padding: 0; margin-bottom: 10px; box-shadow: none; }
-  table.h thead th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  table.h tbody tr.exp td { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .card { padding: 0; margin-bottom: 8px; box-shadow: none; }
+  table.h thead th, table.h tbody tr.exp td, table.h tbody tr.alt td, table.h tbody tr.team td { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
-@media (max-width: 900px) { .leitura { grid-template-columns: 1fr; } }
+@media (max-width: 1000px) { .kpis { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -7217,56 +7250,43 @@ table.lst tbody tr:hover { background: #f7f9ff; }
 
 <script>
 // ============ HISTORICO POR VENDEDOR (aba Historico) ======================
-// HIST = [{s, praca, m:'YYYY-MM', p, g, a, ap, mwh, pa, ga, aa, apa, mwha}]
+// HIST = [{s, praca, m:'YYYY-MM', p, g, a, ap, mwh, pa, ga, aa, apa, mwha, lid, hire}]
 // p/g/a/ap = coorte da PROPOSTA do mes: propostas geradas, contratos gerados,
 // assinados, aprovados e MWh aprovado. Campos *a = a fatia Antecipa de cada um
-// (usados quando o filtro 'incluir Antecipa' esta desligado).
-const HIST = [{&quot;s&quot;:&quot;Neilon Nascimento&quot;,&quot;praca&quot;:&quot;CE&quot;,&quot;m&quot;:&quot;2026-06&quot;,&quot;p&quot;:60,&quot;g&quot;:5,&quot;a&quot;:5,&quot;ap&quot;:5,&quot;mwh&quot;:3.313,&quot;pa&quot;:1,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-06-01&quot;},{&quot;s&quot;:&quot;Neilon Nascimento&quot;,&quot;praca&quot;:&quot;CE&quot;,&quot;m&quot;:&quot;2026-07&quot;,&quot;p&quot;:85,&quot;g&quot;:10,&quot;a&quot;:10,&quot;ap&quot;:8,&quot;mwh&quot;:8.064,&quot;pa&quot;:4,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-06-01&quot;},{&quot;s&quot;:&quot;Neilon Nascimento&quot;,&quot;praca&quot;:&quot;CE&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:44,&quot;g&quot;:15,&quot;a&quot;:13,&quot;ap&quot;:9,&quot;mwh&quot;:5.384,&quot;pa&quot;:6,&quot;ga&quot;:5,&quot;aa&quot;:3,&quot;apa&quot;:1,&quot;mwha&quot;:1.247,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-06-01&quot;},{&quot;s&quot;:&quot;Nubia  Andrade&quot;,&quot;praca&quot;:&quot;CE&quot;,&quot;m&quot;:&quot;2026-06&quot;,&quot;p&quot;:34,&quot;g&quot;:6,&quot;a&quot;:6,&quot;ap&quot;:4,&quot;mwh&quot;:1.937,&quot;pa&quot;:3,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-06-15&quot;},{&quot;s&quot;:&quot;Nubia  Andrade&quot;,&quot;praca&quot;:&quot;CE&quot;,&quot;m&quot;:&quot;2026-07&quot;,&quot;p&quot;:34,&quot;g&quot;:4,&quot;a&quot;:4,&quot;ap&quot;:4,&quot;mwh&quot;:1.853,&quot;pa&quot;:1,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-06-15&quot;},{&quot;s&quot;:&quot;Nubia  Andrade&quot;,&quot;praca&quot;:&quot;CE&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:18,&quot;g&quot;:1,&quot;a&quot;:1,&quot;ap&quot;:1,&quot;mwh&quot;:0.242,&quot;pa&quot;:3,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-06-15&quot;},{&quot;s&quot;:&quot;Odirley Costa&quot;,&quot;praca&quot;:&quot;CE&quot;,&quot;m&quot;:&quot;2026-06&quot;,&quot;p&quot;:15,&quot;g&quot;:5,&quot;a&quot;:5,&quot;ap&quot;:4,&quot;mwh&quot;:1.915,&quot;pa&quot;:1,&quot;ga&quot;:1,&quot;aa&quot;:1,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-06-15&quot;},{&quot;s&quot;:&quot;Odirley Costa&quot;,&quot;praca&quot;:&quot;CE&quot;,&quot;m&quot;:&quot;2026-07&quot;,&quot;p&quot;:64,&quot;g&quot;:8,&quot;a&quot;:5,&quot;ap&quot;:2,&quot;mwh&quot;:1.581,&quot;pa&quot;:6,&quot;ga&quot;:2,&quot;aa&quot;:2,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-06-15&quot;},{&quot;s&quot;:&quot;Odirley Costa&quot;,&quot;praca&quot;:&quot;CE&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:26,&quot;g&quot;:6,&quot;a&quot;:5,&quot;ap&quot;:4,&quot;mwh&quot;:7.598,&quot;pa&quot;:2,&quot;ga&quot;:1,&quot;aa&quot;:1,&quot;apa&quot;:1,&quot;mwha&quot;:0.485,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-06-15&quot;},{&quot;s&quot;:&quot;Sabrina Tomazeti&quot;,&quot;praca&quot;:&quot;CE&quot;,&quot;m&quot;:&quot;2026-07&quot;,&quot;p&quot;:50,&quot;g&quot;:4,&quot;a&quot;:4,&quot;ap&quot;:3,&quot;mwh&quot;:1.027,&quot;pa&quot;:6,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-07-06&quot;},{&quot;s&quot;:&quot;Sabrina Tomazeti&quot;,&quot;praca&quot;:&quot;CE&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:21,&quot;g&quot;:1,&quot;a&quot;:1,&quot;ap&quot;:1,&quot;mwh&quot;:0.262,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-07-06&quot;},{&quot;s&quot;:&quot;Alberto Nascimento&quot;,&quot;praca&quot;:&quot;Feira&quot;,&quot;m&quot;:&quot;2026-05&quot;,&quot;p&quot;:1,&quot;g&quot;:1,&quot;a&quot;:1,&quot;ap&quot;:1,&quot;mwh&quot;:3.03,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-07-28&quot;},{&quot;s&quot;:&quot;Alberto Nascimento&quot;,&quot;praca&quot;:&quot;Feira&quot;,&quot;m&quot;:&quot;2026-07&quot;,&quot;p&quot;:20,&quot;g&quot;:9,&quot;a&quot;:9,&quot;ap&quot;:7,&quot;mwh&quot;:3.231,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-07-28&quot;},{&quot;s&quot;:&quot;Alberto Nascimento&quot;,&quot;praca&quot;:&quot;Feira&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:38,&quot;g&quot;:6,&quot;a&quot;:6,&quot;ap&quot;:5,&quot;mwh&quot;:2.293,&quot;pa&quot;:7,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-07-28&quot;},{&quot;s&quot;:&quot;Lucileide Carlos&quot;,&quot;praca&quot;:&quot;Feira&quot;,&quot;m&quot;:&quot;2026-05&quot;,&quot;p&quot;:59,&quot;g&quot;:15,&quot;a&quot;:15,&quot;ap&quot;:13,&quot;mwh&quot;:10.754,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2025-10-06&quot;},{&quot;s&quot;:&quot;Lucileide Carlos&quot;,&quot;praca&quot;:&quot;Feira&quot;,&quot;m&quot;:&quot;2026-06&quot;,&quot;p&quot;:42,&quot;g&quot;:15,&quot;a&quot;:14,&quot;ap&quot;:11,&quot;mwh&quot;:8.29,&quot;pa&quot;:1,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2025-10-06&quot;},{&quot;s&quot;:&quot;Lucileide Carlos&quot;,&quot;praca&quot;:&quot;Feira&quot;,&quot;m&quot;:&quot;2026-07&quot;,&quot;p&quot;:72,&quot;g&quot;:14,&quot;a&quot;:12,&quot;ap&quot;:10,&quot;mwh&quot;:6.395,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2025-10-06&quot;},{&quot;s&quot;:&quot;Lucileide Carlos&quot;,&quot;praca&quot;:&quot;Feira&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:36,&quot;g&quot;:10,&quot;a&quot;:10,&quot;ap&quot;:7,&quot;mwh&quot;:9.673,&quot;pa&quot;:1,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2025-10-06&quot;},{&quot;s&quot;:&quot;Marcel Sousa&quot;,&quot;praca&quot;:&quot;Feira&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:27,&quot;g&quot;:17,&quot;a&quot;:15,&quot;ap&quot;:10,&quot;mwh&quot;:15.096,&quot;pa&quot;:3,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-08-03&quot;},{&quot;s&quot;:&quot;Tamires Costa&quot;,&quot;praca&quot;:&quot;Feira&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:13,&quot;g&quot;:4,&quot;a&quot;:4,&quot;ap&quot;:3,&quot;mwh&quot;:0.666,&quot;pa&quot;:3,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-08-06&quot;},{&quot;s&quot;:&quot;Tiago Freitas&quot;,&quot;praca&quot;:&quot;Feira&quot;,&quot;m&quot;:&quot;2026-05&quot;,&quot;p&quot;:70,&quot;g&quot;:10,&quot;a&quot;:10,&quot;ap&quot;:10,&quot;mwh&quot;:13.383,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-04-15&quot;},{&quot;s&quot;:&quot;Tiago Freitas&quot;,&quot;praca&quot;:&quot;Feira&quot;,&quot;m&quot;:&quot;2026-06&quot;,&quot;p&quot;:43,&quot;g&quot;:20,&quot;a&quot;:20,&quot;ap&quot;:16,&quot;mwh&quot;:8.945,&quot;pa&quot;:2,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-04-15&quot;},{&quot;s&quot;:&quot;Tiago Freitas&quot;,&quot;praca&quot;:&quot;Feira&quot;,&quot;m&quot;:&quot;2026-07&quot;,&quot;p&quot;:126,&quot;g&quot;:5,&quot;a&quot;:4,&quot;ap&quot;:2,&quot;mwh&quot;:2.145,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-04-15&quot;},{&quot;s&quot;:&quot;Tiago Freitas&quot;,&quot;praca&quot;:&quot;Feira&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:27,&quot;g&quot;:1,&quot;a&quot;:1,&quot;ap&quot;:1,&quot;mwh&quot;:0.261,&quot;pa&quot;:4,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-04-15&quot;},{&quot;s&quot;:&quot;Daniel Magnus&quot;,&quot;praca&quot;:&quot;Natal&quot;,&quot;m&quot;:&quot;2026-07&quot;,&quot;p&quot;:46,&quot;g&quot;:5,&quot;a&quot;:5,&quot;ap&quot;:3,&quot;mwh&quot;:0.713,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-07-13&quot;},{&quot;s&quot;:&quot;Daniel Magnus&quot;,&quot;praca&quot;:&quot;Natal&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:32,&quot;g&quot;:8,&quot;a&quot;:8,&quot;ap&quot;:6,&quot;mwh&quot;:2.027,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-07-13&quot;},{&quot;s&quot;:&quot;Marcio Galvão&quot;,&quot;praca&quot;:&quot;Natal&quot;,&quot;m&quot;:&quot;2026-05&quot;,&quot;p&quot;:93,&quot;g&quot;:14,&quot;a&quot;:13,&quot;ap&quot;:8,&quot;mwh&quot;:3.809,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-02-02&quot;},{&quot;s&quot;:&quot;Marcio Galvão&quot;,&quot;praca&quot;:&quot;Natal&quot;,&quot;m&quot;:&quot;2026-06&quot;,&quot;p&quot;:82,&quot;g&quot;:9,&quot;a&quot;:9,&quot;ap&quot;:9,&quot;mwh&quot;:3.551,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-02-02&quot;},{&quot;s&quot;:&quot;Marcio Galvão&quot;,&quot;praca&quot;:&quot;Natal&quot;,&quot;m&quot;:&quot;2026-07&quot;,&quot;p&quot;:170,&quot;g&quot;:12,&quot;a&quot;:12,&quot;ap&quot;:12,&quot;mwh&quot;:5.123,&quot;pa&quot;:2,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-02-02&quot;},{&quot;s&quot;:&quot;Marcio Galvão&quot;,&quot;praca&quot;:&quot;Natal&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:52,&quot;g&quot;:5,&quot;a&quot;:5,&quot;ap&quot;:2,&quot;mwh&quot;:0.706,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-02-02&quot;},{&quot;s&quot;:&quot;Mecenas Junior&quot;,&quot;praca&quot;:&quot;Natal&quot;,&quot;m&quot;:&quot;2026-06&quot;,&quot;p&quot;:12,&quot;g&quot;:7,&quot;a&quot;:7,&quot;ap&quot;:5,&quot;mwh&quot;:1.234,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-06-24&quot;},{&quot;s&quot;:&quot;Mecenas Junior&quot;,&quot;praca&quot;:&quot;Natal&quot;,&quot;m&quot;:&quot;2026-07&quot;,&quot;p&quot;:176,&quot;g&quot;:42,&quot;a&quot;:41,&quot;ap&quot;:28,&quot;mwh&quot;:9.402,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-06-24&quot;},{&quot;s&quot;:&quot;Mecenas Junior&quot;,&quot;praca&quot;:&quot;Natal&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:61,&quot;g&quot;:20,&quot;a&quot;:19,&quot;ap&quot;:16,&quot;mwh&quot;:4.004,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-06-24&quot;},{&quot;s&quot;:&quot;Rodrigo Ribeiro&quot;,&quot;praca&quot;:&quot;Natal&quot;,&quot;m&quot;:&quot;2026-06&quot;,&quot;p&quot;:51,&quot;g&quot;:16,&quot;a&quot;:14,&quot;ap&quot;:7,&quot;mwh&quot;:1.743,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-06-01&quot;},{&quot;s&quot;:&quot;Rodrigo Ribeiro&quot;,&quot;praca&quot;:&quot;Natal&quot;,&quot;m&quot;:&quot;2026-07&quot;,&quot;p&quot;:124,&quot;g&quot;:16,&quot;a&quot;:14,&quot;ap&quot;:10,&quot;mwh&quot;:6.876,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-06-01&quot;},{&quot;s&quot;:&quot;Rodrigo Ribeiro&quot;,&quot;praca&quot;:&quot;Natal&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:54,&quot;g&quot;:10,&quot;a&quot;:8,&quot;ap&quot;:2,&quot;mwh&quot;:0.491,&quot;pa&quot;:2,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-06-01&quot;},{&quot;s&quot;:&quot;Thiago Firmo&quot;,&quot;praca&quot;:&quot;Natal&quot;,&quot;m&quot;:&quot;2026-07&quot;,&quot;p&quot;:22,&quot;g&quot;:6,&quot;a&quot;:6,&quot;ap&quot;:4,&quot;mwh&quot;:1.262,&quot;pa&quot;:2,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-07-23&quot;},{&quot;s&quot;:&quot;Thiago Firmo&quot;,&quot;praca&quot;:&quot;Natal&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:25,&quot;g&quot;:10,&quot;a&quot;:10,&quot;ap&quot;:6,&quot;mwh&quot;:1.705,&quot;pa&quot;:1,&quot;ga&quot;:1,&quot;aa&quot;:1,&quot;apa&quot;:1,&quot;mwha&quot;:0.49,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-07-23&quot;},{&quot;s&quot;:&quot;Jefferson Fideli&quot;,&quot;praca&quot;:&quot;RNInterior&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:35,&quot;g&quot;:2,&quot;a&quot;:2,&quot;ap&quot;:2,&quot;mwh&quot;:0.469,&quot;pa&quot;:3,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-08-03&quot;},{&quot;s&quot;:&quot;Lucas Santos&quot;,&quot;praca&quot;:&quot;RNInterior&quot;,&quot;m&quot;:&quot;2026-07&quot;,&quot;p&quot;:45,&quot;g&quot;:19,&quot;a&quot;:16,&quot;ap&quot;:12,&quot;mwh&quot;:13.322,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-07-23&quot;},{&quot;s&quot;:&quot;Lucas Santos&quot;,&quot;praca&quot;:&quot;RNInterior&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:99,&quot;g&quot;:39,&quot;a&quot;:34,&quot;ap&quot;:26,&quot;mwh&quot;:10.108,&quot;pa&quot;:10,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-07-23&quot;},{&quot;s&quot;:&quot;Fábio Rodrigues&quot;,&quot;praca&quot;:&quot;Ribeirao&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:21,&quot;g&quot;:2,&quot;a&quot;:2,&quot;ap&quot;:2,&quot;mwh&quot;:3.542,&quot;pa&quot;:5,&quot;ga&quot;:1,&quot;aa&quot;:1,&quot;apa&quot;:1,&quot;mwha&quot;:0.45,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-08-10&quot;},{&quot;s&quot;:&quot;Olímpio Filho&quot;,&quot;praca&quot;:&quot;Ribeirao&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:8,&quot;g&quot;:3,&quot;a&quot;:3,&quot;ap&quot;:1,&quot;mwh&quot;:0.671,&quot;pa&quot;:3,&quot;ga&quot;:2,&quot;aa&quot;:2,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-08-10&quot;},{&quot;s&quot;:&quot;Phillip Faria&quot;,&quot;praca&quot;:&quot;Ribeirao&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:10,&quot;g&quot;:4,&quot;a&quot;:4,&quot;ap&quot;:3,&quot;mwh&quot;:0.69,&quot;pa&quot;:5,&quot;ga&quot;:2,&quot;aa&quot;:2,&quot;apa&quot;:2,&quot;mwha&quot;:0.413,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-08-03&quot;},{&quot;s&quot;:&quot;Anderson Correia&quot;,&quot;praca&quot;:&quot;SPI&quot;,&quot;m&quot;:&quot;2026-06&quot;,&quot;p&quot;:1,&quot;g&quot;:1,&quot;a&quot;:1,&quot;ap&quot;:1,&quot;mwh&quot;:1.413,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-07-13&quot;},{&quot;s&quot;:&quot;Anderson Correia&quot;,&quot;praca&quot;:&quot;SPI&quot;,&quot;m&quot;:&quot;2026-07&quot;,&quot;p&quot;:38,&quot;g&quot;:16,&quot;a&quot;:16,&quot;ap&quot;:16,&quot;mwh&quot;:25.336,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-07-13&quot;},{&quot;s&quot;:&quot;Anderson Correia&quot;,&quot;praca&quot;:&quot;SPI&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:16,&quot;g&quot;:15,&quot;a&quot;:12,&quot;ap&quot;:12,&quot;mwh&quot;:9.201,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-07-13&quot;},{&quot;s&quot;:&quot;Briel Barbosa&quot;,&quot;praca&quot;:&quot;SPI&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:12,&quot;g&quot;:10,&quot;a&quot;:9,&quot;ap&quot;:8,&quot;mwh&quot;:18.622,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-08-10&quot;},{&quot;s&quot;:&quot;Daniel Junior&quot;,&quot;praca&quot;:&quot;SPI&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:18,&quot;g&quot;:7,&quot;a&quot;:4,&quot;ap&quot;:3,&quot;mwh&quot;:2.398,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-08-05&quot;},{&quot;s&quot;:&quot;Diego Faria&quot;,&quot;praca&quot;:&quot;SPI&quot;,&quot;m&quot;:&quot;2026-06&quot;,&quot;p&quot;:78,&quot;g&quot;:10,&quot;a&quot;:9,&quot;ap&quot;:8,&quot;mwh&quot;:5.776,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-06-01&quot;},{&quot;s&quot;:&quot;Diego Faria&quot;,&quot;praca&quot;:&quot;SPI&quot;,&quot;m&quot;:&quot;2026-07&quot;,&quot;p&quot;:71,&quot;g&quot;:20,&quot;a&quot;:13,&quot;ap&quot;:12,&quot;mwh&quot;:7.2,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-06-01&quot;},{&quot;s&quot;:&quot;Diego Faria&quot;,&quot;praca&quot;:&quot;SPI&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:30,&quot;g&quot;:10,&quot;a&quot;:7,&quot;ap&quot;:7,&quot;mwh&quot;:5.375,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-06-01&quot;},{&quot;s&quot;:&quot;Ederson Silva&quot;,&quot;praca&quot;:&quot;SPI&quot;,&quot;m&quot;:&quot;2026-06&quot;,&quot;p&quot;:32,&quot;g&quot;:20,&quot;a&quot;:19,&quot;ap&quot;:10,&quot;mwh&quot;:5.405,&quot;pa&quot;:18,&quot;ga&quot;:13,&quot;aa&quot;:12,&quot;apa&quot;:3,&quot;mwha&quot;:0.947,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-05-27&quot;},{&quot;s&quot;:&quot;Ederson Silva&quot;,&quot;praca&quot;:&quot;SPI&quot;,&quot;m&quot;:&quot;2026-07&quot;,&quot;p&quot;:84,&quot;g&quot;:54,&quot;a&quot;:42,&quot;ap&quot;:21,&quot;mwh&quot;:10.613,&quot;pa&quot;:49,&quot;ga&quot;:31,&quot;aa&quot;:27,&quot;apa&quot;:8,&quot;mwha&quot;:2.267,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-05-27&quot;},{&quot;s&quot;:&quot;Ederson Silva&quot;,&quot;praca&quot;:&quot;SPI&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:55,&quot;g&quot;:32,&quot;a&quot;:25,&quot;ap&quot;:7,&quot;mwh&quot;:1.709,&quot;pa&quot;:30,&quot;ga&quot;:28,&quot;aa&quot;:23,&quot;apa&quot;:6,&quot;mwha&quot;:1.435,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-05-27&quot;},{&quot;s&quot;:&quot;Monica Silveira&quot;,&quot;praca&quot;:&quot;SPI&quot;,&quot;m&quot;:&quot;2026-05&quot;,&quot;p&quot;:11,&quot;g&quot;:7,&quot;a&quot;:7,&quot;ap&quot;:7,&quot;mwh&quot;:11.107,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-04-15&quot;},{&quot;s&quot;:&quot;Monica Silveira&quot;,&quot;praca&quot;:&quot;SPI&quot;,&quot;m&quot;:&quot;2026-07&quot;,&quot;p&quot;:5,&quot;g&quot;:3,&quot;a&quot;:2,&quot;ap&quot;:2,&quot;mwh&quot;:2.865,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-04-15&quot;},{&quot;s&quot;:&quot;Monica Silveira&quot;,&quot;praca&quot;:&quot;SPI&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:3,&quot;g&quot;:0,&quot;a&quot;:0,&quot;ap&quot;:0,&quot;mwh&quot;:0.0,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-04-15&quot;},{&quot;s&quot;:&quot;Nicola Popovic&quot;,&quot;praca&quot;:&quot;SPI&quot;,&quot;m&quot;:&quot;2026-06&quot;,&quot;p&quot;:1,&quot;g&quot;:1,&quot;a&quot;:1,&quot;ap&quot;:1,&quot;mwh&quot;:6.472,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-06-29&quot;},{&quot;s&quot;:&quot;Nicola Popovic&quot;,&quot;praca&quot;:&quot;SPI&quot;,&quot;m&quot;:&quot;2026-07&quot;,&quot;p&quot;:58,&quot;g&quot;:8,&quot;a&quot;:7,&quot;ap&quot;:7,&quot;mwh&quot;:21.704,&quot;pa&quot;:2,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-06-29&quot;},{&quot;s&quot;:&quot;Nicola Popovic&quot;,&quot;praca&quot;:&quot;SPI&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:31,&quot;g&quot;:3,&quot;a&quot;:3,&quot;ap&quot;:2,&quot;mwh&quot;:0.846,&quot;pa&quot;:1,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-06-29&quot;},{&quot;s&quot;:&quot;Percy Hormazabal&quot;,&quot;praca&quot;:&quot;SPI&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:5,&quot;g&quot;:3,&quot;a&quot;:2,&quot;ap&quot;:2,&quot;mwh&quot;:1.995,&quot;pa&quot;:1,&quot;ga&quot;:1,&quot;aa&quot;:1,&quot;apa&quot;:1,&quot;mwha&quot;:0.743,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-08-06&quot;},{&quot;s&quot;:&quot;Rodrigo Lima&quot;,&quot;praca&quot;:&quot;SPI&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:21,&quot;g&quot;:2,&quot;a&quot;:2,&quot;ap&quot;:2,&quot;mwh&quot;:2.632,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-08-05&quot;},{&quot;s&quot;:&quot;Ettore Rossi&quot;,&quot;praca&quot;:&quot;Salvador&quot;,&quot;m&quot;:&quot;2026-05&quot;,&quot;p&quot;:79,&quot;g&quot;:17,&quot;a&quot;:17,&quot;ap&quot;:15,&quot;mwh&quot;:14.395,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2025-11-05&quot;},{&quot;s&quot;:&quot;Ettore Rossi&quot;,&quot;praca&quot;:&quot;Salvador&quot;,&quot;m&quot;:&quot;2026-06&quot;,&quot;p&quot;:53,&quot;g&quot;:18,&quot;a&quot;:17,&quot;ap&quot;:15,&quot;mwh&quot;:9.322,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2025-11-05&quot;},{&quot;s&quot;:&quot;Ettore Rossi&quot;,&quot;praca&quot;:&quot;Salvador&quot;,&quot;m&quot;:&quot;2026-07&quot;,&quot;p&quot;:34,&quot;g&quot;:31,&quot;a&quot;:27,&quot;ap&quot;:24,&quot;mwh&quot;:15.279,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2025-11-05&quot;},{&quot;s&quot;:&quot;Ettore Rossi&quot;,&quot;praca&quot;:&quot;Salvador&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:16,&quot;g&quot;:9,&quot;a&quot;:8,&quot;ap&quot;:7,&quot;mwh&quot;:5.356,&quot;pa&quot;:3,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2025-11-05&quot;},{&quot;s&quot;:&quot;Luciana Campos&quot;,&quot;praca&quot;:&quot;Salvador&quot;,&quot;m&quot;:&quot;2026-06&quot;,&quot;p&quot;:7,&quot;g&quot;:0,&quot;a&quot;:0,&quot;ap&quot;:0,&quot;mwh&quot;:0.0,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-06-25&quot;},{&quot;s&quot;:&quot;Luciana Campos&quot;,&quot;praca&quot;:&quot;Salvador&quot;,&quot;m&quot;:&quot;2026-07&quot;,&quot;p&quot;:18,&quot;g&quot;:9,&quot;a&quot;:8,&quot;ap&quot;:8,&quot;mwh&quot;:2.697,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-06-25&quot;},{&quot;s&quot;:&quot;Luciana Campos&quot;,&quot;praca&quot;:&quot;Salvador&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:10,&quot;g&quot;:5,&quot;a&quot;:5,&quot;ap&quot;:5,&quot;mwh&quot;:4.0,&quot;pa&quot;:3,&quot;ga&quot;:1,&quot;aa&quot;:1,&quot;apa&quot;:1,&quot;mwha&quot;:0.264,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-06-25&quot;},{&quot;s&quot;:&quot;Maria Lúcia&quot;,&quot;praca&quot;:&quot;Salvador&quot;,&quot;m&quot;:&quot;2026-05&quot;,&quot;p&quot;:61,&quot;g&quot;:24,&quot;a&quot;:23,&quot;ap&quot;:21,&quot;mwh&quot;:21.298,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-01-08&quot;},{&quot;s&quot;:&quot;Maria Lúcia&quot;,&quot;praca&quot;:&quot;Salvador&quot;,&quot;m&quot;:&quot;2026-06&quot;,&quot;p&quot;:30,&quot;g&quot;:23,&quot;a&quot;:21,&quot;ap&quot;:15,&quot;mwh&quot;:18.843,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-01-08&quot;},{&quot;s&quot;:&quot;Maria Lúcia&quot;,&quot;praca&quot;:&quot;Salvador&quot;,&quot;m&quot;:&quot;2026-07&quot;,&quot;p&quot;:29,&quot;g&quot;:25,&quot;a&quot;:25,&quot;ap&quot;:21,&quot;mwh&quot;:24.853,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-01-08&quot;},{&quot;s&quot;:&quot;Maria Lúcia&quot;,&quot;praca&quot;:&quot;Salvador&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:14,&quot;g&quot;:9,&quot;a&quot;:9,&quot;ap&quot;:3,&quot;mwh&quot;:6.816,&quot;pa&quot;:3,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-01-08&quot;},{&quot;s&quot;:&quot;Silvia Dias&quot;,&quot;praca&quot;:&quot;Salvador&quot;,&quot;m&quot;:&quot;2026-07&quot;,&quot;p&quot;:5,&quot;g&quot;:5,&quot;a&quot;:5,&quot;ap&quot;:5,&quot;mwh&quot;:2.56,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-07-23&quot;},{&quot;s&quot;:&quot;Silvia Dias&quot;,&quot;praca&quot;:&quot;Salvador&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:33,&quot;g&quot;:25,&quot;a&quot;:23,&quot;ap&quot;:17,&quot;mwh&quot;:10.476,&quot;pa&quot;:6,&quot;ga&quot;:2,&quot;aa&quot;:2,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-07-23&quot;},{&quot;s&quot;:&quot;Tais Santos&quot;,&quot;praca&quot;:&quot;Salvador&quot;,&quot;m&quot;:&quot;2026-05&quot;,&quot;p&quot;:133,&quot;g&quot;:16,&quot;a&quot;:14,&quot;ap&quot;:13,&quot;mwh&quot;:8.749,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-03-16&quot;},{&quot;s&quot;:&quot;Tais Santos&quot;,&quot;praca&quot;:&quot;Salvador&quot;,&quot;m&quot;:&quot;2026-06&quot;,&quot;p&quot;:149,&quot;g&quot;:12,&quot;a&quot;:9,&quot;ap&quot;:9,&quot;mwh&quot;:3.065,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-03-16&quot;},{&quot;s&quot;:&quot;Tais Santos&quot;,&quot;praca&quot;:&quot;Salvador&quot;,&quot;m&quot;:&quot;2026-07&quot;,&quot;p&quot;:102,&quot;g&quot;:18,&quot;a&quot;:18,&quot;ap&quot;:16,&quot;mwh&quot;:14.241,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-03-16&quot;},{&quot;s&quot;:&quot;Tais Santos&quot;,&quot;praca&quot;:&quot;Salvador&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:29,&quot;g&quot;:4,&quot;a&quot;:3,&quot;ap&quot;:2,&quot;mwh&quot;:3.506,&quot;pa&quot;:7,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-03-16&quot;},{&quot;s&quot;:&quot;Tatiane Correia&quot;,&quot;praca&quot;:&quot;Salvador&quot;,&quot;m&quot;:&quot;2026-07&quot;,&quot;p&quot;:6,&quot;g&quot;:5,&quot;a&quot;:5,&quot;ap&quot;:5,&quot;mwh&quot;:2.475,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-07-13&quot;},{&quot;s&quot;:&quot;Tatiane Correia&quot;,&quot;praca&quot;:&quot;Salvador&quot;,&quot;m&quot;:&quot;2026-08&quot;,&quot;p&quot;:11,&quot;g&quot;:7,&quot;a&quot;:7,&quot;ap&quot;:6,&quot;mwh&quot;:3.176,&quot;pa&quot;:2,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0.0,&quot;lid&quot;:false,&quot;hire&quot;:&quot;2026-07-13&quot;}];
+// (usados quando o filtro 'incluir Antecipa' esta desligado). So consultores
+// ATIVOS entram (o process filtra pelo roster; lider fica de fora).
+const HIST = [{&quot;s&quot;:&quot;-&quot;,&quot;praca&quot;:&quot;-&quot;,&quot;m&quot;:&quot;1900-01&quot;,&quot;p&quot;:0,&quot;g&quot;:0,&quot;a&quot;:0,&quot;ap&quot;:0,&quot;mwh&quot;:0,&quot;pa&quot;:0,&quot;ga&quot;:0,&quot;aa&quot;:0,&quot;apa&quot;:0,&quot;mwha&quot;:0}];
 
 const PR_LABEL = {Salvador:'Salvador', Feira:'Feira de Santana', Natal:'Natal', RNInterior:'RN Interior', SPI:'SPI', Ribeirao:'Ribeirão', CE:'Ceará', Outras:'Outras'};
 const PR_ORDEM = ['Salvador','Feira','Natal','RNInterior','SPI','Ribeirao','CE','Outras'];
 // Meta INDIVIDUAL mensal de MWh por praça — mesma régua do BAU (META_IND).
 const META_IND = {Salvador:19.0, Feira:19.0, Natal:19.0, SPI:15.0, Ribeirao:15.0, CE:15.0, RNInterior:15.0, Outras:15.0};
-// Régua do Field (Felipe 14/08): 50 propostas/mês e conversões 25/90/80 — os
-// números redondos logo acima do que a base entrega hoje. A do Anexo A do frame
-// (70/80/80) não bate com a realidade (proposta→contrato roda perto de 20%).
-// MWh vem do META_IND por praça, igual ao BAU.
+// Régua do Field (Felipe 14/08): 50 propostas/mês e conversões 25/90/80.
 const EXP = {prop:50, cg:25, ca:90, cap:80};
 const MES_ABR = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 
 const D = HIST.filter(function(r){ return r &amp;&amp; r.s &amp;&amp; r.s !== '-'; });
-const MESES = (function(){
-  const u = {};
-  D.forEach(function(r){ u[r.m] = 1; });
-  return Object.keys(u).sort();
-})();
+const MESES = (function(){ const u = {}; D.forEach(function(r){ u[r.m] = 1; }); return Object.keys(u).sort(); })();
 const MES_ATUAL = MESES.length ? MESES[MESES.length-1] : '';
+const MES_ANT = MESES.length > 1 ? MESES[MESES.length-2] : '';
 
 let selPraca = 'all', selVend = '', comAnt = true;
 
 function mesLbl(m){ const p = m.split('-'); return MES_ABR[parseInt(p[1],10)-1] + '/' + p[0].slice(2); }
-function n1(v){ return (Math.round(v*10)/10).toFixed(1).replace('.', ','); }
+function n1(v){ const s = (Math.round(v*10)/10).toFixed(1); return (s.slice(-2) === '.0' ? s.slice(0,-2) : s).replace('.', ','); }
 function n2(v){ return (Math.round(v*100)/100).toFixed(2).replace('.', ','); }
 function pct(num, den){ return den > 0 ? Math.round(num*100/den) : null; }
 function pctTxt(num, den){ const v = pct(num, den); return v === null ? '—' : v + '%'; }
+function iniciais(nome){ const p = nome.split(' ').filter(Boolean); return ((p[0]||'')[0] || '') + ((p[p.length-1]||'')[0] || ''); }
 
-// aplica o filtro Antecipa: com = numeros cheios; sem = desconta a fatia Antecipa
 function val(r){
   if (comAnt) return {p:r.p, g:r.g, a:r.a, ap:r.ap, mwh:r.mwh};
   return {p:r.p-(r.pa||0), g:r.g-(r.ga||0), a:r.a-(r.aa||0), ap:r.ap-(r.apa||0), mwh:Math.max(0, r.mwh-(r.mwha||0))};
 }
 function zero(){ return {p:0, g:0, a:0, ap:0, mwh:0}; }
 function soma(acc, v){ acc.p+=v.p; acc.g+=v.g; acc.a+=v.a; acc.ap+=v.ap; acc.mwh+=v.mwh; return acc; }
+function doVend(nome, m){ const r = D.filter(function(x){ return x.s === nome &amp;&amp; x.m === m; })[0]; return r ? val(r) : zero(); }
 
-// selo de tempo de casa: 1o mes (M0) e 2o mes (M1) contados da data de admissão
-function selos(v){
-  let s = '';
-  if (v.lid) s += '<span class=&quot;chip lider&quot;>líder</span>';
-  const m = mesesDeCasa(v.hire);
-  if (m !== null &amp;&amp; m < 1) s += '<span class=&quot;chip novo&quot;>1º mês</span>';
-  else if (m !== null &amp;&amp; m < 2) s += '<span class=&quot;chip novo&quot;>2º mês</span>';
-  return s;
-}
 function mesesDeCasa(hire){
   if (!hire) return null;
   const p = hire.split('-').map(Number);
@@ -7275,15 +7295,20 @@ function mesesDeCasa(hire){
   if (hoje.getDate() < p[2]) m -= 1;
   return m;
 }
+function selo(hire){
+  const m = mesesDeCasa(hire);
+  if (m === null) return '';
+  if (m < 1) return '<span class=&quot;chip novo&quot;>1º mês de casa</span>';
+  if (m < 2) return '<span class=&quot;chip novo&quot;>2º mês de casa</span>';
+  return '';
+}
 
 function vendedores(){
   const map = {};
   D.forEach(function(r){
     if (selPraca !== 'all' &amp;&amp; r.praca !== selPraca) return;
-    if (!map[r.s]) map[r.s] = {s:r.s, praca:r.praca, lid:!!r.lid, hire:r.hire||'', tot:zero(), porMes:{}};
-    const v = val(r);
-    map[r.s].porMes[r.m] = v;
-    soma(map[r.s].tot, v);
+    if (!map[r.s]) map[r.s] = {s:r.s, praca:r.praca, hire:r.hire||'', porMes:{}};
+    map[r.s].porMes[r.m] = val(r);
   });
   return Object.keys(map).map(function(k){ return map[k]; }).sort(function(x,y){
     const a = PR_ORDEM.indexOf(x.praca), b = PR_ORDEM.indexOf(y.praca);
@@ -7292,96 +7317,118 @@ function vendedores(){
   });
 }
 
-// média do time = vendedores da MESMA praça com proposta no mês, sem os líderes
+// média do time = consultores da mesma praça com proposta no mês
 function mediaTime(praca, m){
-  const arr = D.filter(function(r){
-    return r.praca === praca &amp;&amp; r.m === m &amp;&amp; !r.lid &amp;&amp; val(r).p > 0;
-  });
+  const arr = D.filter(function(r){ return r.praca === praca &amp;&amp; r.m === m &amp;&amp; val(r).p > 0; });
   if (!arr.length) return null;
   const acc = zero();
   arr.forEach(function(r){ soma(acc, val(r)); });
   return {p:acc.p/arr.length, g:acc.g/arr.length, a:acc.a/arr.length, ap:acc.ap/arr.length, mwh:acc.mwh/arr.length, n:arr.length};
 }
 
-function linha(rot, v, cls, chip, conv){
-  const c = conv !== false;
-  return '<tr class=&quot;' + (cls||'') + '&quot;><td>' + rot + (chip||'') + '</td>' +
-    '<td><span class=&quot;big&quot;>' + (v.p === null ? '—' : n1(v.p).replace(',0','')) + '</span></td>' +
-    '<td><span class=&quot;big&quot;>' + (v.g === null ? '—' : n1(v.g).replace(',0','')) + '</span>' + (c ? '<span class=&quot;conv&quot;>conv ' + pctTxt(v.g, v.p) + '</span>' : '') + '</td>' +
-    '<td><span class=&quot;big&quot;>' + (v.a === null ? '—' : n1(v.a).replace(',0','')) + '</span>' + (c ? '<span class=&quot;conv&quot;>conv ' + pctTxt(v.a, v.g) + '</span>' : '') + '</td>' +
-    '<td><span class=&quot;big&quot;>' + (v.ap === null ? '—' : n1(v.ap).replace(',0','')) + '</span>' + (c ? '<span class=&quot;conv&quot;>conv ' + pctTxt(v.ap, v.a) + '</span>' : '') + '</td>' +
-    '<td><span class=&quot;big&quot;>' + n2(v.mwh) + '</span></td></tr>';
+// ---------------- tabela do funil (modelo do Anexo A) ----------------
+function cel(v, den, mostrarConv){
+  return '<td><span class=&quot;big&quot;>' + n1(v) + '</span>' +
+    (mostrarConv ? '<span class=&quot;conv&quot;>conv ' + pctTxt(v, den) + '</span>' : '') + '</td>';
 }
-
 function tabelaVend(nome, praca){
   let html = '<table class=&quot;h&quot;><thead><tr><th>Período</th><th>Propostas</th><th>Gerados</th><th>Assinados</th><th>Aprovados</th><th>MWh aprov.</th></tr></thead><tbody>';
-  MESES.forEach(function(m){
-    const r = D.filter(function(x){ return x.s === nome &amp;&amp; x.m === m; })[0];
-    const v = r ? val(r) : zero();
+  MESES.forEach(function(m, i){
+    const v = doVend(nome, m);
     const cur = (m === MES_ATUAL);
-    html += linha(mesLbl(m), v, cur ? 'cur' : '', cur ? '<span class=&quot;chip curso&quot;>em curso</span>' : '');
+    html += '<tr class=&quot;' + (i % 2 ? 'alt' : '') + '&quot;><td>' + mesLbl(m) +
+      (cur ? '<span class=&quot;chip curso&quot;>em curso</span>' : '') + '</td>' +
+      '<td><span class=&quot;big&quot;>' + v.p + '</span></td>' +
+      cel(v.g, v.p, true) + cel(v.a, v.g, true) + cel(v.ap, v.a, true) +
+      '<td><span class=&quot;big&quot;>' + n2(v.mwh) + '</span></td></tr>';
   });
   const meta = META_IND[praca] || 15;
-  const ec = function(v){ return '<td><span class=&quot;big&quot;>—</span>' + (v === null ? '' : '<span class=&quot;conv&quot;>' + v + '%</span>') + '</td>'; };
+  const ec = function(c){ return '<td><span class=&quot;dash&quot;>—</span>' + (c === null ? '' : '<span class=&quot;conv&quot;>' + c + '%</span>') + '</td>'; };
   html += '<tr class=&quot;exp&quot;><td>Expectativa</td>' +
-    '<td><span class=&quot;big&quot;>' + EXP.prop + '</span></td>' +
+    '<td><span class=&quot;big&quot;>' + EXP.prop + '+</span></td>' +
     ec(EXP.cg) + ec(EXP.ca) + ec(EXP.cap) +
-    '<td><span class=&quot;big&quot;>' + n2(meta) + '</span></td></tr>';
+    '<td><span class=&quot;big&quot;>' + n2(meta) + '+</span></td></tr>';
   const mt = mediaTime(praca, MES_ATUAL);
-  if (mt) html += linha('Média do time <span class=&quot;pr&quot;>· ' + (PR_LABEL[praca]||praca) + ' · ' + mesLbl(MES_ATUAL) + ' · ' + mt.n + ' vendedores</span>', mt, 'team', '');
+  if (mt) {
+    html += '<tr class=&quot;team&quot;><td>Média do time<div class=&quot;pr&quot;>' + (PR_LABEL[praca]||praca) + ' · ' + mesLbl(MES_ATUAL) + ' · ' + mt.n + ' pessoas</div></td>' +
+      '<td><span class=&quot;big&quot;>' + n1(mt.p) + '</span></td>' +
+      cel(mt.g, mt.p, true) + cel(mt.a, mt.g, true) + cel(mt.ap, mt.a, true) +
+      '<td><span class=&quot;big&quot;>' + n2(mt.mwh) + '</span></td></tr>';
+  }
   html += '</tbody></table>';
   return html;
 }
 
-function leitura(nome, praca){
-  const ms = MESES.slice();
-  const get = function(m){
-    const r = D.filter(function(x){ return x.s === nome &amp;&amp; x.m === m; })[0];
-    return r ? val(r) : zero();
-  };
-  const cur = get(MES_ATUAL);
-  const ant = ms.length > 1 ? get(ms[ms.length-2]) : zero();
-  const fechados = ms.slice(0, ms.length-1);
-  const mediaProp = fechados.length ? fechados.reduce(function(s,m){ return s + get(m).p; }, 0)/fechados.length : 0;
+// ---------------- barras de MWh por mês ----------------
+function barras(nome, praca){
   const meta = META_IND[praca] || 15;
+  let max = meta;
+  MESES.forEach(function(m){ max = Math.max(max, doVend(nome, m).mwh); });
+  max = max * 1.12;
+  let html = '<div class=&quot;bars&quot;><div class=&quot;bars-t&quot;>MWh aprovado por mês</div>';
+  MESES.forEach(function(m){
+    const v = doVend(nome, m).mwh;
+    const cur = (m === MES_ATUAL);
+    html += '<div class=&quot;brow&quot;><div class=&quot;m&quot;>' + mesLbl(m) + '</div>' +
+      '<div class=&quot;track&quot;><div class=&quot;fill' + (cur ? ' cur' : '') + '&quot; style=&quot;width:' + (max > 0 ? Math.round(v*100/max) : 0) + '%&quot;></div>' +
+      '<div class=&quot;meta&quot; style=&quot;left:' + (max > 0 ? Math.round(meta*100/max) : 0) + '%&quot;></div></div>' +
+      '<div class=&quot;val&quot;>' + n2(v) + ' <small>MWh</small></div></div>';
+  });
+  html += '<div class=&quot;legend&quot;>A marca <b>|</b> lilás é a meta individual do mês (' + n2(meta) + ' MWh · ' + (PR_LABEL[praca]||praca) + ').</div></div>';
+  return html;
+}
 
-  const dProp = ant.p > 0 ? Math.round((cur.p - ant.p)*100/ant.p) : null;
-  const cvCur = pct(cur.ap, cur.p), cvAnt = pct(ant.ap, ant.p);
+// ---------------- KPIs do mês ----------------
+function kpis(nome, praca){
+  const cur = doVend(nome, MES_ATUAL);
+  const ant = MES_ANT ? doVend(nome, MES_ANT) : zero();
+  const meta = META_IND[praca] || 15;
   const pctMeta = meta > 0 ? Math.round(cur.mwh*100/meta) : 0;
+  const dProp = ant.p > 0 ? Math.round((cur.p - ant.p)*100/ant.p) : null;
+  const cv = pct(cur.ap, cur.p);
+  const cor = pctMeta >= 100 ? 'var(--green)' : (pctMeta >= 60 ? 'var(--orange)' : 'var(--pink)');
+  const seta = dProp === null ? '—' : (dProp > 0 ? '▲ +' + dProp + '%' : (dProp < 0 ? '▼ ' + dProp + '%' : '● estável'));
+  const clsSeta = dProp === null ? 'flat' : (dProp > 0 ? 'up' : (dProp < 0 ? 'down' : 'flat'));
 
-  const seta = function(v){ return v === null ? '' : (v > 0 ? '▲ +' + v + '%' : (v < 0 ? '▼ ' + v + '%' : '● estável')); };
-  const cor = function(v){ return v === null ? 'flat' : (v > 0 ? 'up' : (v < 0 ? 'down' : 'flat')); };
-
-  return '<div class=&quot;leitura&quot;>' +
-    '<div class=&quot;li&quot;><div class=&quot;t&quot;>Propostas · ' + mesLbl(MES_ATUAL) + ' vs ' + (ms.length>1 ? mesLbl(ms[ms.length-2]) : '—') + '</div>' +
-      '<div class=&quot;v ' + cor(dProp) + '&quot;>' + cur.p + ' <span style=&quot;font-size:12px&quot;>' + seta(dProp) + '</span></div>' +
-      '<div class=&quot;d&quot;>Média dos meses fechados: ' + n1(mediaProp) + ' por mês · régua: ' + EXP.prop + '</div></div>' +
-    '<div class=&quot;li&quot;><div class=&quot;t&quot;>Conversão proposta → aprovado</div>' +
-      '<div class=&quot;v&quot;>' + (cvCur === null ? '—' : cvCur + '%') + '</div>' +
-      '<div class=&quot;d&quot;>Mês anterior: ' + (cvAnt === null ? '—' : cvAnt + '%') + ' · o placar final é aprovado e MWh</div></div>' +
-    '<div class=&quot;li&quot;><div class=&quot;t&quot;>MWh aprovado · ' + mesLbl(MES_ATUAL) + '</div>' +
-      '<div class=&quot;v ' + (pctMeta >= 100 ? 'up' : (pctMeta >= 60 ? 'flat' : 'down')) + '&quot;>' + n2(cur.mwh) + ' <span style=&quot;font-size:12px&quot;>' + pctMeta + '% da meta</span></div>' +
-      '<div class=&quot;d&quot;>Meta individual do mês: ' + n2(meta) + ' MWh (' + (PR_LABEL[praca]||praca) + ')</div></div>' +
+  return '<div class=&quot;kpis&quot;>' +
+    '<div class=&quot;kpi&quot;><div class=&quot;k&quot;>MWh aprovado · ' + mesLbl(MES_ATUAL) + '</div>' +
+      '<div class=&quot;v&quot; style=&quot;color:' + cor + '&quot;>' + n2(cur.mwh) + ' <small>de ' + n2(meta) + '</small></div>' +
+      '<div class=&quot;track&quot;><div class=&quot;fill&quot; style=&quot;width:' + Math.min(100, pctMeta) + '%;background:' + cor + '&quot;></div></div>' +
+      '<div class=&quot;d&quot;>' + pctMeta + '% da meta individual do mês</div></div>' +
+    '<div class=&quot;kpi&quot;><div class=&quot;k&quot;>Propostas · ' + mesLbl(MES_ATUAL) + '</div>' +
+      '<div class=&quot;v&quot;>' + cur.p + ' <small class=&quot;' + clsSeta + '&quot;>' + seta + '</small></div>' +
+      '<div class=&quot;d&quot;>Régua: ' + EXP.prop + ' por mês' + (MES_ANT ? ' · ' + mesLbl(MES_ANT) + ': ' + ant.p : '') + '</div></div>' +
+    '<div class=&quot;kpi&quot;><div class=&quot;k&quot;>Proposta → aprovado</div>' +
+      '<div class=&quot;v&quot;>' + (cv === null ? '—' : cv + '%') + '</div>' +
+      '<div class=&quot;d&quot;>' + (MES_ANT ? mesLbl(MES_ANT) + ': ' + pctTxt(ant.ap, ant.p) + ' · ' : '') + 'aprovados no mês: ' + cur.ap + '</div></div>' +
   '</div>';
 }
 
+// ---------------- lista do time ----------------
 function listaGeral(){
   const vs = vendedores();
   if (!vs.length) return '<div class=&quot;card&quot;><div class=&quot;empty&quot;>Sem histórico no recorte selecionado.</div></div>';
-  let html = '<div class=&quot;card&quot;><div class=&quot;card-t&quot;>Time <span class=&quot;tag&quot;>' + vs.length + ' vendedores</span>' +
-    '<span class=&quot;pr&quot; style=&quot;margin-left:auto;font-weight:500&quot;>clique no vendedor pra abrir o histórico completo</span></div>' +
-    '<table class=&quot;lst&quot;><thead><tr><th>Vendedor</th>' +
+  let html = '<div class=&quot;card&quot;><div class=&quot;lst-head&quot;><div class=&quot;t&quot;>Time</div><span class=&quot;tag&quot;>' + vs.length + ' consultores</span>' +
+    '<div class=&quot;hint&quot;>clique no nome pra abrir o histórico completo</div></div>' +
+    '<table class=&quot;lst&quot;><thead><tr><th>Consultor</th>' +
     MESES.map(function(m){ return '<th>' + mesLbl(m) + '<div class=&quot;pr&quot; style=&quot;font-weight:500&quot;>props · MWh</div></th>'; }).join('') +
-    '<th>Tendência</th></tr></thead><tbody>';
+    '<th>MWh no período</th><th>Tendência</th></tr></thead><tbody>';
   vs.forEach(function(v){
-    html += '<tr onclick=&quot;setVend(\'' + v.s.replace(/'/g, &quot;\\'&quot;) + '\')&quot;><td>' + v.s + selos(v) + '<div class=&quot;pr&quot;>' + (PR_LABEL[v.praca]||v.praca) + '</div></td>';
+    let maxM = 0;
+    MESES.forEach(function(m){ maxM = Math.max(maxM, (v.porMes[m]||zero()).mwh); });
+    html += '<tr onclick=&quot;setVend(\'' + v.s.replace(/'/g, &quot;\\'&quot;) + '\')&quot;><td><span class=&quot;nm&quot;>' + v.s + '</span>' + selo(v.hire) +
+      '<div class=&quot;pr&quot;>' + (PR_LABEL[v.praca]||v.praca) + '</div></td>';
     MESES.forEach(function(m){
       const x = v.porMes[m] || zero();
-      html += '<td><b>' + x.p + '</b> · ' + n2(x.mwh) + '</td>';
+      html += '<td><b>' + x.p + '</b> <span class=&quot;pr&quot;>· ' + n2(x.mwh) + '</span></td>';
     });
-    const ms = MESES;
+    html += '<td><span class=&quot;spark&quot;>' + MESES.map(function(m){
+      const x = v.porMes[m] || zero();
+      const hh = maxM > 0 ? Math.max(2, Math.round(x.mwh*24/maxM)) : 2;
+      return '<i class=&quot;' + (m === MES_ATUAL ? 'last' : '') + '&quot; style=&quot;height:' + hh + 'px&quot;></i>';
+    }).join('') + '</span></td>';
     const cur = (v.porMes[MES_ATUAL]||zero()).p;
-    const ant = ms.length > 1 ? (v.porMes[ms[ms.length-2]]||zero()).p : 0;
+    const ant = MES_ANT ? (v.porMes[MES_ANT]||zero()).p : 0;
     const d = ant > 0 ? Math.round((cur-ant)*100/ant) : null;
     html += '<td class=&quot;trend ' + (d === null ? 'flat' : (d > 0 ? 'up' : (d < 0 ? 'down' : 'flat'))) + '&quot;>' +
       (d === null ? '—' : (d > 0 ? '▲ +' + d + '%' : (d < 0 ? '▼ ' + d + '%' : '● 0%'))) + '</td></tr>';
@@ -7390,16 +7437,15 @@ function listaGeral(){
   return html;
 }
 
+// ---------------- render ----------------
 function render(){
-  // selects
   const sp = document.getElementById('f-praca');
   const pracas = {};
   D.forEach(function(r){ pracas[r.praca] = 1; });
   sp.innerHTML = '<option value=&quot;all&quot;>Todas</option>' + PR_ORDEM.filter(function(p){ return pracas[p]; })
     .map(function(p){ return '<option value=&quot;' + p + '&quot;' + (selPraca === p ? ' selected' : '') + '>' + (PR_LABEL[p]||p) + '</option>'; }).join('');
-  const sv = document.getElementById('f-vend');
   const vs = vendedores();
-  sv.innerHTML = '<option value=&quot;&quot;>Todos (visão do time)</option>' +
+  document.getElementById('f-vend').innerHTML = '<option value=&quot;&quot;>Todos (visão do time)</option>' +
     vs.map(function(v){ return '<option value=&quot;' + v.s + '&quot;' + (selVend === v.s ? ' selected' : '') + '>' + v.s + '</option>'; }).join('');
   document.getElementById('btn-papo').style.display = selVend ? '' : 'none';
 
@@ -7409,17 +7455,18 @@ function render(){
     document.getElementById('papel').innerHTML = '';
     return;
   }
-  const vsel = vs.filter(function(v){ return v.s === selVend; })[0] || {praca:'Outras'};
-  const praca = vsel.praca;
+  const v = vs.filter(function(x){ return x.s === selVend; })[0] || {praca:'Outras', hire:''};
+  const praca = v.praca;
   app.innerHTML =
-    '<div class=&quot;card&quot;><div class=&quot;card-t&quot;>Funil por vendedor · ' + selVend + selos(vsel) +
-      '<span class=&quot;tag&quot;>' + (PR_LABEL[praca]||praca) + '</span>' +
-      '<span class=&quot;pr&quot; style=&quot;margin-left:auto;font-weight:500&quot;>coorte pela data da proposta' + (comAnt ? ' · GD + Antecipa' : ' · só GD') + '</span></div>' +
+    '<div class=&quot;card&quot;>' +
+      '<div class=&quot;vhead&quot;><div class=&quot;avatar&quot;>' + iniciais(selVend) + '</div>' +
+        '<div><div class=&quot;vname&quot;>' + selVend + '<span class=&quot;chip praca&quot;>' + (PR_LABEL[praca]||praca) + '</span>' + selo(v.hire) + '</div>' +
+        '<div class=&quot;vsub&quot;>Coorte pela data da proposta' + (comAnt ? ' · GD + Antecipa' : ' · só GD') + ' · últimos ' + MESES.length + ' meses</div></div></div>' +
+      kpis(selVend, praca) +
+      '<div class=&quot;tt&quot;>Funil por vendedor · ' + selVend + '</div>' +
       tabelaVend(selVend, praca) +
-      '<div class=&quot;pr&quot; style=&quot;margin-top:10px;line-height:1.6&quot;>Leia de cima pra baixo: evolução mês a mês, depois a expectativa (linha lilás), depois o time. ' +
-      'A conversão de cada etapa é sobre a etapa anterior. Se o número está abaixo da régua, é conversa de expectativa.</div>' +
-    '</div>' +
-    '<div class=&quot;card&quot;><div class=&quot;card-t&quot;>Leitura rápida</div>' + leitura(selVend, praca) + '</div>';
+      barras(selVend, praca) +
+    '</div>';
   montaPapel(selVend, praca);
 }
 
