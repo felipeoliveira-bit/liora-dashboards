@@ -5206,7 +5206,7 @@ async function gerarProposta(){
   showCopyPropostaModal(msg, nome);
 }
 
-// ⭐ v2.7 — Constrói a mensagem padrão do bot (5 itens numerados)
+// ⭐ v2.7 — Constrói a mensagem padrão do bot (6 itens numerados)
 function buildWhatsappMessage(lead){
   const primeiroNome = (lead.nome || '').split(/\s+/)[0] || lead.nome || '';
   const tel = lead.tel || '';
@@ -5219,6 +5219,7 @@ function buildWhatsappMessage(lead){
     `3) ${fat}`,
     `4) Field e Antecipa PF`,
     `5) ${dist}`,
+    `6) Faça ambos`,
   ].join('\n');
 }
 
