@@ -501,6 +501,59 @@ io.open('new_ANT_FIELD.json','w').write(json.dumps(ANT_FIELD, ensure_ascii=False
 print('ant_field:', len(ANT_FIELD))
 print('antecipa:', len(ANTECIPA), '|', (os.path.basename(f_ant) if f_ant else 'sem arquivo'))
 
+# ---- ROSTER do time (planilha de HC do Field, aba principal) -------------
+# https://docs.google.com/spreadsheets/d/1Xrq4e1B3cjla9xA-ypHCP_H-fLxrT2H5crS2UwthIAw/
+# email -> (cargo, hiring_date). SO quem esta ATIVO aqui aparece na aba
+# "Historico" (Felipe 14/08: mostrar so os ativos). Quem sai da operacao some da
+# aba no rebuild seguinte. ATUALIZAR quando entrar/sair gente (mesmo ritual dos
+# mapas PRACA_TITLE/EMAIL2NAME). 'managment' TRUE (Felipe, Lucas Ferrara) fica de fora.
+ROSTER_ATIVO = {
+ 'kelma.rangel@lioraenergia.com.br': ('lider','2025-09-01'),
+ 'lucileide.carlos@lioraenergia.com.br': ('consultor','2025-10-06'),
+ 'ettore.rossi@lioraenergia.com.br': ('consultor','2025-11-05'),
+ 'adroaldo.bonfim@lioraenergia.com.br': ('lider','2025-12-02'),
+ 'maria.lucia@lioraenergia.com.br': ('consultor','2026-01-08'),
+ 'marcio.galvao@lioraenergia.com.br': ('consultor','2026-02-02'),
+ 'caio.lannes@lioraenergia.com.br': ('lider','2026-02-25'),
+ 'tais.santos@lioraenergia.com.br': ('consultor','2026-03-16'),
+ 'bruno.andrade@lioraenergia.com.br': ('lider','2026-04-09'),
+ 'monica.silveira@lioraenergia.com.br': ('consultor','2026-04-15'),
+ 'tiago.freitas@lioraenergia.com.br': ('consultor','2026-04-15'),
+ 'bruno.borges@lioraenergia.com.br': ('lider','2026-04-15'),
+ 'ederson.silva@lioraenergia.com.br': ('consultor','2026-05-27'),
+ 'diego.faria@lioraenergia.com.br': ('consultor','2026-06-01'),
+ 'neilon.nascimento@lioraenergia.com.br': ('consultor','2026-06-01'),
+ 'rodrigo.ribeiro@lioraenergia.com.br': ('consultor','2026-06-01'),
+ 'odirley.costa@lioraenergia.com.br': ('consultor','2026-06-15'),
+ 'nubia.andrade@lioraenergia.com.br': ('consultor','2026-06-15'),
+ 'mecenas.junior@lioraenergia.com.br': ('consultor','2026-06-24'),
+ 'luciana.campos@lioraenergia.com.br': ('consultor','2026-06-25'),
+ 'nicola.popovic@lioraenergia.com.br': ('consultor','2026-06-29'),
+ 'joao.santos@lioraenergia.com.br': ('lider','2026-07-01'),
+ 'sabrina.tomazeti@lioraenergia.com.br': ('consultor','2026-07-06'),
+ 'tatiane.correia@lioraenergia.com.br': ('consultor','2026-07-13'),
+ 'daniel.magnus@lioraenergia.com.br': ('consultor','2026-07-13'),
+ 'anderson.correia@lioraenergia.com.br': ('consultor','2026-07-13'),
+ 'nha.negocios@gmail.com': ('consultor','2026-07-13'),  # e-mail alternativo do Anderson
+ 'mirla.albuquerque@lioraenergia.com.br': ('lider','2026-07-13'),
+ 'lucas.santos@lioraenergia.com.br': ('consultor','2026-07-23'),
+ 'silvia.dias@lioraenergia.com.br': ('consultor','2026-07-23'),
+ 'thiago.firmo@lioraenergia.com.br': ('consultor','2026-07-23'),
+ 'thymacillo@hotmail.com': ('consultor','2026-07-23'),  # e-mail alternativo do Thiago Firmo
+ 'alberto.nascimento@lioraenergia.com.br': ('consultor','2026-07-28'),
+ 'jefferson.fideli@lioraenergia.com.br': ('consultor','2026-08-03'),
+ 'marcel.sousa@lioraenergia.com.br': ('consultor','2026-08-03'),
+ 'phillip.faria@lioraenergia.com.br': ('consultor','2026-08-03'),
+ 'jose.monteiro@lioraenergia.com.br': ('consultor','2026-08-05'),  # Rodrigo Lima (corp_email da planilha)
+ 'jose.lima@lioraenergia.com.br': ('consultor','2026-08-05'),      # Rodrigo Lima (e-mail usado no CRM/dashboard)
+ 'daniel.junior@lioraenergia.com.br': ('consultor','2026-08-05'),
+ 'percy.hormazabal@lioraenergia.com.br': ('consultor','2026-08-06'),
+ 'tamires.costa@lioraenergia.com.br': ('consultor','2026-08-06'),
+ 'briel.barbosa@lioraenergia.com.br': ('consultor','2026-08-10'),
+ 'olimpio.filho@lioraenergia.com.br': ('consultor','2026-08-10'),
+ 'fabio.rodrigues@lioraenergia.com.br': ('consultor','2026-08-10'),
+}
+
 # ---- HIST: historico de performance por vendedor (aba "Historico") -------
 # Fonte: recorte historico_vendedor*.csv (3 meses fechados + mes corrente).
 # COORTE PELA DATA DA PROPOSTA: todas as etapas seguem a proposta gerada no mes,
@@ -522,6 +575,7 @@ def _hist_aprovado(x):
     return False
 
 HIST = []
+_fora = set()
 _unk_snap = set(unknown)  # mk_deal() no historico ve ex-vendedores: nao alerta por eles
 if f_hist:
     _agg = {}; _seen_hd = set()
@@ -532,12 +586,17 @@ if f_hist:
         # ex-vendedores aparecem no historico (meses passados) e nao estao nos mapas:
         # usa o nome do CRM como fallback SEM sujar o alerta de e-mail desconhecido.
         _e = (_em or '').strip().lower()
+        _ros = ROSTER_ATIVO.get(_e)
+        if not _ros:
+            _fora.add(_e or '(sem email)')
+            continue          # so os ATIVOS entram na aba (Felipe 14/08)
         _s = (CLIENT_OVERRIDE.get(norm(_cli)) or [None])[0] or EMAIL2NAME.get(_e) \
              or (r.get('sales_person_name') or _e or '?').strip()
         _pr = _ANT_PRACA_KEY.get(praca_of(_em, _cli), 'Outras')
         _k = (_s, _pr, _d[:7])
         _a = _agg.setdefault(_k, {'s':_s,'praca':_pr,'m':_d[:7],'p':0,'g':0,'a':0,'ap':0,'mwh':0.0,
-                                  'pa':0,'ga':0,'aa':0,'apa':0,'mwha':0.0})
+                                  'pa':0,'ga':0,'aa':0,'apa':0,'mwha':0.0,
+                                  'lid':(_ros[0]=='lider'), 'hire':_ros[1]})
         _ant = (r.get('product_name') or '').strip().upper().startswith('LIORA_ANTECIPA')
         _a['p'] += 1
         if _ant: _a['pa'] += 1
@@ -560,6 +619,8 @@ if f_hist:
         _v['mwh'] = round(_v['mwh'], 3); _v['mwha'] = round(_v['mwha'], 3)
     HIST = sorted(_agg.values(), key=lambda z: (z['praca'], z['s'], z['m']))
 unknown.clear(); unknown.update(_unk_snap)
+if _fora:
+    print('historico: fora do roster ativo (nao entram na aba):', ', '.join(sorted(_fora)))
 io.open('new_HIST.json','w').write(json.dumps(HIST, ensure_ascii=False))
 print('historico:', len(HIST), 'linhas vendedor x mes |',
       (os.path.basename(f_hist) if f_hist else 'sem arquivo'))
