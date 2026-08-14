@@ -769,6 +769,48 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
 .calc-break .v{ text-align:right; font-weight:700; font-variant-numeric:tabular-nums; }
 .calc-break .k.tr,.calc-break .v.tr{ font-size:15px; padding-top:8px; margin-top:2px; border-top:1px dashed rgba(255,255,255,.35); }
 .calc-note{ font-size:12px; color:var(--muted); line-height:1.6; margin-top:14px; border-left:2px solid var(--blue); padding-left:11px; }
+
+/* ===== Missão da Semana (campanha de líderes 13-23/08) — v2.168 ===== */
+.mis-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.mis-pill{font-size:10.5px;font-weight:700;padding:5px 10px;border-radius:20px;background:#0201F3;color:#fff}
+.mis-pill.alt{background:#C58BC7}
+.mis-pill.ghost{background:#fff;color:#4A4A4A;border:1px solid #e2e5ee}
+.mis-tiers{display:flex;gap:8px;margin-bottom:14px}
+.mis-tier{flex:1;background:#fff;border-radius:12px;padding:9px 8px;text-align:center;border:1px solid #eceef4}
+.mis-tier .v{font-size:15px;font-weight:800;color:#0201F3;line-height:1.1}
+.mis-tier .p{font-size:10px;font-weight:700;color:#C58BC7;margin-top:2px}
+.mis-tier .l{font-size:8.5px;font-weight:700;color:#a0a3b5;text-transform:uppercase;letter-spacing:.05em}
+.mis-card{background:#fff;border-radius:16px;padding:14px 15px 15px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.mis-card.done{background:linear-gradient(180deg,#fff,#F4ECF5)}
+.mis-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.mis-name{font-size:14.5px;font-weight:800}
+.mis-lider{font-size:10.5px;color:#9a9ab0;font-weight:600}
+.mis-mwh{font-size:24px;font-weight:800;color:#0201F3;letter-spacing:-.03em;margin-top:6px;line-height:1.1}
+.mis-mwh small{font-size:11px;font-weight:600;color:#9a9ab0;letter-spacing:0}
+.mis-bar{position:relative;height:11px;background:#EDF0F5;border-radius:7px;margin:10px 0 5px;overflow:visible}
+.mis-bar .f{position:absolute;left:0;top:0;bottom:0;border-radius:7px;background:linear-gradient(90deg,#0201F3,#5A4BFF)}
+.mis-bar .f.gold{background:linear-gradient(90deg,#C58BC7,#0201F3)}
+.mis-bar .mk{position:absolute;top:-3px;bottom:-3px;width:2px;background:#c4c9d6}
+.mis-leg{display:flex;justify-content:space-between;font-size:9px;color:#a0a3b5;font-weight:700}
+.mis-prize{margin-top:10px;padding:8px 11px;border-radius:10px;font-size:11.5px;font-weight:700;display:flex;justify-content:space-between;gap:8px}
+.mis-prize.on{background:#0201F3;color:#fff}
+.mis-prize.off{background:#F3F4F8;color:#6b6b7b}
+.mis-prize.blocked{background:#FEF0EF;color:#B42318}
+.mis-next{font-size:11px;color:#6b6b7b;font-weight:600;margin-top:7px}
+.mis-pre{margin-top:11px;border-top:1px solid #EDF0F5;padding-top:9px}
+.mis-pre-t{font-size:9.5px;font-weight:700;color:#a0a3b5;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.mis-chips{display:flex;flex-wrap:wrap;gap:4px}
+.mis-chip{font-size:10.5px;font-weight:600;padding:3px 8px;border-radius:20px}
+.mis-chip.ok{background:#E7F6EC;color:#067647}
+.mis-chip.no{background:#F3F4F8;color:#98a2b3}
+.mis-sec{font-size:12px;font-weight:800;margin:16px 0 8px;display:flex;align-items:center;gap:7px}
+.mis-sec .n{font-size:10px;font-weight:700;color:#fff;background:#0201F3;border-radius:20px;padding:2px 8px}
+.mis-row{background:#fff;border-radius:12px;padding:10px 12px;margin-bottom:7px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.mis-row .c{font-size:12.5px;font-weight:700;line-height:1.25}
+.mis-row .m{font-size:10.5px;color:#9a9ab0;font-weight:600;margin-top:2px}
+.mis-row .v{font-size:14px;font-weight:800;color:#0201F3;white-space:nowrap}
+.mis-toggle{width:100%;font-family:inherit;font-size:11.5px;font-weight:700;color:#0201F3;background:#fff;border:1px solid #d9dcea;border-radius:10px;padding:9px;margin-bottom:12px;cursor:pointer}
+.mis-foot{font-size:10px;color:#a0a3b5;line-height:1.55;margin-top:14px}
 </style>
 </head>
 <body>
@@ -817,6 +859,11 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
     <div id="s5-content"></div>
   </div>
 
+  <!-- SCREEN: MISSÃO (líderes/gestão) -->
+  <div class="screen" id="screen-missao">
+    <div id="s7-content"></div>
+  </div>
+
   <!-- SCREEN: COPA LIORA (TEMPORÁRIO) -->
   <div class="screen" id="screen-copa">
     <div id="s6-content"></div>
@@ -852,6 +899,12 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
         <svg viewBox="0 0 24 24"><path d="M3 4h18l-7 8v6l-4 2v-8L3 4z"/></svg>
       </div>
       <div class="nav-label">Funil</div>
+    </div>
+    <div class="nav-item" id="nav-missao" onclick="setScreen('missao')" style="display:none">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>
+      </div>
+      <div class="nav-label">Missão</div>
     </div>
     <div class="nav-item" onclick="setScreen('campanha')" id="nav-campanha">
       <div class="nav-icon">
@@ -1076,7 +1129,7 @@ let METAS = {
 };
 
 // ── NAV ───────────────────────────────────────────────────
-const TITLES = {resumo:'Field',carteira:'Card', campanha:'Campanhas',propostas:'Ranking',funil:'Funil de Vendas',copa:'Copa Liora'};
+const TITLES = {resumo:'Field',carteira:'Card', campanha:'Campanhas',propostas:'Ranking',funil:'Funil de Vendas',copa:'Copa Liora',missao:'Missão'};
 let currentScreen = 'resumo';
 
 function setScreen(s){
@@ -1092,6 +1145,163 @@ renderResumo();
   if(s==='campanha') renderCampanha();
   if(s==='propostas') renderPropostas();
   if(s==='funil') renderFunil();
+  if(s==='missao') renderMissao();
+}
+
+
+// ══════════════════════════════════════════════════════════════════
+// SCREEN: MISSÃO DA SEMANA (v2.168 — campanha "Semana do Antecipa")
+// Visível SÓ para líderes e gestão (nav-missao nasce display:none).
+// Meta: MWh aprovados em clientes Antecipa, SOMA DO TIME, 13→23/08.
+// Tiers 5/8/15 MWh -> R$750/R$1.500/R$3.000 · pagamento 25/08.
+// Pré-requisito: 1 venda de Antecipa POR VENDEDOR do time.
+// Fonte: rawData (produto LIORA_ANTECIPA_* + aprov_date na janela).
+// ══════════════════════════════════════════════════════════════════
+const MIS_INI = '2026-08-13';
+const MIS_FIM = '2026-08-23';
+const MIS_TIERS = [{mwh:5,premio:750},{mwh:8,premio:1500},{mwh:15,premio:3000}];
+const MIS_MAX = 15;
+let misVerTodos = false;
+
+function misLiderDaPraca(k){
+  for (const nome in LIDERES) if (LIDERES[nome] === k) return nome;
+  return '';
+}
+function misLabel(k){
+  return (typeof PRACA_DEF !== 'undefined' && PRACA_DEF[k]) ? PRACA_DEF[k].label : k;
+}
+function misPracaDe(nome){
+  return SELLER_PRACA[nome] || SELLER_PRACA[(typeof canonicalVendedor==='function' ? canonicalVendedor(nome||'') : nome)] || '';
+}
+function misEhAntecipa(r){
+  return String(r.produto || '').toUpperCase().indexOf('ANTECIPA') !== -1;
+}
+function misRegistros(){
+  return (typeof rawData !== 'undefined' ? rawData : []).filter(function(r){
+    const a = r.aprov_date || '';
+    return misEhAntecipa(r) && a >= MIS_INI && a <= MIS_FIM;
+  });
+}
+function misRoster(){
+  const out = {};
+  for (const nome in SELLER_PRACA){
+    const k = SELLER_PRACA[nome];
+    if (!k || !misLiderDaPraca(k)) continue;
+    if (isGestor_(nome) || isOculto_(nome) || isExTime_(nome)) continue;
+    (out[k] = out[k] || []).push(nome);
+  }
+  for (const k in out) out[k].sort();
+  return out;
+}
+function misTimes(){
+  const roster = misRoster();
+  const T = {};
+  Object.keys(roster).forEach(function(k){
+    T[k] = {k:k, mwh:0, n:0, vend:{}, roster:roster[k].slice()};
+  });
+  misRegistros().forEach(function(r){
+    const k = misPracaDe(r.s);
+    if (!T[k]) return;
+    T[k].mwh += (Number(r.mwh) || 0);
+    T[k].n += 1;
+    T[k].vend[r.s] = (T[k].vend[r.s] || 0) + 1;
+    if (T[k].roster.indexOf(r.s) === -1) T[k].roster.push(r.s);
+  });
+  return T;
+}
+function misTier(m){ let t = null; for (const x of MIS_TIERS) if (m >= x.mwh) t = x; return t; }
+function misProx(m){ for (const x of MIS_TIERS) if (m < x.mwh) return x; return null; }
+function misMwh(v){ return (Math.round(v*100)/100).toFixed(2).replace('.', ','); }
+function misBRL(v){ return 'R$ ' + v.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+function misData(iso){ const m = String(iso||'').match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? (m[3]+'/'+m[2]) : '—'; }
+function misDias(){
+  const hoje = new Date(new Date().toLocaleString('en-US', {timeZone:'America/Sao_Paulo'}));
+  return Math.ceil((new Date(MIS_FIM + 'T23:59:59-03:00') - hoje) / 86400000);
+}
+
+function misCard(t){
+  const tier = misTier(t.mwh), prox = misProx(t.mwh);
+  const faltam = t.roster.filter(function(v){ return !t.vend[v]; });
+  const okPre = t.roster.length > 0 && faltam.length === 0;
+  const pct = Math.min(100, (t.mwh / MIS_MAX) * 100);
+  let prize;
+  if (tier && okPre) prize = '<div class="mis-prize on"><span>🏆 Prêmio garantido</span><span>' + misBRL(tier.premio) + '</span></div>';
+  else if (tier) prize = '<div class="mis-prize blocked"><span>⚠️ ' + misBRL(tier.premio) + ' travado</span><span>' + faltam.length + ' sem venda</span></div>';
+  else prize = '<div class="mis-prize off"><span>Ainda sem prêmio</span><span>meta 1 = 5 MWh</span></div>';
+  const next = prox
+    ? '<div class="mis-next">Faltam <b>' + misMwh(prox.mwh - t.mwh) + ' MWh</b> para ' + misBRL(prox.premio) + '</div>'
+    : '<div class="mis-next">Meta máxima batida 🚀</div>';
+  const chips = t.roster.map(function(v){
+    const n = t.vend[v] || 0;
+    return '<span class="mis-chip ' + (n ? 'ok' : 'no') + '">' + (n ? '✓ ' : '○ ') + v + (n > 1 ? (' ·' + n) : '') + '</span>';
+  }).join('') || '<span class="mis-chip no">sem vendedores mapeados</span>';
+  const marks = MIS_TIERS.map(function(x){ return '<div class="mk" style="left:' + ((x.mwh/MIS_MAX)*100) + '%"></div>'; }).join('');
+  return '<div class="mis-card' + (tier && okPre ? ' done' : '') + '">' +
+    '<div class="mis-top"><div class="mis-name">' + misLabel(t.k) + '</div><div class="mis-lider">' + misLiderDaPraca(t.k) + '</div></div>' +
+    '<div class="mis-mwh">' + misMwh(t.mwh) + ' <small>MWh · ' + t.n + ' aprovado' + (t.n === 1 ? '' : 's') + '</small></div>' +
+    '<div class="mis-bar"><div class="f' + (tier ? ' gold' : '') + '" style="width:' + pct + '%"></div>' + marks + '</div>' +
+    '<div class="mis-leg"><span>0</span><span>5</span><span>8</span><span>15 MWh</span></div>' +
+    prize + next +
+    '<div class="mis-pre"><div class="mis-pre-t">Pré-requisito · 1 Antecipa por vendedor</div><div class="mis-chips">' + chips + '</div></div>' +
+  '</div>';
+}
+
+function misToggle(){ misVerTodos = !misVerTodos; renderMissao(); }
+
+function renderMissao(){
+  const el = document.getElementById('s7-content');
+  if (!el) return;
+  const me = getCurrentVendedor();
+  if (!(isLider(me) || isGestor_(me))){
+    el.innerHTML = '<div class="empty"><div class="empty-icon">🔒</div><div class="empty-text">Painel exclusivo de líderes e gestão.</div></div>';
+    return;
+  }
+  const T = misTimes();
+  const minha = liderPraca(me);
+  const gestor = isGestor_(me);
+  const chaves = Object.keys(T).sort(function(a,b){ return T[b].mwh - T[a].mwh; });
+  const mostrar = (gestor || misVerTodos || !minha) ? chaves : [minha];
+
+  const d = misDias();
+  const restam = d > 1 ? ('faltam ' + d + ' dias') : (d === 1 ? 'último dia' : (d === 0 ? 'encerra hoje' : 'encerrada'));
+
+  let h = '<div class="mis-pills"><span class="mis-pill">13/08 a 23/08</span>' +
+          '<span class="mis-pill alt">Pagamento 25/08</span>' +
+          '<span class="mis-pill ghost">' + restam + '</span></div>' +
+          '<div class="mis-tiers">' + MIS_TIERS.map(function(x, i){
+            return '<div class="mis-tier"><div class="l">Meta ' + (i+1) + '</div><div class="v">' + x.mwh + ' MWh</div><div class="p">' + misBRL(x.premio) + '</div></div>';
+          }).join('') + '</div>';
+
+  if (!gestor && minha){
+    h += '<button class="mis-toggle" onclick="misToggle()">' + (misVerTodos ? '↩ Ver só o meu time' : '👀 Ver todos os times') + '</button>';
+  }
+  h += mostrar.map(function(k){ return misCard(T[k]); }).join('');
+
+  const regs = misRegistros().filter(function(r){
+    return (gestor || misVerTodos || !minha) ? true : (misPracaDe(r.s) === minha);
+  }).sort(function(a,b){ return (b.aprov_date||'').localeCompare(a.aprov_date||'') || (b.mwh - a.mwh); });
+
+  h += '<div class="mis-sec">Aprovados que contam <span class="n">' + regs.length + '</span></div>';
+  h += regs.length ? regs.map(function(r){
+      return '<div class="mis-row"><div><div class="c">' + (r.c || '—') + '</div>' +
+             '<div class="m">' + (r.s || '—') + ' · ' + misData(r.aprov_date) + '</div></div>' +
+             '<div class="v">' + misMwh(Number(r.mwh)||0) + '</div></div>';
+    }).join('')
+    : '<div class="empty"><div class="empty-icon">⏳</div><div class="empty-text">Nenhum Antecipa aprovado ainda. A campanha conta a partir de 13/08.</div></div>';
+
+  h += '<div class="mis-foot">Conta cliente <b>Antecipa</b> com análise aprovada entre 13/08 e 23/08, pela data da aprovação. ' +
+       'O prêmio só é liberado se <b>todo vendedor do time</b> tiver ao menos 1 venda de Antecipa.</div>';
+  el.innerHTML = h;
+}
+
+// Mostra/esconde a aba conforme quem está logado (líder ou gestão).
+function updateMissaoNav(){
+  const nav = document.getElementById('nav-missao');
+  if (!nav) return;
+  const me = (typeof getCurrentVendedor === 'function') ? getCurrentVendedor() : '';
+  const pode = !!me && (isLider(me) || isGestor_(me));
+  nav.style.display = pode ? '' : 'none';
+  if (!pode && currentScreen === 'missao') setScreen('resumo');
 }
 
 // ── SCREEN 1: RESUMO (v2.1) ────────────────────────────────
@@ -3180,6 +3390,7 @@ function getCurrentVendedor(){
   } catch(e) { return ''; }
 }
 function setCurrentVendedor(name){
+  try { setTimeout(function(){ if(typeof updateMissaoNav==='function') updateMissaoNav(); }, 0); } catch(e) {}
   try {
     localStorage.setItem(IDENTITY_KEY, name || '');
     _authTouch();                                // persiste o login
@@ -6177,6 +6388,14 @@ function escapeHtml(s){
   if(!s) return '';
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+</script>
+<script>
+// Missão (v2.168): a aba só existe para líderes/gestão — reavalia no boot e a cada 3s
+// (o login/troca de identidade acontece em vários pontos da tela).
+try {
+  window.addEventListener('load', function(){ if(typeof updateMissaoNav==='function') updateMissaoNav(); });
+  setInterval(function(){ if(typeof updateMissaoNav==='function') updateMissaoNav(); }, 3000);
+} catch(e) {}
 </script>
 </body>
 </html>

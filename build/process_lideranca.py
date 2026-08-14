@@ -416,7 +416,9 @@ if f_ant:
         _seen_ant.add(_did)
         # adate = data da APROVACAO (analise de risco). Usada p/ contar aprovados
         # pela data em que foram aprovados dentro do filtro (Felipe 12/08), nao pela geracao.
-        _adate = pdate(r.get('latest_risk_analysis_created_at')) or (d or '')
+        # FORCE_APPROVED/ANT_APPROVE guardam a data da aprovacao MANUAL (Felipe): ela ganha
+        # do risco da base, senao o deal forcado entra na aba com a data errada (Missao/aprovados por data).
+        _adate = FORCE_APPROVED.get(_did) or pdate(r.get('latest_risk_analysis_created_at')) or (d or '')
         ANTECIPA.append({
           'c': _cli,
           's': seller_of(_em, _cli),
@@ -440,10 +442,39 @@ if f_ant:
         })
 for _did, _rec in ANT_APPROVE.items():
     if _did not in _seen_ant:
-        _r = dict(_rec); _r['risk'] = 'APPROVED'; _r.setdefault('credito','approved'); _r.setdefault('adate', _r.get('date',''))
+        _r = dict(_rec); _r['risk'] = 'APPROVED'; _r.setdefault('credito','approved')
+        _r['adate'] = FORCE_APPROVED.get(_did) or _r.get('adate') or _r.get('date','')
         ANTECIPA.append(_r)
 ANTECIPA.sort(key=lambda x: x['date'], reverse=True)
 io.open('new_ANTECIPA.json','w').write(json.dumps(ANTECIPA, ensure_ascii=False))
+
+# ---- MISSAO: campanha "Semana do Antecipa" (13-23/08/2026) ----------------
+# Alimenta a aba "Missao" do desktop (restrita a lideres/gestao). Recorte:
+# cliente Antecipa do FIELD com analise APROVADA (risco ou credito) e data de
+# aprovacao (adate) dentro da janela. A largada valeu de 13/08 (slide "A largada
+# e hoje"), a vigencia oficial do material e 17-23/08 -> Felipe optou por 13/08.
+MISSAO_INI, MISSAO_FIM = '2026-08-13', '2026-08-23'
+MISSAO = [{'s':x['s'], 'praca':x['praca'], 'mwh':x['mwh'], 'c':x['c'], 'tipo':x.get('tipo',''),
+           'adate':(x.get('adate') or x.get('date') or '')}
+          for x in ANTECIPA
+          if x.get('risk')=='APPROVED' and MISSAO_INI <= (x.get('adate') or x.get('date') or '') <= MISSAO_FIM]
+MISSAO.sort(key=lambda x: (x['adate'], -x['mwh']), reverse=True)
+io.open('new_MISSAO.json','w').write(json.dumps(MISSAO, ensure_ascii=False))
+# Roster = quadro de vendedores por praca. O pre-requisito da campanha e' 1 venda
+# de Antecipa POR VENDEDOR, entao a aba precisa da lista completa (nao so de quem
+# ja vendeu). Fora: gestao e vendedores ocultos (alinhado ao OCULTOS_TIME do mobile).
+MISSAO_FORA = {'Felipe Oliveira','Ana Ribeiro','Raynara Silva','Camila Couto',
+               'Ananias Neto','Rosangela Mendes','Franciele Felix','Ryan Trindade','Antonio Mariano',
+               'Thiago Araujo França'}  # espelha OCULTOS_TIME + EX_TIME do mobile (os 2 dashboards tem de bater)
+_ros = set()
+for _em, _pr in PRACA_TITLE.items():
+    if _pr == 'Outras': continue
+    _nm = EMAIL2NAME.get(_em)
+    if not _nm or _nm in MISSAO_FORA: continue
+    _ros.add((_ANT_PRACA_KEY.get(_pr, 'Outras'), _nm))
+MISSAO_ROSTER = [[a,b] for a,b in sorted(_ros)]
+io.open('new_MISSAO_ROSTER.json','w').write(json.dumps(MISSAO_ROSTER, ensure_ascii=False))
+print('missao:', len(MISSAO), 'aprovados |', len(MISSAO_ROSTER), 'vendedores no roster')
 # ---- ANT_FIELD: propostas do FIELD do mes (GD FS_Liora + Antecipa Field) com flags
 # sig(assinado)/apr(aprovado risco) p/ calcular a fatia do Antecipa nos KPIs da aba. ----
 def _gd_apr(r):
