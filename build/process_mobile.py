@@ -129,7 +129,8 @@ CLIENT_OVERRIDE = {  # cliente (upper/strip) -> (seller canônico, praça label)
  'VALDEMARINA ALVES NABUCO':('Ettore Rossi','Salvador'),  # deal caiu no Adroaldo -> e do Rossi (Felipe 25/07)
  'NICHOLAS PIETRO RODRIGUES REGINALDO':('Lucas Santos','RN Interior'),  # dono -> Lucas (Felipe 27/07)
  'NATANAEL SILVA DOS SANTOS':('Lucas Santos','RN Interior'),  # dono -> Lucas (Felipe 27/07)
- 'MARIA FRAUZINA CAMILO':('Anderson Correia','SPI'),  # aprovado 06/08 do Anderson; base trocou p/ Lucas 07/08 -> volta p/ Anderson (Felipe 07/08); remover qdo base corrigir
+ 'MARIA FRAUZINA CAMILO':('Anderson Correia','SPI'),
+ 'ANA JULIA DA CONCEIÇÃO FREIRE':('Ettore Rossi','Salvador'),  # venda do Rossi lancada na Silvia (Salvador); base ja corrigida mas o card818 ainda mostra Silvia (Felipe 14/08); remover qdo refletir  # aprovado 06/08 do Anderson; base trocou p/ Lucas 07/08 -> volta p/ Anderson (Felipe 07/08); remover qdo base corrigir
 }
 CONSUMPTION_OVERRIDE_BY_ID = {  # deal_id -> MWh; export do card818 congelou (mostra 0.632; base viva=1.636); remover qdo CI destravar
  '35f26046-9c78-4c2b-a7fe-04f7e7564c38': 1.636,  # Mw Safety Ltda / Joao Santos (Felipe 07/08)
