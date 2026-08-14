@@ -1188,6 +1188,7 @@ function misRoster(){
     const k = SELLER_PRACA[nome];
     if (!k || !misLiderDaPraca(k)) continue;
     if (isGestor_(nome) || isOculto_(nome) || isExTime_(nome)) continue;
+    if (isLider(nome)) continue;   // Felipe 14/08: líder não precisa vender 1 Antecipa
     (out[k] = out[k] || []).push(nome);
   }
   for (const k in out) out[k].sort();
@@ -1205,7 +1206,7 @@ function misTimes(){
     T[k].mwh += (Number(r.mwh) || 0);
     T[k].n += 1;
     T[k].vend[r.s] = (T[k].vend[r.s] || 0) + 1;
-    if (T[k].roster.indexOf(r.s) === -1) T[k].roster.push(r.s);
+    if (T[k].roster.indexOf(r.s) === -1 && !isLider(r.s)) T[k].roster.push(r.s);
   });
   return T;
 }
@@ -1225,7 +1226,7 @@ function misCard(t){
   const okPre = t.roster.length > 0 && faltam.length === 0;
   const pct = Math.min(100, (t.mwh / MIS_MAX) * 100);
   let prize;
-  if (tier && okPre) prize = '<div class="mis-prize on"><span>🏆 Prêmio garantido</span><span>' + misBRL(tier.premio) + '</span></div>';
+  if (tier && okPre) prize = '<div class="mis-prize on"><span>🏆 Prêmio do líder</span><span>' + misBRL(tier.premio) + '</span></div>';
   else if (tier) prize = '<div class="mis-prize blocked"><span>⚠️ ' + misBRL(tier.premio) + ' travado</span><span>' + faltam.length + ' sem venda</span></div>';
   else prize = '<div class="mis-prize off"><span>Ainda sem prêmio</span><span>meta 1 = 5 MWh</span></div>';
   const next = prox
@@ -1242,7 +1243,7 @@ function misCard(t){
     '<div class="mis-bar"><div class="f' + (tier ? ' gold' : '') + '" style="width:' + pct + '%"></div>' + marks + '</div>' +
     '<div class="mis-leg"><span>0</span><span>5</span><span>8</span><span>15 MWh</span></div>' +
     prize + next +
-    '<div class="mis-pre"><div class="mis-pre-t">Pré-requisito · 1 Antecipa por vendedor</div><div class="mis-chips">' + chips + '</div></div>' +
+    '<div class="mis-pre"><div class="mis-pre-t">Pré-requisito · 1 Antecipa por vendedor (líder não conta)</div><div class="mis-chips">' + chips + '</div></div>' +
   '</div>';
 }
 
@@ -1269,7 +1270,7 @@ function renderMissao(){
           '<span class="mis-pill alt">Pagamento 25/08</span>' +
           '<span class="mis-pill ghost">' + restam + '</span></div>' +
           '<div class="mis-tiers">' + MIS_TIERS.map(function(x, i){
-            return '<div class="mis-tier"><div class="l">Meta ' + (i+1) + '</div><div class="v">' + x.mwh + ' MWh</div><div class="p">' + misBRL(x.premio) + '</div></div>';
+            return '<div class="mis-tier"><div class="l">Meta ' + (i+1) + '</div><div class="v">' + x.mwh + ' MWh</div><div class="p">' + misBRL(x.premio) + '</div><div class="l">p/ o líder</div></div>';
           }).join('') + '</div>';
 
   if (!gestor && minha){
@@ -1289,8 +1290,9 @@ function renderMissao(){
     }).join('')
     : '<div class="empty"><div class="empty-icon">⏳</div><div class="empty-text">Nenhum Antecipa aprovado ainda. A campanha conta a partir de 13/08.</div></div>';
 
-  h += '<div class="mis-foot">Conta cliente <b>Antecipa</b> com análise aprovada entre 13/08 e 23/08, pela data da aprovação. ' +
-       'O prêmio só é liberado se <b>todo vendedor do time</b> tiver ao menos 1 venda de Antecipa.</div>';
+  h += '<div class="mis-foot">Quem recebe é o <b>líder</b>, na remuneração variável de 25/08, pelo resultado do time. ' +
+       'Conta cliente <b>Antecipa</b> com análise aprovada entre 13/08 e 23/08, pela data da aprovação. ' +
+       'O prêmio só é liberado se <b>todo vendedor do time</b> tiver ao menos 1 venda de Antecipa — o líder não entra nessa conta.</div>';
   el.innerHTML = h;
 }
 

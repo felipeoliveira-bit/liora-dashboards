@@ -465,7 +465,10 @@ io.open('new_MISSAO.json','w').write(json.dumps(MISSAO, ensure_ascii=False))
 # ja vendeu). Fora: gestao e vendedores ocultos (alinhado ao OCULTOS_TIME do mobile).
 MISSAO_FORA = {'Felipe Oliveira','Ana Ribeiro','Raynara Silva','Camila Couto',
                'Ananias Neto','Rosangela Mendes','Franciele Felix','Ryan Trindade','Antonio Mariano',
-               'Thiago Araujo França'}  # espelha OCULTOS_TIME + EX_TIME do mobile (os 2 dashboards tem de bater)
+               'Thiago Araujo França',  # espelha OCULTOS_TIME + EX_TIME do mobile (os 2 dashboards tem de bater)
+               # Felipe 14/08: LIDER nao entra no pre-requisito (nao precisa vender 1 Antecipa);
+               # o que ele vender continua somando no MWh do time.
+               'Adroaldo Bonfim','Kelma Rangel','Bruno Andrade','Mirla Albuquerque','Caio Lannes','João Santos','Bruno Borges'}
 _ros = set()
 for _em, _pr in PRACA_TITLE.items():
     if _pr == 'Outras': continue

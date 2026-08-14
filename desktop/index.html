@@ -6840,17 +6840,6 @@ else initEvents();
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Inter',system-ui,sans-serif;background:#E3EAE8;color:#1a1a2e;padding:20px 22px 60px}
   a{color:inherit}
-  /* ---- lock ---- */
-  #lock{position:fixed;inset:0;background:#0201F3;display:flex;align-items:center;justify-content:center;z-index:9999}
-  #lock .box{background:#fff;border-radius:18px;padding:32px 30px;width:min(380px,90vw);text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.25)}
-  #lock .ico{font-size:34px;margin-bottom:10px}
-  #lock h2{font-size:19px;font-weight:800;color:#0201F3;margin-bottom:6px;letter-spacing:-.02em}
-  #lock p{font-size:12.5px;color:#6b6b7b;margin-bottom:18px;line-height:1.5}
-  #lock input{width:100%;font-family:inherit;font-size:20px;font-weight:700;letter-spacing:.35em;text-align:center;padding:12px;border:2px solid #d6dae6;border-radius:10px;outline:none;color:#1a1a2e}
-  #lock input:focus{border-color:#0201F3}
-  #lock button{width:100%;margin-top:12px;font-family:inherit;font-size:13.5px;font-weight:700;color:#fff;background:#0201F3;border:none;border-radius:10px;padding:12px;cursor:pointer}
-  #lock button:hover{background:#0100c4}
-  #lock .err{font-size:12px;color:#D92D20;font-weight:600;margin-top:10px;min-height:16px}
   /* ---- header ---- */
   .hd{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px}
   .hd h1{font-size:22px;font-weight:800;color:#0201F3;letter-spacing:-.02em}
@@ -6917,22 +6906,11 @@ else initEvents();
 </head>
 <body>
 
-<div id=&quot;lock&quot;>
-  <div class=&quot;box&quot;>
-    <div class=&quot;ico&quot;>🔒</div>
-    <h2>Missão da Semana</h2>
-    <p>Painel restrito a líderes e gestão.<br>Digite o PIN para acompanhar a campanha.</p>
-    <input id=&quot;pin-in&quot; type=&quot;password&quot; inputmode=&quot;numeric&quot; maxlength=&quot;8&quot; placeholder=&quot;••••&quot; autocomplete=&quot;off&quot;>
-    <button onclick=&quot;tryPin()&quot;>Entrar</button>
-    <div class=&quot;err&quot; id=&quot;pin-err&quot;></div>
-  </div>
-</div>
-
-<div id=&quot;app&quot; style=&quot;display:none&quot;>
+<div id=&quot;app&quot;>
   <div class=&quot;hd&quot;>
     <div>
       <h1>🎯 Missão da Semana — Semana do Antecipa</h1>
-      <div class=&quot;sub&quot;>MWh aprovados em clientes Antecipa · soma do time · quanto mais o time aprova, mais o time ganha</div>
+      <div class=&quot;sub&quot;>MWh aprovados em clientes Antecipa · soma do time · quanto mais o time aprova, mais o <b>líder</b> ganha</div>
     </div>
     <div class=&quot;hd-right&quot;>
       <span class=&quot;pill&quot; id=&quot;pill-prazo&quot;>13/08 a 23/08</span>
@@ -6955,7 +6933,7 @@ else initEvents();
 
   <div class=&quot;foot&quot;>
     Conta: cliente <b>Antecipa</b> do Field Sales com <b>análise aprovada</b> (risco ou crédito) entre 13/08 e 23/08, pela data da aprovação.<br>
-    Pré-requisito da campanha: <b>1 venda de Antecipa por vendedor</b> do time — sem isso o prêmio não é liberado, por maior que seja o MWh.
+    Quem recebe é o <b>líder</b>, na remuneração variável de 25/08, pelo resultado do time.<br>Pré-requisito: <b>1 venda de Antecipa por vendedor</b> do time — sem isso o prêmio não é liberado, por maior que seja o MWh. O líder não entra nessa conta (mas o que ele vender soma no MWh do time).
   </div>
 </div>
 
@@ -6965,12 +6943,11 @@ else initEvents();
 // texto codificado e exige 1 ocorrencia — um &quot;[]&quot; cru colidiria com outros arrays
 // deste frame. Registros sem 'adate' sao descartados no render.
 const MISSAO = [{&quot;s&quot;:&quot;Phillip Faria&quot;,&quot;praca&quot;:&quot;Ribeirao&quot;,&quot;mwh&quot;:0.207,&quot;c&quot;:&quot;ALESSANDRA DELFINO&quot;,&quot;tipo&quot;:&quot;PF&quot;,&quot;adate&quot;:&quot;2026-08-13&quot;},{&quot;s&quot;:&quot;Fábio Rodrigues&quot;,&quot;praca&quot;:&quot;Ribeirao&quot;,&quot;mwh&quot;:0.45,&quot;c&quot;:&quot;DANILO FERREIRA DE LACERDA&quot;,&quot;tipo&quot;:&quot;PF&quot;,&quot;adate&quot;:&quot;2026-08-13&quot;},{&quot;s&quot;:&quot;Thiago Firmo&quot;,&quot;praca&quot;:&quot;Natal&quot;,&quot;mwh&quot;:0.49,&quot;c&quot;:&quot;DILEUDA CORINGA DA FONSECA DA SILVA&quot;,&quot;tipo&quot;:&quot;PF&quot;,&quot;adate&quot;:&quot;2026-08-13&quot;}];
-const MISSAO_ROSTER = [[&quot;CE&quot;,&quot;Bruno Borges&quot;],[&quot;CE&quot;,&quot;Neilon Nascimento&quot;],[&quot;CE&quot;,&quot;Nubia  Andrade&quot;],[&quot;CE&quot;,&quot;Odirley Costa&quot;],[&quot;CE&quot;,&quot;Sabrina Tomazeti&quot;],[&quot;CE&quot;,&quot;Silmara Gomes&quot;],[&quot;Feira&quot;,&quot;Alberto Nascimento&quot;],[&quot;Feira&quot;,&quot;Kelma Rangel&quot;],[&quot;Feira&quot;,&quot;Lucileide Carlos&quot;],[&quot;Feira&quot;,&quot;Marcel Sousa&quot;],[&quot;Feira&quot;,&quot;Tamires Costa&quot;],[&quot;Feira&quot;,&quot;Tiago Freitas&quot;],[&quot;Natal&quot;,&quot;Bruno Andrade&quot;],[&quot;Natal&quot;,&quot;Daniel Magnus&quot;],[&quot;Natal&quot;,&quot;Marcio Galvão&quot;],[&quot;Natal&quot;,&quot;Mecenas Junior&quot;],[&quot;Natal&quot;,&quot;Rodrigo Ribeiro&quot;],[&quot;Natal&quot;,&quot;Thiago Firmo&quot;],[&quot;RNInterior&quot;,&quot;Jefferson Fideli&quot;],[&quot;RNInterior&quot;,&quot;Lucas Santos&quot;],[&quot;RNInterior&quot;,&quot;Mirla Albuquerque&quot;],[&quot;Ribeirao&quot;,&quot;Fábio Rodrigues&quot;],[&quot;Ribeirao&quot;,&quot;João Santos&quot;],[&quot;Ribeirao&quot;,&quot;Olímpio Filho&quot;],[&quot;Ribeirao&quot;,&quot;Phillip Faria&quot;],[&quot;SPI&quot;,&quot;Anderson Correia&quot;],[&quot;SPI&quot;,&quot;Briel Barbosa&quot;],[&quot;SPI&quot;,&quot;Caio Lannes&quot;],[&quot;SPI&quot;,&quot;Daniel Junior&quot;],[&quot;SPI&quot;,&quot;Diego Faria&quot;],[&quot;SPI&quot;,&quot;Ederson Silva&quot;],[&quot;SPI&quot;,&quot;Monica Silveira&quot;],[&quot;SPI&quot;,&quot;Nicola Popovic&quot;],[&quot;SPI&quot;,&quot;Percy Hormazabal&quot;],[&quot;SPI&quot;,&quot;Rodrigo Lima&quot;],[&quot;Salvador&quot;,&quot;Adroaldo Bonfim&quot;],[&quot;Salvador&quot;,&quot;Ettore Rossi&quot;],[&quot;Salvador&quot;,&quot;Luciana Campos&quot;],[&quot;Salvador&quot;,&quot;Maria Lúcia&quot;],[&quot;Salvador&quot;,&quot;Silvia Dias&quot;],[&quot;Salvador&quot;,&quot;Tais Santos&quot;],[&quot;Salvador&quot;,&quot;Tatiane Correia&quot;]];
+const MISSAO_ROSTER = [[&quot;CE&quot;,&quot;Neilon Nascimento&quot;],[&quot;CE&quot;,&quot;Nubia  Andrade&quot;],[&quot;CE&quot;,&quot;Odirley Costa&quot;],[&quot;CE&quot;,&quot;Sabrina Tomazeti&quot;],[&quot;CE&quot;,&quot;Silmara Gomes&quot;],[&quot;Feira&quot;,&quot;Alberto Nascimento&quot;],[&quot;Feira&quot;,&quot;Lucileide Carlos&quot;],[&quot;Feira&quot;,&quot;Marcel Sousa&quot;],[&quot;Feira&quot;,&quot;Tamires Costa&quot;],[&quot;Feira&quot;,&quot;Tiago Freitas&quot;],[&quot;Natal&quot;,&quot;Daniel Magnus&quot;],[&quot;Natal&quot;,&quot;Marcio Galvão&quot;],[&quot;Natal&quot;,&quot;Mecenas Junior&quot;],[&quot;Natal&quot;,&quot;Rodrigo Ribeiro&quot;],[&quot;Natal&quot;,&quot;Thiago Firmo&quot;],[&quot;RNInterior&quot;,&quot;Jefferson Fideli&quot;],[&quot;RNInterior&quot;,&quot;Lucas Santos&quot;],[&quot;Ribeirao&quot;,&quot;Fábio Rodrigues&quot;],[&quot;Ribeirao&quot;,&quot;Olímpio Filho&quot;],[&quot;Ribeirao&quot;,&quot;Phillip Faria&quot;],[&quot;SPI&quot;,&quot;Anderson Correia&quot;],[&quot;SPI&quot;,&quot;Briel Barbosa&quot;],[&quot;SPI&quot;,&quot;Daniel Junior&quot;],[&quot;SPI&quot;,&quot;Diego Faria&quot;],[&quot;SPI&quot;,&quot;Ederson Silva&quot;],[&quot;SPI&quot;,&quot;Monica Silveira&quot;],[&quot;SPI&quot;,&quot;Nicola Popovic&quot;],[&quot;SPI&quot;,&quot;Percy Hormazabal&quot;],[&quot;SPI&quot;,&quot;Rodrigo Lima&quot;],[&quot;Salvador&quot;,&quot;Ettore Rossi&quot;],[&quot;Salvador&quot;,&quot;Luciana Campos&quot;],[&quot;Salvador&quot;,&quot;Maria Lúcia&quot;],[&quot;Salvador&quot;,&quot;Silvia Dias&quot;],[&quot;Salvador&quot;,&quot;Tais Santos&quot;],[&quot;Salvador&quot;,&quot;Tatiane Correia&quot;]];
 
 // ===================== config da campanha =====================
 const MIS_INI = '2026-08-13';
 const MIS_FIM = '2026-08-23';
-const MIS_PIN = '3392';
 const MIS_TIERS = [{mwh:5, premio:750}, {mwh:8, premio:1500}, {mwh:15, premio:3000}];
 const MIS_MAX = 15;
 const MIS_LIDER = {
@@ -6984,29 +6961,11 @@ const MIS_LABEL = {
 const MIS_ORDEM = ['Salvador','Feira','Natal','RNInterior','SPI','Ribeirao','CE'];
 
 let misSel = 'all';
+const MIS_LIDERES = Object.keys(MIS_LIDER).map(function(k){ return MIS_LIDER[k]; });
+function ehLider(n){ return MIS_LIDERES.indexOf(n) !== -1; }
 // descarta o placeholder do template (sem data de aprovacao)
 const MIS = MISSAO.filter(function(r){ return r &amp;&amp; r.adate; });
 const ROS = MISSAO_ROSTER.filter(function(p){ return p &amp;&amp; p[1] &amp;&amp; p[1] !== '-'; });
-
-// ===================== lock =====================
-const LS_KEY = 'liora.missao.unlocked.v1';
-function unlock(){
-  document.getElementById('lock').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  render();
-}
-function tryPin(){
-  const v = (document.getElementById('pin-in').value || '').trim();
-  if (v === MIS_PIN){
-    try { localStorage.setItem(LS_KEY, '1'); } catch(e){}
-    unlock();
-  } else {
-    document.getElementById('pin-err').textContent = 'PIN incorreto.';
-    document.getElementById('pin-in').value = '';
-    document.getElementById('pin-in').focus();
-  }
-}
-document.getElementById('pin-in').addEventListener('keydown', function(e){ if(e.key === 'Enter') tryPin(); });
 
 // ===================== helpers =====================
 function fmtMwh(v){ return (Math.round(v*100)/100).toFixed(2).replace('.', ','); }
@@ -7027,6 +6986,7 @@ function times(){
   ROS.forEach(function(p){
     const praca = p[0], nome = p[1];
     if (!MIS_LIDER[praca]) return;
+    if (ehLider(nome)) return;   // líder fora do pré-requisito (Felipe 14/08)
     (roster[praca] = roster[praca] || []).push(nome);
   });
   const out = {};
@@ -7040,7 +7000,9 @@ function times(){
     t.mwh += (Number(r.mwh) || 0);
     t.n += 1;
     t.vend[r.s] = (t.vend[r.s] || 0) + 1;
-    if (t.roster.indexOf(r.s) === -1) t.roster.push(r.s);
+    // vendedor fora do roster entra na lista; líder NÃO (Felipe 14/08: líder não
+    // precisa vender pra liberar o pré-requisito, mas o MWh dele conta pro time)
+    if (t.roster.indexOf(r.s) === -1 &amp;&amp; !ehLider(r.s)) t.roster.push(r.s);
   });
   return out;
 }
@@ -7053,7 +7015,7 @@ function render(){
   document.getElementById('tiers').innerHTML = MIS_TIERS.map(function(x, i){
     return '<div class=&quot;tier&quot;><div class=&quot;tl&quot;>Meta ' + (i+1) + ' de 3</div>' +
            '<div class=&quot;tv&quot;>' + x.mwh + ' MWh</div>' +
-           '<div class=&quot;tp&quot;>o time ganha <span>' + fmtBRL(x.premio) + '</span></div></div>';
+           '<div class=&quot;tp&quot;>o líder ganha <span>' + fmtBRL(x.premio) + '</span></div></div>';
   }).join('');
 
   const d = diasRestantes();
@@ -7100,7 +7062,7 @@ function cardTime(t){
   const pct = Math.min(100, (t.mwh / MIS_MAX) * 100);
 
   let prize;
-  if (tier &amp;&amp; okPre) prize = '<div class=&quot;team-prize on&quot;><span>🏆 Prêmio garantido</span><span>' + fmtBRL(tier.premio) + '</span></div>';
+  if (tier &amp;&amp; okPre) prize = '<div class=&quot;team-prize on&quot;><span>🏆 Prêmio do líder garantido</span><span>' + fmtBRL(tier.premio) + '</span></div>';
   else if (tier &amp;&amp; !okPre) prize = '<div class=&quot;team-prize blocked&quot;><span>⚠️ ' + fmtBRL(tier.premio) + ' travado</span><span>' + faltam.length + ' sem venda</span></div>';
   else prize = '<div class=&quot;team-prize off&quot;><span>Ainda sem prêmio</span><span>meta 1 = 5 MWh</span></div>';
 
@@ -7124,17 +7086,15 @@ function cardTime(t){
     '<div class=&quot;bar&quot;><div class=&quot;fill' + (tier ? ' gold' : '') + '&quot; style=&quot;width:' + pct + '%&quot;></div>' + marks + '</div>' +
     '<div class=&quot;bar-legend&quot;><span>0</span><span>5</span><span>8</span><span>15 MWh</span></div>' +
     prize + next +
-    '<div class=&quot;prereq&quot;><div class=&quot;prereq-t&quot;>Pré-requisito · 1 Antecipa por vendedor</div><div class=&quot;chips&quot;>' + chips + '</div></div>' +
+    '<div class=&quot;prereq&quot;><div class=&quot;prereq-t&quot;>Pré-requisito · 1 Antecipa por vendedor (líder não conta)</div><div class=&quot;chips&quot;>' + chips + '</div></div>' +
   '</div>';
 }
 
 function setTime(p){ misSel = (misSel === p ? 'all' : p); render(); }
 
 // ===================== boot =====================
-try {
-  if (localStorage.getItem(LS_KEY) === '1') unlock();
-  else document.getElementById('pin-in').focus();
-} catch(e) { document.getElementById('pin-in').focus(); }
+// Sem PIN: o dashlideres ja e a URL dos lideres (Felipe 14/08).
+render();
 </script>
 </body>
 </html>
