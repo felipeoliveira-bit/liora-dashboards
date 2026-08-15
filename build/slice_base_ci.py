@@ -85,6 +85,69 @@ def _sbg_idle(updated):
         return str(max(0,(TODAY-d).days))
     except Exception:
         return ''
+# -----------------------------------------------------------------------------
+# BRONZE GAP (Felipe 15/08) - rede de seguranca contra congelamento do dbt.
+# O card818 e' a gold sales_management, que depende da silver
+# distributed_generation_proposals. Em 15/08 essa silver parou de materializar e
+# TODA proposta criada depois sumiu do card818 - inclusive aprovados do dia (e do
+# sbg_field, que sai da mesma gold). O bronze_gap.csv (mb_export) traz esses deals
+# direto do BRONZE; aqui eles viram linhas no formato do card818 e sao anexados a
+# base ANTES do augmento/risco. Com o dbt em dia o recorte vem vazio e nada muda.
+def _gap_consumption_group(v):
+    try: x=float(v)
+    except Exception: return ''
+    if x<=0.5: return '1. <= 0.5 MWh'
+    if x<=1.0: return '2. <= 1.0 MWh'
+    if x<=5.0: return '3. <= 5.0 MWh'
+    return '4. > 5.0 MWh'
+
+def apply_bronze_gap(base, fields, base_path):
+    # A classificacao de canal (internal_sales_classification/sales_team) e' logica do
+    # dbt e nao existe no bronze. Em vez de reimplementar, aprendemos o de-para da
+    # propria base: por (canal, organizacao) usamos a classificacao mais frequente ja
+    # vista no card818. Canal desconhecido entra sem classificacao (fica fora do
+    # FS_Liora) - conservador de proposito: na duvida nunca infla o resultado.
+    p=os.path.join(os.path.dirname(os.path.abspath(base_path)),'bronze_gap.csv')
+    if not os.path.isfile(p): return 0
+    from collections import Counter
+    pair={}; only={}
+    for r in base:
+        ch=(r.get('sales_channel_name') or '').strip()
+        if not ch: continue
+        org=(r.get('sales_organization_name') or '').strip()
+        val=((r.get('internal_sales_classification') or '').strip(),
+             (r.get('sales_team') or '').strip())
+        pair.setdefault((ch,org),Counter())[val]+=1
+        only.setdefault(ch,Counter())[val]+=1
+    have=set((r.get('deal_id') or '').strip() for r in base)
+    with open(p, encoding='utf-8-sig') as fh:
+        rows=list(csv.DictReader(fh))
+    add=0
+    for g in rows:
+        did=(g.get('deal_id') or '').strip()
+        if not did or did in have: continue
+        row={f:'' for f in fields}
+        for k,v in g.items():
+            c='current_total_bill_cost (R$)' if k=='current_total_bill_cost' else k
+            if c in row: row[c]=(v or '')
+        ch=(g.get('sales_channel_name') or '').strip()
+        org=(g.get('sales_organization_name') or '').strip()
+        cnt=pair.get((ch,org)) or only.get(ch)
+        if cnt:
+            cls,team=cnt.most_common(1)[0][0]
+            row['internal_sales_classification']=cls
+            row['sales_team']=team
+        cons=(g.get('current_consumption') or '').strip()
+        if 'current_consumption_filled' in row and not row['current_consumption_filled']:
+            row['current_consumption_filled']=cons
+        if 'is_current_consumption_estimated' in row: row['is_current_consumption_estimated']='false'
+        if 'consumption_group' in row: row['consumption_group']=_gap_consumption_group(cons)
+        if 'ops_tt_status' in row and not row['ops_tt_status']: row['ops_tt_status']='N/A'
+        if 'ops_tt_status_reason' in row and not row['ops_tt_status_reason']: row['ops_tt_status_reason']='N/A'
+        base.append(row); have.add(did); add+=1
+    return add
+# -----------------------------------------------------------------------------
+
 def augment_from_sbg(base, fields, base_path):
     p=os.path.join(os.path.dirname(os.path.abspath(base_path)),'sbg_field.csv')
     if not os.path.isfile(p): return (0,0)
@@ -173,6 +236,8 @@ def main():
         if c not in fields: sys.exit('ABORT: coluna ausente: '+c)
     if len(set(r['deal_stage'] for r in base)) <= 1:
         sys.exit('ABORT: base com um unico deal_stage.')
+    ngap=apply_bronze_gap(base, fields, base_path)
+    if ngap: print('bronze gap: %d deal(s) anexado(s) do bronze (gold atrasada)' % ngap)
     npatch,napp=augment_from_sbg(base, fields, base_path)
     if npatch or napp: print('augmento funil vivo: %d atualizado(s), %d anexado(s)' % (npatch,napp))
     ncorr=apply_risk_real(base, load_risk_real(base_path))
