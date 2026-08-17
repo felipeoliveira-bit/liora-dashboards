@@ -6441,7 +6441,7 @@ loadAll();
   <div class=&quot;kpis&quot; id=&quot;ant-kpis&quot;></div>
   <div class=&quot;grid2&quot;>
     <div class=&quot;card&quot;>
-      <h2 style=&quot;display:flex;align-items:center;gap:8px;flex-wrap:wrap&quot;>👤 Por vendedor <span class=&quot;cnt&quot; id=&quot;ant-vend-cnt&quot;></span><button class=&quot;fbtn-sm&quot; id=&quot;ant-zer-btn&quot; onclick=&quot;toggleZerados()&quot; style=&quot;margin-left:auto;border:1px solid #d6dae6;background:#fff&quot;></button></h2>
+      <h2 style=&quot;display:flex;align-items:center;gap:8px;flex-wrap:wrap&quot;>👤 Por vendedor <span class=&quot;cnt&quot; id=&quot;ant-vend-cnt&quot;></span><span style=&quot;margin-left:auto;display:inline-flex;gap:6px;align-items:center&quot;><button class=&quot;fbtn-sm&quot; id=&quot;ant-lid-btn&quot; onclick=&quot;toggleLideres()&quot; style=&quot;border:1px solid #d6dae6;background:#fff&quot;></button><span class=&quot;fgroup-btns&quot; style=&quot;background:#f1f2f7&quot;><button class=&quot;fbtn-sm&quot; id=&quot;ant-zer-only&quot; onclick=&quot;setAntZer('only')&quot;>Só zerados</button><button class=&quot;fbtn-sm&quot; id=&quot;ant-zer-none&quot; onclick=&quot;setAntZer('none')&quot;>Sem zerados</button></span></span></h2>
       <div id=&quot;ant-vend&quot;></div>
     </div>
     <div class=&quot;card&quot;>
@@ -6507,7 +6507,7 @@ const PRACA_LABEL = {Salvador:'Salvador',Feira:'Feira',Natal:'RN Capital',RNInte
 const PRACA_COLOR = {Salvador:'#1D9E75',Feira:'#EF9F27',Natal:'#378ADD',RNInterior:'#0EA5A5',SPI:'#7F77DD',Ribeirao:'#A78BFA',CE:'#D4537E',Outras:'#9aa3b5'};
 const PRACA_SORT = ['Salvador','Feira','Natal','RNInterior','SPI','Ribeirao','CE','Outras'];
 // Roster de vendedores ATIVOS (espelho de VENDEDORES - VENDEDORES_OCULTOS do topo; manter em sync)
-const ANT_ROSTER = [{n:'Luciana Campos',p:'Salvador'},{n:'Nicola Popovic',p:'SPI'},{n:'Anderson Correia',p:'SPI'},{n:'Percy Hormazabal',p:'SPI'},{n:'Mecenas Junior',p:'Natal'},{n:'Mirla Albuquerque',p:'RNInterior'},{n:'Lucas Santos',p:'RNInterior'},{n:'Jefferson Fideli',p:'RNInterior'},{n:'Phillip Faria',p:'Ribeirao'},{n:'Marcel Sousa',p:'Feira'},{n:'Daniel Magnus',p:'Natal'},{n:'Thiago Firmo',p:'Natal'},{n:'Rodrigo Lima',p:'SPI'},{n:'Daniel Junior',p:'SPI'},{n:'Maria Lúcia',p:'Salvador'},{n:'Ettore Rossi',p:'Salvador'},{n:'Tatiane Correia',p:'Salvador'},{n:'Silvia Dias',p:'Salvador'},{n:'Tais Santos',p:'Salvador'},{n:'Adroaldo Bonfim',p:'Salvador'},{n:'Kelma Rangel',p:'Feira'},{n:'Lucileide Carlos',p:'Feira'},{n:'Tiago Freitas',p:'Feira'},{n:'Tamires Costa',p:'Feira'},{n:'Alberto Nascimento',p:'Feira'},{n:'Marcio Galvão',p:'Natal'},{n:'Bruno Andrade',p:'Natal'},{n:'Rodrigo Ribeiro',p:'Natal'},{n:'Bruno Borges',p:'CE'},{n:'Neilon Nascimento',p:'CE'},{n:'Sabrina Tomazeti',p:'CE'},{n:'Núbia Andrade',p:'CE'},{n:'Odirley Costa',p:'CE'},{n:'Caio Lannes',p:'SPI'},{n:'Monica Silveira',p:'SPI'},{n:'Ederson Silva',p:'SPI'},{n:'Diego Faria',p:'SPI'},{n:'João Santos',p:'Ribeirao'},{n:'Olímpio Filho',p:'Ribeirao'},{n:'Fábio Rodrigues',p:'Ribeirao'},{n:'Briel Barbosa',p:'SPI'}];
+const ANT_ROSTER = [{n:'Luciana Campos',p:'Salvador'},{n:'Nicola Popovic',p:'SPI'},{n:'Anderson Correia',p:'SPI'},{n:'Percy Hormazabal',p:'SPI'},{n:'Mecenas Junior',p:'Natal'},{n:'Mirla Albuquerque',l:1,p:'RNInterior'},{n:'Lucas Santos',p:'RNInterior'},{n:'Jefferson Fideli',p:'RNInterior'},{n:'Phillip Faria',p:'Ribeirao'},{n:'Marcel Sousa',p:'Feira'},{n:'Daniel Magnus',p:'Natal'},{n:'Thiago Firmo',p:'Natal'},{n:'Rodrigo Lima',p:'SPI'},{n:'Daniel Junior',p:'SPI'},{n:'Maria Lúcia',p:'Salvador'},{n:'Ettore Rossi',p:'Salvador'},{n:'Tatiane Correia',p:'Salvador'},{n:'Silvia Dias',p:'Salvador'},{n:'Tais Santos',p:'Salvador'},{n:'Adroaldo Bonfim',l:1,p:'Salvador'},{n:'Kelma Rangel',l:1,p:'Feira'},{n:'Lucileide Carlos',p:'Feira'},{n:'Tiago Freitas',p:'Feira'},{n:'Tamires Costa',p:'Feira'},{n:'Alberto Nascimento',p:'Feira'},{n:'Marcio Galvão',p:'Natal'},{n:'Bruno Andrade',l:1,p:'Natal'},{n:'Rodrigo Ribeiro',p:'Natal'},{n:'Bruno Borges',l:1,p:'CE'},{n:'Neilon Nascimento',p:'CE'},{n:'Sabrina Tomazeti',p:'CE'},{n:'Núbia Andrade',p:'CE'},{n:'Odirley Costa',p:'CE'},{n:'Caio Lannes',l:1,p:'SPI'},{n:'Monica Silveira',p:'SPI'},{n:'Ederson Silva',p:'SPI'},{n:'Diego Faria',p:'SPI'},{n:'João Santos',l:1,p:'Ribeirao'},{n:'Olímpio Filho',p:'Ribeirao'},{n:'Fábio Rodrigues',p:'Ribeirao'},{n:'Briel Barbosa',p:'SPI'}];
 // Normaliza o nome do vendedor p/ o do roster (acento/espaco duplo geram linha duplicada). Felipe 17/08.
 function _antKey(n){ return String(n||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim().toLowerCase(); }
 const _ANT_CANON = {}; ANT_ROSTER.forEach(function(v){ _ANT_CANON[_antKey(v.n)] = v.n; });
@@ -6581,8 +6581,14 @@ function setAntPer(p, elm){ antPer=p; document.querySelectorAll('[data-ant-per]'
 function setAntPraca(p, elm){ antPraca=p; document.querySelectorAll('[data-ant-praca]').forEach(function(b){b.classList.remove('active');}); if(elm) elm.classList.add('active'); renderAll(); }
 function setAntPessoa(v){ antPessoa=v; renderAll(); }
 // Mostrar/ocultar vendedores ativos sem proposta Antecipa no periodo (Felipe 17/08).
-let antZerados = true;
-function toggleZerados(){ antZerados = !antZerados; renderAll(); }
+// 'all' = mostra tudo (padrao) | 'only' = so os zerados | 'none' = esconde os zerados
+let antZer = 'all';
+function setAntZer(v){ antZer = (antZer===v ? 'all' : v); renderAll(); }
+// Mostrar/ocultar lideres de operacao no painel Por vendedor (Felipe 17/08).
+const _ANT_LID = {}; ANT_ROSTER.forEach(function(v){ if(v.l) _ANT_LID[_antKey(v.n)] = 1; });
+function _ehLider(n){ return !!_ANT_LID[_antKey(n)]; }
+let antLideres = true;
+function toggleLideres(){ antLideres = !antLideres; renderAll(); }
 function setVendSort(k){ if(vendSort.k===k){ vendSort.dir=-vendSort.dir; } else { vendSort={k:k, dir:(k==='name'?1:-1)}; } renderAll(); }
 function setPracaSort(k){ if(pracaSort.k===k){ pracaSort.dir=-pracaSort.dir; } else { pracaSort={k:k, dir:(k==='name'||k==='reg'?1:-1)}; } renderAll(); }
 function _antHead(fn, st, cols){
@@ -6651,6 +6657,7 @@ function renderKpis(rows){
 function renderVend(rows){
   const agg = {};
   function _slot(k){ if(!agg[k]) agg[k] = {ger:0, ass:0, apr:0, billSum:0, billN:0}; return agg[k]; }
+  if(!antLideres) rows = rows.filter(function(x){ return !_ehLider(x.s); });
   rows.forEach(function(x){
     const a = _slot(x.s||&quot;—&quot;);
     a.ger++;
@@ -6658,22 +6665,31 @@ function renderVend(rows){
     if((x.bill||0)>0){ a.billSum+=x.bill; a.billN++; }
   });
   // Aprovadas: por DATA de aprovacao no periodo (independe da geracao); une chaves (Felipe 12/08).
-  apprRows().forEach(function(x){ _slot(x.s||&quot;—&quot;).apr++; });
+  apprRows().forEach(function(x){ if(!antLideres &amp;&amp; _ehLider(x.s)) return; _slot(x.s||&quot;—&quot;).apr++; });
   // Todos os vendedores ATIVOS aparecem, mesmo com 0 proposta Antecipa (Felipe 17/08). Botao 'zerados' liga/desliga.
-  if(antZerados) ANT_ROSTER.forEach(function(v){
+  if(antZer!=='none') ANT_ROSTER.forEach(function(v){
+    if(!antLideres &amp;&amp; v.l) return;
     if(antPraca!=='all' &amp;&amp; v.p!==antPraca) return;
     if(antPessoa!=='all' &amp;&amp; v.n!==antPessoa) return;
     _slot(v.n);
   });
-  const keys = Object.keys(agg).sort(function(a,b){
+  function _zerado(n){ var z=agg[n]; return z.ger===0 &amp;&amp; z.ass===0 &amp;&amp; z.apr===0; }
+  const keys = Object.keys(agg).filter(function(n){
+    if(antZer==='only') return _zerado(n);
+    if(antZer==='none') return !_zerado(n);
+    return true;
+  }).sort(function(a,b){
     if(vendSort.k==='name'){ return vendSort.dir===1?a.localeCompare(b,'pt-BR'):b.localeCompare(a,'pt-BR'); }
     function _v(n){ var z=agg[n]; if(vendSort.k==='ass')return z.ass; if(vendSort.k==='apr')return z.apr; if(vendSort.k==='tk')return z.billN?z.billSum/z.billN:0; return z.ger; }
     var d = vendSort.dir===1 ? (_v(a)-_v(b)) : (_v(b)-_v(a));
     return d || a.localeCompare(b,'pt-BR');
   });
   el(&quot;ant-vend-cnt&quot;).textContent = keys.length + &quot; vendedor(es)&quot;;
-  var _zb = el(&quot;ant-zer-btn&quot;);
-  if(_zb){ _zb.textContent = antZerados ? &quot;Ocultar zerados&quot; : &quot;Mostrar zerados&quot;; _zb.classList.toggle('active', !antZerados); }
+  var _zo = el(&quot;ant-zer-only&quot;), _zn = el(&quot;ant-zer-none&quot;);
+  if(_zo) _zo.classList.toggle('active', antZer==='only');
+  if(_zn) _zn.classList.toggle('active', antZer==='none');
+  var _lb = el(&quot;ant-lid-btn&quot;);
+  if(_lb){ _lb.textContent = antLideres ? &quot;Ocultar líderes&quot; : &quot;Mostrar líderes&quot;; _lb.classList.toggle('active', !antLideres); }
   if(!keys.length){ el(&quot;ant-vend&quot;).innerHTML = '<div class=&quot;empty&quot; style=&quot;padding:14px 0&quot;>sem dados</div>'; return; }
   const tot = {ger:0, ass:0, apr:0, billSum:0, billN:0};
   keys.forEach(function(k){ tot.ger+=agg[k].ger; tot.ass+=agg[k].ass; tot.apr+=agg[k].apr; tot.billSum+=agg[k].billSum; tot.billN+=agg[k].billN; });
