@@ -6513,6 +6513,11 @@ function _antKey(n){ return String(n||'').normalize('NFD').replace(/[\u0300-\u03
 const _ANT_CANON = {}; ANT_ROSTER.forEach(function(v){ _ANT_CANON[_antKey(v.n)] = v.n; });
 ANTECIPA.forEach(function(x){ var c=_ANT_CANON[_antKey(x.s)]; if(c) x.s=c; });
 ANT_FIELD.forEach(function(x){ var c=_ANT_CANON[_antKey(x.s)]; if(c) x.s=c; });
+// Nao-vendedores que nao devem aparecer na aba (Felipe 17/08). Remocao IN-PLACE: os arrays sao const.
+const ANT_EXCLUI = ['Felipe Oliveira'];
+const _ANT_EX = {}; ANT_EXCLUI.forEach(function(n){ _ANT_EX[_antKey(n)] = 1; });
+function _antPurge(arr){ for(var i=arr.length-1;i>=0;i--){ if(_ANT_EX[_antKey(arr[i].s)]) arr.splice(i,1); } }
+_antPurge(ANTECIPA); _antPurge(DATA); _antPurge(ANT_FIELD);
 
 function brl(n){ return &quot;R$ &quot; + (n||0).toLocaleString(&quot;pt-BR&quot;,{minimumFractionDigits:0,maximumFractionDigits:0}); }
 function pct(a,b){ return b>0 ? Math.round(a/b*100) : 0; }
