@@ -6703,9 +6703,14 @@ function renderVend(rows){
   el(&quot;ant-vend&quot;).innerHTML = html;
 }
 
+function _zerCel(a){
+  if(!a.tim) return a.zer || 0;
+  var p = Math.round(a.zer/a.tim*100);
+  return a.zer + ' <span style=&quot;color:#8a8a99;font-weight:600&quot;>(' + p + '% do time)</span>';
+}
 function renderPracaBreak(rows){
   const agg = {};
-  function _slotP(k){ if(!agg[k]) agg[k] = {ger:0, ace:0, ass:0, apr:0, billSum:0, billN:0}; return agg[k]; }
+  function _slotP(k){ if(!agg[k]) agg[k] = {ger:0, ace:0, ass:0, apr:0, zer:0, tim:0, billSum:0, billN:0}; return agg[k]; }
   rows.forEach(function(x){
     const a = _slotP(x.praca||&quot;Outras&quot;);
     a.ger++;
@@ -6715,23 +6720,33 @@ function renderPracaBreak(rows){
   });
   // Aprovadas: por DATA de aprovacao no periodo; une chaves de praca (Felipe 12/08).
   apprRows().forEach(function(x){ _slotP(x.praca||&quot;Outras&quot;).apr++; });
+  // Agentes zerados: vendedor ATIVO do roster sem nenhuma proposta/assinatura/aprovacao no periodo (Felipe 17/08).
+  const _ativo = {};
+  rows.forEach(function(x){ _ativo[_antKey(x.s)] = 1; });
+  apprRows().forEach(function(x){ _ativo[_antKey(x.s)] = 1; });
+  ANT_ROSTER.forEach(function(v){
+    if(antPraca!=='all' &amp;&amp; v.p!==antPraca) return;
+    if(antPessoa!=='all' &amp;&amp; v.n!==antPessoa) return;
+    var _sp = _slotP(v.p); _sp.tim++;
+    if(!_ativo[_antKey(v.n)]) _sp.zer++;
+  });
   const keys = Object.keys(agg).sort(function(a,b){
     if(pracaSort.k===null){ return PRACA_SORT.indexOf(a)-PRACA_SORT.indexOf(b); }
     if(pracaSort.k==='reg'){ var r=PRACA_SORT.indexOf(a)-PRACA_SORT.indexOf(b); return pracaSort.dir===1?r:-r; }
     if(pracaSort.k==='name'){ return pracaSort.dir===1?a.localeCompare(b,'pt-BR'):b.localeCompare(a,'pt-BR'); }
-    function _v(n){ var z=agg[n]; if(pracaSort.k==='ass')return z.ass; if(pracaSort.k==='apr')return z.apr; if(pracaSort.k==='tk')return z.billN?z.billSum/z.billN:0; return z.ger; }
+    function _v(n){ var z=agg[n]; if(pracaSort.k==='ass')return z.ass; if(pracaSort.k==='apr')return z.apr; if(pracaSort.k==='zer')return z.zer; if(pracaSort.k==='tk')return z.billN?z.billSum/z.billN:0; return z.ger; }
     var d = pracaSort.dir===1 ? (_v(a)-_v(b)) : (_v(b)-_v(a));
     return d || (PRACA_SORT.indexOf(a)-PRACA_SORT.indexOf(b));
   });
   if(!keys.length){ el(&quot;ant-praca&quot;).innerHTML = '<div class=&quot;empty&quot; style=&quot;padding:14px 0&quot;>sem dados</div>'; return; }
-  const tot = {ger:0, ace:0, ass:0, apr:0, billSum:0, billN:0};
-  keys.forEach(function(k){ tot.ger+=agg[k].ger; tot.ace+=agg[k].ace; tot.ass+=agg[k].ass; tot.apr+=agg[k].apr; tot.billSum+=agg[k].billSum; tot.billN+=agg[k].billN; });
-  let html = '<table class=&quot;ptbl&quot;>' + _antHead('setPracaSort', pracaSort, [['reg','Praça'],['ger','Geradas Antecipa'],['ass','Assinadas'],['apr','Aprovadas'],['tk','Ticket médio']]) + '<tbody>';
+  const tot = {ger:0, ace:0, ass:0, apr:0, zer:0, tim:0, billSum:0, billN:0};
+  keys.forEach(function(k){ tot.ger+=agg[k].ger; tot.ace+=agg[k].ace; tot.ass+=agg[k].ass; tot.apr+=agg[k].apr; tot.zer+=agg[k].zer; tot.tim+=agg[k].tim; tot.billSum+=agg[k].billSum; tot.billN+=agg[k].billN; });
+  let html = '<table class=&quot;ptbl&quot;>' + _antHead('setPracaSort', pracaSort, [['reg','Praça'],['ger','Geradas Antecipa'],['ass','Assinadas'],['apr','Aprovadas'],['tk','Ticket médio'],['zer','Agentes zerados']]) + '<tbody>';
   keys.forEach(function(k){
     const a = agg[k];
-    html += &quot;<tr><td>&quot;+pracaBadge(k)+&quot;</td><td>&quot;+a.ger+&quot;</td><td>&quot;+a.ass+&quot;</td><td>&quot;+a.apr+&quot;</td><td>&quot;+brl(a.billN?a.billSum/a.billN:0)+&quot;</td></tr>&quot;;
+    html += &quot;<tr><td>&quot;+pracaBadge(k)+&quot;</td><td>&quot;+a.ger+&quot;</td><td>&quot;+a.ass+&quot;</td><td>&quot;+a.apr+&quot;</td><td>&quot;+brl(a.billN?a.billSum/a.billN:0)+&quot;</td><td>&quot;+_zerCel(a)+&quot;</td></tr>&quot;;
   });
-  html += '<tr class=&quot;tot&quot;><td>Total</td><td>'+tot.ger+'</td><td>'+tot.ass+'</td><td>'+tot.apr+'</td><td>'+brl(tot.billN?tot.billSum/tot.billN:0)+'</td></tr>';
+  html += '<tr class=&quot;tot&quot;><td>Total</td><td>'+tot.ger+'</td><td>'+tot.ass+'</td><td>'+tot.apr+'</td><td>'+brl(tot.billN?tot.billSum/tot.billN:0)+'</td><td>'+_zerCel(tot)+'</td></tr>';
   html += &quot;</tbody></table>&quot;;
   el(&quot;ant-praca&quot;).innerHTML = html;
 }
