@@ -237,6 +237,7 @@ def praca_of(email, client):
 CONSUMPTION_OVERRIDE_BY_ID = {  # deal_id -> MWh; ganha do override por nome. card818 congelado (0.632) e nome 'MW SAFETY LTDA' forca 0.632 em todas as UCs; este id e' 1.636 (Felipe 07/08); remover qdo CI destravar
  '35f26046-9c78-4c2b-a7fe-04f7e7564c38': 1.636,  # Mw Safety Ltda / Joao Santos (Ribeirao)
  'a8216055-6fa2-491f-a651-0d70ad461f08': 0.632,  # a8216055 fatura R$47,90; Felipe mantem 0.632 (07/08)
+ 'd7f9bcce-7145-4bf3-b043-0c12b461bf97': 0.561,  # PAULO HENRIQUE GHIOTTI DA SILVA / Olimpio Filho (Ribeirao) - aprovado 17/08; card818 em cache manda 0.0, gold viva = 0.561 (Felipe 17/08); remover quando a base refletir
 }
 CONSUMPTION_OVERRIDE = {
  norm('FRANCISCO ALDECI DE QUEIROZ FERNANDES'): 5.86,  # base mostra 0.59 (Felipe 03/07)
