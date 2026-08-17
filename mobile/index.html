@@ -1164,6 +1164,12 @@ const MIS_INI = '2026-08-13';
 const MIS_FIM = '2026-08-23';
 const MIS_TIERS = [{mwh:5,premio:750},{mwh:8,premio:1500},{mwh:15,premio:3000}];
 const MIS_MAX = 15;
+// Felipe 17/08: cliente aprovado na semana da campanha (17-23/08) vale 1,5x tambem
+// na Missao. Aprovados de 13 a 16/08 (largada) seguem valendo 1x.
+const MIS_BONUS_INI = '2026-08-17';
+const MIS_BONUS = 1.5;
+function misTemBonus(r){ return (r.aprov_date || '') >= MIS_BONUS_INI; }
+function misMwhCamp(r){ const m = Number(r.mwh) || 0; return misTemBonus(r) ? m * MIS_BONUS : m; }
 let misVerTodos = false;
 
 function misLiderDaPraca(k){
@@ -1201,12 +1207,15 @@ function misTimes(){
   const roster = misRoster();
   const T = {};
   Object.keys(roster).forEach(function(k){
-    T[k] = {k:k, mwh:0, n:0, vend:{}, roster:roster[k].slice()};
+    T[k] = {k:k, mwh:0, base:0, bonus:0, nBonus:0, n:0, vend:{}, roster:roster[k].slice()};
   });
   misRegistros().forEach(function(r){
     const k = misPracaDe(r.s);
     if (!T[k]) return;
-    T[k].mwh += (Number(r.mwh) || 0);
+    const _m = Number(r.mwh) || 0;
+    T[k].base += _m;
+    T[k].mwh += misMwhCamp(r);
+    if (misTemBonus(r)){ T[k].bonus += _m * (MIS_BONUS - 1); T[k].nBonus += 1; }
     T[k].n += 1;
     T[k].vend[r.s] = (T[k].vend[r.s] || 0) + 1;
     if (T[k].roster.indexOf(r.s) === -1 && !isLider(r.s)) T[k].roster.push(r.s);
@@ -1243,6 +1252,12 @@ function misCard(t){
   return '<div class="mis-card' + (tier && okPre ? ' done' : '') + '">' +
     '<div class="mis-top"><div class="mis-name">' + misLabel(t.k) + '</div><div class="mis-lider">' + misLiderDaPraca(t.k) + '</div></div>' +
     '<div class="mis-mwh">' + misMwh(t.mwh) + ' <small>MWh · ' + t.n + ' aprovado' + (t.n === 1 ? '' : 's') + '</small></div>' +
+    '<div style="font-size:11px;margin:-4px 0 8px;line-height:1.4">' +
+      '<span style="color:var(--blue);font-weight:700">' + misMwh(t.base) + '</span> <span style="color:var(--muted)">normal</span>' +
+      (t.bonus > 0
+        ? ' <span style="color:var(--purple);font-weight:800">+ ' + misMwh(t.bonus) + ' bônus 1,5×</span> <span style="color:var(--purple)">(' + t.nBonus + ' desta semana)</span>'
+        : ' <span style="color:var(--purple);font-weight:700">· nenhum aprovado 17-23/08 ainda (valem 1,5×)</span>') +
+    '</div>' +
     '<div class="mis-bar"><div class="f' + (tier ? ' gold' : '') + '" style="width:' + pct + '%"></div>' + marks + '</div>' +
     '<div class="mis-leg"><span>0</span><span>5</span><span>8</span><span>15 MWh</span></div>' +
     prize + next +
@@ -1272,6 +1287,13 @@ function renderMissao(){
   let h = '<div class="mis-pills"><span class="mis-pill">13/08 a 23/08</span>' +
           '<span class="mis-pill alt">Pagamento 25/08</span>' +
           '<span class="mis-pill ghost">' + restam + '</span></div>' +
+          '<div style="background:#F3F1FF;border:1px solid #D9D4FF;border-radius:12px;padding:10px 12px;margin-bottom:12px">' +
+            '<div style="font-size:12px;font-weight:800;color:var(--purple);text-align:center">⚡ Cliente aprovado de 17 a 23/08 vale 1,5×</div>' +
+            '<div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px;line-height:1.5">' +
+              'Cliente de 2 MWh conta como <b style="color:var(--purple)">3 MWh</b> pro time. Aprovados de 13 a 16/08 valem 1×.<br>' +
+              '<span style="color:var(--blue);font-weight:700">Azul</span> = MWh normal · <span style="color:var(--purple);font-weight:700">roxo</span> = bônus.' +
+            '</div>' +
+          '</div>' +
           '<div class="mis-tiers">' + MIS_TIERS.map(function(x, i){
             return '<div class="mis-tier"><div class="l">Meta ' + (i+1) + '</div><div class="v">' + x.mwh + ' MWh</div><div class="p">' + misBRL(x.premio) + '</div><div class="l">p/ o líder</div></div>';
           }).join('') + '</div>';
@@ -1287,14 +1309,19 @@ function renderMissao(){
 
   h += '<div class="mis-sec">Aprovados que contam <span class="n">' + regs.length + '</span></div>';
   h += regs.length ? regs.map(function(r){
-      return '<div class="mis-row"><div><div class="c">' + (r.c || '—') + '</div>' +
+      const _b = misTemBonus(r);
+      return '<div class="mis-row"' + (_b ? ' style="border-left:3px solid var(--purple);padding-left:9px"' : '') + '><div><div class="c">' + (r.c || '—') +
+             (_b ? ' <span style="display:inline-block;background:#F3F1FF;color:var(--purple);border-radius:999px;padding:1px 6px;font-size:9.5px;font-weight:800;vertical-align:middle">1,5×</span>' : '') + '</div>' +
              '<div class="m">' + (r.s || '—') + ' · ' + misData(r.aprov_date) + '</div></div>' +
-             '<div class="v">' + misMwh(Number(r.mwh)||0) + '</div></div>';
+             '<div class="v">' + (_b
+                ? '<span style="color:var(--muted);font-weight:500;font-size:11px">' + misMwh(Number(r.mwh)||0) + '</span> <span style="color:var(--purple)">' + misMwh(misMwhCamp(r)) + '</span>'
+                : misMwh(Number(r.mwh)||0)) + '</div></div>';
     }).join('')
     : '<div class="empty"><div class="empty-icon">⏳</div><div class="empty-text">Nenhum Antecipa aprovado ainda. A campanha conta a partir de 13/08.</div></div>';
 
   h += '<div class="mis-foot">Quem recebe é o <b>líder</b>, na remuneração variável de 25/08, pelo resultado do time. ' +
        'Conta cliente <b>Antecipa</b> com análise aprovada entre 13/08 e 23/08, pela data da aprovação. ' +
+       'Aprovados de <b>17 a 23/08</b> contam <b>1,5×</b> o MWh (semana da campanha); de 13 a 16/08, 1×. ' +
        'O prêmio só é liberado se <b>todo vendedor do time</b> tiver ao menos 1 venda de Antecipa — o líder não entra nessa conta.</div>';
   el.innerHTML = h;
 }
