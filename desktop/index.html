@@ -6437,11 +6437,13 @@ loadAll();
     <div class=&quot;fgroup-btns&quot; id=&quot;ant-praca-pills&quot;></div>
     <span class=&quot;fbar-label&quot; style=&quot;margin-left:8px&quot;>Pessoa</span>
     <select class=&quot;fbar-sel&quot; id=&quot;ant-pessoa&quot; onchange=&quot;setAntPessoa(this.value)&quot;><option value=&quot;all&quot;>Todas</option></select>
+    <span class=&quot;fbar-label&quot; style=&quot;margin-left:8px&quot;>Líderes</span>
+    <div class=&quot;fgroup-btns&quot;><button class=&quot;fbtn-sm&quot; id=&quot;ant-lid-on&quot; onclick=&quot;setAntLideres(true)&quot;>Incluir</button><button class=&quot;fbtn-sm&quot; id=&quot;ant-lid-off&quot; onclick=&quot;setAntLideres(false)&quot;>Ocultar</button></div>
   </div>
   <div class=&quot;kpis&quot; id=&quot;ant-kpis&quot;></div>
   <div class=&quot;grid2&quot;>
     <div class=&quot;card&quot;>
-      <h2 style=&quot;display:flex;align-items:center;gap:8px;flex-wrap:wrap&quot;>👤 Por vendedor <span class=&quot;cnt&quot; id=&quot;ant-vend-cnt&quot;></span><span style=&quot;margin-left:auto;display:inline-flex;gap:6px;align-items:center&quot;><button class=&quot;fbtn-sm&quot; id=&quot;ant-lid-btn&quot; onclick=&quot;toggleLideres()&quot; style=&quot;border:1px solid #d6dae6;background:#fff&quot;></button><span class=&quot;fgroup-btns&quot; style=&quot;background:#f1f2f7&quot;><button class=&quot;fbtn-sm&quot; id=&quot;ant-zer-only&quot; onclick=&quot;setAntZer('only')&quot;>Só zerados</button><button class=&quot;fbtn-sm&quot; id=&quot;ant-zer-none&quot; onclick=&quot;setAntZer('none')&quot;>Sem zerados</button></span></span></h2>
+      <h2 style=&quot;display:flex;align-items:center;gap:8px;flex-wrap:wrap&quot;>👤 Por vendedor <span class=&quot;cnt&quot; id=&quot;ant-vend-cnt&quot;></span><span style=&quot;margin-left:auto;display:inline-flex;gap:6px;align-items:center&quot;><span class=&quot;fgroup-btns&quot; style=&quot;background:#f1f2f7&quot;><button class=&quot;fbtn-sm&quot; id=&quot;ant-zer-only&quot; onclick=&quot;setAntZer('only')&quot;>Só zerados</button><button class=&quot;fbtn-sm&quot; id=&quot;ant-zer-none&quot; onclick=&quot;setAntZer('none')&quot;>Sem zerados</button></span></span></h2>
       <div id=&quot;ant-vend&quot;></div>
     </div>
     <div class=&quot;card&quot;>
@@ -6588,7 +6590,7 @@ function setAntZer(v){ antZer = (antZer===v ? 'all' : v); renderAll(); }
 const _ANT_LID = {}; ANT_ROSTER.forEach(function(v){ if(v.l) _ANT_LID[_antKey(v.n)] = 1; });
 function _ehLider(n){ return !!_ANT_LID[_antKey(n)]; }
 let antLideres = true;
-function toggleLideres(){ antLideres = !antLideres; renderAll(); }
+function setAntLideres(v){ antLideres = v; renderAll(); }
 function setVendSort(k){ if(vendSort.k===k){ vendSort.dir=-vendSort.dir; } else { vendSort={k:k, dir:(k==='name'?1:-1)}; } renderAll(); }
 function setPracaSort(k){ if(pracaSort.k===k){ pracaSort.dir=-pracaSort.dir; } else { pracaSort={k:k, dir:(k==='name'||k==='reg'?1:-1)}; } renderAll(); }
 function _antHead(fn, st, cols){
@@ -6688,8 +6690,9 @@ function renderVend(rows){
   var _zo = el(&quot;ant-zer-only&quot;), _zn = el(&quot;ant-zer-none&quot;);
   if(_zo) _zo.classList.toggle('active', antZer==='only');
   if(_zn) _zn.classList.toggle('active', antZer==='none');
-  var _lb = el(&quot;ant-lid-btn&quot;);
-  if(_lb){ _lb.textContent = antLideres ? &quot;Ocultar líderes&quot; : &quot;Mostrar líderes&quot;; _lb.classList.toggle('active', !antLideres); }
+  var _lon = el(&quot;ant-lid-on&quot;), _loff = el(&quot;ant-lid-off&quot;);
+  if(_lon) _lon.classList.toggle('active', antLideres);
+  if(_loff) _loff.classList.toggle('active', !antLideres);
   if(!keys.length){ el(&quot;ant-vend&quot;).innerHTML = '<div class=&quot;empty&quot; style=&quot;padding:14px 0&quot;>sem dados</div>'; return; }
   const tot = {ger:0, ass:0, apr:0, billSum:0, billN:0};
   keys.forEach(function(k){ tot.ger+=agg[k].ger; tot.ass+=agg[k].ass; tot.apr+=agg[k].apr; tot.billSum+=agg[k].billSum; tot.billN+=agg[k].billN; });
@@ -6725,6 +6728,7 @@ function renderPracaBreak(rows){
   rows.forEach(function(x){ _ativo[_antKey(x.s)] = 1; });
   apprRows().forEach(function(x){ _ativo[_antKey(x.s)] = 1; });
   ANT_ROSTER.forEach(function(v){
+    if(!antLideres &amp;&amp; v.l) return;   // mesmo universo do painel Por vendedor (Felipe 17/08)
     if(antPraca!=='all' &amp;&amp; v.p!==antPraca) return;
     if(antPessoa!=='all' &amp;&amp; v.n!==antPessoa) return;
     var _sp = _slotP(v.p); _sp.tim++;
