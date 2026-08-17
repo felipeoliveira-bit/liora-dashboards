@@ -6441,7 +6441,7 @@ loadAll();
   <div class=&quot;kpis&quot; id=&quot;ant-kpis&quot;></div>
   <div class=&quot;grid2&quot;>
     <div class=&quot;card&quot;>
-      <h2>👤 Por vendedor <span class=&quot;cnt&quot; id=&quot;ant-vend-cnt&quot;></span></h2>
+      <h2 style=&quot;display:flex;align-items:center;gap:8px;flex-wrap:wrap&quot;>👤 Por vendedor <span class=&quot;cnt&quot; id=&quot;ant-vend-cnt&quot;></span><button class=&quot;fbtn-sm&quot; id=&quot;ant-zer-btn&quot; onclick=&quot;toggleZerados()&quot; style=&quot;margin-left:auto;border:1px solid #d6dae6;background:#fff&quot;></button></h2>
       <div id=&quot;ant-vend&quot;></div>
     </div>
     <div class=&quot;card&quot;>
@@ -6580,6 +6580,9 @@ function apprRows(){
 function setAntPer(p, elm){ antPer=p; document.querySelectorAll('[data-ant-per]').forEach(function(b){b.classList.remove('active');}); if(elm) elm.classList.add('active'); renderAll(); }
 function setAntPraca(p, elm){ antPraca=p; document.querySelectorAll('[data-ant-praca]').forEach(function(b){b.classList.remove('active');}); if(elm) elm.classList.add('active'); renderAll(); }
 function setAntPessoa(v){ antPessoa=v; renderAll(); }
+// Mostrar/ocultar vendedores ativos sem proposta Antecipa no periodo (Felipe 17/08).
+let antZerados = true;
+function toggleZerados(){ antZerados = !antZerados; renderAll(); }
 function setVendSort(k){ if(vendSort.k===k){ vendSort.dir=-vendSort.dir; } else { vendSort={k:k, dir:(k==='name'?1:-1)}; } renderAll(); }
 function setPracaSort(k){ if(pracaSort.k===k){ pracaSort.dir=-pracaSort.dir; } else { pracaSort={k:k, dir:(k==='name'||k==='reg'?1:-1)}; } renderAll(); }
 function _antHead(fn, st, cols){
@@ -6656,8 +6659,8 @@ function renderVend(rows){
   });
   // Aprovadas: por DATA de aprovacao no periodo (independe da geracao); une chaves (Felipe 12/08).
   apprRows().forEach(function(x){ _slot(x.s||&quot;—&quot;).apr++; });
-  // Todos os vendedores ATIVOS aparecem, mesmo com 0 proposta Antecipa (Felipe 17/08).
-  ANT_ROSTER.forEach(function(v){
+  // Todos os vendedores ATIVOS aparecem, mesmo com 0 proposta Antecipa (Felipe 17/08). Botao 'zerados' liga/desliga.
+  if(antZerados) ANT_ROSTER.forEach(function(v){
     if(antPraca!=='all' &amp;&amp; v.p!==antPraca) return;
     if(antPessoa!=='all' &amp;&amp; v.n!==antPessoa) return;
     _slot(v.n);
@@ -6669,6 +6672,8 @@ function renderVend(rows){
     return d || a.localeCompare(b,'pt-BR');
   });
   el(&quot;ant-vend-cnt&quot;).textContent = keys.length + &quot; vendedor(es)&quot;;
+  var _zb = el(&quot;ant-zer-btn&quot;);
+  if(_zb){ _zb.textContent = antZerados ? &quot;Ocultar zerados&quot; : &quot;Mostrar zerados&quot;; _zb.classList.toggle('active', !antZerados); }
   if(!keys.length){ el(&quot;ant-vend&quot;).innerHTML = '<div class=&quot;empty&quot; style=&quot;padding:14px 0&quot;>sem dados</div>'; return; }
   const tot = {ger:0, ass:0, apr:0, billSum:0, billN:0};
   keys.forEach(function(k){ tot.ger+=agg[k].ger; tot.ass+=agg[k].ass; tot.apr+=agg[k].apr; tot.billSum+=agg[k].billSum; tot.billN+=agg[k].billN; });
