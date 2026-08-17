@@ -6506,6 +6506,13 @@ const MESES = [&quot;janeiro&quot;,&quot;fevereiro&quot;,&quot;março&quot;,&quo
 const PRACA_LABEL = {Salvador:'Salvador',Feira:'Feira',Natal:'RN Capital',RNInterior:'RN Interior',SPI:'Campinas SPI',Ribeirao:'Ribeirão SPI',CE:'CE',Outras:'Outras'};
 const PRACA_COLOR = {Salvador:'#1D9E75',Feira:'#EF9F27',Natal:'#378ADD',RNInterior:'#0EA5A5',SPI:'#7F77DD',Ribeirao:'#A78BFA',CE:'#D4537E',Outras:'#9aa3b5'};
 const PRACA_SORT = ['Salvador','Feira','Natal','RNInterior','SPI','Ribeirao','CE','Outras'];
+// Roster de vendedores ATIVOS (espelho de VENDEDORES - VENDEDORES_OCULTOS do topo; manter em sync)
+const ANT_ROSTER = [{n:'Luciana Campos',p:'Salvador'},{n:'Nicola Popovic',p:'SPI'},{n:'Anderson Correia',p:'SPI'},{n:'Percy Hormazabal',p:'SPI'},{n:'Mecenas Junior',p:'Natal'},{n:'Mirla Albuquerque',p:'RNInterior'},{n:'Lucas Santos',p:'RNInterior'},{n:'Jefferson Fideli',p:'RNInterior'},{n:'Phillip Faria',p:'Ribeirao'},{n:'Marcel Sousa',p:'Feira'},{n:'Daniel Magnus',p:'Natal'},{n:'Thiago Firmo',p:'Natal'},{n:'Rodrigo Lima',p:'SPI'},{n:'Daniel Junior',p:'SPI'},{n:'Maria Lúcia',p:'Salvador'},{n:'Ettore Rossi',p:'Salvador'},{n:'Tatiane Correia',p:'Salvador'},{n:'Silvia Dias',p:'Salvador'},{n:'Tais Santos',p:'Salvador'},{n:'Adroaldo Bonfim',p:'Salvador'},{n:'Kelma Rangel',p:'Feira'},{n:'Lucileide Carlos',p:'Feira'},{n:'Tiago Freitas',p:'Feira'},{n:'Tamires Costa',p:'Feira'},{n:'Alberto Nascimento',p:'Feira'},{n:'Marcio Galvão',p:'Natal'},{n:'Bruno Andrade',p:'Natal'},{n:'Rodrigo Ribeiro',p:'Natal'},{n:'Bruno Borges',p:'CE'},{n:'Neilon Nascimento',p:'CE'},{n:'Sabrina Tomazeti',p:'CE'},{n:'Núbia Andrade',p:'CE'},{n:'Odirley Costa',p:'CE'},{n:'Caio Lannes',p:'SPI'},{n:'Monica Silveira',p:'SPI'},{n:'Ederson Silva',p:'SPI'},{n:'Diego Faria',p:'SPI'},{n:'João Santos',p:'Ribeirao'},{n:'Olímpio Filho',p:'Ribeirao'},{n:'Fábio Rodrigues',p:'Ribeirao'},{n:'Briel Barbosa',p:'SPI'}];
+// Normaliza o nome do vendedor p/ o do roster (acento/espaco duplo geram linha duplicada). Felipe 17/08.
+function _antKey(n){ return String(n||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim().toLowerCase(); }
+const _ANT_CANON = {}; ANT_ROSTER.forEach(function(v){ _ANT_CANON[_antKey(v.n)] = v.n; });
+ANTECIPA.forEach(function(x){ var c=_ANT_CANON[_antKey(x.s)]; if(c) x.s=c; });
+ANT_FIELD.forEach(function(x){ var c=_ANT_CANON[_antKey(x.s)]; if(c) x.s=c; });
 
 function brl(n){ return &quot;R$ &quot; + (n||0).toLocaleString(&quot;pt-BR&quot;,{minimumFractionDigits:0,maximumFractionDigits:0}); }
 function pct(a,b){ return b>0 ? Math.round(a/b*100) : 0; }
@@ -6644,6 +6651,12 @@ function renderVend(rows){
   });
   // Aprovadas: por DATA de aprovacao no periodo (independe da geracao); une chaves (Felipe 12/08).
   apprRows().forEach(function(x){ _slot(x.s||&quot;—&quot;).apr++; });
+  // Todos os vendedores ATIVOS aparecem, mesmo com 0 proposta Antecipa (Felipe 17/08).
+  ANT_ROSTER.forEach(function(v){
+    if(antPraca!=='all' &amp;&amp; v.p!==antPraca) return;
+    if(antPessoa!=='all' &amp;&amp; v.n!==antPessoa) return;
+    _slot(v.n);
+  });
   const keys = Object.keys(agg).sort(function(a,b){
     if(vendSort.k==='name'){ return vendSort.dir===1?a.localeCompare(b,'pt-BR'):b.localeCompare(a,'pt-BR'); }
     function _v(n){ var z=agg[n]; if(vendSort.k==='ass')return z.ass; if(vendSort.k==='apr')return z.apr; if(vendSort.k==='tk')return z.billN?z.billSum/z.billN:0; return z.ger; }
@@ -6654,7 +6667,7 @@ function renderVend(rows){
   if(!keys.length){ el(&quot;ant-vend&quot;).innerHTML = '<div class=&quot;empty&quot; style=&quot;padding:14px 0&quot;>sem dados</div>'; return; }
   const tot = {ger:0, ass:0, apr:0, billSum:0, billN:0};
   keys.forEach(function(k){ tot.ger+=agg[k].ger; tot.ass+=agg[k].ass; tot.apr+=agg[k].apr; tot.billSum+=agg[k].billSum; tot.billN+=agg[k].billN; });
-  let html = '<table class=&quot;ptbl&quot;>' + _antHead('setVendSort', vendSort, [['name','Vendedor'],['ger','Geradas'],['ass','Assinadas'],['apr','Aprovadas'],['tk','Ticket médio']]) + '<tbody>';
+  let html = '<table class=&quot;ptbl&quot;>' + _antHead('setVendSort', vendSort, [['name','Vendedor'],['ger','Geradas Antecipa'],['ass','Assinadas'],['apr','Aprovadas'],['tk','Ticket médio']]) + '<tbody>';
   keys.forEach(function(k){
     const a = agg[k];
     html += &quot;<tr><td>&quot;+esc(k)+&quot;</td><td>&quot;+a.ger+&quot;</td><td>&quot;+a.ass+&quot;</td><td>&quot;+a.apr+&quot;</td><td>&quot;+brl(a.billN?a.billSum/a.billN:0)+&quot;</td></tr>&quot;;
@@ -6687,7 +6700,7 @@ function renderPracaBreak(rows){
   if(!keys.length){ el(&quot;ant-praca&quot;).innerHTML = '<div class=&quot;empty&quot; style=&quot;padding:14px 0&quot;>sem dados</div>'; return; }
   const tot = {ger:0, ace:0, ass:0, apr:0, billSum:0, billN:0};
   keys.forEach(function(k){ tot.ger+=agg[k].ger; tot.ace+=agg[k].ace; tot.ass+=agg[k].ass; tot.apr+=agg[k].apr; tot.billSum+=agg[k].billSum; tot.billN+=agg[k].billN; });
-  let html = '<table class=&quot;ptbl&quot;>' + _antHead('setPracaSort', pracaSort, [['reg','Praça'],['ger','Geradas'],['ass','Assinadas'],['apr','Aprovadas'],['tk','Ticket médio']]) + '<tbody>';
+  let html = '<table class=&quot;ptbl&quot;>' + _antHead('setPracaSort', pracaSort, [['reg','Praça'],['ger','Geradas Antecipa'],['ass','Assinadas'],['apr','Aprovadas'],['tk','Ticket médio']]) + '<tbody>';
   keys.forEach(function(k){
     const a = agg[k];
     html += &quot;<tr><td>&quot;+pracaBadge(k)+&quot;</td><td>&quot;+a.ger+&quot;</td><td>&quot;+a.ass+&quot;</td><td>&quot;+a.apr+&quot;</td><td>&quot;+brl(a.billN?a.billSum/a.billN:0)+&quot;</td></tr>&quot;;
