@@ -255,7 +255,8 @@ FORCE_APPROVED = {'cfb2500c-c323-4943-a7f8-e831a8f37b55': '2026-08-04',  # PP FE
                   '77a56fa5-9c4e-476c-b71d-ac08534d6745': '2026-08-13',  # DILEUDA CORINGA DA FONSECA DA SILVA (Antecipa PF, Thiago Macillo/Natal RN) - aprovado manual (Felipe 13/08); risco APPROVED_PENDING_CREDIT + credito PENDING; remover quando base refletir
                   'b4e7eacc-8dc9-445e-9a37-d83cb3ecff80': '2026-08-13',  # DANILO FERREIRA DE LACERDA (Antecipa PF, Fabio Rodrigues/Ribeirao) - BGC_PARCEIRO risco APPROVED_PENDING_CREDIT + credito PENDING; aprovado manual (Felipe 13/08); remover quando base refletir
                   '1d00bb47-a942-4407-8216-98df676b41e9': '2026-08-13',
-                  '0b97aa9e-2def-45ec-ad98-034573f178a6': '2026-08-17'}  # JONAS EMER COQUELY / 62018400000181 (Antecipa PJ, Joao Santos/Ribeirao) - BGC_PARCEIRO risco APPROVED_PENDING_CREDIT (Pix) + sem analise de credito; aprovado manual (Felipe 17/08); remover quando base refletir  # ALESSANDRA DELFINO (Antecipa PF, Phillip Faria/Ribeirao) - BGC_PARCEIRO risco APPROVED_PENDING_CREDIT + credito PENDING; aprovado manual (Felipe 13/08); remover quando base refletir
+                  '0b97aa9e-2def-45ec-ad98-034573f178a6': '2026-08-17',
+                  '25611c90-3b9b-4b2f-a42e-41d22dcebd7a': '2026-08-17'}  # THAIS CRISTINA FLOSINO (Antecipa PJ, Joao Santos/Ribeirao) - risco APPROVED_PENDING_CREDIT + CREDITO APPROVED na gold, mas o card818 veio em cache com MANUAL/sem credito (Felipe 17/08); remover quando a base refletir  # JONAS EMER COQUELY / 62018400000181 (Antecipa PJ, Joao Santos/Ribeirao) - BGC_PARCEIRO risco APPROVED_PENDING_CREDIT (Pix) + sem analise de credito; aprovado manual (Felipe 17/08); remover quando base refletir  # ALESSANDRA DELFINO (Antecipa PF, Phillip Faria/Ribeirao) - BGC_PARCEIRO risco APPROVED_PENDING_CREDIT + credito PENDING; aprovado manual (Felipe 13/08); remover quando base refletir
 def mwh_of(client, raw, did=None):
     if did is not None:
         ovid = CONSUMPTION_OVERRIDE_BY_ID.get(did)
@@ -406,6 +407,11 @@ ANT_APPROVE = {
    'c':'Jonas Emer Coquely','s':'João Santos','praca':'Ribeirao','city':'RIBEIRÃO PRETO','uf':'SP',
    'dist':'CPFL','bill':758.15,'mwh':2.38,'stage':'BGC_PARCEIRO','acc':True,
    'tipo':'PJ','signed':True,'date':'2026-08-15',
+ },
+ '25611c90-3b9b-4b2f-a42e-41d22dcebd7a': {  # THAIS CRISTINA FLOSINO - Joao Santos/Ribeirao - Antecipa PJ - credito approved na gold; card818 em cache (Felipe 17/08); remover quando a base refletir
+   'c':'Thaís Cristina Flosino','s':'João Santos','praca':'Ribeirao','city':'RIBEIRÃO PRETO','uf':'SP',
+   'dist':'CPFL','bill':459.95,'mwh':0.429,'stage':'BGC_PARCEIRO','acc':True,
+   'tipo':'PJ','signed':True,'date':'2026-08-12',
  },
 }
 _seen_ant = set()
