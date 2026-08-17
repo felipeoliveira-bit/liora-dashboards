@@ -36,6 +36,27 @@ def _norm_name(s):
     s = s.replace('_', ' ').lower()
     return re.sub(r'\s+', ' ', s).strip()
 
+# Apelidos: arquivo no Drive com nome que nao e o nome do vendedor no CRM.
+# Chave = _norm_name do nome do ARQUIVO (sem extensao); valor = nome no roster.
+APELIDOS = {
+    'popo': 'Nicola Popovic',   # Caio subiu como "Popo.jpg" (03/08)
+}
+
+def _fuzzy(s):
+    # Tolera as variacoes que mais aparecem nos nomes do time:
+    #   Souza/Sousa, Fideli/Felipe? nao - so troca z<->s e tira pontuacao.
+    s = _norm_name(s).replace('.', ' ').replace('-', ' ')
+    s = re.sub(r'\s+', ' ', s).strip()
+    return s.replace('z', 's')
+
+def _match(stem, canon, canon_fz):
+    # 1) nome exato (normalizado)  2) apelido  3) fuzzy (Souza==Sousa)
+    k = canon.get(_norm_name(stem))
+    if k: return k
+    ap = APELIDOS.get(_norm_name(stem))
+    if ap and _norm_name(ap) in canon: return canon[_norm_name(ap)]
+    return canon_fz.get(_fuzzy(stem))
+
 def fetch_photos():
     # Retorna dict {nome_arquivo: bytes} baixado do Drive. [] se indisponivel.
     key = os.environ.get('GDRIVE_SA_KEY', '').strip()
@@ -98,9 +119,10 @@ def inject(mobile_html, named_bytes):
     photos = dict(kv(t[ps:pe]))
     rs, re_ = obj_span('SELLER_PRACA')
     roster = [k for k, _ in kv(t[rs:re_])]
-    canon = {}
+    canon, canon_fz = {}, {}
     for n in roster + list(photos.keys()):
         canon.setdefault(_norm_name(n), n)
+        canon_fz.setdefault(_fuzzy(n), n)
 
     IMG_EXT = ('.jpg', '.jpeg', '.png', '.webp', '.gif', '.bmp')
     added, updated, nomatch = [], [], []
@@ -112,7 +134,7 @@ def inject(mobile_html, named_bytes):
             im = Image.open(io.BytesIO(named_bytes[fname])); im.load(); im = im.convert('RGB')
         except Exception:
             log("  ! %s: nao abriu como imagem - ignorado." % fname); continue
-        key = canon.get(_norm_name(stem))
+        key = _match(stem, canon, canon_fz)
         if not key:
             nomatch.append(fname); continue
         was = key in photos
