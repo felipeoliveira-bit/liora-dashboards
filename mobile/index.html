@@ -1789,8 +1789,8 @@ function renderCarteira(){
   const pct = meta>0?Math.min((myAprov/meta)*100,100):0;
   const pc = pct>=70?'var(--green)':pct>=40?'var(--blue)':'var(--red)';
   const myPend = myDeals.filter(x=>!isAprovado(x)&&!isNegado(x)).reduce((a,x)=>a+x.mwh,0);
-  const campValSemana = campVal(CAMP_CFG.semana, myDeals.filter(x=>noPeriodo(x,CAMP_CFG.semana.ini,CAMP_CFG.semana.end)&&isAprovado(x)));
-  const campValBateu  = campVal(CAMP_CFG.bateu,  myDeals.filter(x=>noPeriodo(x,CAMP_CFG.bateu.ini,CAMP_CFG.bateu.end)&&isAprovado(x)));
+  const campPartsSemana = campParts(CAMP_CFG.semana, myDeals.filter(x=>noPeriodo(x,CAMP_CFG.semana.ini,CAMP_CFG.semana.end)&&isAprovado(x)));
+  const campValSemana = campPartsSemana.total;
   const campValAntecipa = campVal(CAMP_CFG.antecipa, myDeals.filter(x=>noPeriodo(x,CAMP_CFG.antecipa.ini,CAMP_CFG.antecipa.end)&&isAprovado(x)&&campMatch(CAMP_CFG.antecipa,x)));
   const VIS_PREREQ = 15;
   let visitasBlock;
@@ -1826,15 +1826,12 @@ function renderCarteira(){
     </div>
     <div class="summary-bar">
       <div class="summary-row"><span class="summary-key">🏆 Campanha da Semana</span><span class="summary-val" style="color:var(--blue)">${campFmt(CAMP_CFG.semana,campValSemana)} MWh</span></div>
+      ${campBreakdownLine(CAMP_CFG.semana, campPartsSemana)}
       ${renderCampProgress(CAMP_CFG.semana, campValSemana)}
     </div>
     <div class="summary-bar">
-      <div class="summary-row"><span class="summary-key">⚡ Antecipa</span><span class="summary-val" style="color:var(--blue)">${campValAntecipa} antecipa</span></div>
+      <div class="summary-row"><span class="summary-key">⚡ Bateu Levou Antecipa</span><span class="summary-val" style="color:var(--purple)">${campValAntecipa} antecipa</span></div>
       ${renderCampProgress(CAMP_CFG.antecipa, campValAntecipa)}
-    </div>
-    <div class="summary-bar">
-      <div class="summary-row"><span class="summary-key">⚡ Bateu Levou</span><span class="summary-val" style="color:var(--blue)">${campValBateu} aprovados</span></div>
-      ${renderCampProgress(CAMP_CFG.bateu, campValBateu)}
     </div>
     ${renderRemRulesCard(seller)}
     <div class="section-head">Sua Carteira (${myDeals.length} clientes)</div>`;
@@ -1858,6 +1855,7 @@ function renderCarteira(){
         <div class="client-meta">
           <span class="status-badge" style="background:${si.bg};color:${si.color}">${badgeLabel}</span>
           <span class="mwh-badge">${x.mwh.toFixed(2)} MWh</span>
+          ${isAntecipaDeal(x) ? `<span class="mwh-badge" style="background:#F3F1FF;color:var(--purple);font-weight:800">⚡ 1,5× · ${campNum(x.mwh*1.5)} MWh</span>` : ''}
           <span class="days-badge" style="color:${idleColor}">${x.idle}d</span>
         </div>
         ${naoAceito ? `<div class="acao-text" style="background:#FCEBEB;border:1px solid #F5C2C2;color:#A32D2D;font-weight:700;border-radius:10px;padding:8px 10px">⚠️ Não aceito pela distribuidora${x.lost_reason ? ` · ${escapeHtml(x.lost_reason)}` : ''}</div>` : `<div class="acao-text">${acao}</div>`}
@@ -1896,25 +1894,46 @@ function isExTime_(n){ return EX_TIME.indexOf(n) !== -1; }
 function isOculto_(n){ return OCULTOS_TIME.indexOf(n) !== -1; }
 const CAMP_CFG = {
   semana: { key:'semana', btn:'MWh', title:'Campanha da Semana',
-    ini:'2026-08-10', end:'2026-08-16', period:'10 a 16/08/2026 · 23h59 · pgto 18/08',
-    desc:'Remuneração variável <b>individual</b> pelos MWh <b>aprovados</b> no período de 10/08 a 16/08. Pagamento no dia 18/08.',
+    ini:'2026-08-17', end:'2026-08-23', period:'17 a 23/08/2026 \u00b7 23h59 \u00b7 pgto 25/08',
+    desc:'Remunera\u00e7\u00e3o vari\u00e1vel <b>individual</b> pelos MWh <b>aprovados</b> no per\u00edodo de 17/08 a 23/08. Pagamento no dia 25/08.',
     metric:'mwh', unit:'MWh camp.', tierUnit:'MWh', totalWord:'Total acumulado',
+    antecipaBonus:1.5,
     tiers:[ {v:15,label:'R$ 2.500',tier:3},{v:8,label:'R$ 1.500',tier:2},{v:5,label:'R$ 750',tier:1} ] },
-  antecipa: { key:'antecipa', btn:'⚡ Antecipa', title:'⚡ Antecipa vale mais',
-    ini:'2026-08-10', end:'2026-08-16', period:'10 a 16/08/2026 · 23h59 · pgto 18/08',
-    desc:'Remuneração variável <b>individual</b> por <b>clientes com produto Antecipa vigente</b> (aprovado) no período de 10/08 a 16/08. Pagamento no dia 18/08.',
+  antecipa: { key:'antecipa', btn:'\u26a1 Antecipa', title:'\u26a1 Bateu Levou Antecipa',
+    ini:'2026-08-17', end:'2026-08-23', period:'17 a 23/08/2026 \u00b7 23h59 \u00b7 pgto 25/08',
+    desc:'Campanha rel\u00e2mpago <b>individual</b> por <b>clientes com produto Antecipa vigente</b> (aprovado) no per\u00edodo de 17/08 a 23/08. Pagamento no dia 25/08.',
     metric:'count', unit:'antecipa', tierUnit:'clientes', totalWord:'Total',
-    tiers:[ {v:10,label:'R$ 750',tier:3},{v:8,label:'R$ 500',tier:2},{v:5,label:'R$ 250',tier:1} ] },
-  bateu: { key:'bateu', btn:'⚡ Bateu Levou', title:'⚡ Bateu Levou',
-    ini:'2026-08-10', end:'2026-08-16', period:'10 a 16/08/2026 · 23h59 · pgto 18/08',
-    desc:'Remuneração variável <b>individual</b> por <b>clientes aprovados</b> no período de 10/08 a 16/08. Pagamento no dia 18/08.',
-    metric:'count', unit:'aprovados', tierUnit:'clientes', totalWord:'Total',
-    tiers:[ {v:10,label:'R$ 350',tier:3},{v:8,label:'R$ 250',tier:2},{v:5,label:'R$ 120',tier:1} ] }
+    tiers:[ {v:10,label:'R$ 750',tier:3},{v:8,label:'R$ 500',tier:2},{v:5,label:'R$ 250',tier:1} ] }
 };
 let CAMP_VIEW = 'semana';
 function setCampView(k){ CAMP_VIEW = k; renderCampanha(); }
-function campVal(cfg, deals){ return cfg.metric==='count' ? deals.length : deals.reduce((a,d)=>a+(d.mwh||0),0); }
-function campMatch(cfg, x){ if(cfg && cfg.key==='antecipa'){ return !!x.credito_ok && /ANTECIPA/i.test(x.produto||''); } return true; }
+// v2.170 \u2014 Semana 17-23/08: o MWh do Antecipa vale 1,5x SO na Campanha da Semana.
+// Meta mensal, rankings e "MWh aprovados" continuam no valor real (Felipe 17/08).
+function isAntecipaDeal(x){ return !!x.credito_ok && /ANTECIPA/i.test(x.produto||''); }
+function campParts(cfg, deals){
+  deals = deals || [];
+  if(!cfg || cfg.metric==='count'){ const n=deals.length; return {base:n,bonus:0,total:n,nAntecipa:n}; }
+  const mult = (cfg.antecipaBonus||1);
+  let base=0, bonus=0, nAnt=0;
+  deals.forEach(d=>{ const m=d.mwh||0; base+=m; if(mult>1 && isAntecipaDeal(d)){ bonus += m*(mult-1); nAnt++; } });
+  return {base:base, bonus:bonus, total:base+bonus, nAntecipa:nAnt};
+}
+function campVal(cfg, deals){ return campParts(cfg, deals).total; }
+function campMatch(cfg, x){ if(cfg && cfg.key==='antecipa'){ return isAntecipaDeal(x); } return true; }
+function campNum(v){ return (Math.floor(v*100)/100).toFixed(2); }
+// Quebra visivel: MWh normal (azul) x bonus Antecipa (roxo)
+function campBreakdownLine(cfg, parts){
+  if(!cfg || cfg.metric==='count' || !(cfg.antecipaBonus>1)) return '';
+  if(!(parts.bonus>0)){
+    return '<div style="font-size:11px;color:var(--muted);margin-top:1px;line-height:1.4">'
+      + '<span style="color:var(--blue);font-weight:700">'+campNum(parts.base)+'</span> MWh normal \u00b7 '
+      + '<span style="color:var(--purple);font-weight:700">nenhum Antecipa ainda \u2014 vale 1,5\u00d7</span></div>';
+  }
+  return '<div style="font-size:11px;color:var(--muted);margin-top:1px;line-height:1.4">'
+    + '<span style="color:var(--blue);font-weight:700">'+campNum(parts.base)+'</span> MWh normal + '
+    + '<span style="color:var(--purple);font-weight:800">'+campNum(parts.bonus)+' b\u00f4nus Antecipa</span> '
+    + '<span style="color:var(--purple)">('+parts.nAntecipa+' cliente'+(parts.nAntecipa===1?'':'s')+' \u00d7 1,5)</span></div>';
+}
 function campFmt(cfg, v){ return cfg.metric==='count' ? String(v) : (Math.floor(v*100)/100).toFixed(2); }
 function campTier(cfg, v){ for(const t of cfg.tiers){ if(v>=t.v) return t; } return null; }
 function campNext(cfg, v){ const asc=[...cfg.tiers].sort((a,b)=>a.v-b.v); for(const t of asc){ if(v<t.v) return t; } return null; }
@@ -1950,7 +1969,11 @@ function openCampDetails(vendedor, type){
   const val = campVal(cfg, deals);
   const tier = campTier(cfg, val);
   const prizeLabel = tier ? `🏆 ${tier.label}` : null;
+  const parts = campParts(cfg, deals);
   const totalLabel = cfg.metric==='count' ? `${deals.length} aprovado${deals.length===1?'':'s'} no período` : `${val.toFixed(2)} MWh em ${deals.length} aprovado${deals.length===1?'':'s'}`;
+  const breakdownLabel = (cfg.antecipaBonus>1)
+    ? `<br><span style="font-size:11px"><span style="color:var(--blue);font-weight:700">${campNum(parts.base)} MWh normal</span>${parts.bonus>0?` <span style="color:var(--purple);font-weight:800">+ ${campNum(parts.bonus)} bônus Antecipa</span>`:` · <span style="color:var(--purple);font-weight:700">sem Antecipa (vale 1,5×)</span>`}</span>`
+    : '';
 
   // Ordena por aprov_date descendente (mais recente primeiro)
   deals.sort((a,b) => (b.aprov_date||'').localeCompare(a.aprov_date||''));
@@ -1964,11 +1987,12 @@ function openCampDetails(vendedor, type){
 
   const dealsHtml = deals.map(d => {
     const dateBr = d.aprov_date ? d.aprov_date.split('-').reverse().slice(0,2).join('/') : '—';
+    const _ant = (cfg.antecipaBonus>1) && isAntecipaDeal(d);
     return `
-      <div class="camp-deal-card">
-        <div class="camp-deal-name">${escapeHtml(d.c || 'Cliente sem nome')}</div>
+      <div class="camp-deal-card"${_ant?' style="border-left:3px solid var(--purple);padding-left:9px"':''}>
+        <div class="camp-deal-name">${escapeHtml(d.c || 'Cliente sem nome')}${_ant?` <span style="display:inline-block;background:#F3F1FF;color:var(--purple);border-radius:999px;padding:2px 7px;font-size:10px;font-weight:800;vertical-align:middle">⚡ ANTECIPA 1,5×</span>`:''}</div>
         <div class="camp-deal-meta">
-          📅 ${dateBr} · ⚡ ${(d.mwh||0).toFixed(2)} MWh · ${escapeHtml(d.dist || '—')}
+          📅 ${dateBr} · ⚡ ${(d.mwh||0).toFixed(2)} MWh${_ant?` <span style="color:var(--purple);font-weight:800">→ ${campNum((d.mwh||0)*cfg.antecipaBonus)} na campanha</span>`:''} · ${escapeHtml(d.dist || '—')}
         </div>
         ${d.city ? `<div class="camp-deal-city">📍 ${escapeHtml(d.city)}</div>` : ''}
       </div>
@@ -1981,7 +2005,7 @@ function openCampDetails(vendedor, type){
       <button class="modal-close" onclick="closeCampDetailsModal()">✕</button>
       <div class="modal-title">${escapeHtml(vendedor)}</div>
       <div class="modal-sub">
-        ${totalLabel} · ${periodLabel}
+        ${totalLabel} · ${periodLabel}${breakdownLabel}
         ${prizeLabel ? `<br><span style="display:inline-block;margin-top:6px;font-weight:700;font-size:13px;color:var(--blue)">${prizeLabel}</span>` : ''}
       </div>
       <div style="margin-top:14px">
@@ -2807,10 +2831,13 @@ function renderCampanha(){
 function renderCampaignView(cfg){
   const campData = rawData.filter(x=>noPeriodo(x,cfg.ini,cfg.end)&&isAprovado(x)&&campMatch(cfg,x));
   const byS = {};
-  campData.forEach(x=>{ byS[x.s]=(byS[x.s]||0)+(cfg.metric==='count'?1:(x.mwh||0)); });
+  campData.forEach(x=>{ (byS[x.s] = byS[x.s] || []).push(x); });
   const allCampSellers = [...new Set([...Object.keys(byS), ...Object.keys(METAS)])];
-  const full = allCampSellers.map(name=>({name,val:byS[name]||0,meta:METAS[name]||15})).sort((a,b)=>b.val-a.val);
+  const full = allCampSellers.map(name=>{ const p = campParts(cfg, byS[name]||[]); return {name:name, val:p.total, parts:p, meta:METAS[name]||15}; }).sort((a,b)=>b.val-a.val);
   const totalCamp = full.reduce((a,s)=>a+s.val,0);
+  const totalBase  = full.reduce((a,s)=>a+(s.parts.base||0),0);
+  const totalBonus = full.reduce((a,s)=>a+(s.parts.bonus||0),0);
+  const temBonus = (cfg.antecipaBonus>1);
   const medals = ['🥇','🥈','🥉'];
 
   let html = `
@@ -2818,11 +2845,22 @@ function renderCampaignView(cfg){
       <div class="camp-title">${cfg.title}</div>
       <div class="camp-period">${cfg.period}</div>
       <div class="camp-sub">${cfg.metric==='count'?'Clientes aprovados':'Aprovados'} · ${cfg.totalWord}: ${campFmt(cfg,totalCamp)}${cfg.metric==='count'?' aprovados':' MWh'}</div>
+      ${temBonus ? `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">
+        <span style="background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:4px 10px;font-size:11px;font-weight:800;color:#fff">${campNum(totalBase)} MWh normal</span>
+        <span style="background:#fff;border-radius:999px;padding:4px 10px;font-size:11px;font-weight:800;color:var(--purple)">+ ${campNum(totalBonus)} bônus Antecipa</span>
+      </div>` : ''}
     </div>
 
     <div class="rules-card">
       <div class="rules-title">📋 Regras da Campanha</div>
       <div class="rules-desc">${cfg.desc}</div>
+      ${temBonus ? `<div style="background:#F3F1FF;border:1px solid #D9D4FF;border-radius:12px;padding:10px 12px;margin-bottom:12px">
+        <div style="font-size:12px;font-weight:800;color:var(--purple);text-align:center">⚡ Nesta semana o MWh do Antecipa vale 1,5×</div>
+        <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px;line-height:1.5">
+          Cliente de 2 MWh no Antecipa entra como <b style="color:var(--purple)">3 MWh</b> aqui.<br>
+          <span style="color:var(--blue);font-weight:700">Azul</span> = MWh normal · <span style="color:var(--purple);font-weight:700">roxo</span> = bônus Antecipa.
+        </div>
+      </div>` : ''}
       <div class="tiers-grid${cfg.tiers.length===3?' three-col':''}">
         ${[...cfg.tiers].sort((a,b)=>a.v-b.v).map(t=>`<div class="tier tier-${t.tier}"><div class="tier-mwh">${t.v} ${cfg.tierUnit}</div><div class="tier-prize">${t.label}</div></div>`).join('')}
       </div>
@@ -2849,6 +2887,7 @@ function renderCampaignView(cfg){
         <div class="rank-info">
           <div class="rank-name">${s.name}${prizeInfo}</div>
           <div class="rank-praca" style="color:${isLider(s.name)?'var(--muted)':pc}">Mês: ${mes.toFixed(1)} MWh${isLider(s.name)?'':` · ${pct.toFixed(0)}% da meta`}</div>
+          ${temBonus && has ? `<div style="font-size:11px;margin-top:2px;line-height:1.4"><span style="color:var(--blue);font-weight:700">${campNum(s.parts.base)}</span> <span style="color:var(--muted)">normal</span>${s.parts.bonus>0?` <span style="color:var(--purple);font-weight:800">+ ${campNum(s.parts.bonus)} Antecipa</span>`:''}</div>` : ''}
           ${nextInfo}
         </div>
         <div class="rank-right">
