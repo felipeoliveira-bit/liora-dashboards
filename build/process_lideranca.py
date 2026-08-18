@@ -249,6 +249,11 @@ CONSUMPTION_OVERRIDE = {
  norm('MÁRCIO PEREIRA PINTO'): 5.866,  # aprovado manual, base mostra 1.3 (Felipe 10/07)
  norm('DRAX CENTRO AUTOMOTIVO LTDA'): 4.311,
 }
+# PRODUCT_OVERRIDE: deal_id -> produto/credito_ok. Espelha o mesmo dict do process_mobile.py
+# (os 2 dashboards tem de bater). Venda feita como Antecipa e registrada com outro produto.
+PRODUCT_OVERRIDE = {
+ '02f320f6-e275-449f-b385-aaec0dfcc541': {'produto':'LIORA_ANTECIPA_PJ','credito_ok':True},  # MARCELO OLIVEIRA VENERANDO (Odirley/CE, 2.62 MWh, aprovado 17/08) - vendido como Antecipa, base traz LIORA_F_ (Felipe 18/08)
+}
 # LOST_IGNORE: ignora lost_at/lost_reason (falso 'nao aceito pela distribuidora') p/ estes clientes.
 LOST_IGNORE = { norm('FRANCISCO ALDECI DE QUEIROZ FERNANDES'), norm('ANTÔNIO EDMILSON LEITE') }  # 2º: dup denied em BGC, forçado aprovado (Felipe 15/07)
 # FORCE_APPROVED: deals que contam como aprovado por decisao manual (contrato assinado,
@@ -299,6 +304,7 @@ def mk_deal(r):
     if r['deal_id'] in FORCE_APPROVED and FORCE_APPROVED[r['deal_id']]: d = FORCE_APPROVED[r['deal_id']]  # data de aprovação manual
     forced = r['deal_id'] in FORCE_APPROVED
     out_stage = 'REQUEST_TITULARIDADE' if (forced and r['deal_stage'] in ('BGC_PARCEIRO','BACKGROUND_CHECKING')) else r['deal_stage']
+    _prod_ov = PRODUCT_OVERRIDE.get((r.get('deal_id') or '').strip(), {})  # venda Antecipa registrada com produto errado (Felipe 18/08)
     return {
       'c': r['current_client_name'],
       's': seller_of(r['sales_person_email'], r['current_client_name']),
@@ -309,8 +315,8 @@ def mk_deal(r):
       'status': r['ops_tt_status'] or 'N/A',
       'idle': int(fnum(r['idle_days'])),
       'city': r['current_client_city'],
-      'produto': (r.get('product_name') or '').strip(),
-      'credito_ok': credito_ok,  # Antecipa: análise de crédito aprovada (Felipe 06/08)
+      'produto': _prod_ov.get('produto', (r.get('product_name') or '').strip()),
+      'credito_ok': _prod_ov.get('credito_ok', credito_ok),  # Antecipa: análise de crédito aprovada (Felipe 06/08)
       'credito': credit_pt(r.get('deal_credit_stage')),  # situação do Antecipa (PT)
       'semana': semana(d),
       'lost_at': ('' if (forced or norm(r['current_client_name']) in LOST_IGNORE) else (r['deal_lost_at'] or '')),
@@ -415,6 +421,11 @@ ANT_APPROVE = {
    'c':'Thaís Cristina Flosino','s':'João Santos','praca':'Ribeirao','city':'RIBEIRÃO PRETO','uf':'SP',
    'dist':'CPFL','bill':459.95,'mwh':0.429,'stage':'BGC_PARCEIRO','acc':True,
    'tipo':'PJ','signed':True,'date':'2026-08-12',
+ },
+ '02f320f6-e275-449f-b385-aaec0dfcc541': {  # MARCELO OLIVEIRA VENERANDO - Odirley Costa/CE - vendido como Antecipa PJ mas o CRM registrou LIORA_F_ (fora do recorte Antecipa); injecao manual (Felipe 18/08); remover quando o CRM corrigir o produto
+   'c':'MARCELO OLIVEIRA VENERANDO','s':'Odirley Costa','praca':'CE','city':'PACATUBA','uf':'CE',
+   'dist':'Enel CE','bill':313.39,'mwh':2.62,'stage':'REQUEST_TITULARIDADE','acc':True,
+   'tipo':'PJ','signed':True,'date':'2026-08-13','adate':'2026-08-17',
  },
 }
 _seen_ant = set()

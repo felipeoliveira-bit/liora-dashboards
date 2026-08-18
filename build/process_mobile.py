@@ -139,6 +139,12 @@ CONSUMPTION_OVERRIDE_BY_ID = {  # deal_id -> MWh; export do card818 congelou (mo
  'a8216055-6fa2-491f-a651-0d70ad461f08': 0.632,  # a8216055 fatura R$47,90; Felipe mantem 0.632 (07/08)
  'd7f9bcce-7145-4bf3-b043-0c12b461bf97': 0.561,  # PAULO HENRIQUE GHIOTTI DA SILVA / Olimpio Filho (Ribeirao) - aprovado 17/08; card818 em cache manda 0.0, gold viva = 0.561 (Felipe 17/08); remover quando a base refletir
 }
+# PRODUCT_OVERRIDE: deal_id -> produto/credito_ok. Venda feita como Antecipa mas registrada
+# no CRM com outro produto (ex.: LIORA_F_). Sem isso o deal nao passa no isAntecipaDeal()
+# (credito_ok && /ANTECIPA/) e perde o bonus 1,5x da Campanha da Semana. Remover quando o CRM corrigir.
+PRODUCT_OVERRIDE = {
+ '02f320f6-e275-449f-b385-aaec0dfcc541': {'produto':'LIORA_ANTECIPA_PJ','credito_ok':True},  # MARCELO OLIVEIRA VENERANDO (Odirley/CE, CNPJ 15329657000174, 2.62 MWh, aprovado 17/08) - vendido como Antecipa, base traz LIORA_F_ (Felipe 18/08)
+}
 CONSUMPTION_OVERRIDE = {  # cliente (upper/strip) -> MWh; temp ate base corrigir
  'FRANCISCO ALDECI DE QUEIROZ FERNANDES': 5.86,  # base mostra 0.59 (Felipe 03/07)
  'GABRIEL LUCHIARI ALBERTO': 0.567,  # base mostra 0.13; fatura R$526/615 SP CPFL (Felipe 08/07)
@@ -224,6 +230,7 @@ def build_rawData(deals_path, ag_path, prop_path=None, docs_map=None, uc_map=Non
         _status = (r.get('ops_tt_status') or '').lower()
         _credit = (r.get('latest_credit_analysis_result') or '').strip().lower()  # Antecipa
         credito_ok = (_credit == 'approved')  # Felipe 06/08: crédito aprovado conta como aprovado
+        _prod_ov = PRODUCT_OVERRIDE.get(did, {})  # venda Antecipa registrada com produto errado (Felipe 18/08)
         # Alinha ao desktop (definição oficial isAprovado): conta como aprovado se risco
         # APPROVED, OU status "aprovado", OU stage REQUEST_TITULARIDADE (fallback p/ deal
         # que avançou sem risco APPROVED). Nunca conta DENIED nem BGC_PARCEIRO (validação
@@ -242,8 +249,8 @@ def build_rawData(deals_path, ag_path, prop_path=None, docs_map=None, uc_map=Non
             'stage':('REQUEST_TITULARIDADE' if (forced and r['deal_stage'] in ('BGC_PARCEIRO','BACKGROUND_CHECKING')) else r['deal_stage']),'status':r['ops_tt_status'],'idle':idle,
             'city':r['current_client_city'],'state':r['current_client_state'],
             'dist':DIST_MAP.get(r['distributor_short_name'], r['distributor_short_name']),
-            'produto':(r.get('product_name') or '').strip(),
-            'credito_ok':credito_ok,'credito':credit_pt(r.get('deal_credit_stage')),
+            'produto':_prod_ov.get('produto', (r.get('product_name') or '').strip()),
+            'credito_ok':_prod_ov.get('credito_ok', credito_ok),'credito':credit_pt(r.get('deal_credit_stage')),
             'deal_id':did,'uc':uc_map.get(did,''),'tel':r['client_phone_number'],'cnpj':r['current_client_cnpj'],'cpf':r['current_client_cpf'],
             'fatura':pfloat(r['current_total_bill_cost (R$)']),'semana':semana(basis),
             'lost_at':('' if (forced or (cli or '').strip().upper() in LOST_IGNORE) else r['deal_lost_at']),'lost_reason':('' if (forced or (cli or '').strip().upper() in LOST_IGNORE) else r['deal_lost_reason']),
