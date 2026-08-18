@@ -69,6 +69,7 @@ EMAIL_NOME = {
  'monica.silveira@lioraenergia.com.br':'Monica Silveira','franciele.felix@lioraenergia.com.br':'Franciele Felix',
  'ederson.silva@lioraenergia.com.br':'Ederson Silva','diego.faria@lioraenergia.com.br':'Diego Faria',
  'briel.barbosa@lioraenergia.com.br':'Briel Barbosa','olimpio.filho@lioraenergia.com.br':'Olímpio Filho','fabio.rodrigues@lioraenergia.com.br':'Fábio Rodrigues', # novos 10/08
+ 'karianine.sampaio@lioraenergia.com.br':'Karianine Sampaio', # nova 18/08
  'felipe.oliveira@lioraenergia.com.br':'Felipe Oliveira',
  'mirla.albuquerque@lioraenergia.com.br':'Mirla Albuquerque',
  'lucas.santos@lioraenergia.com.br':'Lucas Santos',
@@ -101,7 +102,8 @@ SELLER_PRACA = {  # canônico -> label praça
  'Bruno Andrade':'Natal','Marcio Galvão':'Natal','Rodrigo Ribeiro':'Natal','Ananias Neto':'Natal','Thiago Araujo França':'Natal','Camila Couto':'Feira de Santana',
  'Caio Lannes':'SPI','Monica Silveira':'SPI','Franciele Felix':'SPI','Ederson Silva':'SPI','Diego Faria':'SPI',
  'Bruno Borges':'CE','Neilon Nascimento':'CE','Sabrina Tomazeti':'CE','Odirley Costa':'CE','Núbia Andrade':'CE',
- 'Briel Barbosa':'SPI','Olímpio Filho':'Ribeirão Preto SPI','Fábio Rodrigues':'Ribeirão Preto SPI',  # novos 10/08
+ 'Briel Barbosa':'SPI','Olímpio Filho':'Ribeirão Preto SPI','Fábio Rodrigues':'Ribeirão Preto SPI',
+ 'Karianine Sampaio':'Ribeirão Preto SPI',  # novos 10/08
  'Felipe Oliveira':'Outros',
 }
 DIST_MAP = {'NEOENERGIA COELBA':'Coelba','NEOENERGIA COSERN':'Cosern','CPFL PAULISTA':'CPFL','ENEL CE':'Enel'}

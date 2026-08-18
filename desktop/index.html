@@ -267,7 +267,7 @@ const VENDEDORES = [
   {nome:'Monica Silveira',praca:'SPI'},
   {nome:'Franciele Felix',praca:'SPI'},
   {nome:'Ederson Silva',praca:'SPI'},
-  {nome:'Diego Faria',praca:'SPI'},{nome:'João Santos',praca:'Ribeirao'},{nome:'Olímpio Filho',praca:'Ribeirao'},{nome:'Fábio Rodrigues',praca:'Ribeirao'},{nome:'Briel Barbosa',praca:'SPI'},
+  {nome:'Diego Faria',praca:'SPI'},{nome:'João Santos',praca:'Ribeirao'},{nome:'Olímpio Filho',praca:'Ribeirao'},{nome:'Fábio Rodrigues',praca:'Ribeirao'},{nome:'Karianine Sampaio',praca:'Ribeirao'},{nome:'Briel Barbosa',praca:'SPI'},
 ];
 
 const PRACA_OF = {};
@@ -1219,7 +1219,7 @@ const VENDEDORES = [
   {nome:'Bruno Andrade',praca:'Natal'},{nome:'Rodrigo Ribeiro',praca:'Natal'},{nome:'Bruno Borges',praca:'CE'},
   {nome:'Neilon Nascimento',praca:'CE'},{nome:'Sabrina Tomazeti',praca:'CE'},{nome:'Núbia Andrade',praca:'CE'},{nome:'Odirley Costa',praca:'CE'},{nome:'Caio Lannes',praca:'SPI'},
   {nome:'Monica Silveira',praca:'SPI'},{nome:'Franciele Felix',praca:'SPI'},
-  {nome:'Ederson Silva',praca:'SPI'},{nome:'Diego Faria',praca:'SPI'},{nome:'João Santos',praca:'Ribeirao'},{nome:'Olímpio Filho',praca:'Ribeirao'},{nome:'Fábio Rodrigues',praca:'Ribeirao'},{nome:'Briel Barbosa',praca:'SPI'},
+  {nome:'Ederson Silva',praca:'SPI'},{nome:'Diego Faria',praca:'SPI'},{nome:'João Santos',praca:'Ribeirao'},{nome:'Olímpio Filho',praca:'Ribeirao'},{nome:'Fábio Rodrigues',praca:'Ribeirao'},{nome:'Karianine Sampaio',praca:'Ribeirao'},{nome:'Briel Barbosa',praca:'SPI'},
 ];
 const PRACA_OF = {};
 VENDEDORES.forEach(v => PRACA_OF[v.nome] = v.praca);
@@ -1959,7 +1959,7 @@ const VENDEDORES = [
   {nome:'Monica Silveira',praca:'SPI'},
   {nome:'Franciele Felix',praca:'SPI'},
   {nome:'Ederson Silva',praca:'SPI'},
-  {nome:'Diego Faria',praca:'SPI'},{nome:'João Santos',praca:'Ribeirao'},{nome:'Olímpio Filho',praca:'Ribeirao'},{nome:'Fábio Rodrigues',praca:'Ribeirao'},{nome:'Briel Barbosa',praca:'SPI'},
+  {nome:'Diego Faria',praca:'SPI'},{nome:'João Santos',praca:'Ribeirao'},{nome:'Olímpio Filho',praca:'Ribeirao'},{nome:'Fábio Rodrigues',praca:'Ribeirao'},{nome:'Karianine Sampaio',praca:'Ribeirao'},{nome:'Briel Barbosa',praca:'SPI'},
   {nome:'Felipe Oliveira',praca:'SPI'},
 ];
 
@@ -5608,7 +5608,7 @@ const VENDEDORES = [
   {nome:'Monica Silveira', praca:'SPI'},
   {nome:'Franciele Felix', praca:'SPI'},
   {nome:'Ederson Silva', praca:'SPI'},
-  {nome:'Diego Faria', praca:'SPI'},{nome:'João Santos', praca:'Ribeirao'},{nome:'Olímpio Filho',praca:'Ribeirao'},{nome:'Fábio Rodrigues',praca:'Ribeirao'},{nome:'Briel Barbosa',praca:'SPI'},
+  {nome:'Diego Faria', praca:'SPI'},{nome:'João Santos', praca:'Ribeirao'},{nome:'Olímpio Filho',praca:'Ribeirao'},{nome:'Fábio Rodrigues',praca:'Ribeirao'},{nome:'Karianine Sampaio',praca:'Ribeirao'},{nome:'Briel Barbosa',praca:'SPI'},
 ];
 VENDEDORES_OCULTOS.forEach(function(n){ var i=VENDEDORES.findIndex(function(v){return v.nome===n;}); if(i>=0) VENDEDORES.splice(i,1); }); // desligados fora da lista
 
@@ -6509,7 +6509,7 @@ const PRACA_LABEL = {Salvador:'Salvador',Feira:'Feira',Natal:'RN Capital',RNInte
 const PRACA_COLOR = {Salvador:'#1D9E75',Feira:'#EF9F27',Natal:'#378ADD',RNInterior:'#0EA5A5',SPI:'#7F77DD',Ribeirao:'#A78BFA',CE:'#D4537E',Outras:'#9aa3b5'};
 const PRACA_SORT = ['Salvador','Feira','Natal','RNInterior','SPI','Ribeirao','CE','Outras'];
 // Roster de vendedores ATIVOS (espelho de VENDEDORES - VENDEDORES_OCULTOS do topo; manter em sync)
-const ANT_ROSTER = [{n:'Luciana Campos',p:'Salvador'},{n:'Nicola Popovic',p:'SPI'},{n:'Anderson Correia',p:'SPI'},{n:'Percy Hormazabal',p:'SPI'},{n:'Mecenas Junior',p:'Natal'},{n:'Mirla Albuquerque',l:1,p:'RNInterior'},{n:'Lucas Santos',p:'RNInterior'},{n:'Jefferson Fideli',p:'RNInterior'},{n:'Phillip Faria',p:'Ribeirao'},{n:'Marcel Sousa',p:'Feira'},{n:'Daniel Magnus',p:'Natal'},{n:'Thiago Firmo',p:'Natal'},{n:'Rodrigo Lima',p:'SPI'},{n:'Daniel Junior',p:'SPI'},{n:'Maria Lúcia',p:'Salvador'},{n:'Ettore Rossi',p:'Salvador'},{n:'Tatiane Correia',p:'Salvador'},{n:'Silvia Dias',p:'Salvador'},{n:'Tais Santos',p:'Salvador'},{n:'Adroaldo Bonfim',l:1,p:'Salvador'},{n:'Kelma Rangel',l:1,p:'Feira'},{n:'Lucileide Carlos',p:'Feira'},{n:'Tiago Freitas',p:'Feira'},{n:'Tamires Costa',p:'Feira'},{n:'Alberto Nascimento',p:'Feira'},{n:'Marcio Galvão',p:'Natal'},{n:'Bruno Andrade',l:1,p:'Natal'},{n:'Rodrigo Ribeiro',p:'Natal'},{n:'Bruno Borges',l:1,p:'CE'},{n:'Neilon Nascimento',p:'CE'},{n:'Sabrina Tomazeti',p:'CE'},{n:'Núbia Andrade',p:'CE'},{n:'Odirley Costa',p:'CE'},{n:'Caio Lannes',l:1,p:'SPI'},{n:'Monica Silveira',p:'SPI'},{n:'Ederson Silva',p:'SPI'},{n:'Diego Faria',p:'SPI'},{n:'João Santos',l:1,p:'Ribeirao'},{n:'Olímpio Filho',p:'Ribeirao'},{n:'Fábio Rodrigues',p:'Ribeirao'},{n:'Briel Barbosa',p:'SPI'}];
+const ANT_ROSTER = [{n:'Luciana Campos',p:'Salvador'},{n:'Nicola Popovic',p:'SPI'},{n:'Anderson Correia',p:'SPI'},{n:'Percy Hormazabal',p:'SPI'},{n:'Mecenas Junior',p:'Natal'},{n:'Mirla Albuquerque',l:1,p:'RNInterior'},{n:'Lucas Santos',p:'RNInterior'},{n:'Jefferson Fideli',p:'RNInterior'},{n:'Phillip Faria',p:'Ribeirao'},{n:'Marcel Sousa',p:'Feira'},{n:'Daniel Magnus',p:'Natal'},{n:'Thiago Firmo',p:'Natal'},{n:'Rodrigo Lima',p:'SPI'},{n:'Daniel Junior',p:'SPI'},{n:'Maria Lúcia',p:'Salvador'},{n:'Ettore Rossi',p:'Salvador'},{n:'Tatiane Correia',p:'Salvador'},{n:'Silvia Dias',p:'Salvador'},{n:'Tais Santos',p:'Salvador'},{n:'Adroaldo Bonfim',l:1,p:'Salvador'},{n:'Kelma Rangel',l:1,p:'Feira'},{n:'Lucileide Carlos',p:'Feira'},{n:'Tiago Freitas',p:'Feira'},{n:'Tamires Costa',p:'Feira'},{n:'Alberto Nascimento',p:'Feira'},{n:'Marcio Galvão',p:'Natal'},{n:'Bruno Andrade',l:1,p:'Natal'},{n:'Rodrigo Ribeiro',p:'Natal'},{n:'Bruno Borges',l:1,p:'CE'},{n:'Neilon Nascimento',p:'CE'},{n:'Sabrina Tomazeti',p:'CE'},{n:'Núbia Andrade',p:'CE'},{n:'Odirley Costa',p:'CE'},{n:'Caio Lannes',l:1,p:'SPI'},{n:'Monica Silveira',p:'SPI'},{n:'Ederson Silva',p:'SPI'},{n:'Diego Faria',p:'SPI'},{n:'João Santos',l:1,p:'Ribeirao'},{n:'Olímpio Filho',p:'Ribeirao'},{n:'Fábio Rodrigues',p:'Ribeirao'},{n:'Karianine Sampaio',p:'Ribeirao'},{n:'Briel Barbosa',p:'SPI'}];
 // Normaliza o nome do vendedor p/ o do roster (acento/espaco duplo geram linha duplicada). Felipe 17/08.
 function _antKey(n){ return String(n||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim().toLowerCase(); }
 const _ANT_CANON = {}; ANT_ROSTER.forEach(function(v){ _ANT_CANON[_antKey(v.n)] = v.n; });
