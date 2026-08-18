@@ -1947,7 +1947,7 @@ let CAMP_VIEW = 'semana';
 function setCampView(k){ CAMP_VIEW = k; renderCampanha(); }
 // v2.170 \u2014 Semana 17-23/08: o MWh do Antecipa vale 1,5x SO na Campanha da Semana.
 // Meta mensal, rankings e "MWh aprovados" continuam no valor real (Felipe 17/08).
-function isAntecipaDeal(x){ return !!x.credito_ok && /ANTECIPA/i.test(x.produto||''); }
+function isAntecipaDeal(x){ return /ANTECIPA/i.test(x.produto||'') && isAprovado(x); }  // Felipe 18/08: era !!credito_ok, o que escondia o Antecipa aprovado por risco (Pix nao gera analise de credito) do ranking/campanha
 function campParts(cfg, deals){
   deals = deals || [];
   if(!cfg || cfg.metric==='count'){ const n=deals.length; return {base:n,bonus:0,total:n,nAntecipa:n}; }
