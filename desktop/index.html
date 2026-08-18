@@ -5250,12 +5250,23 @@ function render() {
   const totalMwh = d.filter(isPendente).reduce((a,x)=>a+x.mwh,0);
   const approvedMwh = d.filter(x => (isAprovado(x) || isPendenteOPS(x)) &amp;&amp; noMesAtual(x)).reduce((a,x)=>a+x.mwh,0);
   const urgMwh = d.filter(x=>x.status==='Pendente Vendas').reduce((a,x)=>a+x.mwh,0);
+  // Quebra da origem do aprovado (Felipe 18/08): de onde vem cada aprovacao do mes.
+  // risco = APPROVED na base | pend. credito = APPROVED_PENDING_CREDIT (Antecipa, falta pagamento)
+  // credito = analise de credito aprovada | manual = FORCE_APPROVED
+  const _aprMes = d.filter(x => isAprovado(x) && noMesAtual(x));
+  const _qRisco = _aprMes.filter(x => x.rapr).length;
+  const _qCred = _aprMes.filter(x => !x.rapr && x.credito_ok).length;
+  const _qApc = _aprMes.filter(x => !x.rapr && !x.credito_ok && x.apc).length;
+  const _qMan = _aprMes.filter(x => !x.rapr && !x.credito_ok && !x.apc && x.fapr).length;
+  const _qEtapa = _aprMes.length - _qRisco - _qApc - _qCred - _qMan;
+  const _quebra = [[_qRisco,'risco'],[_qCred,'credito'],[_qApc,'pend. credito'],[_qMan,'manual'],[_qEtapa,'etapa']]
+    .filter(z => z[0] > 0).map(z => z[0] + ' ' + z[1]).join(' + ');
   const opObj = OPS.find(o=>o.key===currentOp);
   const metaOp = opObj?.meta||398;
 
   document.getElementById('metrics').innerHTML = `
     <div class=&quot;metric&quot; id=&quot;metric-todos&quot; onclick=&quot;metricClick('todos')&quot; title=&quot;Ver todos os clientes&quot;><div class=&quot;lbl&quot;>Clientes Assinados</div><div class=&quot;val&quot;>${d.length}</div></div>
-    <div class=&quot;metric&quot; id=&quot;metric-aprovados&quot; onclick=&quot;metricClick('aprovados')&quot; title=&quot;Ver clientes aprovados&quot; style=&quot;border-top:3px solid #1D9E75&quot;><div class=&quot;lbl&quot;>MWh Total Aprovado</div><div class=&quot;val&quot; style=&quot;color:#1D9E75&quot;>${approvedMwh.toFixed(1)}</div></div>
+    <div class=&quot;metric&quot; id=&quot;metric-aprovados&quot; onclick=&quot;metricClick('aprovados')&quot; title=&quot;Ver clientes aprovados&quot; style=&quot;border-top:3px solid #1D9E75&quot;><div class=&quot;lbl&quot;>MWh Total Aprovado</div><div class=&quot;val&quot; style=&quot;color:#1D9E75&quot;>${approvedMwh.toFixed(1)}</div><div style='font-size:10.5px;color:#8a8a9e;margin-top:3px;font-weight:600' title='De onde vem cada aprovacao do mes'>${_aprMes.length} aprovados${_quebra ? ' · ' + _quebra : ''}</div></div>
     <div class=&quot;metric&quot; id=&quot;metric-pendentes&quot; onclick=&quot;metricClick('pendentes')&quot; title=&quot;Ver clientes com pendência&quot;><div class=&quot;lbl&quot;>MWh Total em Pendência</div><div class=&quot;val&quot;>${totalMwh.toFixed(1)}</div></div>
     
   `;

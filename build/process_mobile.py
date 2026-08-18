@@ -123,6 +123,22 @@ CREDIT_STAGE_PT = {
 def credit_pt(s):
     s=(s or '').strip()
     return CREDIT_STAGE_PT.get(s, s)
+
+# ---- APPROVED_PENDING_CREDIT conta como aprovado (Felipe 18/08) -----------
+# Espelha o process_lideranca.py (os 2 dashboards tem de bater): o risco
+# APPROVED_PENDING_CREDIT JA E' aprovacao de risco - falta so o pagamento do
+# Antecipa. Pix nao gera analise de credito, entao esses clientes ficavam de fora
+# e precisavam de FORCE_APPROVED na mao. Excecao: credito NEGADO/REJEITADO.
+CREDIT_NEG = {'denied', 'rejected', 'refused'}
+CREDIT_STAGE_NEG = {'CREDIT_ANALISYS_REJECTED', 'PAYMENT_REJECTED'}
+def apc_ok(r):
+    if (r.get('latest_risk_analysis_result') or '').strip() != 'APPROVED_PENDING_CREDIT':
+        return False
+    if (r.get('latest_credit_analysis_result') or '').strip().lower() in CREDIT_NEG:
+        return False
+    if (r.get('deal_credit_stage') or '').strip() in CREDIT_STAGE_NEG:
+        return False
+    return True
 CLIENT_OVERRIDE = {  # cliente (upper/strip) -> (seller canônico, praça label)
  'NIVALDO GESTEIRA DE OLIVEIRA':('Maria Lúcia','Salvador'),
  'MANOEL ROQUE DA SILVA JUNIOR':('Lucileide Carlos','Feira de Santana'),
@@ -236,8 +252,9 @@ def build_rawData(deals_path, ag_path, prop_path=None, docs_map=None, uc_map=Non
         # APPROVED, OU status "aprovado", OU stage REQUEST_TITULARIDADE (fallback p/ deal
         # que avançou sem risco APPROVED). Nunca conta DENIED nem BGC_PARCEIRO (validação
         # Antecipa, ainda não aprovado) — EXCETO quando o crédito do Antecipa já foi aprovado.
-        _reached = (_risk=='APPROVED') or ('aprovado' in _status) or (r['deal_stage']=='REQUEST_TITULARIDADE')
-        approved = forced or credito_ok or (_reached and _risk!='DENIED' and r['deal_stage']!='BGC_PARCEIRO')
+        _apc = apc_ok(r)  # Felipe 18/08: APPROVED_PENDING_CREDIT = aprovado (falta só o pagamento)
+        _reached = (_risk=='APPROVED') or _apc or ('aprovado' in _status) or (r['deal_stage']=='REQUEST_TITULARIDADE')
+        approved = forced or credito_ok or _apc or (_reached and _risk!='DENIED' and r['deal_stage']!='BGC_PARCEIRO')
         aprov = (iso(pdate(r['latest_risk_analysis_created_at']) or pdate(r['deal_created_at'])) if approved else '')
         created = pdate(r['deal_created_at'])
         basis = (pdate(r['latest_risk_analysis_created_at']) or created) if approved else created
@@ -247,11 +264,11 @@ def build_rawData(deals_path, ag_path, prop_path=None, docs_map=None, uc_map=Non
         except: idle=0
         out.append({
             'c':cli,'s':s,'mwh':CONSUMPTION_OVERRIDE_BY_ID.get(r['deal_id'], CONSUMPTION_OVERRIDE.get((cli or '').strip().upper(), pfloat(r['current_consumption_filled']))),
-            'stage':('REQUEST_TITULARIDADE' if (forced and r['deal_stage'] in ('BGC_PARCEIRO','BACKGROUND_CHECKING')) else r['deal_stage']),'status':r['ops_tt_status'],'idle':idle,
+            'stage':('REQUEST_TITULARIDADE' if ((forced or _apc) and r['deal_stage'] in ('BGC_PARCEIRO','BACKGROUND_CHECKING')) else r['deal_stage']),'status':r['ops_tt_status'],'idle':idle,
             'city':r['current_client_city'],'state':r['current_client_state'],
             'dist':DIST_MAP.get(r['distributor_short_name'], r['distributor_short_name']),
             'produto':_prod_ov.get('produto', (r.get('product_name') or '').strip()),
-            'credito_ok':_prod_ov.get('credito_ok', credito_ok),'credito':credit_pt(r.get('deal_credit_stage')),
+            'credito_ok':_prod_ov.get('credito_ok', credito_ok),'credito':credit_pt(r.get('deal_credit_stage')),'apc':bool(_apc),'fapr':bool(forced),'rapr':(_risk=='APPROVED'),
             'deal_id':did,'uc':uc_map.get(did,''),'tel':r['client_phone_number'],'cnpj':r['current_client_cnpj'],'cpf':r['current_client_cpf'],
             'fatura':pfloat(r['current_total_bill_cost (R$)']),'semana':semana(basis),
             'lost_at':('' if (forced or (cli or '').strip().upper() in LOST_IGNORE) else r['deal_lost_at']),'lost_reason':('' if (forced or (cli or '').strip().upper() in LOST_IGNORE) else r['deal_lost_reason']),

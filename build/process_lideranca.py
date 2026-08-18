@@ -292,19 +292,42 @@ def credit_pt(s):
     s = (s or '').strip()
     return CREDIT_STAGE_PT.get(s, s)
 
+# ---- APPROVED_PENDING_CREDIT conta como aprovado (Felipe 18/08) -----------
+# Regra nova: APPROVED_PENDING_CREDIT JA E' aprovacao de risco - o "pending credit"
+# e' so a etapa de pagamento do Antecipa. Antes so contava se o credito saisse
+# 'approved', o que deixava de fora todo Antecipa pago via PIX (que nunca gera
+# analise de credito: Jonas Emer 17/08, Nelo Minghe 18/08) e obrigava a um
+# FORCE_APPROVED manual por cliente. UNICA excecao: credito NEGADO/REJEITADO.
+CREDIT_NEG = {'denied', 'rejected', 'refused'}
+CREDIT_STAGE_NEG = {'CREDIT_ANALISYS_REJECTED', 'PAYMENT_REJECTED'}
+def apc_ok(r):
+    """True quando o risco e' APPROVED_PENDING_CREDIT e o credito NAO foi negado."""
+    if (r.get('latest_risk_analysis_result') or '').strip() != 'APPROVED_PENDING_CREDIT':
+        return False
+    if (r.get('latest_credit_analysis_result') or '').strip().lower() in CREDIT_NEG:
+        return False
+    if (r.get('deal_credit_stage') or '').strip() in CREDIT_STAGE_NEG:
+        return False
+    return True
+
 # ---- rawData (deals + aguardando, dedup por deal_id) ---------------------
 def mk_deal(r):
     risk = (r['latest_risk_analysis_result'] or '').strip()
-    if r['deal_stage']=='BGC_PARCEIRO': risk=''  # em validação Antecipa: não conta como aprovado
+    _apc = apc_ok(r)  # Felipe 18/08: risco aprovado pendente de crédito já conta
+    if r['deal_stage']=='BGC_PARCEIRO' and not _apc: risk=''  # em validação Antecipa: não conta como aprovado
     credit = (r.get('latest_credit_analysis_result') or '').strip().lower()  # Antecipa
     credito_ok = (credit == 'approved')
+    if _apc: risk='APPROVED'  # Felipe 18/08: APPROVED_PENDING_CREDIT = aprovado (falta só o pagamento)
     if credito_ok: risk='APPROVED'  # Felipe 06/08: crédito aprovado (Antecipa) conta como aprovado no Field
     if r['deal_id'] in FORCE_APPROVED: risk='APPROVED'  # aprovado manual
     # aprovado conta pela DATA DA ANÁLISE DE RISCO; sem risco (WAITING) usa criação
     d = pdate(r['latest_risk_analysis_created_at']) or pdate(r['deal_created_at'])
     if r['deal_id'] in FORCE_APPROVED and FORCE_APPROVED[r['deal_id']]: d = FORCE_APPROVED[r['deal_id']]  # data de aprovação manual
     forced = r['deal_id'] in FORCE_APPROVED
-    out_stage = 'REQUEST_TITULARIDADE' if (forced and r['deal_stage'] in ('BGC_PARCEIRO','BACKGROUND_CHECKING')) else r['deal_stage']
+    # o isAprovado() do HTML descarta BGC_PARCEIRO ANTES de olhar o risco, entao o
+    # aprovado-pendente-de-credito precisa sair do estagio de validacao (mesmo
+    # tratamento que o FORCE_APPROVED ja fazia na mao para esses mesmos clientes).
+    out_stage = 'REQUEST_TITULARIDADE' if ((forced or _apc) and r['deal_stage'] in ('BGC_PARCEIRO','BACKGROUND_CHECKING')) else r['deal_stage']
     _prod_ov = PRODUCT_OVERRIDE.get((r.get('deal_id') or '').strip(), {})  # venda Antecipa registrada com produto errado (Felipe 18/08)
     return {
       'c': r['current_client_name'],
@@ -318,6 +341,9 @@ def mk_deal(r):
       'city': r['current_client_city'],
       'produto': _prod_ov.get('produto', (r.get('product_name') or '').strip()),
       'credito_ok': _prod_ov.get('credito_ok', credito_ok),  # Antecipa: análise de crédito aprovada (Felipe 06/08)
+      'apc': bool(_apc),  # aprovado no risco, pendente de crédito/pagamento (Felipe 18/08)
+      'fapr': bool(forced),  # aprovado manual (FORCE_APPROVED) - alimenta a quebra do card
+      'rapr': (r['latest_risk_analysis_result'] or '').strip()=='APPROVED',  # risco APPROVED na base (quebra do card)
       'credito': credit_pt(r.get('deal_credit_stage')),  # situação do Antecipa (PT)
       'semana': semana(d),
       'lost_at': ('' if (forced or norm(r['current_client_name']) in LOST_IGNORE) else (r['deal_lost_at'] or '')),
@@ -464,7 +490,7 @@ if f_ant:
           # Felipe 12/08: a aba Antecipa passa a honrar credito aprovado (mesma regra 06/08 do resto):
           # credito=='approved' conta como APPROVED aqui tambem (antes so risco APPROVED contava, e
           # deals com credito approved + risco APPROVED_PENDING_CREDIT sumiam da aba). Ver memoria antecipa.
-          'risk': ('APPROVED' if (_did in ANT_APPROVE or (r.get('latest_credit_analysis_result') or '').strip().lower()=='approved') else (r.get('latest_risk_analysis_result') or '').strip()),
+          'risk': ('APPROVED' if (_did in ANT_APPROVE or apc_ok(r) or (r.get('latest_credit_analysis_result') or '').strip().lower()=='approved') else (r.get('latest_risk_analysis_result') or '').strip()),  # apc_ok: Felipe 18/08
           'credito': ('approved' if _did in ANT_APPROVE else (r.get('latest_credit_analysis_result') or '').strip()),
           'tipo': _ant_tipo(r.get('product_name')),
           'signed': bool((r.get('latest_contract_signature_signed_at') or '').strip()),
@@ -513,7 +539,9 @@ print('missao:', len(MISSAO), 'aprovados |', len(MISSAO_ROSTER), 'vendedores no 
 # sig(assinado)/apr(aprovado risco) p/ calcular a fatia do Antecipa nos KPIs da aba. ----
 def _gd_apr(r):
     risk=(r.get('latest_risk_analysis_result') or '').strip()
-    if (r.get('deal_stage') or '')=='BGC_PARCEIRO': risk=''
+    _apc=apc_ok(r)  # Felipe 18/08
+    if (r.get('deal_stage') or '')=='BGC_PARCEIRO' and not _apc: risk=''
+    if _apc: risk='APPROVED'
     if (r.get('latest_credit_analysis_result') or '').strip().lower()=='approved': risk='APPROVED'
     if (r.get('deal_id') or '').strip() in FORCE_APPROVED: risk='APPROVED'
     return risk=='APPROVED'
