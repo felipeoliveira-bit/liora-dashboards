@@ -10,7 +10,7 @@
 #   <out_dir>/docs_pendentes.csv  -> 4o recorte (opcional; nao derruba se falhar)
 #
 # Uso: python3 mb_export.py <out_dir>
-import os, sys, json, urllib.request, urllib.error, urllib.parse
+import os, sys, json, csv, io, urllib.request, urllib.error, urllib.parse
 
 URL = (os.environ.get('METABASE_URL') or '').rstrip('/')
 KEY = os.environ.get('METABASE_API_KEY') or ''
@@ -247,6 +247,85 @@ ORDER BY proposal_created_at
 
 # horario REAL da ultima atualizacao da base = ultimo sucesso do pipeline de ingestao
 # (mesma fonte do card "Ultima deal gerado do Datalake" no Metabase da Liora).
+# GOLD AO VIVO (Felipe 17/08/2026): o export do CARD 818 vem do CACHE do Metabase e
+# pode atrasar horas - dois exports com 1h30 de diferenca voltaram byte a byte iguais
+# enquanto um SELECT direto na MESMA tabela ja trazia propostas/aprovacoes novas (no dia
+# 17/08 sumiram 21 das 65 propostas Antecipa geradas e 1 aprovado). Este recorte le a
+# gold direto por SQL (nao passa pelo cache) e e' MESCLADO no base.csv logo apos o card.
+# Os dois nomes de coluna com " (R$)" nao sao aceitos como alias no BigQuery, por isso
+# saem como *_rs e o merge renomeia de volta para o cabecalho que o slice espera.
+GOLD_LIVE_SQL = r"""
+SELECT
+  deal_id, deal_stage,
+  FORMAT_DATETIME('%Y-%m-%dT%H:%M:%S', deal_lost_at) AS deal_lost_at,
+  deal_lost_reason, CAST(rd_station_crm_id AS STRING) AS rd_station_crm_id,
+  FORMAT_DATETIME('%Y-%m-%dT%H:%M:%S', deal_created_at) AS deal_created_at,
+  current_client_cnpj, current_client_cpf, current_client_name, client_phone_number,
+  current_client_state, current_client_city, distributor_short_name,
+  origin_campaign, origin_source, internal_sales_classification, sales_team,
+  sales_organization_name, sales_channel_name, sales_person_name, sales_person_email,
+  CAST(current_total_bill_cost AS STRING) AS current_total_bill_cost_rs,
+  CAST(rd_bill_cost AS STRING) AS rd_bill_cost_rs,
+  CAST(under_minimal_flag AS STRING) AS under_minimal_flag,
+  rd_distributor,
+  CAST(current_consumption AS STRING) AS current_consumption,
+  CAST(is_current_consumption_estimated AS STRING) AS is_current_consumption_estimated,
+  CAST(current_consumption_filled AS STRING) AS current_consumption_filled,
+  consumption_group, proposal_id,
+  FORMAT_DATETIME('%Y-%m-%dT%H:%M:%S', proposal_created_at) AS proposal_created_at,
+  CAST(accepted_proposal AS STRING) AS accepted_proposal,
+  product_name, energy_retailer_name,
+  CAST(has_valid_bill_uploaded AS STRING) AS has_valid_bill_uploaded,
+  bill_id, latest_contract_id,
+  FORMAT_DATETIME('%Y-%m-%dT%H:%M:%S', latest_contract_created_at) AS latest_contract_created_at,
+  FORMAT_DATETIME('%Y-%m-%dT%H:%M:%S', latest_contract_signature_signed_at) AS latest_contract_signature_signed_at,
+  latest_risk_analysis_result,
+  FORMAT_DATETIME('%Y-%m-%dT%H:%M:%S', latest_risk_analysis_created_at) AS latest_risk_analysis_created_at,
+  latest_risk_analysis_comments,
+  CAST(idle_days AS STRING) AS idle_days,
+  idle_days_group,
+  CAST(cancelation_date AS STRING) AS cancelation_date,
+  ops_tt_status, ops_tt_status_reason,
+  CAST(credit_product AS STRING) AS credit_product,
+  deal_credit_stage, latest_credit_analysis_result
+FROM `liora_gold.sales_management`
+"""
+GOLD_RENAME = {'current_total_bill_cost_rs': 'current_total_bill_cost (R$)',
+               'rd_bill_cost_rs': 'rd_bill_cost (R$)'}
+
+def _read_csv(path):
+    raw = open(path, 'rb').read().replace(b'\x00', b'')
+    r = csv.DictReader(io.StringIO(raw.decode('utf-8-sig')))
+    return r.fieldnames, list(r)
+
+def merge_gold_live(base_path, live_path):
+    """Mescla a gold ao vivo no base.csv. Atualiza o que mudou, acrescenta o que
+    faltava e PRESERVA linhas que so existem no card (fail-safe: nunca encolhe).
+    Devolve (atualizadas, acrescentadas) ou levanta excecao (o chamador segue com o card)."""
+    bf, base = _read_csv(base_path)
+    lf, live = _read_csv(live_path)
+    lf2 = [GOLD_RENAME.get(c, c) for c in lf]
+    if bf != lf2:
+        raise RuntimeError('colunas divergem card x gold (so no card: %s | so na gold: %s)'
+                           % ([c for c in bf if c not in lf2], [c for c in lf2 if c not in bf]))
+    for r in live:
+        for k, v in GOLD_RENAME.items():
+            if k in r:
+                r[v] = r.pop(k)
+    idx = {(r['deal_id'], r['proposal_id']): r for r in base}
+    upd = add = 0
+    for r in live:
+        k = (r['deal_id'], r['proposal_id'])
+        if k in idx:
+            if idx[k] != r:
+                upd += 1
+            idx[k].update(r)
+        else:
+            base.append(r); idx[k] = r; add += 1
+    with open(base_path, 'w', newline='', encoding='utf-8') as fh:
+        w = csv.DictWriter(fh, fieldnames=bf); w.writeheader(); w.writerows(base)
+    return upd, add
+
 DATA_TS_SQL = r"""
 SELECT FORMAT_DATETIME('%H:%M - %d/%m', DATETIME(MAX(updated_at), 'America/Sao_Paulo')) AS ts
 FROM `liora-server-production.liora_bronze._ingestion_watermarks`
@@ -300,6 +379,21 @@ def main():
     if n < 2000:
         print('ERRO: base com %d linhas (<2000) - export incompleto.' % n, file=sys.stderr)
         sys.exit(4)
+    # gold ao vivo mesclada no base.csv (contorna o cache do card 818) - OPCIONAL:
+    # se falhar, segue com o card puro (comportamento antigo).
+    gold_p = os.path.join(OUT, 'gold_live.csv')
+    try:
+        g = export_sql_csv(DATABASE_ID, GOLD_LIVE_SQL, gold_p)
+        print('gold_live.csv OK: %d linhas' % g)
+        if g < 2000:
+            raise RuntimeError('gold com %d linhas (<2000) - suspeita de export incompleto' % g)
+        upd, add = merge_gold_live(base, gold_p)
+        print('gold viva mesclada no base.csv: %d atualizada(s), %d acrescentada(s)' % (upd, add))
+    except Exception as e:
+        print('aviso: merge da gold viva falhou (segue so com o card 818): %s' % e, file=sys.stderr)
+    finally:
+        try: os.remove(gold_p)
+        except Exception: pass
     # docs_pendentes (opcional)
     try:
         d = export_sql_csv(DATABASE_ID, DOCS_SQL, os.path.join(OUT, 'docs_pendentes.csv'))
