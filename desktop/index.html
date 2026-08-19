@@ -512,6 +512,25 @@ window.addEventListener('message', (e) => {
 });
 
 // Fetch leads
+// v2.169 - DEDUPE POR ID (linha duplicada na planilha fazia o lead voltar atras).
+// A planilha tem ids repetidos (2 linhas com o mesmo id): o backend GRAVA na
+// primeira linha encontrada, mas o 'list' devolve AS DUAS. A copia velha vencia
+// na tela e a alteracao salva parecia ter voltado atras. Aqui fica so a linha
+// mais recente de cada id (updatedAt, cai pra createdAt).
+function _dedupLeadsById(a){
+  var m = {}, out = [];
+  (a || []).forEach(function(l){
+    var id = String((l || {}).id || '');
+    if(!id){ out.push(l); return; }
+    var p = m[id];
+    if(p === undefined){ m[id] = out.length; out.push(l); return; }
+    var tn = Number(l.updatedAt) || Number(l.createdAt) || 0;
+    var to = Number(out[p].updatedAt) || Number(out[p].createdAt) || 0;
+    if(tn >= to) out[p] = l;
+  });
+  return out;
+}
+
 async function loadLeads() {
   const status = document.getElementById('sync-status');
   status.innerHTML = '<span class=&quot;spinner&quot;></span> Sincronizando…';
@@ -525,7 +544,7 @@ async function loadLeads() {
     });
     let data, _t='', _ok=false; for(let _i=0; _i<3; _i++){ try { const _r = (_i===0) ? r : await fetch(LEADS_API_URL,{method:'POST',mode:'cors',redirect:'follow',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'list'})}); _t = await _r.text(); data = JSON.parse(_t); _ok = true; break; } catch(_e){ if(_i < 2) await new Promise(function(s){ setTimeout(s,1200); }); } } if(!_ok) throw new Error(String(_t).trim().charAt(0)==='<' ? 'Sincronizando… clique Atualizar' : 'Base de leads indisponivel');
     if (data &amp;&amp; data.leads) {
-      leads = data.leads.filter(l => String((l&amp;&amp;l.stage)||'').trim().toLowerCase() !== 'excluido').map(l => ({
+      leads = _dedupLeadsById(data.leads).filter(l => String((l&amp;&amp;l.stage)||'').trim().toLowerCase() !== 'excluido').map(l => ({
         ...l,
         vendedor: canonName( (l.vendedor || '').trim()),
         stage: normalizeStage(l.stage),
@@ -1396,6 +1415,25 @@ window.addEventListener('message', (e) => {
   }
 });
 
+// v2.169 - DEDUPE POR ID (linha duplicada na planilha fazia o lead voltar atras).
+// A planilha tem ids repetidos (2 linhas com o mesmo id): o backend GRAVA na
+// primeira linha encontrada, mas o 'list' devolve AS DUAS. A copia velha vencia
+// na tela e a alteracao salva parecia ter voltado atras. Aqui fica so a linha
+// mais recente de cada id (updatedAt, cai pra createdAt).
+function _dedupLeadsById(a){
+  var m = {}, out = [];
+  (a || []).forEach(function(l){
+    var id = String((l || {}).id || '');
+    if(!id){ out.push(l); return; }
+    var p = m[id];
+    if(p === undefined){ m[id] = out.length; out.push(l); return; }
+    var tn = Number(l.updatedAt) || Number(l.createdAt) || 0;
+    var to = Number(out[p].updatedAt) || Number(out[p].createdAt) || 0;
+    if(tn >= to) out[p] = l;
+  });
+  return out;
+}
+
 async function loadLeads() {
   const status = document.getElementById('sync-status');
   status.innerHTML = '<span class=&quot;spinner&quot;></span> Sincronizando…';
@@ -1407,7 +1445,7 @@ async function loadLeads() {
     });
     let data, _t='', _ok=false; for(let _i=0; _i<3; _i++){ try { const _r = (_i===0) ? r : await fetch(LEADS_API_URL,{method:'POST',mode:'cors',redirect:'follow',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'list'})}); _t = await _r.text(); data = JSON.parse(_t); _ok = true; break; } catch(_e){ if(_i < 2) await new Promise(function(s){ setTimeout(s,1200); }); } } if(!_ok) throw new Error(String(_t).trim().charAt(0)==='<' ? 'Sincronizando… clique Atualizar' : 'Base de leads indisponivel');
     if (data &amp;&amp; data.leads) {
-      leads = data.leads.filter(l => String((l&amp;&amp;l.stage)||'').trim().toLowerCase() !== 'excluido').map(l => ({ ...l, vendedor: canonName( (l.vendedor||'').trim()), stage: normalizeStage(l.stage), fatura: parseFloat(l.fatura||0)||0 }));
+      leads = _dedupLeadsById(data.leads).filter(l => String((l&amp;&amp;l.stage)||'').trim().toLowerCase() !== 'excluido').map(l => ({ ...l, vendedor: canonName( (l.vendedor||'').trim()), stage: normalizeStage(l.stage), fatura: parseFloat(l.fatura||0)||0 }));
       const time = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
       status.innerHTML = `✅ ${leads.length} leads · ${time}`;
       renderAll();
@@ -2166,6 +2204,25 @@ function normalizeLead(l) {
   };
 }
 
+// v2.169 - DEDUPE POR ID (linha duplicada na planilha fazia o lead voltar atras).
+// A planilha tem ids repetidos (2 linhas com o mesmo id): o backend GRAVA na
+// primeira linha encontrada, mas o 'list' devolve AS DUAS. A copia velha vencia
+// na tela e a alteracao salva parecia ter voltado atras. Aqui fica so a linha
+// mais recente de cada id (updatedAt, cai pra createdAt).
+function _dedupLeadsById(a){
+  var m = {}, out = [];
+  (a || []).forEach(function(l){
+    var id = String((l || {}).id || '');
+    if(!id){ out.push(l); return; }
+    var p = m[id];
+    if(p === undefined){ m[id] = out.length; out.push(l); return; }
+    var tn = Number(l.updatedAt) || Number(l.createdAt) || 0;
+    var to = Number(out[p].updatedAt) || Number(out[p].createdAt) || 0;
+    if(tn >= to) out[p] = l;
+  });
+  return out;
+}
+
 async function loadLeads() {
   const status = document.getElementById('sync-status');
   status.innerHTML = '<span class=&quot;spinner&quot;></span> Sincronizando…';
@@ -2179,7 +2236,7 @@ async function loadLeads() {
     });
     let data, _t='', _ok=false; for(let _i=0; _i<3; _i++){ try { const _r = (_i===0) ? r : await fetch(LEADS_API_URL,{method:'POST',mode:'cors',redirect:'follow',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'list'})}); _t = await _r.text(); data = JSON.parse(_t); _ok = true; break; } catch(_e){ if(_i < 2) await new Promise(function(s){ setTimeout(s,1200); }); } } if(!_ok) throw new Error(String(_t).trim().charAt(0)==='<' ? 'Sincronizando… clique Atualizar' : 'Base de leads indisponivel');
     if (data &amp;&amp; data.leads) {
-      leads = data.leads.filter(l => String((l&amp;&amp;l.stage)||'').trim().toLowerCase() !== 'excluido').map(normalizeLead);
+      leads = _dedupLeadsById(data.leads).filter(l => String((l&amp;&amp;l.stage)||'').trim().toLowerCase() !== 'excluido').map(normalizeLead);
       const time = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
       status.innerHTML = `✅ ${leads.length} leads · ${time}`;
       populateMesSel();
@@ -5885,10 +5942,29 @@ function hcElapsedWd(ref){ if(!ref) return 1; var p=ref.split('-'); var y=+p[0],
 function hcMonthAgg(){ var ref=hcRefDate(); var ym=ref.slice(0,7); var propM={}; HC_PROP.forEach(function(p){ if(p[0]<=ref &amp;&amp; p[0].slice(0,7)===ym) propM[p[1]]=(propM[p[1]]||0)+1; }); var taskM={}; (hcLeads||[]).forEach(function(x){ if(x.c &amp;&amp; x.c<=ref &amp;&amp; x.c.slice(0,7)===ym) taskM[x.v]=(taskM[x.v]||0)+1; if(x.p &amp;&amp; x.p<=ref &amp;&amp; x.p.slice(0,7)===ym) taskM[x.v]=(taskM[x.v]||0)+1; }); return { ref:ref, propM:propM, taskM:taskM, ewd:hcElapsedWd(ref) }; }
 function canonName(n){ var A={'Antonio Carlos':'Antonio Mariano'}; n=(n||'').trim(); if(A[n])n=A[n]; try{ if(typeof PRACA_OF!=='undefined'){ if(PRACA_OF[n]!==undefined) return n; var _ck=function(s){ return String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim(); }; if(!canonName._lc){ canonName._lc={}; for(var k in PRACA_OF){ canonName._lc[_ck(k)]=k; } } var h=canonName._lc[_ck(n)]; if(h) return h; } }catch(e){} return n; }
 var _hcTries = 0;
+// v2.169 - DEDUPE POR ID (linha duplicada na planilha fazia o lead voltar atras).
+// A planilha tem ids repetidos (2 linhas com o mesmo id): o backend GRAVA na
+// primeira linha encontrada, mas o 'list' devolve AS DUAS. A copia velha vencia
+// na tela e a alteracao salva parecia ter voltado atras. Aqui fica so a linha
+// mais recente de cada id (updatedAt, cai pra createdAt).
+function _dedupLeadsById(a){
+  var m = {}, out = [];
+  (a || []).forEach(function(l){
+    var id = String((l || {}).id || '');
+    if(!id){ out.push(l); return; }
+    var p = m[id];
+    if(p === undefined){ m[id] = out.length; out.push(l); return; }
+    var tn = Number(l.updatedAt) || Number(l.createdAt) || 0;
+    var to = Number(out[p].updatedAt) || Number(out[p].createdAt) || 0;
+    if(tn >= to) out[p] = l;
+  });
+  return out;
+}
+
 function loadHCLeads(){
   fetch(LEADS_API_URL,{method:'POST',mode:'cors',redirect:'follow',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'list'})})
     .then(r=>r.json()).then(data=>{
-      var arr = (((data&amp;&amp;data.leads)||[]).filter(l=>String((l&amp;&amp;l.stage)||'').trim().toLowerCase()!=='excluido').map(l=>({v:canonName((l.vendedor||'').trim()),c:hcDay(l.createdAt),p:hcDay(l.proximaInteracao)}))).filter(x=>x.v);
+      var arr = ((_dedupLeadsById(((data&amp;&amp;data.leads)||[]))).filter(l=>String((l&amp;&amp;l.stage)||'').trim().toLowerCase()!=='excluido').map(l=>({v:canonName((l.vendedor||'').trim()),c:hcDay(l.createdAt),p:hcDay(l.proximaInteracao)}))).filter(x=>x.v);
       if (!arr.length &amp;&amp; _hcTries < 5) { _hcTries++; setTimeout(loadHCLeads, 800); return; } // vazio: provável carregamento incompleto, tenta de novo
       hcLeads = arr; renderVacancia();
     })

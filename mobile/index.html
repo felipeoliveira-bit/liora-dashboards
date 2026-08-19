@@ -3874,6 +3874,25 @@ function _leadsListPayload(){
   }catch(e){ return { scope:{all:true}, aliases: VENDEDOR_ALIASES }; }
 }
 
+// v2.169 - DEDUPE POR ID (linha duplicada na planilha fazia o lead voltar atras).
+// A planilha tem ids repetidos (2 linhas com o mesmo id): o backend GRAVA na
+// primeira linha encontrada, mas o 'list' devolve AS DUAS. A copia velha vencia
+// na tela e a alteracao salva parecia ter voltado atras. Aqui fica so a linha
+// mais recente de cada id (updatedAt, cai pra createdAt).
+function _dedupLeadsById(a){
+  var m = {}, out = [];
+  (a || []).forEach(function(l){
+    var id = String((l || {}).id || '');
+    if(!id){ out.push(l); return; }
+    var p = m[id];
+    if(p === undefined){ m[id] = out.length; out.push(l); return; }
+    var tn = Number(l.updatedAt) || Number(l.createdAt) || 0;
+    var to = Number(out[p].updatedAt) || Number(out[p].createdAt) || 0;
+    if(tn >= to) out[p] = l;
+  });
+  return out;
+}
+
 async function loadLeads(){
   if (leadsLoaded) return;
   if (!LEADS_API_ENABLED) {
@@ -3892,7 +3911,7 @@ async function loadLeads(){
       catch(e){ lastErr=e; if(attempt<3) await new Promise(r=>setTimeout(r,_pauses[attempt-1])); }
     }
     if (lastErr) throw lastErr;
-    window.leads = (data.leads || [])
+    window.leads = _dedupLeadsById(data.leads || [])
       // v2.29: descarta leads marcados como excluídos no Sheets (kept para histórico,
       // mas não devem entrar em window.leads — senão contam no header e somem das abas).
       .filter(l => l && l.stage !== 'excluido')
