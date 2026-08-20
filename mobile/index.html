@@ -2708,6 +2708,33 @@ function _pagFetchLote(cidGarantido){
   return _PAG_PROMISE;
 }
 
+// Rede de campo cai. Tenta o lote, repete 1x depois de 1,5s e, se ainda assim
+// falhar, pede SO o contrato deste cliente (requisicao minima) — melhor mostrar
+// o pagamento de um do que nenhum.
+async function _pagBuscaComRetry(cid){
+  try { await _pagFetchLote(cid); return; }
+  catch (_e1) {
+    await new Promise(function(r){ setTimeout(r, 1500); });
+    try { await _pagFetchLote(cid); return; }
+    catch (_e2) {
+      const r = await apiCall('pagAntecipa', { contract_ids: [cid] }, { timeoutMs: 15000 });
+      _PAG_CACHE[cid] = (r && r.pag && r.pag[cid]) || null;
+    }
+  }
+}
+
+// Botao "tentar de novo" do recado de erro: devolve o estado de carregando e
+// chama de novo (o erro nunca fica no cache, entao a nova tentativa e limpa).
+function _pagTentarDeNovo(cid){
+  const box = document.getElementById('cd-pag-box');
+  if (box) {
+    box.innerHTML = '<div class="cd-section-title">\uD83D\uDCB8 Pagamento Antecipa</div>'
+      + '<div class="cd-row"><div class="cd-row-k">Status</div><div class="cd-row-v" style="color:var(--muted)">consultando\u2026</div></div>';
+    box.style.display = '';
+  }
+  _loadPagAntecipa(cid);
+}
+
 async function _loadPagAntecipa(cid){
   function done(html){
     const load = document.getElementById('cd-pag-load');
@@ -2726,7 +2753,7 @@ async function _loadPagAntecipa(cid){
     }
     let lista = _PAG_CACHE[cid];
     if (lista === undefined) {
-      await _pagFetchLote(cid);            // 1 chamada cobre a carteira toda
+      await _pagBuscaComRetry(cid);        // 1 chamada cobre a carteira toda (c/ retry)
       lista = _PAG_CACHE[cid];
     }
     if (!lista || !lista.length) { done(''); return; }
@@ -2767,7 +2794,11 @@ async function _loadPagAntecipa(cid){
     done(`<div class="cd-section-title">💸 Pagamento Antecipa</div>
       <div class="cd-row">
         <div class="cd-row-k">Status</div>
-        <div class="cd-row-v" style="color:var(--muted)">não deu pra consultar agora — ${escapeHtml(String((e && e.message) || e))}</div>
+        <div class="cd-row-v" style="color:var(--muted)">não deu pra consultar agora</div>
+      </div>
+      <div class="cd-row cd-row-action" onclick="event.stopPropagation(); _pagTentarDeNovo('${escapeHtml(cid)}')">
+        <div class="cd-row-k" style="max-width:58%">${escapeHtml(String((e && e.message) || e))}</div>
+        <div class="cd-row-v cd-row-v-link">tentar de novo ›</div>
       </div>`);
   }
 }
