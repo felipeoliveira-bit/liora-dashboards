@@ -2574,6 +2574,17 @@ function openClienteDetalhes(dealId){
        </div>`;
   })() : '';
 
+  // Pagamento Antecipa — lido AO VIVO da planilha de depositos (action pagAntecipa
+  // no Apps Script, cruza pelo contract_id). Nasce como "carregando" e o
+  // _loadPagAntecipa preenche, esconde (se o cliente nao tem pagamento) ou avisa o erro.
+  const pagBlock = lead.cid
+    ? `<div class="cd-section" id="cd-pag-box" style="display:none"></div>
+       <div class="cd-section" id="cd-pag-load">
+         <div class="cd-section-title">💸 Pagamento Antecipa</div>
+         <div class="cd-row"><div class="cd-row-k">Status</div><div class="cd-row-v" style="color:var(--muted)">consultando…</div></div>
+       </div>`
+    : '';
+
   overlay.innerHTML = `
     <div class="modal-sheet cd-sheet">
       <div class="modal-handle"></div>
@@ -2614,6 +2625,7 @@ function openClienteDetalhes(dealId){
       </div>
 
       ${creditBlock}
+      ${pagBlock}
 
       <div class="cd-section">
         <div class="cd-section-title">🎯 Próxima ação</div>
@@ -2632,6 +2644,75 @@ function openClienteDetalhes(dealId){
     </div>
   `;
   document.body.appendChild(overlay);
+  if (lead.cid) _loadPagAntecipa(lead.cid);
+}
+
+// ── PAGAMENTO ANTECIPA (planilha de depositos, ao vivo) ─────────────────
+// Cruza o contract_id do deal com a planilha de controle de depositos via
+// action 'pagAntecipa' do Apps Script (v2.38). O Apps Script le a planilha
+// com a conta do dono do script; o front so manda o contract_id do cliente
+// que o usuario abriu. Cache em memoria pra nao reconsultar no mesmo acesso.
+const _PAG_CACHE = {};
+
+async function _loadPagAntecipa(cid){
+  function done(html){
+    const load = document.getElementById('cd-pag-load');
+    if (load) load.remove();
+    const box = document.getElementById('cd-pag-box');
+    if (!box) return;                       // modal ja foi fechado
+    if (!html) { box.remove(); return; }    // sem pagamento => secao nao aparece
+    box.innerHTML = html;
+    box.style.display = '';
+  }
+
+  try {
+    let lista = _PAG_CACHE[cid];
+    if (lista === undefined) {
+      const r = await apiCall('pagAntecipa', { contract_ids: [cid] }, { timeoutMs: 15000 });
+      lista = (r && r.pag && r.pag[cid]) || null;
+      _PAG_CACHE[cid] = lista;
+    }
+    if (!lista || !lista.length) { done(''); return; }
+
+    const pagos  = lista.filter(p => /transferid/i.test(p.status || ''));
+    const falhou = lista.some(p => /falha/i.test(p.status || ''));
+    const total  = pagos.reduce((s,p) => s + (Number(p.valor) || 0), 0);
+    const datas  = pagos.map(p => p.data).filter(Boolean);
+
+    let resumo, cor;
+    if (pagos.length)   { resumo = pagos.length > 1 ? `Pago (${pagos.length} parcelas)` : 'Pago'; cor = '#1D9E75'; }
+    else if (falhou)    { resumo = 'Falha no pagamento';                                          cor = 'var(--red)'; }
+    else                { resumo = lista[0].status || 'Em processamento';                         cor = 'var(--orange)'; }
+
+    const linhas = lista.map(function(p, i){
+      const url = String(p.comprovante || '').trim();
+      const link = /^https?:\/\//i.test(url)
+        ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener" class="cd-row-v-link" style="text-decoration:none" onclick="event.stopPropagation()">ver comprovante ›</a>`
+        : '<span style="color:var(--muted)">sem comprovante</span>';
+      const rot = (lista.length > 1 ? ('Parcela ' + (i+1)) : 'Valor') + (p.data ? ' · ' + escapeHtml(p.data) : '');
+      const st  = /transferid/i.test(p.status || '') ? '' :
+                  ` <span style="color:var(--muted)">(${escapeHtml(p.status || '—')})</span>`;
+      return `<div class="cd-row">
+                <div class="cd-row-k">${rot}</div>
+                <div class="cd-row-v">${p.valor != null ? _fmtMoney(p.valor) : '—'}${st} · ${link}</div>
+              </div>`;
+    }).join('');
+
+    done(`<div class="cd-section-title">💸 Pagamento Antecipa</div>
+      <div class="cd-row">
+        <div class="cd-row-k">Status</div>
+        <div class="cd-row-v" style="color:${cor};font-weight:600">${escapeHtml(resumo)}</div>
+      </div>
+      ${pagos.length > 1 ? `<div class="cd-row"><div class="cd-row-k">Total pago</div><div class="cd-row-v" style="font-weight:600">${_fmtMoney(total)}</div></div>` : ''}
+      ${datas.length ? `<div class="cd-row"><div class="cd-row-k">${datas.length > 1 ? 'Último pagamento' : 'Data do pagamento'}</div><div class="cd-row-v">${escapeHtml(datas[datas.length-1])}</div></div>` : ''}
+      ${linhas}`);
+  } catch (e) {
+    done(`<div class="cd-section-title">💸 Pagamento Antecipa</div>
+      <div class="cd-row">
+        <div class="cd-row-k">Status</div>
+        <div class="cd-row-v" style="color:var(--muted)">não deu pra consultar agora — ${escapeHtml(String((e && e.message) || e))}</div>
+      </div>`);
+  }
 }
 
 function dialLeadTel(ev){

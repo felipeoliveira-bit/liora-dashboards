@@ -281,6 +281,7 @@ def build_rawData(deals_path, ag_path, prop_path=None, docs_map=None, uc_map=Non
             'motivo':(('CANCELADO — '+(r.get('deal_lost_reason') or '').strip()) if ((r.get('latest_risk_analysis_result') or '').strip()=='APPROVED' and (r.get('deal_lost_at') or '').strip() and r.get('deal_stage')=='BACKGROUND_CHECKING' and (r.get('deal_lost_reason') or '').strip().lower()!='troca de titularidade') else (r.get('latest_risk_analysis_comments') or '').strip()),
             'date':iso(created),'aprov_date':aprov,
             'docs':docs_map.get((r.get('latest_contract_id') or '').strip(),''),
+            'cid':(r.get('latest_contract_id') or '').strip(),   # cruza c/ a planilha de pagamentos do Antecipa (action pagAntecipa)
         })
     for r in rows(deals_path): emit(r)
     for r in INJECT_DEALS:
