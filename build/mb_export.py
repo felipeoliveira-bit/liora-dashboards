@@ -11,6 +11,7 @@
 #
 # Uso: python3 mb_export.py <out_dir>
 import os, sys, json, csv, io, urllib.request, urllib.error, urllib.parse
+import time, uuid
 
 URL = (os.environ.get('METABASE_URL') or '').rstrip('/')
 KEY = os.environ.get('METABASE_API_KEY') or ''
@@ -353,8 +354,16 @@ def export_card_csv(card_id, dest):
     n = max(0, raw.count(b'\n') - 1)
     return n
 
+def bust(sql):
+    # QUEBRA-CACHE (Felipe 20/08): o Metabase cacheia resultado de query nativa pelo
+    # hash do SQL. Sem isto o recorte volta IDENTICO ao da rodada anterior e as
+    # analises de risco da ultima hora chegam como MANUAL -> aprovado do dia SOME
+    # da tela (incidente 20/08: 8 aprovados de Field entre 15:24 e 17:02 sumiram).
+    # Um comentario com timestamp+uuid muda o hash sem mudar UMA coluna do resultado.
+    return '-- nocache %s %s\n%s' % (time.strftime('%Y%m%dT%H%M%S'), uuid.uuid4().hex[:8], sql)
+
 def export_sql_csv(db_id, sql, dest):
-    q = {'database': db_id, 'type': 'native', 'native': {'query': sql}}
+    q = {'database': db_id, 'type': 'native', 'native': {'query': bust(sql)}}
     raw = _req('/api/dataset/csv', data={'query': json.dumps(q)}, form=True)
     open(dest, 'wb').write(raw)
     n = max(0, raw.count(b'\n') - 1)
@@ -415,6 +424,23 @@ def main():
     try:
         rr = export_sql_csv(DATABASE_ID, RISK_SQL, os.path.join(OUT, 'risk_real.csv'))
         print('risk_real.csv OK: %d linhas' % rr)
+        # AVISO DE FRESCOR (Felipe 20/08): se a analise de risco mais nova do recorte
+        # for de mais de 90 min atras, provavelmente veio de cache (ou o pipeline
+        # travou) e os aprovados da ultima hora vao sumir da tela. Nao derruba o
+        # build - so grita no log p/ dar nome ao problema na hora de conferir.
+        try:
+            _mx = ''
+            with open(os.path.join(OUT, 'risk_real.csv'), encoding='utf-8-sig') as _fh:
+                for _r in csv.DictReader(_fh):
+                    _c = (_r.get('real_created') or '').strip()
+                    if _c > _mx: _mx = _c
+            print('risk_real: analise mais nova = %s' % (_mx or '?'))
+            if _mx:
+                _age = (time.time() - time.mktime(time.strptime(_mx[:19], '%Y-%m-%dT%H:%M:%S'))) / 60.0
+                if _age > 90:
+                    print('AVISO risk_real: analise mais nova tem %d min - suspeita de CACHE do Metabase; aprovado do dia pode sumir.' % _age, file=sys.stderr)
+        except Exception as _e:
+            print('aviso: nao consegui medir o frescor do risk_real: %s' % _e, file=sys.stderr)
     except Exception as e:
         try: os.remove(os.path.join(OUT, 'risk_real.csv'))
         except Exception: pass
@@ -439,7 +465,7 @@ def main():
     # data_ts: HH:MM - DD/MM real da ultima atualizacao da base (watermark do pipeline).
     # Grava data_ts.txt (valor unico). Se falhar, o build cai no relogio do proprio build.
     try:
-        q = {'database': DATABASE_ID, 'type': 'native', 'native': {'query': DATA_TS_SQL}}
+        q = {'database': DATABASE_ID, 'type': 'native', 'native': {'query': bust(DATA_TS_SQL)}}
         raw = _req('/api/dataset/csv', data={'query': json.dumps(q)}, form=True)
         lines = raw.decode('utf-8', 'replace').splitlines()
         val = lines[1].strip().strip('"') if len(lines) > 1 else ''
