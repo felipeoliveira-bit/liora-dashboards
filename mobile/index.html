@@ -305,6 +305,9 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
 .camp-deal-name { font-weight: 700; font-size: 13px; color: var(--ink); }
 .camp-deal-meta { font-size: 11px; color: var(--muted); margin-top: 3px; }
 .camp-deal-city { font-size: 10px; color: var(--muted); margin-top: 2px; }
+.camp-deal-card.clicavel { cursor: pointer; position: relative; padding-right: 24px; transition: background .15s, transform .1s; }
+.camp-deal-card.clicavel:active { background: #EEF0F8; transform: scale(.99); }
+.camp-deal-card.clicavel::after { content: '\203A'; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 20px; opacity: .45; }
 .rank-card.clickable { cursor: pointer; transition: background .15s, transform .1s; position: relative; }
 .rank-card.clickable:active { background: #F4F5FA; transform: scale(.99); }
 .rank-card.clickable::after { content: '›'; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 22px; opacity: .45; }
@@ -2027,7 +2030,7 @@ function openCampDetails(vendedor, type){
     const dateBr = d.aprov_date ? d.aprov_date.split('-').reverse().slice(0,2).join('/') : '—';
     const _ant = (cfg.antecipaBonus>1) && isAntecipaDeal(d);
     return `
-      <div class="camp-deal-card"${_ant?' style="border-left:3px solid var(--purple);padding-left:9px"':''}>
+      <div class="camp-deal-card${d.deal_id?' clicavel':''}"${_ant?' style="border-left:3px solid var(--purple);padding-left:9px"':''}${d.deal_id?` onclick="abrirClienteDaCampanha('${escapeHtml(d.deal_id)}')"`:''}>
         <div class="camp-deal-name">${escapeHtml(d.c || 'Cliente sem nome')}${_ant?` <span style="display:inline-block;background:#F3F1FF;color:var(--purple);border-radius:999px;padding:2px 7px;font-size:10px;font-weight:800;vertical-align:middle">⚡ ANTECIPA 1,5×</span>`:''}</div>
         <div class="camp-deal-meta">
           📅 ${dateBr} · ⚡ ${(d.mwh||0).toFixed(2)} MWh${_ant?` <span style="color:var(--purple);font-weight:800">→ ${campNum((d.mwh||0)*cfg.antecipaBonus)} na campanha</span>`:''} · ${escapeHtml(d.dist || '—')}
@@ -2515,6 +2518,15 @@ function _fmtTel(v){
   return `(${ddd}) ${num.slice(0,sep)}-${num.slice(sep)}`;
 }
 
+// Da lista da campanha, tocar no cliente abre o mesmo detalhe. Custo zero de
+// dados: a lista da campanha ja e um filtro do rawData, entao o deal sempre
+// existe la (nao cai no 'Cliente nao encontrado').
+function abrirClienteDaCampanha(dealId){
+  if (!dealId) return;
+  try { if (typeof closeCampDetailsModal === 'function') closeCampDetailsModal(); } catch(_e){}
+  openClienteDetalhes(dealId);
+}
+
 function openClienteDetalhes(dealId){
   if(!dealId) return;
   const lead = rawData.find(x => x.deal_id === dealId);
@@ -2654,6 +2666,48 @@ function openClienteDetalhes(dealId){
 // que o usuario abriu. Cache em memoria pra nao reconsultar no mesmo acesso.
 const _PAG_CACHE = {};
 
+// Busca em LOTE. O Apps Script le a planilha de depositos INTEIRA a cada
+// chamada, entao pedir 1 contrato custa o mesmo que pedir 142 (~2s medidos).
+// Como ele roda uma execucao por vez POR USUARIO, uma chamada por cliente
+// aberto entraria na fila atras da sincronizacao de leads (15-20s) e a secao
+// demoraria a preencher. Uma chamada so traz todos os contratos Antecipa da
+// carteira; da 2a abertura em diante e instantaneo e sem rede.
+let _PAG_PROMISE = null;              // busca em voo (aberturas simultaneas entram de carona)
+let _PAG_TS = 0;                      // quando o lote foi carregado
+const _PAG_TTL_MS = 10 * 60 * 1000;   // 10 min: deposito novo aparece sem recarregar o app
+
+function _pagIdsDaCarteira(){
+  try {
+    const vistos = {}, ids = [];
+    for (let i = 0; i < rawData.length; i++) {
+      const x = rawData[i];
+      if (!x || !x.cid) continue;
+      if (String(x.produto || '').toUpperCase().indexOf('ANTECIPA') < 0) continue;
+      if (vistos[x.cid]) continue;
+      vistos[x.cid] = 1; ids.push(x.cid);
+    }
+    return ids;
+  } catch (_e) { return []; }
+}
+
+function _pagFetchLote(cidGarantido){
+  if (_PAG_PROMISE) return _PAG_PROMISE;
+  const ids = _pagIdsDaCarteira();
+  if (cidGarantido && ids.indexOf(cidGarantido) < 0) ids.push(cidGarantido);
+  if (!ids.length) return Promise.resolve();
+  _PAG_PROMISE = apiCall('pagAntecipa', { contract_ids: ids }, { timeoutMs: 30000 })
+    .then(function(r){
+      const pag = (r && r.pag) || {};
+      // guarda null pros contratos sem deposito: 'undefined' segue significando
+      // "ainda nao buscado", que e o que o _loadPagAntecipa testa.
+      for (let i = 0; i < ids.length; i++) _PAG_CACHE[ids[i]] = pag[ids[i]] || null;
+      _PAG_TS = Date.now();
+      _PAG_PROMISE = null;
+    })
+    .catch(function(err){ _PAG_PROMISE = null; throw err; });   // erro nao gruda: da pra tentar de novo
+  return _PAG_PROMISE;
+}
+
 async function _loadPagAntecipa(cid){
   function done(html){
     const load = document.getElementById('cd-pag-load');
@@ -2666,11 +2720,14 @@ async function _loadPagAntecipa(cid){
   }
 
   try {
+    if (_PAG_TS && (Date.now() - _PAG_TS) > _PAG_TTL_MS) {   // lote velho: derruba e rebusca
+      for (const k in _PAG_CACHE) delete _PAG_CACHE[k];
+      _PAG_TS = 0;
+    }
     let lista = _PAG_CACHE[cid];
     if (lista === undefined) {
-      const r = await apiCall('pagAntecipa', { contract_ids: [cid] }, { timeoutMs: 15000 });
-      lista = (r && r.pag && r.pag[cid]) || null;
-      _PAG_CACHE[cid] = lista;
+      await _pagFetchLote(cid);            // 1 chamada cobre a carteira toda
+      lista = _PAG_CACHE[cid];
     }
     if (!lista || !lista.length) { done(''); return; }
 
