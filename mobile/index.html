@@ -878,7 +878,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
   <div class="copa-modal" id="copa-modal" onclick="closeCopaFig()"></div>
 
   <div style="position:fixed;bottom:78px;right:8px;font-size:9px;color:#aaa;background:rgba(255,255,255,.85);padding:2px 6px;border-radius:8px;z-index:99;font-family:monospace;pointer-events:none">
-    v2.166 · 07/08
+    v2.171 · 21/08
   </div>
 
   <!-- BOTTOM NAV -->
@@ -1823,10 +1823,13 @@ function renderCarteira(){
   const el = document.getElementById('s2-content');
   if(!seller){ el.innerHTML = '<div class="empty"><div class="empty-icon">👆</div><div class="empty-text">Identifica-te no topo da tela pra ver tua carteira</div></div>'; return; }
 
-  const CARD_AS_SELLER = ['João Santos']; // por enquanto: Card do João usa regras de vendedor, não de líder
-  const _liderSeller = (typeof isLider==='function' && isLider(seller) && !CARD_AS_SELLER.includes(seller));
+  // v2.171 — TODO lider tem o botao "Ver resultado do time" (pedido Felipe 21/08).
+  // CARD_AS_SELLER = lider que TAMBEM vende: mantem os blocos de vendedor (Seu Resultado/campanhas) na carteira pessoal.
+  const CARD_AS_SELLER = ['João Santos'];
+  const _liderTime   = (typeof isLider==='function' && isLider(seller));
+  const _liderSeller = _liderTime && !CARD_AS_SELLER.includes(seller);
   // v2.164 — lider ve a propria carteira por padrao ao selecionar o proprio nome; botao abre a visao de time
-  if(_liderSeller && liderVerTime){ el.innerHTML = renderCarteiraLider(seller); return; }
+  if(_liderTime && liderVerTime){ el.innerHTML = renderCarteiraLider(seller); return; }
 
   const myDeals = rawData.filter(x=>x.s===seller);
   const myAprov = myDeals.filter(x => noMes(x) && isAprovado(x)).reduce((a,x)=>a+x.mwh,0);
@@ -1850,9 +1853,11 @@ function renderCarteira(){
       + '<div class="summary-row" style="margin-top:2px"><span class="summary-key" style="font-size:11px;color:var(--muted);font-weight:500">'+_vis+' visitas em '+VIS_MES_LABEL+' \u00b7 '+_du+' dias \u00fateis \u00b7 pr\u00e9-req 15/dia</span><span></span></div></div>';
   }
 
+  const _btnTime = _liderTime ? '<button onclick="liderVerTime=true;renderCarteira()" style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-bottom:12px;padding:11px 12px;background:#EEF2FF;border:1px solid #C7D2FE;border-radius:12px;font-size:13px;font-weight:800;color:#3730A3;cursor:pointer;font-family:inherit">\u{1F465} Ver resultado do time</button>' : '';
   let html = _liderSeller ? `
-    <button onclick="liderVerTime=true;renderCarteira()" style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-bottom:12px;padding:11px 12px;background:#EEF2FF;border:1px solid #C7D2FE;border-radius:12px;font-size:13px;font-weight:800;color:#3730A3;cursor:pointer;font-family:inherit">👥 Ver resultado do time</button>
+    ${_btnTime}
     <div class="section-head">Sua Carteira (${myDeals.length} clientes)</div>` : `
+    ${_btnTime}
     ${visitasBlock}
     <div class="card">
       <div class="card-title">Seu Resultado</div>
