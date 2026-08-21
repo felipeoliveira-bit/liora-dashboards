@@ -1,5 +1,24 @@
 import csv, json, datetime, re, glob
 
+# ── Observacao da analise de risco (Felipe 21/08) ───────────────────────────
+# latest_risk_analysis_comments explica por que o Antecipa travou ("1 fatura
+# vencida", "baixa_renda", "instalacao desligada"...), mas vem colado num
+# payload PIX EMV gigante ("00020126980014br.gov.bcb.pix0136...") que polui a
+# tela. Aqui tiramos o payload e recuperamos de dentro dele a referencia da
+# fatura (Conta Ref MES/AA Vencimento DD/MM/AA), que e' a parte util.
+_OBS_PIX = re.compile(r'0002\d{2}\S{20,}.*$', re.S)   # payload vem sempre no fim: corta dali pro fim
+_OBS_REF = re.compile(r'Conta Ref ([A-Z]{3}/\d{2}) Vencimento (\d{2}/\d{2}/\d{2})')
+def clean_obs(t, limit=200):
+    raw = (t or '').replace('\r', ' ')
+    if not raw.strip(): return ''
+    t = _OBS_PIX.sub(' ', raw)
+    t = re.sub(r'(?i),?\s*pix\s*:?\s*$', '', re.sub(r'\s+', ' ', t).strip())
+    t = t.strip(' ,;.|-\u00b7')
+    refs = _OBS_REF.findall(raw)
+    if refs and 'Ref' not in t:
+        t = (t + ' \u00b7 ' + ', '.join('ref ' + a + ' venc ' + b for a, b in refs[:3])).strip(' \u00b7')
+    return t[:limit].strip()
+
 # ── Documentos pendentes (4o recorte) ─────────────────────
 def short_doc(t):
     t=(t or '').strip(); low=t.lower(); rep='representante' in low
@@ -280,7 +299,7 @@ def build_rawData(deals_path, ag_path, prop_path=None, docs_map=None, uc_map=Non
             'deal_id':did,'uc':uc_map.get(did,''),'tel':r['client_phone_number'],'cnpj':r['current_client_cnpj'],'cpf':r['current_client_cpf'],
             'fatura':pfloat(r['current_total_bill_cost (R$)']),'semana':semana(basis),
             'lost_at':('' if (forced or (cli or '').strip().upper() in LOST_IGNORE) else r['deal_lost_at']),'lost_reason':('' if (forced or (cli or '').strip().upper() in LOST_IGNORE) else r['deal_lost_reason']),
-            'motivo':(('CANCELADO — '+(r.get('deal_lost_reason') or '').strip()) if ((r.get('latest_risk_analysis_result') or '').strip()=='APPROVED' and (r.get('deal_lost_at') or '').strip() and r.get('deal_stage')=='BACKGROUND_CHECKING' and (r.get('deal_lost_reason') or '').strip().lower()!='troca de titularidade') else (r.get('latest_risk_analysis_comments') or '').strip()),
+            'motivo':(('CANCELADO — '+(r.get('deal_lost_reason') or '').strip()) if ((r.get('latest_risk_analysis_result') or '').strip()=='APPROVED' and (r.get('deal_lost_at') or '').strip() and r.get('deal_stage')=='BACKGROUND_CHECKING' and (r.get('deal_lost_reason') or '').strip().lower()!='troca de titularidade') else clean_obs(r.get('latest_risk_analysis_comments'))),
             'date':iso(created),'aprov_date':aprov,
             'docs':docs_map.get((r.get('latest_contract_id') or '').strip(),''),
             'cid':(r.get('latest_contract_id') or '').strip(),   # cruza c/ a planilha de pagamentos do Antecipa (action pagAntecipa)

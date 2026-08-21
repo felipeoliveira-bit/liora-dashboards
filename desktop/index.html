@@ -6593,6 +6593,7 @@ loadAll();
           <th data-k=&quot;mwh&quot; class=&quot;num&quot;>MWh</th>
           <th data-k=&quot;stage&quot;>Estágio</th>
           <th data-k=&quot;date&quot;>Data</th>
+          <th data-k=&quot;obs&quot; title=&quot;Observação da análise de risco — o que travou o cliente&quot;>Análise de risco</th>
         </tr></thead>
         <tbody id=&quot;ant-tbody&quot;></tbody>
       </table>
@@ -7030,24 +7031,34 @@ function openKpi(key){
   el('kpi-body').innerHTML = '<div class=&quot;tbl-wrap&quot;><table><thead><tr>'
     + '<th>Cliente</th><th>Vendedor</th><th>Praça</th><th>Cidade/UF</th><th>Distribuidora</th><th>Tipo</th>'
     + '<th class=&quot;num&quot;>Fatura</th><th class=&quot;num&quot;>MWh</th><th>Estágio</th><th>'
-    + (dk==='adate' ? 'Aprovado em' : 'Data') + '</th></tr></thead><tbody>'
+    + (dk==='adate' ? 'Aprovado em' : 'Data') + '</th><th>Análise de risco</th></tr></thead><tbody>'
     + rows.map(function(x){
         return '<tr><td>'+esc(x.c||'—')+'</td><td>'+esc(x.s||'—')+'</td><td>'+pracaBadge(x.praca)+'</td>'
           + '<td>'+esc((x.city||'—')+(x.uf?' / '+x.uf:''))+'</td><td>'+esc(x.dist||'—')+'</td>'
           + '<td><span class=&quot;pill '+(x.tipo==='PJ'?'pj':'pf')+'&quot;>'+esc(x.tipo||'-')+'</span></td>'
           + '<td class=&quot;num&quot;>'+brl(x.bill)+'</td>'
           + '<td class=&quot;num&quot;>'+(x.mwh||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'</td>'
-          + '<td>'+esc(stLbl(x.stage))+'</td><td>'+ddmm(x[dk]||x.date)+'</td></tr>';
+          + '<td>'+esc(stLbl(x.stage))+'</td><td>'+ddmm(x[dk]||x.date)+'</td>'+antObsCell(x.obs)+'</tr>';
       }).join('')
     + '</tbody></table></div>';
   el('kpi-modal').classList.add('open');
 }
 function closeKpi(){ el('kpi-modal').classList.remove('open'); }
 
+// Observacao da analise de risco na lista (Felipe 21/08). O texto ja vem limpo
+// do payload PIX pelo build; aqui so cortamos visualmente e deixamos o texto
+// completo no title (hover).
+function antObsCell(t){
+  const v = (t||'').trim();
+  if(!v) return '<td style=&quot;color:#b9b9c6&quot;>—</td>';
+  const sh = v.length>64 ? v.slice(0,63)+'…' : v;
+  return '<td style=&quot;max-width:280px&quot; title=&quot;'+esc(v)+'&quot;>'+esc(sh)+'</td>';
+}
+
 function renderList(){
   const rows = currentRows();
   const body = el(&quot;ant-tbody&quot;);
-  if(!rows.length){ body.innerHTML = '<tr><td colspan=&quot;10&quot; class=&quot;empty&quot;>nenhuma proposta com esses filtros</td></tr>'; }
+  if(!rows.length){ body.innerHTML = '<tr><td colspan=&quot;11&quot; class=&quot;empty&quot;>nenhuma proposta com esses filtros</td></tr>'; }
   else {
     body.innerHTML = rows.map(function(x){
       const tipoCls = x.tipo===&quot;PJ&quot;?&quot;pj&quot;:&quot;pf&quot;;
@@ -7063,6 +7074,7 @@ function renderList(){
         + '<td class=&quot;num&quot;>'+(x.mwh||0).toLocaleString(&quot;pt-BR&quot;,{minimumFractionDigits:2,maximumFractionDigits:2})+&quot;</td>&quot;
         + &quot;<td>&quot;+esc(stLbl(x.stage))+&quot;</td>&quot;
         + &quot;<td>&quot;+ddmm(x.date)+&quot;</td>&quot;
+        + antObsCell(x.obs)
         + &quot;</tr>&quot;;
     }).join(&quot;&quot;);
   }

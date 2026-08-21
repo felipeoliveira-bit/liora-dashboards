@@ -878,7 +878,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
   <div class="copa-modal" id="copa-modal" onclick="closeCopaFig()"></div>
 
   <div style="position:fixed;bottom:78px;right:8px;font-size:9px;color:#aaa;background:rgba(255,255,255,.85);padding:2px 6px;border-radius:8px;z-index:99;font-family:monospace;pointer-events:none">
-    v2.171 · 21/08
+    v2.172 · 21/08
   </div>
 
   <!-- BOTTOM NAV -->
@@ -1017,6 +1017,21 @@ function getStatusInfo(x){
   if(isAgDocs(x))    return {label:'Ag. Docs',bg:'#FFF8E1',color:'#795500'};
   if(isOutros(x))    return {label:'Outros',bg:'#f0f0f0',color:'#666'};
   return {label:x.status||'—',bg:'#f0f0f0',color:'#666'};
+}
+
+// v2.172 — Observacao da analise de risco (Felipe 21/08). E o campo que explica
+// por que o cliente travou ("1 fatura vencida", "baixa_renda", "instalacao
+// desligada"): o time precisa VER isso pra agir. O build ja limpa o payload PIX.
+// Negado nao repete aqui porque o getAcao ja imprime o motivo da negativa.
+function obsAnalise(x){
+  const v = ((x && x.motivo) || '').trim();
+  if(!v || (typeof isNegado==='function' && isNegado(x))) return '';
+  return v;
+}
+function obsAnaliseHtml(x){
+  const v = obsAnalise(x);
+  if(!v) return '';
+  return '<div class="acao-text" style="background:#FFF8E1;border:1px solid #F5E0A3;color:#795500;border-radius:10px;padding:8px 10px;margin-top:6px">\u{1F50E} An\u00e1lise de risco: ' + escapeHtml(v) + '</div>';
 }
 
 function getAcao(x){
@@ -1909,6 +1924,7 @@ function renderCarteira(){
           <span class="days-badge" style="color:${idleColor}">${x.idle}d</span>
         </div>
         ${naoAceito ? `<div class="acao-text" style="background:#FCEBEB;border:1px solid #F5C2C2;color:#A32D2D;font-weight:700;border-radius:10px;padding:8px 10px">⚠️ Não aceito pela distribuidora${x.lost_reason ? ` · ${escapeHtml(x.lost_reason)}` : ''}</div>` : `<div class="acao-text">${acao}</div>`}
+        ${obsAnaliseHtml(x)}
         ${x.deal_id ? `
           <button class="relatar-btn" data-deal-id="${escapeHtml(x.deal_id)}" data-cliente-nome="${escapeHtml(x.c)}" onclick="event.stopPropagation(); openRelatarSituacaoFromBtn(this)">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -2582,6 +2598,15 @@ function openClienteDetalhes(dealId){
   const stageMeaningBlock = stageMeaning
     ? `<div class="cd-row"><div class="cd-row-k">O que significa</div><div class="cd-row-v" style="color:#1D9E75;font-weight:500">${escapeHtml(stageMeaning)}</div></div>`
     : '';
+  // Observação da análise de risco (v2.172): mostra sempre que existir, inclusive
+  // no negado (aqui o texto completo cabe, diferente do card da carteira).
+  const _obsTxt = ((lead.motivo)||'').trim();
+  const obsBlock = _obsTxt
+    ? `<div class="cd-section">
+         <div class="cd-section-title">🔎 Análise de risco</div>
+         <div class="cd-acao">${escapeHtml(_obsTxt)}</div>
+       </div>`
+    : '';
   // Situação Antecipa (crédito) — bloco explicado, só p/ deals do Antecipa
   const creditBlock = lead.credito ? (function(){
     var info = CREDIT_DESC[lead.credito];
@@ -2645,6 +2670,7 @@ function openClienteDetalhes(dealId){
         ${lead.semana ? `<div class="cd-row"><div class="cd-row-k">Semana</div><div class="cd-row-v">${escapeHtml(lead.semana)}</div></div>` : ''}
       </div>
 
+      ${obsBlock}
       ${creditBlock}
       ${pagBlock}
 

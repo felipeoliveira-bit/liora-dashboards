@@ -12,6 +12,25 @@
 # ==========================================================================
 import csv, json, re, io, datetime, sys, glob, os
 
+# ── Observacao da analise de risco (Felipe 21/08) ───────────────────────────
+# latest_risk_analysis_comments explica por que o Antecipa travou ("1 fatura
+# vencida", "baixa_renda", "instalacao desligada"...), mas vem colado num
+# payload PIX EMV gigante ("00020126980014br.gov.bcb.pix0136...") que polui a
+# tela. Aqui tiramos o payload e recuperamos de dentro dele a referencia da
+# fatura (Conta Ref MES/AA Vencimento DD/MM/AA), que e' a parte util.
+_OBS_PIX = re.compile(r'0002\d{2}\S{20,}.*$', re.S)   # payload vem sempre no fim: corta dali pro fim
+_OBS_REF = re.compile(r'Conta Ref ([A-Z]{3}/\d{2}) Vencimento (\d{2}/\d{2}/\d{2})')
+def clean_obs(t, limit=200):
+    raw = (t or '').replace('\r', ' ')
+    if not raw.strip(): return ''
+    t = _OBS_PIX.sub(' ', raw)
+    t = re.sub(r'(?i),?\s*pix\s*:?\s*$', '', re.sub(r'\s+', ' ', t).strip())
+    t = t.strip(' ,;.|-\u00b7')
+    refs = _OBS_REF.findall(raw)
+    if refs and 'Ref' not in t:
+        t = (t + ' \u00b7 ' + ', '.join('ref ' + a + ' venc ' + b for a, b in refs[:3])).strip(' \u00b7')
+    return t[:limit].strip()
+
 # ── Documentos pendentes (4o recorte) ──
 def short_doc(t):
     t=(t or '').strip(); low=t.lower(); rep='representante' in low
@@ -501,6 +520,9 @@ if f_ant:
           'risk': ('APPROVED' if (_did in ANT_APPROVE or apc_ok(r) or (r.get('latest_credit_analysis_result') or '').strip().lower()=='approved') else (r.get('latest_risk_analysis_result') or '').strip()),  # apc_ok: Felipe 18/08
           'credito': ('approved' if _did in ANT_APPROVE else (r.get('latest_credit_analysis_result') or '').strip()),
           'tipo': _ant_tipo(r.get('product_name')),
+          # obs = observacao da analise de risco (Felipe 21/08): da visibilidade
+          # ao time do que travou o cliente (fatura vencida, baixa_renda, etc).
+          'obs': clean_obs(r.get('latest_risk_analysis_comments')),
           'signed': bool((r.get('latest_contract_signature_signed_at') or '').strip()),
           'date': d or '',
           'adate': _adate,
