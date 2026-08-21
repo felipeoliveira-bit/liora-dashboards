@@ -883,7 +883,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
   <div class="copa-modal" id="copa-modal" onclick="closeCopaFig()"></div>
 
   <div style="position:fixed;bottom:78px;right:8px;font-size:9px;color:#aaa;background:rgba(255,255,255,.85);padding:2px 6px;border-radius:8px;z-index:99;font-family:monospace;pointer-events:none">
-    v2.175 · 21/08
+    v2.176 · 21/08
   </div>
 
   <!-- BOTTOM NAV -->
@@ -912,7 +912,10 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
       </div>
       <div class="nav-label">Funil</div>
     </div>
-    <div class="nav-item" onclick="setScreen('pendencias')" id="nav-pendencias">
+    <!-- v2.176 (Felipe 21/08): a aba saiu da barra. A entrada e' o card "Pendencias do
+         time" na tela Field. O item fica no DOM (display:none) porque o setScreen
+         busca 'nav-'+tela e quebraria sem ele. -->
+    <div class="nav-item" onclick="setScreen('pendencias')" id="nav-pendencias" style="display:none">
       <div class="nav-icon">
         <svg viewBox="0 0 24 24"><path d="M9 3h6v3H9z"/><path d="M6 6h12a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg>
       </div>
@@ -2398,7 +2401,8 @@ function renderPendencias(){
               : (e.tipo==='praca' ? ('Time · ' + (misLabel ? misLabel(e.praca) : e.praca))
               : (pendPraca==='all' ? 'Todas as praças' : (PRACA_DEF[pendPraca] ? PRACA_DEF[pendPraca].label : pendPraca)));
 
-  let h = '<div class="camp-header" style="background:linear-gradient(135deg,#F59E0B 0%,#B45309 100%)">'
+  let h = '<button onclick="setScreen(\'resumo\')" style="display:flex;align-items:center;gap:6px;width:100%;margin-bottom:10px;padding:10px 12px;background:#fff;border:1.5px solid var(--border);border-radius:12px;font-family:inherit;font-size:12px;font-weight:800;color:var(--ink);cursor:pointer">\u2190 Voltar pro Field</button>'
+    + '<div class="camp-header" style="background:linear-gradient(135deg,#F59E0B 0%,#B45309 100%)">'
     + '<div class="camp-title">Pendências · ' + escapeHtml(alvo) + '</div>'
     + '<div class="camp-period">' + rows.length + ' cliente' + (rows.length===1?'':'s') + '</div>'
     + '<div class="camp-sub">' + mwh.toFixed(1) + ' MWh travados · toque no cliente pra ver o detalhe</div>'
