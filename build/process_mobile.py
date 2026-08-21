@@ -203,7 +203,6 @@ FORCE_APPROVED = {'dabf7abd-1266-40b0-bb0b-6b593cfca457': '2026-08-18',  # MATEU
                   '2a50c11b-55c8-4f23-810f-438c71f90696': '2026-08-19',  # ROSEMEIRE DIAS DE ALMEIDA (Antecipa PF, Ettore Rossi/Salvador, 1.29 MWh) - risco APPROVED 20/08 00:23
                   '18a28a63-cd00-4bde-97e0-f04151fe5a2d': '2026-08-19',  # NELO MINGHE NETO (Antecipa PJ, Fabio Rodrigues/Ribeirao, 0.905 MWh) - risco APPROVED 20/08 00:47
                   '67505be8-e7a4-496f-a8e3-a711909fa2fc': '2026-08-19',  # ALEXANDRE ZANETI ARANTES (Antecipa PJ, Karianine Sampaio/Ribeirao, 0.871 MWh) - risco APPROVED 20/08 01:14
-                  '1e11931c-3e99-48f4-a338-47d734012625': '2026-08-20',  # FRANCISCO DAS CHAGAS CUNHA SILVA / 33050196000188 (Antecipa PJ, Olimpio Filho/Ribeirao, 0.916 MWh) - DENIED em 14/08 12:24 ('Instalacao esta desligada') + deal lost; REANALISADO e APROVADO hoje 20/08 (Felipe). Bronze ingeriu ate 19:00 / watermark 19:10, a reaprovacao ainda nao chegou na base. Remover quando a base refletir.
                   }  # ALEXANDRE ZANETI ARANTES (Antecipa PJ, Karianine Sampaio/Ribeirao, 0.871 MWh) - risco APPROVED 20/08 01:14
 LOST_IGNORE = {  # ignora lost_at/lost_reason (falso 'nao aceito pela distribuidora')
  'FRANCISCO ALDECI DE QUEIROZ FERNANDES',  # reprovado e erro; ignorar (Felipe 03/07)
