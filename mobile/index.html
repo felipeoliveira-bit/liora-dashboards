@@ -883,7 +883,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
   <div class="copa-modal" id="copa-modal" onclick="closeCopaFig()"></div>
 
   <div style="position:fixed;bottom:78px;right:8px;font-size:9px;color:#aaa;background:rgba(255,255,255,.85);padding:2px 6px;border-radius:8px;z-index:99;font-family:monospace;pointer-events:none">
-    v2.176 · 21/08
+    v2.177 · 21/08
   </div>
 
   <!-- BOTTOM NAV -->
@@ -1475,21 +1475,14 @@ function renderResumo(){
       </div>
     </div>
 
-    <div class="stat-grid">
-      <div class="stat-card clickable" onclick="setScreen('pendencias')">
-        <div class="stat-icon">📋</div>
-        <div class="stat-label">Pendências do time</div>
-        <div class="stat-value" style="color:var(--orange)">${_pendMwhResumo().toFixed(1)}<span class="stat-unit">MWh</span></div>
+    <div class="stat-card clickable" onclick="setScreen('pendencias')" style="text-align:left;margin-bottom:12px;display:flex;align-items:center;gap:12px;padding:14px">
+      <div style="flex:1;min-width:0">
+        <div class="stat-label" style="margin-top:0">📋 Pendências do time</div>
+        <div class="stat-value" style="color:var(--orange)">${_pendMwhResumo().toFixed(1)}<span class="stat-unit">MWh travados</span></div>
+        <div style="font-size:11px;color:#555;margin-top:4px;line-height:1.4">${_pendCountResumo()} cliente${_pendCountResumo()===1?'':'s'} parado${_pendCountResumo()===1?'':'s'} em documento, análise de risco ou Antecipa</div>
       </div>
+      <div style="flex-shrink:0;font-size:18px;color:var(--muted)">›</div>
     </div>
-    ${_pendCountResumo() > 0 ? `
-      <div class="alert-card blue clickable" onclick="setScreen('pendencias')">
-        <div class="alert-icon">📋</div>
-        <div class="alert-content">
-          <div class="alert-title">${_pendCountResumo()} clientes com pendência</div>
-          <div class="alert-desc">${_pendMwhResumo().toFixed(1)} MWh travados em documento ou análise de risco. Toque para abrir.</div>
-        </div>
-      </div>` : ''}
   `;
 
   // ── Meta to Date + Execução diária UNIFICADOS por praça ──
