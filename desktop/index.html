@@ -6477,6 +6477,20 @@ loadAll();
   .filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center}
   .filters input,.filters select{font-family:inherit;font-size:12.5px;padding:7px 10px;border:1px solid #d6dae6;border-radius:8px;background:#fff;color:#1a1a2e}
   .filters input[type=text]{flex:1;min-width:150px}
+  .ms{position:relative;display:inline-block}
+  .ms-btn{font-family:inherit;font-size:12.5px;padding:7px 10px;border:1px solid #d6dae6;border-radius:8px;background:#fff;color:#1a1a2e;cursor:pointer;display:inline-flex;align-items:center;gap:6px;max-width:260px}
+  .ms-btn:hover{border-color:#b9c0d4}
+  .ms-btn.on{border-color:#0201F3;color:#0201F3;font-weight:600}
+  .ms-car{font-size:10px;opacity:.6}
+  .ms-pan{display:none;position:absolute;top:calc(100% + 4px);left:0;z-index:60;background:#fff;border:1px solid #d6dae6;border-radius:10px;box-shadow:0 8px 24px rgba(20,20,50,.16);padding:8px;min-width:250px;max-height:320px;overflow:auto}
+  .ms.open .ms-pan{display:block}
+  .ms-act{display:flex;gap:6px;margin-bottom:6px;border-bottom:1px solid #eef0f6;padding-bottom:6px}
+  .ms-act button{flex:1;font-family:inherit;font-size:11.5px;font-weight:600;padding:5px 8px;border:none;border-radius:6px;background:#f1f2f7;color:#4A4A4A;cursor:pointer}
+  .ms-act button:hover{background:#e6e8f2}
+  .ms-opt{display:flex;align-items:center;gap:8px;font-size:12.5px;padding:5px 6px;border-radius:6px;cursor:pointer;white-space:nowrap}
+  .ms-opt:hover{background:#f6f7fb}
+  .ms-opt input{margin:0;accent-color:#0201F3}
+  .ms-opt .ms-n{margin-left:auto;font-size:11px;color:#8a8fa3}
   .chk{display:flex;align-items:center;gap:6px;font-size:12.5px;color:#4A4A4A;cursor:pointer;user-select:none}
   table{width:100%;border-collapse:collapse;font-size:12.5px}
   th{text-align:left;padding:8px 8px;border-bottom:2px solid #E3EAE8;color:#4A4A4A;font-weight:600;cursor:pointer;white-space:nowrap;position:sticky;top:0;background:#fff}
@@ -6544,7 +6558,13 @@ loadAll();
       <input type=&quot;text&quot; id=&quot;f-busca&quot; placeholder=&quot;Buscar cliente, cidade, vendedor...&quot;>
       <select id=&quot;f-uf&quot;><option value=&quot;&quot;>UF (todas)</option></select>
       <select id=&quot;f-dist&quot;><option value=&quot;&quot;>Distribuidora (todas)</option></select>
-      <select id=&quot;f-stage&quot;><option value=&quot;&quot;>Estágio (todos)</option></select>
+      <div class=&quot;ms&quot; id=&quot;f-stage-ms&quot;>
+        <button type=&quot;button&quot; class=&quot;ms-btn&quot; id=&quot;f-stage-btn&quot; onclick=&quot;toggleStageMenu(event)&quot;>Estágio (todos)<span class=&quot;ms-car&quot;>&#9662;</span></button>
+        <div class=&quot;ms-pan&quot; id=&quot;f-stage-pan&quot;>
+          <div class=&quot;ms-act&quot;><button type=&quot;button&quot; onclick=&quot;stageAll(true)&quot;>Marcar todos</button><button type=&quot;button&quot; onclick=&quot;stageAll(false)&quot;>Limpar</button></div>
+          <div id=&quot;f-stage-list&quot;></div>
+        </div>
+      </div>
       <select id=&quot;f-tipo&quot;><option value=&quot;&quot;>PF/PJ</option><option value=&quot;PF&quot;>PF</option><option value=&quot;PJ&quot;>PJ</option></select>
     </div>
     <div class=&quot;tbl-wrap&quot;>
@@ -6618,6 +6638,7 @@ function pracaLbl(k){ return PRACA_LABEL[k]||k||'—'; }
 function pracaBadge(k){ return '<span class=&quot;badge-praca b-'+(k||'Outras')+'&quot;>'+esc(pracaLbl(k))+'</span>'; }
 
 let sortKey = &quot;date&quot;, sortDir = -1;
+let stageSel = {};  // multi-selecao de estagio na lista de Propostas (vazio = todos)
 
 // ===== Período (fuso Brasília, igual ao Rankings) =====
 function localISO(d){
@@ -6875,24 +6896,51 @@ function fillSelect(id, key, rows){
   s.innerHTML = first + Object.keys(vals).sort().map(function(v){ return '<option value=&quot;'+esc(v)+'&quot;>'+esc(v)+'</option>'; }).join(&quot;&quot;);
   s.value = cur;
 }
-function fillStageSelect(rows){
-  const s = el(&quot;f-stage&quot;);
-  const cur = s.value;
-  const seen = {}; const list = [];
+function fillStageFilter(rows){
+  const seen = {}; const list = []; const cnt = {};
   STAGE_ORDER.forEach(function(p){ if(rows.some(function(x){return x.stage===p[0];})){ list.push([p[0],p[1]]); seen[p[0]]=1; } });
   rows.forEach(function(x){ if(x.stage &amp;&amp; !seen[x.stage]){ list.push([x.stage, stLbl(x.stage)]); seen[x.stage]=1; } });
-  s.innerHTML = '<option value=&quot;&quot;>Estágio (todos)</option>' + list.map(function(p){ return '<option value=&quot;'+esc(p[0])+'&quot;>'+esc(p[1])+'</option>'; }).join(&quot;&quot;);
-  s.value = cur;
+  rows.forEach(function(x){ if(x.stage) cnt[x.stage] = (cnt[x.stage]||0)+1; });
+  Object.keys(stageSel).forEach(function(k){ if(!seen[k]) delete stageSel[k]; });
+  el('f-stage-list').innerHTML = list.length ? list.map(function(p){
+    return '<label class=&quot;ms-opt&quot;><input type=&quot;checkbox&quot; value=&quot;'+esc(p[0])+'&quot;'+(stageSel[p[0]]?' checked':'')+' onchange=&quot;onStageChange()&quot;>'+esc(p[1])+'<span class=&quot;ms-n&quot;>'+(cnt[p[0]]||0)+'</span></label>';
+  }).join('') : '<div class=&quot;ms-opt&quot; style=&quot;color:#8a8fa3&quot;>sem estágios</div>';
+  syncStageBtn();
+}
+function stageInputs(){ return Array.prototype.slice.call(document.querySelectorAll('#f-stage-list input')); }
+function onStageChange(){
+  stageSel = {};
+  stageInputs().forEach(function(i){ if(i.checked) stageSel[i.value] = 1; });
+  syncStageBtn(); renderList();
+}
+function stageAll(v){
+  stageInputs().forEach(function(i){ i.checked = !!v; });
+  onStageChange();
+}
+function syncStageBtn(){
+  const ks = Object.keys(stageSel);
+  const b = el('f-stage-btn');
+  let txt = 'Estágio (todos)';
+  if(ks.length===1) txt = stLbl(ks[0]);
+  else if(ks.length>1) txt = 'Estágio (' + ks.length + ')';
+  b.innerHTML = '<span style=&quot;overflow:hidden;text-overflow:ellipsis;white-space:nowrap&quot;>' + esc(txt) + '</span><span class=&quot;ms-car&quot;>&#9662;</span>';
+  b.title = ks.length ? ks.map(function(k){ return stLbl(k); }).join(', ') : 'Todos os estágios';
+  if(ks.length) b.classList.add('on'); else b.classList.remove('on');
+}
+function toggleStageMenu(e){
+  if(e) e.stopPropagation();
+  el('f-stage-ms').classList.toggle('open');
 }
 
 function currentRows(){
   const base = baseRows();
   const q = (el(&quot;f-busca&quot;).value||&quot;&quot;).toLowerCase().trim();
-  const fuf = el(&quot;f-uf&quot;).value, fdist = el(&quot;f-dist&quot;).value, fst = el(&quot;f-stage&quot;).value, ftipo = el(&quot;f-tipo&quot;).value;
+  const fuf = el(&quot;f-uf&quot;).value, fdist = el(&quot;f-dist&quot;).value, ftipo = el(&quot;f-tipo&quot;).value;
+  const nStage = Object.keys(stageSel).length;
   let rows = base.filter(function(x){
     if(fuf &amp;&amp; x.uf!==fuf) return false;
     if(fdist &amp;&amp; x.dist!==fdist) return false;
-    if(fst &amp;&amp; x.stage!==fst) return false;
+    if(nStage &amp;&amp; !stageSel[x.stage]) return false;
     if(ftipo &amp;&amp; x.tipo!==ftipo) return false;
     if(q){
       const hay = ((x.c||&quot;&quot;)+&quot; &quot;+(x.s||&quot;&quot;)+&quot; &quot;+(x.city||&quot;&quot;)+&quot; &quot;+(x.uf||&quot;&quot;)+&quot; &quot;+(x.dist||&quot;&quot;)).toLowerCase();
@@ -6950,14 +6998,18 @@ function renderAll(){
   }
   renderPracaPills();
   renderKpis(base); renderVend(base); renderPracaBreak(base);
-  fillSelect(&quot;f-uf&quot;,&quot;uf&quot;,base); fillSelect(&quot;f-dist&quot;,&quot;dist&quot;,base); fillStageSelect(base);
+  fillSelect(&quot;f-uf&quot;,&quot;uf&quot;,base); fillSelect(&quot;f-dist&quot;,&quot;dist&quot;,base); fillStageFilter(base);
   renderList();
 }
 
 function initEvents(){
-  [&quot;f-busca&quot;,&quot;f-uf&quot;,&quot;f-dist&quot;,&quot;f-stage&quot;,&quot;f-tipo&quot;].forEach(function(id){
+  [&quot;f-busca&quot;,&quot;f-uf&quot;,&quot;f-dist&quot;,&quot;f-tipo&quot;].forEach(function(id){
     el(id).addEventListener(&quot;input&quot;, renderList);
     el(id).addEventListener(&quot;change&quot;, renderList);
+  });
+  document.addEventListener(&quot;click&quot;, function(ev){
+    const box = el('f-stage-ms');
+    if(box &amp;&amp; !box.contains(ev.target)) box.classList.remove('open');
   });
   (function stampWeekTitles(){
     var w0=weekRange(0), w1=weekRange(1);
