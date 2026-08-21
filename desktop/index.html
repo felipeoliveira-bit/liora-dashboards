@@ -6782,12 +6782,16 @@ function renderKpis(rows){
     ass:   rows.filter(function(x){return x.signed;}),
     apr:   apprRows(),
     tprop: rows.filter(function(x){return (x.bill||0)>0;}).slice().sort(function(a,b){return (b.bill||0)-(a.bill||0);}),
-    tapr:  apprRows().filter(function(x){return (x.bill||0)>0;}).slice().sort(function(a,b){return (b.bill||0)-(a.bill||0);})
+    tapr:  apprRows().filter(function(x){return (x.bill||0)>0;}).slice().sort(function(a,b){return (b.bill||0)-(a.bill||0);}),
+    amwh:  apprRows().slice().sort(function(a,b){return (b.mwh||0)-(a.mwh||0);})
   };
+  // MWh aprovado = SOMA (nao media) do consumo dos aprovados no periodo (Felipe 21/08)
+  const amwh = apprRows().reduce(function(a,x){ return a+(x.mwh||0); }, 0);
   const k = [
     [&quot;Propostas geradas&quot;, tot, pct(tot,fieldP)+&quot;% do field&quot;, false, 'ger'],
     [&quot;Assinadas&quot;, sig, pct(sig,fieldS)+&quot;% do field&quot;, true, 'ass'],
     [&quot;Aprovadas no risco&quot;, apr, pct(apr,fieldA)+&quot;% do field&quot;, false, 'apr'],
+    [&quot;MWh aprovado&quot;, amwh.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}), &quot;total no periodo&quot;, true, 'amwh'],
     [&quot;Ticket médio propostas&quot;, brl(ticket), &quot;por proposta&quot;, false, 'tprop'],
     [&quot;Ticket médio aprovados&quot;, brl(tapr), &quot;por aprovado&quot;, false, 'tapr'],
   ];
@@ -7004,7 +7008,8 @@ const KPI_META = {
   ass:   ['Assinadas', 'proposta(s) com contrato assinado', 'date'],
   apr:   ['Aprovadas no risco', 'cliente(s) aprovado(s) no risco, pela data da aprovação', 'adate'],
   tprop: ['Ticket médio propostas', 'proposta(s) com fatura informada — média das faturas', 'date'],
-  tapr:  ['Ticket médio aprovados', 'aprovado(s) com fatura informada — média das faturas', 'adate']
+  tapr:  ['Ticket médio aprovados', 'aprovado(s) com fatura informada — média das faturas', 'adate'],
+  amwh:  ['MWh aprovado', 'aprovado(s) no período — soma do consumo (MWh)', 'adate']
 };
 function antPerLbl(){
   if(antPer==='today')     return 'Hoje ('+ddmm(TODAY_ISO)+')';
