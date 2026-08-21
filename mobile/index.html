@@ -1025,7 +1025,10 @@ function getStatusInfo(x){
 // Negado nao repete aqui porque o getAcao ja imprime o motivo da negativa.
 function obsAnalise(x){
   const v = ((x && x.motivo) || '').trim();
-  if(!v || (typeof isNegado==='function' && isNegado(x))) return '';
+  if(!v) return '';
+  if(/^auto-aprovado/i.test(v)) return '';                              // "todos os checks verdes" nao e' acao
+  if(typeof isNegado==='function' && isNegado(x)) return '';            // getAcao ja mostra o motivo da negativa
+  if(typeof isAprovado==='function' && isAprovado(x)) return '';        // aprovado nao tem pendencia a resolver
   return v;
 }
 function obsAnaliseHtml(x){
