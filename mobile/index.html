@@ -883,7 +883,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
   <div class="copa-modal" id="copa-modal" onclick="closeCopaFig()"></div>
 
   <div style="position:fixed;bottom:78px;right:8px;font-size:9px;color:#aaa;background:rgba(255,255,255,.85);padding:2px 6px;border-radius:8px;z-index:99;font-family:monospace;pointer-events:none">
-    v2.173 · 21/08
+    v2.174 · 21/08
   </div>
 
   <!-- BOTTOM NAV -->
@@ -1034,18 +1034,40 @@ function getStatusInfo(x){
 // por que o cliente travou ("1 fatura vencida", "baixa_renda", "instalacao
 // desligada"): o time precisa VER isso pra agir. O build ja limpa o payload PIX.
 // Negado nao repete aqui porque o getAcao ja imprime o motivo da negativa.
-function obsAnalise(x){
+function obsMotivo(x){                                                   // texto util, sem o ruido do agente
   const v = ((x && x.motivo) || '').trim();
   if(!v) return '';
   if(/^auto-aprovado/i.test(v)) return '';                              // "todos os checks verdes" nao e' acao
-  if(typeof isNegado==='function' && isNegado(x)) return '';            // getAcao ja mostra o motivo da negativa
-  if(typeof isAprovado==='function' && isAprovado(x)) return '';        // aprovado nao tem pendencia a resolver
   return v;
 }
-function obsAnaliseHtml(x){
-  const v = obsAnalise(x);
+function obsAnalise(x){
+  const v = obsMotivo(x);
   if(!v) return '';
-  return '<div class="acao-text" style="background:#FFF8E1;border:1px solid #F5E0A3;color:#795500;border-radius:10px;padding:8px 10px;margin-top:6px">\u{1F50E} An\u00e1lise de risco: ' + escapeHtml(v) + '</div>';
+  if(typeof isNegado==='function' && isNegado(x)) return '';            // getAcao ja mostra o motivo da negativa
+  // v2.174 (Felipe 21/08): aprovado no risco/BGC mas com o Antecipa ainda pendurado
+  // (ex.: AGUARDANDO_CONFIRMACAO_DO_CLIENTE) CONTINUA tendo acao -> mostra a obs.
+  if(typeof isAprovado==='function' && isAprovado(x) && !pendAntecipa(x)) return '';
+  return v;
+}
+// Antecipa que ainda nao fechou: credito aprovado nao quer dizer concluido — o
+// deal_credit_stage diz de quem e' a bola (cliente confirmar, forma de pagamento,
+// desembolso). Terminal = pagamento realizado ou credito/pagamento rejeitado.
+const PEND_ANT_FIM = ['PAGAMENTO_REALIZADO','ANÁLISE_DE_CRÉDITO_REJEITADA','PAGAMENTO_REJEITADO'];
+function pendAntecipa(x){
+  const c = String((x && x.credito) || '').trim();
+  if(!c || PEND_ANT_FIM.indexOf(c) >= 0) return '';
+  const info = (typeof CREDIT_DESC !== 'undefined') ? CREDIT_DESC[c] : null;
+  const label = info ? info[0] : (c.charAt(0) + c.slice(1).toLowerCase().replace(/_/g,' '));
+  const desc  = info ? info[1] : '';
+  return 'Antecipa · ' + label + (desc ? ' — ' + desc : '');
+}
+function obsAnaliseHtml(x){
+  let h = '';
+  const a = pendAntecipa(x);
+  if(a) h += '<div class="acao-text" style="background:#F3F1FF;border:1px solid #D6D0FB;color:#4C41B0;border-radius:10px;padding:8px 10px;margin-top:6px">\u23F3 ' + escapeHtml(a) + '</div>';
+  const v = obsAnalise(x);
+  if(v) h += '<div class="acao-text" style="background:#FFF8E1;border:1px solid #F5E0A3;color:#795500;border-radius:10px;padding:8px 10px;margin-top:6px">\u{1F50E} An\u00e1lise de risco: ' + escapeHtml(v) + '</div>';
+  return h;
 }
 
 function getAcao(x){
@@ -2239,12 +2261,14 @@ function pendDe(x){
     if(d === '__OK__') out.push({k:'docs', ico:'📄', txt:'Documentos recebidos — aguardando processamento', ok:true});
     else out.push({k:'docs', ico:'📄', txt: d ? ('Falta: ' + d) : 'Documentos pendentes (detalhe indisponível)'});
   }
+  const ant = (typeof pendAntecipa==='function') ? pendAntecipa(x) : '';
+  if(ant) out.push({k:'antecipa', ico:'⏳', txt: ant});
   const obs = (typeof obsAnalise==='function') ? obsAnalise(x) : '';
   if(obs) out.push({k:'risco', ico:'🔎', txt: obs});
   return out;
 }
 
-function pendBase(){
+function pendBase(ignorarPraca){
   const e = pendEscopo();
   if(e.tipo==='none') return [];
   const out = [];
@@ -2253,7 +2277,7 @@ function pendBase(){
       if(canonicalVendedor(x.s||'') !== canonicalVendedor(e.me)) return;
     } else if(e.tipo==='praca'){
       if(String(SELLER_PRACA[x.s]||'').toLowerCase() !== String(e.praca||'').toLowerCase()) return;
-    } else if(pendPraca !== 'all'){
+    } else if(!ignorarPraca && pendPraca !== 'all'){
       if(((x.praca && x.praca.key) || 'outras') !== pendPraca) return;
     }
     const p = pendDe(x);
@@ -2289,7 +2313,10 @@ function pendCard(r){
       + '<span class="days-badge" style="color:' + idleColor + '">' + (x.idle||0) + 'd parado</span>'
     + '</div>';
   r.pend.forEach(function(p){
-    const cor = p.ok ? ['#EAF3DE','#C9E2B4','#1D6B4F'] : (p.k==='docs' ? ['#FFF8E1','#F5E0A3','#795500'] : ['#FFF1E6','#FBD3A8','#8A4B00']);
+    const cor = p.ok ? ['#EAF3DE','#C9E2B4','#1D6B4F']
+              : p.k==='docs'     ? ['#FFF8E1','#F5E0A3','#795500']
+              : p.k==='antecipa' ? ['#F3F1FF','#D6D0FB','#4C41B0']
+              :                    ['#FFF1E6','#FBD3A8','#8A4B00'];
     h += '<div class="acao-text" style="background:' + cor[0] + ';border:1px solid ' + cor[1] + ';color:' + cor[2]
       + ';border-radius:10px;padding:8px 10px;margin-top:6px">' + p.ico + ' ' + escapeHtml(p.txt) + '</div>';
   });
@@ -2312,6 +2339,37 @@ function _pendTodas(){
 function _pendCountResumo(){ return _pendTodas().length; }
 function _pendMwhResumo(){ return _pendTodas().reduce(function(a,r){ return a + (r.x.mwh||0); }, 0); }
 
+// Filtro de praca em pills (v2.173.1). Trocou o <select>, que nao parecia clicavel
+// no celular. Conta em cima da base SEM o filtro de praca, senao a pill selecionada
+// zeraria as outras. Mostra so praca que tem pendencia (+ a selecionada, sempre).
+function pendPracaPills(){
+  const ordem = ['salvador','feira','natal','rninterior','spi','ribeirao','ce','outras'];
+  const todas = pendBase(true);
+  const porPraca = {};
+  todas.forEach(function(r){
+    const k = (r.x.praca && r.x.praca.key) || 'outras';
+    if(!porPraca[k]) porPraca[k] = {n:0, mwh:0};
+    porPraca[k].n++; porPraca[k].mwh += (r.x.mwh||0);
+  });
+  function pill(k, label, n, cor){
+    const on = pendPraca === k;
+    return '<button onclick="pendSetPraca(\'' + k + '\')" style="flex:0 0 auto;padding:8px 12px;border-radius:999px;'
+      + 'background:' + (on ? cor : '#fff') + ';border:1.5px solid ' + (on ? cor : 'var(--border)') + ';'
+      + 'color:' + (on ? '#fff' : 'var(--ink)') + ';font-family:inherit;font-size:11.5px;font-weight:800;'
+      + 'cursor:pointer;white-space:nowrap">' + escapeHtml(label) + ' · ' + n + '</button>';
+  }
+  let out = '<div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:2px 0 6px">Praça</div>'
+    + '<div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:4px;-webkit-overflow-scrolling:touch">'
+    + pill('all', 'Todas', todas.length, 'var(--blue)');
+  ordem.forEach(function(k){
+    if(!PRACA_DEF[k]) return;
+    const d = porPraca[k];
+    if(!d && pendPraca !== k) return;                 // praca sem pendencia nao ocupa espaco
+    out += pill(k, PRACA_DEF[k].label, d ? d.n : 0, PRACA_DEF[k].color);
+  });
+  return out + '</div>';
+}
+
 function renderPendencias(){
   const el = document.getElementById('s8-content');
   if(!el) return;
@@ -2323,10 +2381,13 @@ function renderPendencias(){
   const base  = pendBase();
   const nDocs = base.filter(function(r){ return r.pend.some(function(p){ return p.k==='docs'; }); }).length;
   const nRisk = base.filter(function(r){ return r.pend.some(function(p){ return p.k==='risco'; }); }).length;
+  const nAnt  = base.filter(function(r){ return r.pend.some(function(p){ return p.k==='antecipa'; }); }).length;
   const rows  = pendFiltro==='all' ? base : base.filter(function(r){ return r.pend.some(function(p){ return p.k===pendFiltro; }); })
                   .map(function(r){ return {x:r.x, pend:r.pend.filter(function(p){ return p.k===pendFiltro; })}; });
   const mwh   = rows.reduce(function(a,r){ return a + (r.x.mwh||0); }, 0);
-  const alvo  = e.tipo==='self' ? 'Seus clientes' : (e.tipo==='praca' ? ('Time · ' + (misLabel ? misLabel(e.praca) : e.praca)) : 'Todas as praças');
+  const alvo  = e.tipo==='self' ? 'Seus clientes'
+              : (e.tipo==='praca' ? ('Time · ' + (misLabel ? misLabel(e.praca) : e.praca))
+              : (pendPraca==='all' ? 'Todas as praças' : (PRACA_DEF[pendPraca] ? PRACA_DEF[pendPraca].label : pendPraca)));
 
   let h = '<div class="camp-header" style="background:linear-gradient(135deg,#F59E0B 0%,#B45309 100%)">'
     + '<div class="camp-title">Pendências · ' + escapeHtml(alvo) + '</div>'
@@ -2338,17 +2399,11 @@ function renderPendencias(){
     + pendChip('all','📋','Todas', base.length, pendFiltro==='all')
     + pendChip('docs','📄','Docs', nDocs, pendFiltro==='docs')
     + pendChip('risco','🔎','Análise', nRisk, pendFiltro==='risco')
+    + pendChip('antecipa','⏳','Antecipa', nAnt, pendFiltro==='antecipa')
     + '</div>';
 
   if(e.tipo === 'all'){
-    const ordem = ['salvador','feira','natal','rninterior','spi','ribeirao','ce','outras'];
-    h += '<div class="seller-block" style="margin-bottom:10px"><select class="seller-select" onchange="pendSetPraca(this.value)">'
-      + '<option value="all"' + (pendPraca==='all'?' selected':'') + '>Todas as praças</option>'
-      + ordem.map(function(k){
-          if(!PRACA_DEF[k]) return '';
-          return '<option value="' + k + '"' + (pendPraca===k?' selected':'') + '>' + escapeHtml(PRACA_DEF[k].label) + '</option>';
-        }).join('')
-      + '</select></div>';
+    h += pendPracaPills();
   }
 
   if(!rows.length){
@@ -6892,7 +6947,7 @@ function moveLead(id, newStage){
 }
 
 const STAGE_DESC={'WAITING_DOCUMENTS':'Falta documento pra análise','BACKGROUND_CHECKING':'Em processo de análise do time de Ops','BACKGROUND CHECKING':'Em processo de análise do time de Ops','BGC_PARCEIRO':'Já aprovado na análise de risco; agora em análise do Antecipa (parte 2). Prazo de até 1,5 dia útil.','BGC_REVIEW':'Em processo de análise do time de Ops','REQUEST_TITULARIDADE':'Aprovado na análise, aguardando processo de troca de titularidade','TITULARIDADE_ONGOING':'Troca de titularidade solicitada, aguardando confirmação da distribuidora','TITULARIDADE ONGOING':'Troca de titularidade solicitada, aguardando confirmação da distribuidora','REGISTERING_DG':'Troca de titularidade aprovada, aguardando cadastro na DG para gerar a fatura','ACTIVE_MEMBER':'Troca aprovada e cliente cadastrado na DG para gerar faturas Liora','ACTIVE MEMBER':'Troca aprovada e cliente cadastrado na DG para gerar faturas Liora'};
-const CREDIT_DESC={'PENDENTE':['Em análise de crédito','Ainda em análise de crédito. Alta taxa de aprovação, mas pode eventualmente ser negado.'],'ANÁLISE_DE_CRÉDITO_REJEITADA':['Crédito rejeitado','Reprovado na análise de crédito — entra uma análise de risco negada por cima.'],'COLETANDO_INFORMAÇÕES_DE_DEPÓSITO':['Preparando o pagamento','Puxando as informações para lançar o pagamento.'],'AGUARDANDO_APROVAÇÃO_DE_PAGAMENTO':['Aguardando o pagamento','Pagamento já cadastrado — aguardando aprovação e/ou execução do desembolso.'],'PAGAMENTO_REALIZADO':['Pagamento realizado','Desembolso feito — entra a aprovação final por cima.'],'AGUARDANDO_CONFIRMAÇÃO_DO_CLIENTE':['Aguardando o cliente','Aguardando confirmação do cliente.'],'AGUARDANDO_RESPOSTA_DO_CLIENTE':['Aguardando o cliente','Aguardando resposta do cliente.']};
+const CREDIT_DESC={'PENDENTE':['Em análise de crédito','Ainda em análise de crédito. Alta taxa de aprovação, mas pode eventualmente ser negado.'],'ANÁLISE_DE_CRÉDITO_REJEITADA':['Crédito rejeitado','Reprovado na análise de crédito — entra uma análise de risco negada por cima.'],'COLETANDO_INFORMAÇÕES_DE_DEPÓSITO':['Preparando o pagamento','Puxando as informações para lançar o pagamento.'],'AGUARDANDO_APROVAÇÃO_DE_PAGAMENTO':['Aguardando o pagamento','Pagamento já cadastrado — aguardando aprovação e/ou execução do desembolso.'],'PAGAMENTO_REALIZADO':['Pagamento realizado','Desembolso feito — entra a aprovação final por cima.'],'AGUARDANDO_CONFIRMAÇÃO_DO_CLIENTE':['Aguardando o cliente','Aguardando confirmação do cliente.'],'AGUARDANDO_RESPOSTA_DO_CLIENTE':['Aguardando o cliente','Aguardando resposta do cliente.'],'VERIFICANDO_FORMA_DE_PAGAMENTO':['Definindo a forma de pagamento','Confirmando com o cliente como o Antecipa será pago.'],'PAGAMENTO_REJEITADO':['Pagamento rejeitado','O desembolso foi rejeitado — precisa refazer.'],'ENVIO_DE_COMUNICADOS_DE_RECUPERAÇÃO':['Em recuperação','Cliente em régua de recuperação.']};
 function prettyProdTitle(s){return s.split(/\s+/).filter(function(w){return w;}).map(function(w){var L=w.replace(/[^A-Za-zÀ-ÿ]/g,'');if(L.length<=4&&w===w.toUpperCase())return w;var lw=w.toLowerCase();return lw.replace(/([a-zà-ÿ])/,function(m){return m.toUpperCase();});}).join(' ');}
 function prettyProduto(raw){if(raw==null)return '';var s=String(raw).trim();if(!s)return '';var U=s.toUpperCase();if(U.indexOf('LIORA_ANTECIPA_PF')===0)return 'Antecipa PF';if(U.indexOf('LIORA_ANTECIPA_PJ')===0)return 'Antecipa PJ';if(U.indexOf('LIORA_B_')===0||U==='LIORA_B')return 'Liora Blindado';if(U.indexOf('LIORA_F_')===0||U==='LIORA_F')return 'Liora Flex';if(U.indexOf('BUNDLE')===0)return s;s=s.replace(/\s*-\s*.*$/,'');s=s.replace(/(_\d+(\.\d+)?)+$/,'');s=s.replace(/\s+\d+$/,'');if(s.indexOf('_')>-1){var parts=s.split('_').filter(function(x){return x.trim();});var forn=parts.shift();var dist=parts.join(' ').replace(/\s+/g,' ').trim();s=dist?(forn+' ('+dist+')'):forn;}return prettyProdTitle(s);}
 function escapeHtml(s){
