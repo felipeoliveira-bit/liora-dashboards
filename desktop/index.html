@@ -6461,6 +6461,19 @@ loadAll();
   .kpi .val{font-size:26px;font-weight:800;color:#0201F3;line-height:1.1;margin-top:4px}
   .kpi .foot{font-size:11.5px;color:#6b6b7b;margin-top:2px}
   .kpi.accent .val{color:#CC86D6}
+  .kpi.klick{cursor:pointer;transition:.15s;position:relative}
+  .kpi.klick:hover{box-shadow:0 6px 18px rgba(2,1,243,.16);transform:translateY(-1px)}
+  .kpi .kmore{font-size:10.5px;font-weight:700;color:#0201F3;margin-top:6px;opacity:0}
+  .kpi.klick:hover .kmore{opacity:1}
+  .kmodal{display:none;position:fixed;inset:0;z-index:200;background:rgba(20,20,50,.42);padding:24px;align-items:flex-start;justify-content:center}
+  .kmodal.open{display:flex}
+  .kmodal-box{background:#fff;border-radius:16px;box-shadow:0 18px 50px rgba(20,20,50,.28);width:100%;max-width:1000px;max-height:calc(100vh - 48px);display:flex;flex-direction:column;overflow:hidden}
+  .kmodal-head{display:flex;align-items:flex-start;gap:12px;padding:16px 18px;border-bottom:1px solid #eef0f6}
+  .kmodal-title{font-size:16px;font-weight:800;color:#1a1a2e}
+  .kmodal-sub{font-size:12px;color:#6b6b7b;margin-top:3px}
+  .kmodal-x{margin-left:auto;background:#f1f2f7;border:none;border-radius:8px;width:30px;height:30px;font-size:14px;color:#4A4A4A;cursor:pointer;flex-shrink:0}
+  .kmodal-x:hover{background:#e6e8f2}
+  .kmodal-body{padding:8px 18px 18px;overflow:auto}
   .grid2{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;margin-bottom:18px}
   @media(max-width:860px){.grid2{grid-template-columns:1fr}}
   .card{background:#fff;border-radius:14px;padding:16px 18px;box-shadow:0 2px 10px rgba(2,1,243,.06)}
@@ -6585,6 +6598,16 @@ loadAll();
       </table>
     </div>
     <div class=&quot;lst-cnt&quot; id=&quot;ant-lista-foot&quot;></div>
+  </div>
+
+  <div class=&quot;kmodal&quot; id=&quot;kpi-modal&quot; onclick=&quot;if(event.target===this) closeKpi()&quot;>
+    <div class=&quot;kmodal-box&quot;>
+      <div class=&quot;kmodal-head&quot;>
+        <div><div class=&quot;kmodal-title&quot; id=&quot;kpi-title&quot;></div><div class=&quot;kmodal-sub&quot; id=&quot;kpi-sub&quot;></div></div>
+        <button type=&quot;button&quot; class=&quot;kmodal-x&quot; onclick=&quot;closeKpi()&quot; title=&quot;fechar&quot;>&#10005;</button>
+      </div>
+      <div class=&quot;kmodal-body&quot;><div id=&quot;kpi-body&quot;></div></div>
+    </div>
   </div>
 
 <script>
@@ -6752,16 +6775,29 @@ function renderKpis(rows){
   const ticket = bills.length ? bills.reduce(function(a,b){return a+b;},0)/bills.length : 0;
   const abills = apprRows().map(function(x){return x.bill||0;}).filter(function(v){return v>0;});
   const tapr = abills.length ? abills.reduce(function(a,b){return a+b;},0)/abills.length : 0;
+  // Clicar no KPI abre a lista de clientes que formam o numero (Felipe 20/08).
+  KPI_ROWS = {
+    ger:   rows.slice(),
+    ass:   rows.filter(function(x){return x.signed;}),
+    apr:   apprRows(),
+    tprop: rows.filter(function(x){return (x.bill||0)>0;}).slice().sort(function(a,b){return (b.bill||0)-(a.bill||0);}),
+    tapr:  apprRows().filter(function(x){return (x.bill||0)>0;}).slice().sort(function(a,b){return (b.bill||0)-(a.bill||0);})
+  };
   const k = [
-    [&quot;Propostas geradas&quot;, tot, pct(tot,fieldP)+&quot;% do field&quot;, false],
-    [&quot;Assinadas&quot;, sig, pct(sig,fieldS)+&quot;% do field&quot;, true],
-    [&quot;Aprovadas no risco&quot;, apr, pct(apr,fieldA)+&quot;% do field&quot;, false],
-    [&quot;Ticket médio propostas&quot;, brl(ticket), &quot;por proposta&quot;, false],
-    [&quot;Ticket médio aprovados&quot;, brl(tapr), &quot;por aprovado&quot;, false],
+    [&quot;Propostas geradas&quot;, tot, pct(tot,fieldP)+&quot;% do field&quot;, false, 'ger'],
+    [&quot;Assinadas&quot;, sig, pct(sig,fieldS)+&quot;% do field&quot;, true, 'ass'],
+    [&quot;Aprovadas no risco&quot;, apr, pct(apr,fieldA)+&quot;% do field&quot;, false, 'apr'],
+    [&quot;Ticket médio propostas&quot;, brl(ticket), &quot;por proposta&quot;, false, 'tprop'],
+    [&quot;Ticket médio aprovados&quot;, brl(tapr), &quot;por aprovado&quot;, false, 'tapr'],
   ];
   el(&quot;ant-kpis&quot;).innerHTML = k.map(function(x){
-    return '<div class=&quot;kpi'+(x[3]?&quot; accent&quot;:&quot;&quot;)+'&quot;><div class=&quot;lbl&quot;>'+x[0]+'</div>'
-      +'<div class=&quot;val&quot;>'+x[1]+'</div><div class=&quot;foot&quot;>'+x[2]+'</div></div>';
+    const n = (KPI_ROWS[x[4]]||[]).length;
+    return '<div class=&quot;kpi'+(x[3]?&quot; accent&quot;:&quot;&quot;)+(n?' klick':'')+'&quot;'
+      +(n?' onclick=&quot;openKpi(\''+x[4]+'\')&quot; title=&quot;ver os clientes desse número&quot;':'')
+      +'><div class=&quot;lbl&quot;>'+x[0]+'</div>'
+      +'<div class=&quot;val&quot;>'+x[1]+'</div><div class=&quot;foot&quot;>'+x[2]+'</div>'
+      +(n?'<div class=&quot;kmore&quot;>ver '+n+' cliente'+(n===1?'':'s')+' &#8250;</div>':'')
+      +'</div>';
   }).join(&quot;&quot;);
 }
 
@@ -6961,6 +6997,53 @@ function currentRows(){
   return rows;
 }
 
+let KPI_ROWS = {};
+const KPI_META = {
+  ger:   ['Propostas geradas', 'proposta(s) Antecipa gerada(s) no período e nos filtros atuais', 'date'],
+  ass:   ['Assinadas', 'proposta(s) com contrato assinado', 'date'],
+  apr:   ['Aprovadas no risco', 'cliente(s) aprovado(s) no risco, pela data da aprovação', 'adate'],
+  tprop: ['Ticket médio propostas', 'proposta(s) com fatura informada — média das faturas', 'date'],
+  tapr:  ['Ticket médio aprovados', 'aprovado(s) com fatura informada — média das faturas', 'adate']
+};
+function antPerLbl(){
+  if(antPer==='today')     return 'Hoje ('+ddmm(TODAY_ISO)+')';
+  if(antPer==='yesterday') return 'Ontem ('+ddmm(YESTERDAY_ISO)+')';
+  if(antPer==='week'){     const w=weekRange(0); return 'Semana ('+ddmm(w[0])+' a '+ddmm(w[1])+')'; }
+  if(antPer==='lastweek'){ const w=weekRange(1); return 'Semana passada ('+ddmm(w[0])+' a '+ddmm(w[1])+')'; }
+  return 'Mês (' + monthLabel() + ')';
+}
+function openKpi(key){
+  const rows = (KPI_ROWS[key]||[]).slice();
+  const meta = KPI_META[key] || ['Clientes', '', 'date'];
+  const dk = meta[2];
+  if(!rows.length) return;
+  rows.sort(function(a,b){ return String(b[dk]||b.date||'').localeCompare(String(a[dk]||a.date||'')) || ((b.mwh||0)-(a.mwh||0)); });
+  const mwh = rows.reduce(function(a,x){ return a+(x.mwh||0); },0);
+  const bl = rows.map(function(x){return x.bill||0;}).filter(function(v){return v>0;});
+  const tk = bl.length ? bl.reduce(function(a,b){return a+b;},0)/bl.length : 0;
+  el('kpi-title').textContent = meta[0];
+  el('kpi-sub').innerHTML = esc(rows.length + ' ' + meta[1]) + ' &nbsp;·&nbsp; <b>'
+    + mwh.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' MWh</b>'
+    + ' &nbsp;·&nbsp; ticket médio <b>' + brl(tk) + '</b>'
+    + ' &nbsp;·&nbsp; ' + esc(antPerLbl()) + (antPraca!=='all' ? ' · ' + esc(pracaLbl(antPraca)) : '')
+    + (antPessoa!=='all' ? ' · ' + esc(antPessoa) : '');
+  el('kpi-body').innerHTML = '<div class=&quot;tbl-wrap&quot;><table><thead><tr>'
+    + '<th>Cliente</th><th>Vendedor</th><th>Praça</th><th>Cidade/UF</th><th>Distribuidora</th><th>Tipo</th>'
+    + '<th class=&quot;num&quot;>Fatura</th><th class=&quot;num&quot;>MWh</th><th>Estágio</th><th>'
+    + (dk==='adate' ? 'Aprovado em' : 'Data') + '</th></tr></thead><tbody>'
+    + rows.map(function(x){
+        return '<tr><td>'+esc(x.c||'—')+'</td><td>'+esc(x.s||'—')+'</td><td>'+pracaBadge(x.praca)+'</td>'
+          + '<td>'+esc((x.city||'—')+(x.uf?' / '+x.uf:''))+'</td><td>'+esc(x.dist||'—')+'</td>'
+          + '<td><span class=&quot;pill '+(x.tipo==='PJ'?'pj':'pf')+'&quot;>'+esc(x.tipo||'-')+'</span></td>'
+          + '<td class=&quot;num&quot;>'+brl(x.bill)+'</td>'
+          + '<td class=&quot;num&quot;>'+(x.mwh||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'</td>'
+          + '<td>'+esc(stLbl(x.stage))+'</td><td>'+ddmm(x[dk]||x.date)+'</td></tr>';
+      }).join('')
+    + '</tbody></table></div>';
+  el('kpi-modal').classList.add('open');
+}
+function closeKpi(){ el('kpi-modal').classList.remove('open'); }
+
 function renderList(){
   const rows = currentRows();
   const body = el(&quot;ant-tbody&quot;);
@@ -7007,6 +7090,7 @@ function initEvents(){
     el(id).addEventListener(&quot;input&quot;, renderList);
     el(id).addEventListener(&quot;change&quot;, renderList);
   });
+  document.addEventListener(&quot;keydown&quot;, function(ev){ if(ev.key==='Escape') closeKpi(); });
   document.addEventListener(&quot;click&quot;, function(ev){
     const box = el('f-stage-ms');
     if(box &amp;&amp; !box.contains(ev.target)) box.classList.remove('open');

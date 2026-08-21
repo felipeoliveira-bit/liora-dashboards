@@ -690,6 +690,10 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
 .rk-seg-btn .lb { font-size:9.5px; font-weight:700; color:var(--muted); margin-top:4px; display:block; white-space:nowrap; }
 .rk-seg-btn.active { background:var(--blue); box-shadow:0 3px 10px rgba(2,1,243,.28); }
 .rk-seg-btn.active .lb { color:#fff; }
+.rk-sub { display:flex; align-items:center; gap:6px; margin:-4px 0 12px; flex-wrap:wrap; }
+.rk-sub-lb { font-size:10.5px; font-weight:700; color:var(--muted); }
+.rk-sub-btn { padding:5px 11px; background:#fff; border:1.5px solid #ECECF5; border-radius:100px; font-size:11px; font-weight:800; color:var(--muted); cursor:pointer; transition:.15s; user-select:none; }
+.rk-sub-btn.active { background:var(--blue); border-color:var(--blue); color:#fff; }
 .rk-scope { display:flex; gap:6px; overflow-x:auto; margin:0 -16px 14px; padding:0 16px 2px; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
 .rk-scope::-webkit-scrollbar{ display:none; }
 .rk-chip { flex-shrink:0; padding:7px 14px; background:#fff; border:1.5px solid #ECECF5; border-radius:100px; font-size:11.5px; font-weight:700; color:var(--muted); white-space:nowrap; cursor:pointer; transition:.15s; }
@@ -3113,10 +3117,12 @@ const RAW_PROP = [{"date":"2026-08-20","week":34,"month":8,"dayofweek":"Thursday
 let propPeriod = 'd0';   // 'd0' | 'd1' | 'semana' | 'mes'
 let propMetric = 'aprovado';   // 'aprovado' | 'propostas' | 'tarefas'
 let rankScope  = '';           // '' = todos; 'Salvador'|'Feira de Santana'|'Natal'|'CE'|'SPI'
+let antRankBy  = 'cli';        // ranking Antecipa: 'cli' = n de clientes | 'mwh' = MWh aprovado em Antecipa
 
 function setPropPeriod(p){ propPeriod = p; renderPropostas(); }
 function setPropMetric(m){ propMetric = m; renderPropostas(); }
 function setRankScope(s){ rankScope = s; renderPropostas(); }
+function setAntRankBy(v){ antRankBy = v; renderPropostas(); }
 
 // Data dos dados: 2026-06-03 (última data no RAW_PROP) — usar como "hoje"
 const PROP_TODAY = (function(){
@@ -3219,7 +3225,7 @@ function renderPropostas() {
   // By seller — ordena pela métrica selecionada
   const sellers = {};
   data.forEach(r=>{
-    if(!sellers[r.seller]) sellers[r.seller]={prop:0,mwh:0,aprov:0,aprovCount:0,tarefas:0,antecipa:0};
+    if(!sellers[r.seller]) sellers[r.seller]={prop:0,mwh:0,aprov:0,aprovCount:0,tarefas:0,antecipa:0,antMwh:0};
     sellers[r.seller].prop++;
     sellers[r.seller].mwh+=r.consumption_mwh;
   });
@@ -3230,7 +3236,7 @@ function renderPropostas() {
     .filter(x => isAprovado(x))
     .map(x => ({ seller: x.s, mwh: x.mwh, date: x.aprov_date }));
   filterPropByPeriod(aprovBase, propPeriod).forEach(r=>{
-    if(!sellers[r.seller]) sellers[r.seller]={prop:0,mwh:0,aprov:0,aprovCount:0,tarefas:0,antecipa:0};
+    if(!sellers[r.seller]) sellers[r.seller]={prop:0,mwh:0,aprov:0,aprovCount:0,tarefas:0,antecipa:0,antMwh:0};
     sellers[r.seller].aprov += r.mwh;
     sellers[r.seller].aprovCount += 1;
   });
@@ -3238,10 +3244,11 @@ function renderPropostas() {
   // v2.168 — ranking Antecipa: clientes com produto Antecipa vigente (crédito aprovado)
   const antecipaBase = rawData
     .filter(x => isAprovado(x) && campMatch(CAMP_CFG.antecipa, x))
-    .map(x => ({ seller: x.s, date: x.aprov_date }));
+    .map(x => ({ seller: x.s, mwh: x.mwh, date: x.aprov_date }));
   filterPropByPeriod(antecipaBase, propPeriod).forEach(r=>{
-    if(!sellers[r.seller]) sellers[r.seller]={prop:0,mwh:0,aprov:0,aprovCount:0,tarefas:0,antecipa:0};
+    if(!sellers[r.seller]) sellers[r.seller]={prop:0,mwh:0,aprov:0,aprovCount:0,tarefas:0,antecipa:0,antMwh:0};
     sellers[r.seller].antecipa = (sellers[r.seller].antecipa||0) + 1;
+    sellers[r.seller].antMwh   = (sellers[r.seller].antMwh||0) + (r.mwh||0);   // MWh 1x (o 1,5x e so da campanha)
   });
 
   // v2.167 — ranking de Visitas removido: dependia dos leads de TODOS os vendedores
@@ -3255,7 +3262,10 @@ function renderPropostas() {
     .sort((a,b)=>{
     if(propMetric === 'aprovado') return b[1].aprov - a[1].aprov;
     if(propMetric === 'qtd')      return b[1].aprovCount - a[1].aprovCount;
-    if(propMetric === 'antecipa') return (b[1].antecipa||0) - (a[1].antecipa||0);
+    if(propMetric === 'antecipa'){
+      if(antRankBy === 'mwh') return (b[1].antMwh||0) - (a[1].antMwh||0);
+      return ((b[1].antecipa||0) - (a[1].antecipa||0)) || ((b[1].antMwh||0) - (a[1].antMwh||0));
+    }
     return b[1].prop - a[1].prop;
   });
 
@@ -3289,6 +3299,11 @@ function renderPropostas() {
       <div class="rk-seg-btn ${propMetric==='qtd'?'active':''}" onclick="setPropMetric('qtd')"><span class="ic">👥</span><span class="lb">Clientes</span></div>
       <div class="rk-seg-btn ${propMetric==='propostas'?'active':''}" onclick="setPropMetric('propostas')"><span class="ic">📋</span><span class="lb">Propostas</span></div>
     </div>
+    ${propMetric==='antecipa' ? `<div class="rk-sub">
+      <span class="rk-sub-lb">Ordenar por</span>
+      <div class="rk-sub-btn ${antRankBy==='cli'?'active':''}" onclick="setAntRankBy('cli')">💳 Clientes</div>
+      <div class="rk-sub-btn ${antRankBy==='mwh'?'active':''}" onclick="setAntRankBy('mwh')">⚡ MWh</div>
+    </div>` : ''}
     <div class="rk-scope">
       ${[['','Todas'],['salvador','Salvador'],['feira','Feira'],['natal','RN Capital'],['rninterior','RN Interior'],['spi','Campinas SPI'],['ribeirao','Ribeirão SPI'],['ce','CE']].map(o=>`<div class="rk-chip ${rankScope===o[0]?'active':''}" onclick="setRankScope('${o[0]}')">${o[1]}</div>`).join('')}
     </div>`;
@@ -3310,8 +3325,13 @@ function renderPropostas() {
       mainVal = d.aprovCount; mainUnit = d.aprovCount===1?'aprovado':'aprovados';
       subInfo = `⚡ ${d.aprov.toFixed(1)} MWh · 📋 ${d.prop} props`;
     } else if(propMetric === 'antecipa'){
-      mainVal = (d.antecipa||0); mainUnit = 'antecipa';
-      subInfo = `⚡ ${d.aprov.toFixed(1)} MWh · 📋 ${d.prop} props`;
+      if(antRankBy === 'mwh'){
+        mainVal = (d.antMwh||0).toFixed(1); mainUnit = 'MWh antecipa';
+        subInfo = `💳 ${d.antecipa||0} antecipa · 📋 ${d.prop} props`;
+      } else {
+        mainVal = (d.antecipa||0); mainUnit = 'antecipa';
+        subInfo = `⚡ ${(d.antMwh||0).toFixed(1)} MWh antecipa · 📋 ${d.prop} props`;
+      }
     } else {
       mainVal = d.prop; mainUnit = 'props';
       subInfo = `⚡ ${d.aprov.toFixed(1)} MWh aprov.`;
