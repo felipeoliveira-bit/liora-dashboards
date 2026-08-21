@@ -44,7 +44,7 @@ html, body { height: 100%; overflow: hidden; background: var(--gray); font-famil
 .bottom-nav { flex-shrink: 0; background: #fff; border-top: 1px solid var(--border); display: flex; padding-bottom: env(safe-area-inset-bottom, 8px); z-index: 100; box-shadow: 0 -4px 20px rgba(0,0,0,.08); }
 .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 10px 2px 6px; cursor: pointer; transition: .15s; gap: 3px; min-width: 0; }
 .nav-item .nav-icon { font-size: 20px; line-height: 1; }
-.nav-item .nav-label { font-size: 9.5px; font-weight: 600; color: var(--muted); letter-spacing: .01em; white-space: nowrap; }
+.nav-item .nav-label { font-size: clamp(7.6px, 2.35vw, 9.5px); font-weight: 600; color: var(--muted); letter-spacing: .01em; white-space: nowrap; }  /* v2.173: 7 abas (com Missao) cabem em tela estreita */
 .nav-item.active .nav-label { color: var(--blue); }
 .nav-item.active .nav-icon { transform: translateY(-1px); }
 
@@ -866,6 +866,11 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
     <div id="s5-content"></div>
   </div>
 
+  <!-- SCREEN: PENDÊNCIAS (v2.173) -->
+  <div class="screen" id="screen-pendencias">
+    <div id="s8-content"></div>
+  </div>
+
   <!-- SCREEN: MISSÃO (líderes/gestão) -->
   <div class="screen" id="screen-missao">
     <div id="s7-content"></div>
@@ -878,7 +883,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
   <div class="copa-modal" id="copa-modal" onclick="closeCopaFig()"></div>
 
   <div style="position:fixed;bottom:78px;right:8px;font-size:9px;color:#aaa;background:rgba(255,255,255,.85);padding:2px 6px;border-radius:8px;z-index:99;font-family:monospace;pointer-events:none">
-    v2.172 · 21/08
+    v2.173 · 21/08
   </div>
 
   <!-- BOTTOM NAV -->
@@ -906,6 +911,12 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
         <svg viewBox="0 0 24 24"><path d="M3 4h18l-7 8v6l-4 2v-8L3 4z"/></svg>
       </div>
       <div class="nav-label">Funil</div>
+    </div>
+    <div class="nav-item" onclick="setScreen('pendencias')" id="nav-pendencias">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24"><path d="M9 3h6v3H9z"/><path d="M6 6h12a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg>
+      </div>
+      <div class="nav-label">Pendências</div>
     </div>
     <div class="nav-item" id="nav-missao" onclick="setScreen('missao')" style="display:none">
       <div class="nav-icon">
@@ -1158,7 +1169,7 @@ let METAS = {
 };
 
 // ── NAV ───────────────────────────────────────────────────
-const TITLES = {resumo:'Field',carteira:'Card', campanha:'Campanhas',propostas:'Ranking',funil:'Funil de Vendas',copa:'Copa Liora',missao:'Missão'};
+const TITLES = {resumo:'Field',carteira:'Card', campanha:'Campanhas',propostas:'Ranking',funil:'Funil de Vendas',copa:'Copa Liora',missao:'Missão',pendencias:'Pendências'};
 let currentScreen = 'resumo';
 
 function setScreen(s){
@@ -1175,6 +1186,7 @@ renderResumo();
   if(s==='propostas') renderPropostas();
   if(s==='funil') renderFunil();
   if(s==='missao') renderMissao();
+  if(s==='pendencias') renderPendencias();
 }
 
 
@@ -1432,18 +1444,18 @@ function renderResumo(){
     </div>
 
     <div class="stat-grid">
-      <div class="stat-card clickable" onclick="openAgDocsModal()">
-        <div class="stat-icon">📄</div>
-        <div class="stat-label">Aguardando documentação</div>
-        <div class="stat-value" style="color:var(--orange)">${totalAgDocsMwh.toFixed(1)}<span class="stat-unit">MWh</span></div>
+      <div class="stat-card clickable" onclick="setScreen('pendencias')">
+        <div class="stat-icon">📋</div>
+        <div class="stat-label">Pendências do time</div>
+        <div class="stat-value" style="color:var(--orange)">${_pendMwhResumo().toFixed(1)}<span class="stat-unit">MWh</span></div>
       </div>
     </div>
-    ${totalAgDocsCount > 0 ? `
-      <div class="alert-card blue clickable" onclick="openAgDocsModal()">
-        <div class="alert-icon">📄</div>
+    ${_pendCountResumo() > 0 ? `
+      <div class="alert-card blue clickable" onclick="setScreen('pendencias')">
+        <div class="alert-icon">📋</div>
         <div class="alert-content">
-          <div class="alert-title">${totalAgDocsCount} clientes aguardando documentação</div>
-          <div class="alert-desc">${totalAgDocsMwh.toFixed(1)} MWh travados. Toque para ver por praça.</div>
+          <div class="alert-title">${_pendCountResumo()} clientes com pendência</div>
+          <div class="alert-desc">${_pendMwhResumo().toFixed(1)} MWh travados em documento ou análise de risco. Toque para abrir.</div>
         </div>
       </div>` : ''}
   `;
@@ -2197,6 +2209,182 @@ function closeMetaAprovados(){ var m=document.getElementById('meta-aprov-modal')
 function closeCampDetailsModal(){
   const m = document.getElementById('camp-details-modal');
   if (m) m.remove();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// SCREEN: PENDÊNCIAS (v2.173 — pedido Felipe 21/08)
+// Evolui o antigo card "Aguardando documentação": além do documento que
+// falta, mostra o que a ANÁLISE DE RISCO apontou (fatura vencida, contrato
+// a refazer, foto ilegível, baixa renda...). Escopo igual ao resto do CRM:
+// vendedor vê os próprios clientes, líder vê a praça, gestão vê tudo.
+// Fonte: rawData (isAgDocs + campo motivo via obsAnalise) — nada novo no build.
+// ══════════════════════════════════════════════════════════════════
+let pendFiltro = 'all';     // all | docs | risco
+let pendPraca  = 'all';     // só a gestão troca
+const pendAberto = {};      // indice do grupo -> aberto?
+
+function pendEscopo(){
+  const me = (typeof getCurrentVendedor==='function') ? getCurrentVendedor() : '';
+  if(!me) return {tipo:'none', me:''};
+  if(typeof isGestor_==='function' && isGestor_(me)) return {tipo:'all', me:me};
+  if(typeof isLider==='function' && isLider(me))     return {tipo:'praca', me:me, praca:(typeof liderPraca==='function'?liderPraca(me):'')};
+  return {tipo:'self', me:me};
+}
+
+// O que está pendente neste cliente (pode ser mais de uma coisa ao mesmo tempo).
+function pendDe(x){
+  const out = [];
+  if(typeof isAgDocs==='function' && isAgDocs(x)){
+    const d = (x.docs||'').trim();
+    if(d === '__OK__') out.push({k:'docs', ico:'📄', txt:'Documentos recebidos — aguardando processamento', ok:true});
+    else out.push({k:'docs', ico:'📄', txt: d ? ('Falta: ' + d) : 'Documentos pendentes (detalhe indisponível)'});
+  }
+  const obs = (typeof obsAnalise==='function') ? obsAnalise(x) : '';
+  if(obs) out.push({k:'risco', ico:'🔎', txt: obs});
+  return out;
+}
+
+function pendBase(){
+  const e = pendEscopo();
+  if(e.tipo==='none') return [];
+  const out = [];
+  rawData.forEach(function(x){
+    if(e.tipo==='self'){
+      if(canonicalVendedor(x.s||'') !== canonicalVendedor(e.me)) return;
+    } else if(e.tipo==='praca'){
+      if(String(SELLER_PRACA[x.s]||'').toLowerCase() !== String(e.praca||'').toLowerCase()) return;
+    } else if(pendPraca !== 'all'){
+      if(((x.praca && x.praca.key) || 'outras') !== pendPraca) return;
+    }
+    const p = pendDe(x);
+    if(p.length) out.push({x:x, pend:p});
+  });
+  out.sort(function(a,b){ return (b.x.idle||0)-(a.x.idle||0) || (b.x.mwh||0)-(a.x.mwh||0); });
+  return out;
+}
+
+function pendSetFiltro(f){ pendFiltro = f; renderPendencias(); }
+function pendSetPraca(v){ pendPraca = v; renderPendencias(); }
+function pendToggle(i){ pendAberto[i] = !pendAberto[i]; renderPendencias(); }
+
+function pendChip(id, ico, label, n, ativo){
+  const bg = ativo ? 'var(--blue)' : '#fff';
+  const fg = ativo ? '#fff' : 'var(--ink)';
+  const bd = ativo ? 'var(--blue)' : 'var(--border)';
+  return '<button onclick="pendSetFiltro(\'' + id + '\')" style="flex:1;min-width:0;padding:9px 6px;background:' + bg
+    + ';border:1.5px solid ' + bd + ';border-radius:12px;font-family:inherit;font-size:11px;font-weight:800;color:' + fg
+    + ';cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + ico + ' ' + label + ' · ' + n + '</button>';
+}
+
+function pendCard(r){
+  const x = r.x;
+  const si = (typeof getStatusInfo==='function') ? getStatusInfo(x) : {label:'—',bg:'#f0f0f0',color:'#666'};
+  const idleColor = x.idle>=8?'var(--red)':x.idle>=5?'var(--orange)':'var(--muted)';
+  let h = '<div class="client-card"' + (x.deal_id ? ' onclick="openClienteDetalhes(\'' + escapeHtml(x.deal_id) + '\')" style="cursor:pointer"' : '') + '>'
+    + '<div class="client-name">' + escapeHtml(x.c || '(sem nome)') + '</div>'
+    + '<div class="client-city">' + escapeHtml(x.city || '—') + (x.dist ? ' · ' + escapeHtml(x.dist) : '') + '</div>'
+    + '<div class="client-meta">'
+      + '<span class="status-badge" style="background:' + si.bg + ';color:' + si.color + '">' + si.label + '</span>'
+      + '<span class="mwh-badge">' + (x.mwh||0).toFixed(2) + ' MWh</span>'
+      + '<span class="days-badge" style="color:' + idleColor + '">' + (x.idle||0) + 'd parado</span>'
+    + '</div>';
+  r.pend.forEach(function(p){
+    const cor = p.ok ? ['#EAF3DE','#C9E2B4','#1D6B4F'] : (p.k==='docs' ? ['#FFF8E1','#F5E0A3','#795500'] : ['#FFF1E6','#FBD3A8','#8A4B00']);
+    h += '<div class="acao-text" style="background:' + cor[0] + ';border:1px solid ' + cor[1] + ';color:' + cor[2]
+      + ';border-radius:10px;padding:8px 10px;margin-top:6px">' + p.ico + ' ' + escapeHtml(p.txt) + '</div>';
+  });
+  if(x.deal_id){
+    h += '<button class="relatar-btn" data-deal-id="' + escapeHtml(x.deal_id) + '" data-cliente-nome="' + escapeHtml(x.c||'')
+      + '" onclick="event.stopPropagation(); openRelatarSituacaoFromBtn(this)">'
+      + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 11a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v3a4 4 0 0 1-4 4H8l-5 4z"/></svg>'
+      + 'Relatar situação ao suporte</button>';
+  }
+  return h + '</div>';
+}
+
+// Numeros do card do Field: pendencias de TODAS as pracas (o card sempre foi global),
+// independente do filtro/escopo escolhido dentro da aba Pendencias.
+function _pendTodas(){
+  const out = [];
+  rawData.forEach(function(x){ const p = pendDe(x); if(p.length) out.push({x:x, pend:p}); });
+  return out;
+}
+function _pendCountResumo(){ return _pendTodas().length; }
+function _pendMwhResumo(){ return _pendTodas().reduce(function(a,r){ return a + (r.x.mwh||0); }, 0); }
+
+function renderPendencias(){
+  const el = document.getElementById('s8-content');
+  if(!el) return;
+  const e = pendEscopo();
+  if(e.tipo === 'none'){
+    el.innerHTML = '<div class="empty"><div class="empty-icon">👆</div><div class="empty-text">Identifica-te no topo da tela pra ver as pendências</div></div>';
+    return;
+  }
+  const base  = pendBase();
+  const nDocs = base.filter(function(r){ return r.pend.some(function(p){ return p.k==='docs'; }); }).length;
+  const nRisk = base.filter(function(r){ return r.pend.some(function(p){ return p.k==='risco'; }); }).length;
+  const rows  = pendFiltro==='all' ? base : base.filter(function(r){ return r.pend.some(function(p){ return p.k===pendFiltro; }); })
+                  .map(function(r){ return {x:r.x, pend:r.pend.filter(function(p){ return p.k===pendFiltro; })}; });
+  const mwh   = rows.reduce(function(a,r){ return a + (r.x.mwh||0); }, 0);
+  const alvo  = e.tipo==='self' ? 'Seus clientes' : (e.tipo==='praca' ? ('Time · ' + (misLabel ? misLabel(e.praca) : e.praca)) : 'Todas as praças');
+
+  let h = '<div class="camp-header" style="background:linear-gradient(135deg,#F59E0B 0%,#B45309 100%)">'
+    + '<div class="camp-title">Pendências · ' + escapeHtml(alvo) + '</div>'
+    + '<div class="camp-period">' + rows.length + ' cliente' + (rows.length===1?'':'s') + '</div>'
+    + '<div class="camp-sub">' + mwh.toFixed(1) + ' MWh travados · toque no cliente pra ver o detalhe</div>'
+    + '</div>';
+
+  h += '<div style="display:flex;gap:6px;margin-bottom:10px">'
+    + pendChip('all','📋','Todas', base.length, pendFiltro==='all')
+    + pendChip('docs','📄','Docs', nDocs, pendFiltro==='docs')
+    + pendChip('risco','🔎','Análise', nRisk, pendFiltro==='risco')
+    + '</div>';
+
+  if(e.tipo === 'all'){
+    const ordem = ['salvador','feira','natal','rninterior','spi','ribeirao','ce','outras'];
+    h += '<div class="seller-block" style="margin-bottom:10px"><select class="seller-select" onchange="pendSetPraca(this.value)">'
+      + '<option value="all"' + (pendPraca==='all'?' selected':'') + '>Todas as praças</option>'
+      + ordem.map(function(k){
+          if(!PRACA_DEF[k]) return '';
+          return '<option value="' + k + '"' + (pendPraca===k?' selected':'') + '>' + escapeHtml(PRACA_DEF[k].label) + '</option>';
+        }).join('')
+      + '</select></div>';
+  }
+
+  if(!rows.length){
+    h += '<div class="empty"><div class="empty-icon">✅</div><div class="empty-text">Nenhuma pendência com esse filtro. Time em dia!</div></div>';
+    el.innerHTML = h;
+    return;
+  }
+
+  if(e.tipo === 'self'){
+    rows.forEach(function(r){ h += pendCard(r); });
+    el.innerHTML = h;
+    return;
+  }
+
+  // líder/gestão: acordeão por vendedor, quem tem mais pendência primeiro
+  const grupos = {};
+  rows.forEach(function(r){ const k = r.x.s || '(sem vendedor)'; (grupos[k] = grupos[k] || []).push(r); });
+  const nomes = Object.keys(grupos).sort(function(a,b){
+    return grupos[b].length - grupos[a].length || a.localeCompare(b,'pt-BR');
+  });
+  nomes.forEach(function(nome, i){
+    const g = grupos[nome];
+    const gm = g.reduce(function(a,r){ return a + (r.x.mwh||0); }, 0);
+    if(pendAberto[i] === undefined) pendAberto[i] = true;   // líder abre o time já expandido
+    const open = !!pendAberto[i];
+    h += '<div class="agd-praca' + (open?' open':'') + '">'
+      + '<button class="agd-vend-head" onclick="pendToggle(' + i + ')">'
+        + ((typeof avatarImg==='function') ? avatarImg(nome,'agd-avatar') : '')
+        + '<span class="agd-vend-name">' + escapeHtml(nome) + '</span>'
+        + '<span class="agd-vend-stat">' + g.length + ' · ' + gm.toFixed(1) + ' MWh</span>'
+        + '<span class="agd-caret"' + (open?' style="transform:rotate(90deg)"':'') + '>▶</span>'
+      + '</button>'
+      + '<div class="agd-praca-body">' + g.map(pendCard).join('') + '</div>'
+      + '</div>';
+  });
+  el.innerHTML = h;
 }
 
 // v2.104 — Drill-down "Aguardando documentação": praça → vendedor → clientes
