@@ -883,7 +883,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
   <div class="copa-modal" id="copa-modal" onclick="closeCopaFig()"></div>
 
   <div style="position:fixed;bottom:78px;right:8px;font-size:9px;color:#aaa;background:rgba(255,255,255,.85);padding:2px 6px;border-radius:8px;z-index:99;font-family:monospace;pointer-events:none">
-    v2.174 · 21/08
+    v2.175 · 21/08
   </div>
 
   <!-- BOTTOM NAV -->
@@ -1053,10 +1053,17 @@ function obsAnalise(x){
 // deal_credit_stage diz de quem e' a bola (cliente confirmar, forma de pagamento,
 // desembolso). Terminal = pagamento realizado ou credito/pagamento rejeitado.
 const PEND_ANT_FIM = ['PAGAMENTO_REALIZADO','ANÁLISE_DE_CRÉDITO_REJEITADA','PAGAMENTO_REJEITADO'];
+// ⚠️ CREDIT_DESC e' const declarada no FIM do arquivo. `typeof` numa const em TDZ
+// LANCA ReferenceError (nao devolve 'undefined'), e o renderResumo roda no boot,
+// antes dessa linha -> tela Field ficava BRANCA. Por isso o acesso vai em try/catch.
+function pendCreditDesc(c){
+  try { return (typeof CREDIT_DESC !== 'undefined' && CREDIT_DESC) ? (CREDIT_DESC[c] || null) : null; }
+  catch(e){ return null; }
+}
 function pendAntecipa(x){
   const c = String((x && x.credito) || '').trim();
   if(!c || PEND_ANT_FIM.indexOf(c) >= 0) return '';
-  const info = (typeof CREDIT_DESC !== 'undefined') ? CREDIT_DESC[c] : null;
+  const info = pendCreditDesc(c);
   const label = info ? info[0] : (c.charAt(0) + c.slice(1).toLowerCase().replace(/_/g,' '));
   const desc  = info ? info[1] : '';
   return 'Antecipa · ' + label + (desc ? ' — ' + desc : '');
@@ -2333,7 +2340,9 @@ function pendCard(r){
 // independente do filtro/escopo escolhido dentro da aba Pendencias.
 function _pendTodas(){
   const out = [];
-  rawData.forEach(function(x){ const p = pendDe(x); if(p.length) out.push({x:x, pend:p}); });
+  try {
+    rawData.forEach(function(x){ const p = pendDe(x); if(p.length) out.push({x:x, pend:p}); });
+  } catch(e){ console.warn('pendencias (resumo):', e && e.message); return []; }
   return out;
 }
 function _pendCountResumo(){ return _pendTodas().length; }
