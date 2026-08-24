@@ -777,7 +777,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
 .calc-break .k.tr,.calc-break .v.tr{ font-size:15px; padding-top:8px; margin-top:2px; border-top:1px dashed rgba(255,255,255,.35); }
 .calc-note{ font-size:12px; color:var(--muted); line-height:1.6; margin-top:14px; border-left:2px solid var(--blue); padding-left:11px; }
 
-/* ===== Missão da Semana (campanha de líderes 13-23/08) — v2.168 ===== */
+/* ===== Missão da Semana (campanha de líderes 24-30/08) — v2.168 ===== */
 .mis-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .mis-pill{font-size:10.5px;font-weight:700;padding:5px 10px;border-radius:20px;background:#0201F3;color:#fff}
 .mis-pill.alt{background:#C58BC7}
@@ -883,7 +883,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
   <div class="copa-modal" id="copa-modal" onclick="closeCopaFig()"></div>
 
   <div style="position:fixed;bottom:78px;right:8px;font-size:9px;color:#aaa;background:rgba(255,255,255,.85);padding:2px 6px;border-radius:8px;z-index:99;font-family:monospace;pointer-events:none">
-    v2.177 · 21/08
+    v2.178 · 24/08
   </div>
 
   <!-- BOTTOM NAV -->
@@ -1225,18 +1225,18 @@ renderResumo();
 // ══════════════════════════════════════════════════════════════════
 // SCREEN: MISSÃO DA SEMANA (v2.168 — campanha "Semana do Antecipa")
 // Visível SÓ para líderes e gestão (nav-missao nasce display:none).
-// Meta: MWh aprovados em clientes Antecipa, SOMA DO TIME, 13→23/08.
-// Tiers 5/8/15 MWh -> R$750/R$1.500/R$3.000 · pagamento 25/08.
+// Meta: MWh aprovados em clientes Antecipa, SOMA DO TIME, 24→30/08.
+// Tiers 5/8/15 MWh -> R$750/R$1.500/R$3.000 · pagamento 01/09.
 // Pré-requisito: 1 venda de Antecipa POR VENDEDOR do time.
 // Fonte: rawData (produto LIORA_ANTECIPA_* + aprov_date na janela).
 // ══════════════════════════════════════════════════════════════════
-const MIS_INI = '2026-08-13';
-const MIS_FIM = '2026-08-23';
+const MIS_INI = '2026-08-24';
+const MIS_FIM = '2026-08-30';
 const MIS_TIERS = [{mwh:5,premio:750},{mwh:8,premio:1500},{mwh:15,premio:3000}];
 const MIS_MAX = 15;
-// Felipe 17/08: cliente aprovado na semana da campanha (17-23/08) vale 1,5x tambem
-// na Missao. Aprovados de 13 a 16/08 (largada) seguem valendo 1x.
-const MIS_BONUS_INI = '2026-08-17';
+// Felipe 24/08: campanha recalibrada p/ 24-30/08 (mesmas regras). A janela toda
+// vale 1,5x -- nao existe periodo de largada nesta semana.
+const MIS_BONUS_INI = '2026-08-24';
 const MIS_BONUS = 1.5;
 function misTemBonus(r){ return (r.aprov_date || '') >= MIS_BONUS_INI; }
 function misMwhCamp(r){ const m = Number(r.mwh) || 0; return misTemBonus(r) ? m * MIS_BONUS : m; }
@@ -1354,13 +1354,13 @@ function renderMissao(){
   const d = misDias();
   const restam = d > 1 ? ('faltam ' + d + ' dias') : (d === 1 ? 'último dia' : (d === 0 ? 'encerra hoje' : 'encerrada'));
 
-  let h = '<div class="mis-pills"><span class="mis-pill">13/08 a 23/08</span>' +
-          '<span class="mis-pill alt">Pagamento 25/08</span>' +
+  let h = '<div class="mis-pills"><span class="mis-pill">24/08 a 30/08</span>' +
+          '<span class="mis-pill alt">Pagamento 01/09</span>' +
           '<span class="mis-pill ghost">' + restam + '</span></div>' +
           '<div style="background:#F3F1FF;border:1px solid #D9D4FF;border-radius:12px;padding:10px 12px;margin-bottom:12px">' +
-            '<div style="font-size:12px;font-weight:800;color:var(--purple);text-align:center">⚡ Cliente aprovado de 17 a 23/08 vale 1,5×</div>' +
+            '<div style="font-size:12px;font-weight:800;color:var(--purple);text-align:center">⚡ Cliente aprovado de 24 a 30/08 vale 1,5×</div>' +
             '<div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px;line-height:1.5">' +
-              'Cliente de 2 MWh conta como <b style="color:var(--purple)">3 MWh</b> pro time. Aprovados de 13 a 16/08 valem 1×.<br>' +
+              'Cliente de 2 MWh conta como <b style="color:var(--purple)">3 MWh</b> pro time. Vale para todo aprovado da semana.<br>' +
               '<span style="color:var(--blue);font-weight:700">Azul</span> = MWh normal · <span style="color:var(--purple);font-weight:700">roxo</span> = bônus.' +
             '</div>' +
           '</div>' +
@@ -1389,9 +1389,9 @@ function renderMissao(){
     }).join('')
     : '<div class="empty"><div class="empty-icon">⏳</div><div class="empty-text">Nenhum Antecipa aprovado ainda. A campanha conta a partir de 13/08.</div></div>';
 
-  h += '<div class="mis-foot">Quem recebe é o <b>líder</b>, na remuneração variável de 25/08, pelo resultado do time. ' +
-       'Conta cliente <b>Antecipa</b> com análise aprovada entre 13/08 e 23/08, pela data da aprovação. ' +
-       'Aprovados de <b>17 a 23/08</b> contam <b>1,5×</b> o MWh (semana da campanha); de 13 a 16/08, 1×. ' +
+  h += '<div class="mis-foot">Quem recebe é o <b>líder</b>, na remuneração variável de 01/09, pelo resultado do time. ' +
+       'Conta cliente <b>Antecipa</b> com análise aprovada entre 24/08 e 30/08, pela data da aprovação. ' +
+       'Todo aprovado de <b>24 a 30/08</b> conta <b>1,5×</b> o MWh. ' +
        'O prêmio só é liberado se <b>todo vendedor do time</b> tiver ao menos 1 venda de Antecipa — o líder não entra nessa conta.</div>';
   el.innerHTML = h;
 }
@@ -2000,20 +2000,20 @@ function isExTime_(n){ return EX_TIME.indexOf(n) !== -1; }
 function isOculto_(n){ return OCULTOS_TIME.indexOf(n) !== -1; }
 const CAMP_CFG = {
   semana: { key:'semana', btn:'MWh', title:'Campanha da Semana',
-    ini:'2026-08-17', end:'2026-08-23', period:'17 a 23/08/2026 \u00b7 23h59 \u00b7 pgto 25/08',
-    desc:'Remunera\u00e7\u00e3o vari\u00e1vel <b>individual</b> pelos MWh <b>aprovados</b> no per\u00edodo de 17/08 a 23/08. Pagamento no dia 25/08.',
+    ini:'2026-08-24', end:'2026-08-30', period:'24 a 30/08/2026 \u00b7 23h59 \u00b7 pgto 01/09',
+    desc:'Remunera\u00e7\u00e3o vari\u00e1vel <b>individual</b> pelos MWh <b>aprovados</b> no per\u00edodo de 24/08 a 30/08. Pagamento no dia 01/09.',
     metric:'mwh', unit:'MWh camp.', tierUnit:'MWh', totalWord:'Total acumulado',
     antecipaBonus:1.5,
     tiers:[ {v:15,label:'R$ 2.500',tier:3},{v:8,label:'R$ 1.500',tier:2},{v:5,label:'R$ 750',tier:1} ] },
   antecipa: { key:'antecipa', btn:'\u26a1 Antecipa', title:'\u26a1 Bateu Levou Antecipa',
-    ini:'2026-08-17', end:'2026-08-23', period:'17 a 23/08/2026 \u00b7 23h59 \u00b7 pgto 25/08',
-    desc:'Campanha rel\u00e2mpago <b>individual</b> por <b>clientes com produto Antecipa vigente</b> (aprovado) no per\u00edodo de 17/08 a 23/08. Pagamento no dia 25/08.',
+    ini:'2026-08-24', end:'2026-08-30', period:'24 a 30/08/2026 \u00b7 23h59 \u00b7 pgto 01/09',
+    desc:'Campanha rel\u00e2mpago <b>individual</b> por <b>clientes com produto Antecipa vigente</b> (aprovado) no per\u00edodo de 24/08 a 30/08. Pagamento no dia 01/09.',
     metric:'count', unit:'antecipa', tierUnit:'clientes', totalWord:'Total',
     tiers:[ {v:10,label:'R$ 750',tier:3},{v:8,label:'R$ 500',tier:2},{v:5,label:'R$ 250',tier:1} ] }
 };
 let CAMP_VIEW = 'semana';
 function setCampView(k){ CAMP_VIEW = k; renderCampanha(); }
-// v2.170 \u2014 Semana 17-23/08: o MWh do Antecipa vale 1,5x SO na Campanha da Semana.
+// v2.178 \u2014 Semana 24-30/08: o MWh do Antecipa vale 1,5x SO na Campanha da Semana.
 // Meta mensal, rankings e "MWh aprovados" continuam no valor real (Felipe 17/08).
 function isAntecipaDeal(x){ return /ANTECIPA/i.test(x.produto||'') && isAprovado(x); }  // Felipe 18/08: era !!credito_ok, o que escondia o Antecipa aprovado por risco (Pix nao gera analise de credito) do ranking/campanha
 function campParts(cfg, deals){

@@ -538,12 +538,12 @@ for _did, _rec in ANT_APPROVE.items():
 ANTECIPA.sort(key=lambda x: x['date'], reverse=True)
 io.open('new_ANTECIPA.json','w').write(json.dumps(ANTECIPA, ensure_ascii=False))
 
-# ---- MISSAO: campanha "Semana do Antecipa" (13-23/08/2026) ----------------
+# ---- MISSAO: campanha "Semana do Antecipa" (24-30/08/2026) ----------------
 # Alimenta a aba "Missao" do desktop (restrita a lideres/gestao). Recorte:
 # cliente Antecipa do FIELD com analise APROVADA (risco ou credito) e data de
 # aprovacao (adate) dentro da janela. A largada valeu de 13/08 (slide "A largada
 # e hoje"), a vigencia oficial do material e 17-23/08 -> Felipe optou por 13/08.
-MISSAO_INI, MISSAO_FIM = '2026-08-13', '2026-08-23'
+MISSAO_INI, MISSAO_FIM = '2026-08-24', '2026-08-30'
 MISSAO = [{'s':x['s'], 'praca':x['praca'], 'mwh':x['mwh'], 'c':x['c'], 'tipo':x.get('tipo',''),
            'adate':(x.get('adate') or x.get('date') or '')}
           for x in ANTECIPA
