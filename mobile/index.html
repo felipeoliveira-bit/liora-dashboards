@@ -883,7 +883,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
   <div class="copa-modal" id="copa-modal" onclick="closeCopaFig()"></div>
 
   <div style="position:fixed;bottom:78px;right:8px;font-size:9px;color:#aaa;background:rgba(255,255,255,.85);padding:2px 6px;border-radius:8px;z-index:99;font-family:monospace;pointer-events:none">
-    v2.179 · 25/08
+    v2.180 · 25/08
   </div>
 
   <!-- BOTTOM NAV -->
@@ -1789,6 +1789,32 @@ function renderCarteiraLider(seller){
   const meta  = _mt > 0 ? _mt : (METAS[seller] || 0);
   const pracaLabel = pracas.map(function(k){ return (typeof PRACA_LABEL!=='undefined' && PRACA_LABEL[k]) || k; }).join(' + ');
   const teamMwh = pracas.reduce(function(a,k){ return a + teamMwhAprovado(k); }, 0);
+  // v2.180 (Felipe 25/08) — líder de mais de uma praça precisa ver o número SEPARADO
+  // por praça (senão não dá para cobrar cada time). O consolidado continua em cima,
+  // porque a RV do líder é calculada sobre o total.
+  const porPraca = pracas.map(function(k){
+    const _mw = teamMwhAprovado(k);
+    const _me = (typeof PRACA_DEF!=='undefined' && PRACA_DEF[k] && PRACA_DEF[k].meta) || 0;
+    return { k:k,
+             label: (typeof PRACA_LABEL!=='undefined' && PRACA_LABEL[k]) || k,
+             cor:   (typeof PRACA_DEF!=='undefined' && PRACA_DEF[k] && PRACA_DEF[k].color) || 'var(--blue)',
+             mwh:_mw, meta:_me, pct: _me>0 ? (_mw/_me*100) : 0 };
+  }).sort(function(a,b){ return b.mwh - a.mwh; });
+  const cardPorPraca = pracas.length < 2 ? '' : `
+    <div class="card">
+      <div class="card-title">Por praça</div>
+      ${porPraca.map(function(p){
+        const _c = p.pct>=70?'var(--green)':p.pct>=40?'var(--blue)':'var(--red)';
+        return `
+        <div style="margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:5px">
+            <span style="font-size:13px;font-weight:800;color:var(--ink)"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${p.cor};margin-right:6px"></span>${p.label}</span>
+            <span style="font-size:12px;color:var(--muted);white-space:nowrap"><b style="color:var(--ink);font-size:16px">${p.mwh.toFixed(1)}</b> / ${p.meta} MWh · <b style="color:${_c}">${p.pct.toFixed(0)}%</b></span>
+          </div>
+          <div class="bar-bg"><div class="bar-fill" style="width:${Math.min(p.pct,100).toFixed(0)}%;background:${p.cor}"></div></div>
+        </div>`;
+      }).join('')}
+    </div>`;
   const pct = meta>0 ? (teamMwh/meta*100) : 0;
   const pc  = pct>=70?'var(--green)':pct>=40?'var(--blue)':'var(--red)';
   const barW = Math.min(pct,100);
@@ -1817,12 +1843,12 @@ function renderCarteiraLider(seller){
       <div class="bar-bg"><div class="bar-fill" style="width:${barW.toFixed(0)}%;background:var(--blue)"></div></div>
       ${renderRemProgressLider(seller, teamMwh, meta)}
     </div>
-    ${renderRemRulesCardLider(seller, pct)}
-    <div class="section-head">Time (${membros.length})</div>`;
-  membros.forEach(m=>{
+    ${cardPorPraca}
+    ${renderRemRulesCardLider(seller, pct)}`;
+  const _cardMembro = function(m){
     const mp = m.mt>0?Math.min(m.mwh/m.mt*100,100):0;
     const mc = mp>=70?'var(--green)':mp>=40?'var(--blue)':'var(--red)';
-    html += `
+    return `
       <div class="client-card" onclick="document.getElementById('seller-select').value=this.dataset.nome;renderCarteira()" data-nome="${escapeHtml(m.nome)}" style="cursor:pointer">
         <div class="client-name">${escapeHtml(m.nome)}${m.nome===seller?' · você':''}</div>
         <div class="client-meta">
@@ -1830,7 +1856,24 @@ function renderCarteiraLider(seller){
           <span class="days-badge" style="color:${mc}">${mp.toFixed(0)}% · meta ${m.mt}</span>
         </div>
       </div>`;
-  });
+  };
+  if(pracas.length < 2){
+    html += `<div class="section-head">Time (${membros.length})</div>`;
+    membros.forEach(function(m){ html += _cardMembro(m); });
+  } else {
+    // v2.180 — uma seção por praça, para a líder saber de quem é cada número
+    porPraca.forEach(function(p){
+      const grupo = membros.filter(function(m){ return (SELLER_PRACA[m.nome]||'').toLowerCase() === p.k; });
+      if(!grupo.length) return;
+      html += `<div class="section-head">${p.label} (${grupo.length}) · ${p.mwh.toFixed(1)} MWh</div>`;
+      grupo.forEach(function(m){ html += _cardMembro(m); });
+    });
+    const _resto = membros.filter(function(m){ return pracas.indexOf((SELLER_PRACA[m.nome]||'').toLowerCase()) === -1; });
+    if(_resto.length){
+      html += `<div class="section-head">Outros (${_resto.length})</div>`;
+      _resto.forEach(function(m){ html += _cardMembro(m); });
+    }
+  }
   return html;
 }
 
