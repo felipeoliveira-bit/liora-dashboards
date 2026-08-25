@@ -3415,6 +3415,7 @@ tr:hover td{background:#f8f9fc}
   
   <div class=&quot;cc&quot;><div class=&quot;ct&quot;>Matriz Praça × Dia da Semana</div><div class=&quot;tw&quot; id=&quot;time-matrix&quot;></div></div>
   <div class=&quot;cc&quot;><div class=&quot;ct&quot;>Top Vendedor por Praça</div><div id=&quot;top-per-praca&quot;></div></div>
+  <div class=&quot;cc&quot;><div class=&quot;ct&quot;>Propostas por Vendedor<span id=&quot;rkv-sub&quot; style=&quot;font-weight:400;color:var(--text3);font-size:11px;margin-left:6px&quot;></span><button class=&quot;btn-t&quot; id=&quot;rkv-mq&quot; onclick=&quot;setRkvMetric('qty')&quot; style=&quot;margin-left:8px;padding:4px 11px&quot;>Propostas</button><button class=&quot;btn-t&quot; id=&quot;rkv-mm&quot; onclick=&quot;setRkvMetric('mwh')&quot; style=&quot;padding:4px 11px&quot;>MWh</button></div><div id=&quot;rk-vendedor&quot;></div></div>
 </div>
 
 <!-- RANKING -->
@@ -3422,7 +3423,7 @@ tr:hover td{background:#f8f9fc}
   <div class=&quot;stitle&quot; style=&quot;margin-top:24px&quot;>📋 Lista de Propostas</div>
   <div class=&quot;cc&quot;>
     <div class=&quot;ct&quot;>
-      <span>Lista de Propostas — Semana (<span id=&quot;wcount&quot;>0</span>)</span>
+      <span>Lista de Propostas <span id=&quot;pt-perlbl&quot;></span> (<span id=&quot;wcount&quot;>0</span>)</span>
       <select id=&quot;pt-filter-seller&quot; onchange=&quot;filterPT()&quot; style=&quot;font-size:11px;padding:4px 8px;border-radius:6px;border:1px solid #ddd;background:#fff;font-family:inherit;margin-left:8px&quot;>
         <option value=&quot;&quot;>Todos vendedores</option>
       </select>
@@ -3433,6 +3434,8 @@ tr:hover td{background:#f8f9fc}
         <option value=&quot;Natal&quot;>Natal</option>
         <option value=&quot;CE&quot;>CE</option>
         <option value=&quot;SPI&quot;>Campinas SPI</option>
+        <option value=&quot;Ribeirao&quot;>Ribeirão SPI</option>
+        <option value=&quot;RN Interior&quot;>RN Interior</option>
       </select>
       <button class=&quot;btn-t&quot; onclick=&quot;toggleTable()&quot; id=&quot;smbtn&quot; style=&quot;padding:4px 11px&quot;>Ver todas</button>
     </div>
@@ -3782,10 +3785,32 @@ function renderOverview(){
   if(elTitleOv) elTitleOv.textContent=&quot;Visão Praça&quot;;
   
   renderShareTable(weekD);
+  renderSellerRank(base);
   renderPT(false,base);
   if(typeof renderTimes==='function') renderTimes();
 }
 
+let _rkvMetric='qty';
+function setRkvMetric(m){ _rkvMetric=m; done.overview=false; renderCurrent(); }
+function renderSellerRank(base){
+  const el=document.getElementById('rk-vendedor');
+  if(!el) return;
+  const v=topV(base,_rkvMetric);
+  const mx=(v[0]&&v[0][_rkvMetric])||1;
+  const sub=document.getElementById('rkv-sub');
+  if(sub) sub.textContent='('+v.length+' vendedor(es))'+(typeof filterLabel==='function'?filterLabel():'');
+  const bq=document.getElementById('rkv-mq'), bm=document.getElementById('rkv-mm');
+  if(bq) bq.className='btn-t'+(_rkvMetric==='qty'?' at':'');
+  if(bm) bm.className='btn-t'+(_rkvMetric==='mwh'?' at':'');
+  if(!v.length){ el.innerHTML='<div style=\'padding:12px;color:var(--text3);font-size:12px\'>Sem propostas no periodo/filtro atual.</div>'; return; }
+  el.innerHTML=v.map((x,i)=>`<div class='ri'>
+      <div class='rn ${i===0?'go':i===1?'si':i===2?'br':''}'>${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div>
+      <div class='rname'>${x.name}</div>
+      <div style='margin-right:6px'>${pb(x.praca)}</div>
+      <div class='rbw'><div class='rb' style='width:${(x[_rkvMetric]/mx*100).toFixed(0)}%;background:${PC[x.praca]||'#0201F3'}'></div></div>
+      <div class='rv' style='color:${PC[x.praca]||'#0201F3'}'>${_rkvMetric==='qty'?x.qty:fW(x.mwh)}</div>
+    </div>`).join('');
+}
 let _sa=false,_ptData=[];
 function toggleTable(){_sa=!_sa;document.getElementById(&quot;smbtn&quot;).textContent=_sa?&quot;Menos&quot;:&quot;Ver todas&quot;;renderPT(_sa,_ptData);}
 function renderPT(all,weekD){
@@ -3802,6 +3827,8 @@ function renderPT(all,weekD){
       return String(va||'').localeCompare(String(vb||'')) * _ptSortDir;
     });
   }
+  const _pl=document.getElementById('pt-perlbl');
+  if(_pl) _pl.textContent='— '+({today:'Hoje',yesterday:'Ontem',week:'Semana atual',month:'Mês'}[PROP_PERIODO]||'Mês');
   document.getElementById(&quot;wcount&quot;).textContent = filtered_data.length;
   const data = all ? filtered_data : filtered_data.slice(0,25);
   window.__propRows = data;
