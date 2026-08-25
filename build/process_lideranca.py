@@ -329,6 +329,8 @@ def credit_pt(s):
 # FORCE_APPROVED manual por cliente. UNICA excecao: credito NEGADO/REJEITADO.
 CREDIT_NEG = {'denied', 'rejected', 'refused'}
 CREDIT_STAGE_NEG = {'CREDIT_ANALISYS_REJECTED', 'PAYMENT_REJECTED'}
+LOST_POS_VENDA = {'troca de titularidade', 'uc desligada'}  # perda POSTERIOR a venda (churn): nao desfaz o aprovado (Felipe 25/08)
+
 def apc_ok(r):
     """True quando o risco e' APPROVED_PENDING_CREDIT e o credito NAO foi negado."""
     if (r.get('latest_risk_analysis_result') or '').strip() != 'APPROVED_PENDING_CREDIT':
@@ -524,7 +526,7 @@ if f_ant:
           # ANT_APPROVE/FORCE_APPROVED continuam ganhando (decisao manual do Felipe).
           'risk': ('APPROVED' if (_did in ANT_APPROVE or _did in FORCE_APPROVED)
                    else ('PERDIDO' if ((r.get('deal_lost_at') or '').strip()
-                                       and (r.get('deal_lost_reason') or '').strip().lower() != 'troca de titularidade')
+                                       and (r.get('deal_lost_reason') or '').strip().lower() not in LOST_POS_VENDA)
                    else ('APPROVED' if (apc_ok(r) or (r.get('latest_credit_analysis_result') or '').strip().lower()=='approved')
                          else (r.get('latest_risk_analysis_result') or '').strip()))),  # apc_ok: Felipe 18/08
           'credito': ('approved' if _did in ANT_APPROVE else (r.get('latest_credit_analysis_result') or '').strip()),
@@ -580,7 +582,7 @@ def _gd_apr(r):
     risk=(r.get('latest_risk_analysis_result') or '').strip()
     # Felipe 25/08: perdido nunca conta (excecao: troca de titularidade). FORCE_APPROVED ganha.
     if (r.get('deal_id') or '').strip() not in FORCE_APPROVED and (r.get('deal_lost_at') or '').strip() \
-       and (r.get('deal_lost_reason') or '').strip().lower() != 'troca de titularidade':
+       and (r.get('deal_lost_reason') or '').strip().lower() not in LOST_POS_VENDA:
         return False
     _apc=apc_ok(r)  # Felipe 18/08
     if (r.get('deal_stage') or '')=='BGC_PARCEIRO' and not _apc: risk=''

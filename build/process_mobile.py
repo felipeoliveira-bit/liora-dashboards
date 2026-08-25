@@ -208,6 +208,12 @@ FORCE_APPROVED = {
                   '18a28a63-cd00-4bde-97e0-f04151fe5a2d': '2026-08-19',  # NELO MINGHE NETO (Antecipa PJ, Fabio Rodrigues/Ribeirao, 0.905 MWh) - risco APPROVED 20/08 00:47
                   '67505be8-e7a4-496f-a8e3-a711909fa2fc': '2026-08-19',  # ALEXANDRE ZANETI ARANTES (Antecipa PJ, Karianine Sampaio/Ribeirao, 0.871 MWh) - risco APPROVED 20/08 01:14
                   }  # ALEXANDRE ZANETI ARANTES (Antecipa PJ, Karianine Sampaio/Ribeirao, 0.871 MWh) - risco APPROVED 20/08 01:14
+# Perdas POSTERIORES a venda (churn): o cliente foi aprovado e entregue, e a perda
+# veio depois. Nao desfazem o aprovado do mes. 'UC Desligada' entrou 25/08 junto com
+# a regra de perdido nunca contar (Felipe): eram 16 clientes / 30,77 MWh de agosto que
+# ja tinham virado titularidade. O que desfaz e' desistencia/reprovacao/inelegibilidade.
+LOST_POS_VENDA = {'troca de titularidade', 'uc desligada'}
+
 LOST_IGNORE = {  # ignora lost_at/lost_reason (falso 'nao aceito pela distribuidora')
  'FRANCISCO ALDECI DE QUEIROZ FERNANDES',  # reprovado e erro; ignorar (Felipe 03/07)
  'ANTÔNIO EDMILSON LEITE',  # dup denied em BGC, forçado aprovado (Felipe 15/07)
@@ -291,7 +297,7 @@ def build_rawData(deals_path, ag_path, prop_path=None, docs_map=None, uc_map=Non
         # titularidade' (perda tecnica) e a LOST_IGNORE. FORCE_APPROVED continua ganhando:
         # e' decisao manual explicita do Felipe.
         _lost = (bool((r['deal_lost_at'] or '').strip())
-                 and (r.get('deal_lost_reason') or '').strip().lower() != 'troca de titularidade'
+                 and (r.get('deal_lost_reason') or '').strip().lower() not in LOST_POS_VENDA
                  and (cli or '').strip().upper() not in LOST_IGNORE)
         approved = forced or (not _lost and (credito_ok or _apc or (_reached and _risk!='DENIED' and r['deal_stage']!='BGC_PARCEIRO')))
         aprov = (iso(pdate(r['latest_risk_analysis_created_at']) or pdate(r['deal_created_at'])) if approved else '')
