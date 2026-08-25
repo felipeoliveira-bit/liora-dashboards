@@ -329,7 +329,14 @@ def credit_pt(s):
 # FORCE_APPROVED manual por cliente. UNICA excecao: credito NEGADO/REJEITADO.
 CREDIT_NEG = {'denied', 'rejected', 'refused'}
 CREDIT_STAGE_NEG = {'CREDIT_ANALISYS_REJECTED', 'PAYMENT_REJECTED'}
-LOST_POS_VENDA = {'troca de titularidade', 'uc desligada'}  # perda POSTERIOR a venda (churn): nao desfaz o aprovado (Felipe 25/08)
+# Felipe 25/08 (final): a lista e' INVERTIDA de proposito. So estes motivos DESFAZEM a
+# venda aprovada: o cliente desistiu, ou o credito foi reprovado. Todo o resto mantem o
+# aprovado. 'UC Desligada' (16 clientes / 30,77 MWh em agosto) NAO e' reprovacao: e' o
+# canal de Ops que nao consegue avancar com a titularidade porque a UC esta desligada -
+# a venda foi aprovada no risco e continua valendo. Idem 'Telefone incorreto',
+# 'Baixa Renda / NIS', 'placa solar'. Risco DENIED e credito negado ja caem nos testes
+# proprios, sem depender do motivo da perda.
+LOST_DESFAZ = {'cliente desistiu', 'reprovado na análise de crédito'}
 
 def apc_ok(r):
     """True quando o risco e' APPROVED_PENDING_CREDIT e o credito NAO foi negado."""
@@ -526,7 +533,7 @@ if f_ant:
           # ANT_APPROVE/FORCE_APPROVED continuam ganhando (decisao manual do Felipe).
           'risk': ('APPROVED' if (_did in ANT_APPROVE or _did in FORCE_APPROVED)
                    else ('PERDIDO' if ((r.get('deal_lost_at') or '').strip()
-                                       and (r.get('deal_lost_reason') or '').strip().lower() not in LOST_POS_VENDA)
+                                       and (r.get('deal_lost_reason') or '').strip().lower() in LOST_DESFAZ)
                    else ('APPROVED' if (apc_ok(r) or (r.get('latest_credit_analysis_result') or '').strip().lower()=='approved')
                          else (r.get('latest_risk_analysis_result') or '').strip()))),  # apc_ok: Felipe 18/08
           'credito': ('approved' if _did in ANT_APPROVE else (r.get('latest_credit_analysis_result') or '').strip()),
@@ -582,7 +589,7 @@ def _gd_apr(r):
     risk=(r.get('latest_risk_analysis_result') or '').strip()
     # Felipe 25/08: perdido nunca conta (excecao: troca de titularidade). FORCE_APPROVED ganha.
     if (r.get('deal_id') or '').strip() not in FORCE_APPROVED and (r.get('deal_lost_at') or '').strip() \
-       and (r.get('deal_lost_reason') or '').strip().lower() not in LOST_POS_VENDA:
+       and (r.get('deal_lost_reason') or '').strip().lower() in LOST_DESFAZ:
         return False
     _apc=apc_ok(r)  # Felipe 18/08
     if (r.get('deal_stage') or '')=='BGC_PARCEIRO' and not _apc: risk=''

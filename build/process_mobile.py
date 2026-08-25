@@ -208,11 +208,14 @@ FORCE_APPROVED = {
                   '18a28a63-cd00-4bde-97e0-f04151fe5a2d': '2026-08-19',  # NELO MINGHE NETO (Antecipa PJ, Fabio Rodrigues/Ribeirao, 0.905 MWh) - risco APPROVED 20/08 00:47
                   '67505be8-e7a4-496f-a8e3-a711909fa2fc': '2026-08-19',  # ALEXANDRE ZANETI ARANTES (Antecipa PJ, Karianine Sampaio/Ribeirao, 0.871 MWh) - risco APPROVED 20/08 01:14
                   }  # ALEXANDRE ZANETI ARANTES (Antecipa PJ, Karianine Sampaio/Ribeirao, 0.871 MWh) - risco APPROVED 20/08 01:14
-# Perdas POSTERIORES a venda (churn): o cliente foi aprovado e entregue, e a perda
-# veio depois. Nao desfazem o aprovado do mes. 'UC Desligada' entrou 25/08 junto com
-# a regra de perdido nunca contar (Felipe): eram 16 clientes / 30,77 MWh de agosto que
-# ja tinham virado titularidade. O que desfaz e' desistencia/reprovacao/inelegibilidade.
-LOST_POS_VENDA = {'troca de titularidade', 'uc desligada'}
+# Felipe 25/08 (final): a lista e' INVERTIDA de proposito. So estes motivos DESFAZEM a
+# venda aprovada: o cliente desistiu, ou o credito foi reprovado. Todo o resto mantem o
+# aprovado. 'UC Desligada' (16 clientes / 30,77 MWh em agosto) NAO e' reprovacao: e' o
+# canal de Ops que nao consegue avancar com a titularidade porque a UC esta desligada -
+# a venda foi aprovada no risco e continua valendo. Idem 'Telefone incorreto',
+# 'Baixa Renda / NIS', 'placa solar'. Risco DENIED e credito negado ja caem nos testes
+# proprios, sem depender do motivo da perda.
+LOST_DESFAZ = {'cliente desistiu', 'reprovado na análise de crédito'}
 
 LOST_IGNORE = {  # ignora lost_at/lost_reason (falso 'nao aceito pela distribuidora')
  'FRANCISCO ALDECI DE QUEIROZ FERNANDES',  # reprovado e erro; ignorar (Felipe 03/07)
@@ -297,7 +300,7 @@ def build_rawData(deals_path, ag_path, prop_path=None, docs_map=None, uc_map=Non
         # titularidade' (perda tecnica) e a LOST_IGNORE. FORCE_APPROVED continua ganhando:
         # e' decisao manual explicita do Felipe.
         _lost = (bool((r['deal_lost_at'] or '').strip())
-                 and (r.get('deal_lost_reason') or '').strip().lower() not in LOST_POS_VENDA
+                 and (r.get('deal_lost_reason') or '').strip().lower() in LOST_DESFAZ
                  and (cli or '').strip().upper() not in LOST_IGNORE)
         approved = forced or (not _lost and (credito_ok or _apc or (_reached and _risk!='DENIED' and r['deal_stage']!='BGC_PARCEIRO')))
         aprov = (iso(pdate(r['latest_risk_analysis_created_at']) or pdate(r['deal_created_at'])) if approved else '')
