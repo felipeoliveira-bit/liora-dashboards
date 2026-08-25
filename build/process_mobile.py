@@ -89,7 +89,7 @@ EMAIL_NOME = {
  'ederson.silva@lioraenergia.com.br':'Ederson Silva','diego.faria@lioraenergia.com.br':'Diego Faria',
  'briel.barbosa@lioraenergia.com.br':'Briel Barbosa','olimpio.filho@lioraenergia.com.br':'Olímpio Filho','fabio.rodrigues@lioraenergia.com.br':'Fábio Rodrigues', # novos 10/08
  'karianine.sampaio@lioraenergia.com.br':'Karianine Sampaio', # nova 18/08
- 'olavo.cavaldanti@lioraenergia.com.br':'Olavo Cavalcanti','paulo.lima@lioraenergia.com.br':'Paulo Lima',  # novos 24/08 (Olavo Cavalcanti - Mossoro/RN Interior; Paulo Lima - Ribeirao)
+ 'olavocavalcanti@lioraenergia.com.br':'Olavo Cavalcanti','olavo.cavaldanti@lioraenergia.com.br':'Olavo Cavalcanti','paulo.lima@lioraenergia.com.br':'Paulo Lima',  # novos 24/08 (Olavo Cavalcanti - Mossoro/RN Interior; Paulo Lima - Ribeirao)
  'felipe.oliveira@lioraenergia.com.br':'Felipe Oliveira',
  'mirla.albuquerque@lioraenergia.com.br':'Mirla Albuquerque',
  'lucas.santos@lioraenergia.com.br':'Lucas Santos',
