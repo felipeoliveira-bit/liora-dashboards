@@ -192,11 +192,20 @@ CONSUMPTION_OVERRIDE = {  # cliente (upper/strip) -> MWh; temp ate base corrigir
  'MÁRCIO PEREIRA PINTO': 5.866,  # aprovado manual, base mostra 1.3 (Felipe 10/07)
  'DRAX CENTRO AUTOMOTIVO LTDA': 4.311,
 }
+# FORCE_DENIED: deals que NAO contam como aprovado por decisao manual, mesmo com risco
+# APPROVED_PENDING_CREDIT / credito 'approved'. Nasceu da Dileuda (25/08): cliente
+# desistiu, o Antecipa nunca foi pago (credit_stage parado em GATHERING_DEPOSIT_
+# INFORMATION) e o credito_ok passava na frente do teste de perdido em 2 dos 4
+# isAprovado() do desktop e no do mobile. Efeito: zera _apc/credito_ok, marca risco
+# DENIED e MANTEM o stage real (BGC_PARCEIRO), entao o cliente cai como negado em
+# todas as telas. Chave = deal_id.
+FORCE_DENIED = {
+  '77a56fa5-9c4e-476c-b71d-ac08534d6745',  # DILEUDA CORINGA DA FONSECA DA SILVA (Antecipa PF, Thiago Macillo/Natal RN, 0.49 MWh) - desistiu; perdido 13/08 na base; era FORCE_APPROVED e o Felipe liberou considerar reprovada (25/08)
+}
 FORCE_APPROVED = {
                   '1e11931c-3e99-48f4-a338-47d734012625': '2026-08-20',  # FRANCISCO DAS CHAGAS CUNHA SILVA / 33050196000188 (Antecipa PJ, Olimpio Filho/Ribeirao, 0.916 MWh) - reaprovado 20/08 (lag de ingestao). ATENCAO: o risco RE-REPROVOU o deal em 21/08 14:04 ('Reprovado na analise de risco', lost + BGC_PARCEIRO) e o risk_real confirma DENIED; Felipe 21/08 mandou MANTER como aprovado mesmo assim. Nao remover sem falar com ele.
                   'cfb2500c-c323-4943-a7f8-e831a8f37b55': '2026-08-04',  # PP FERREIRA DE SALES COMER DE COSMETICOS - aprovado manual SOS 15:32 04/08 (Aurivando/CE); card818+risk_real ainda MANUAL; remover quando base refletir
                   'f9cf93c9-5348-4586-acdb-5a2b1dd49f60': '2026-08-12',  # ISMAEL RODRIGUES SILVA (Antecipa PF, Phillip Faria/Ribeirao SPI) - aprovado manual (Felipe 12/08); base risco MANUAL; remover quando base refletir
-                  '77a56fa5-9c4e-476c-b71d-ac08534d6745': '2026-08-13',  # DILEUDA CORINGA DA FONSECA DA SILVA (Antecipa PF, Thiago Macillo/Natal RN) - aprovado manual (Felipe 13/08); risco APPROVED_PENDING_CREDIT + credito PENDING; remover quando base refletir
                   'b4e7eacc-8dc9-445e-9a37-d83cb3ecff80': '2026-08-13',  # DANILO FERREIRA DE LACERDA (Antecipa PF, Fabio Rodrigues/Ribeirao) - BGC_PARCEIRO risco APPROVED_PENDING_CREDIT + credito PENDING; aprovado manual (Felipe 13/08); remover quando base refletir
                   '1d00bb47-a942-4407-8216-98df676b41e9': '2026-08-13',
                   '0b97aa9e-2def-45ec-ad98-034573f178a6': '2026-08-17',
@@ -389,6 +398,7 @@ def build_rawData(deals_path, ag_path, prop_path=None, docs_map=None, uc_map=Non
         # que avançou sem risco APPROVED). Nunca conta DENIED nem BGC_PARCEIRO (validação
         # Antecipa, ainda não aprovado) — EXCETO quando o crédito do Antecipa já foi aprovado.
         _apc = apc_ok(r)  # Felipe 18/08: APPROVED_PENDING_CREDIT = aprovado (falta só o pagamento)
+        if did in FORCE_DENIED: _apc=False; credito_ok=False; _risk='DENIED'  # reprovado manual (Felipe)
         _reached = (_risk=='APPROVED') or _apc or ('aprovado' in _status) or (r['deal_stage']=='REQUEST_TITULARIDADE')
         # Felipe 25/08: PERDIDO nunca conta como aprovado, em qualquer estagio. Antes o
         # credito_ok e o _apc passavam na frente do teste de perdido e cliente que

@@ -279,11 +279,20 @@ PRODUCT_OVERRIDE = {
 LOST_IGNORE = { norm('FRANCISCO ALDECI DE QUEIROZ FERNANDES'), norm('ANTÔNIO EDMILSON LEITE') }  # 2º: dup denied em BGC, forçado aprovado (Felipe 15/07)
 # FORCE_APPROVED: deals que contam como aprovado por decisao manual (contrato assinado,
 # aguardando BGC). Chave = deal_id. Remover quando a base refletir BGC APPROVED.
+# FORCE_DENIED: deals que NAO contam como aprovado por decisao manual, mesmo com risco
+# APPROVED_PENDING_CREDIT / credito 'approved'. Nasceu da Dileuda (25/08): cliente
+# desistiu, o Antecipa nunca foi pago (credit_stage parado em GATHERING_DEPOSIT_
+# INFORMATION) e o credito_ok passava na frente do teste de perdido em 2 dos 4
+# isAprovado() do desktop e no do mobile. Efeito: zera _apc/credito_ok, marca risco
+# DENIED e MANTEM o stage real (BGC_PARCEIRO), entao o cliente cai como negado em
+# todas as telas. Chave = deal_id.
+FORCE_DENIED = {
+  '77a56fa5-9c4e-476c-b71d-ac08534d6745',  # DILEUDA CORINGA DA FONSECA DA SILVA (Antecipa PF, Thiago Macillo/Natal RN, 0.49 MWh) - desistiu; perdido 13/08 na base; era FORCE_APPROVED e o Felipe liberou considerar reprovada (25/08)
+}
 FORCE_APPROVED = {
                   '1e11931c-3e99-48f4-a338-47d734012625': '2026-08-20',  # FRANCISCO DAS CHAGAS CUNHA SILVA / 33050196000188 (Antecipa PJ, Olimpio Filho/Ribeirao, 0.916 MWh) - reaprovado 20/08 (lag de ingestao). ATENCAO: o risco RE-REPROVOU o deal em 21/08 14:04 ('Reprovado na analise de risco', lost + BGC_PARCEIRO) e o risk_real confirma DENIED; Felipe 21/08 mandou MANTER como aprovado mesmo assim. Nao remover sem falar com ele.
                   'cfb2500c-c323-4943-a7f8-e831a8f37b55': '2026-08-04',  # PP FERREIRA DE SALES COMER DE COSMETICOS - aprovado manual SOS 15:32 04/08 (Aurivando/CE); card818+risk_real ainda MANUAL; remover quando base refletir
                   'f9cf93c9-5348-4586-acdb-5a2b1dd49f60': '2026-08-12',  # ISMAEL RODRIGUES SILVA (Antecipa PF, Phillip Faria/Ribeirao SPI) - aprovado manual (Felipe 12/08); base risco MANUAL; remover quando base refletir
-                  '77a56fa5-9c4e-476c-b71d-ac08534d6745': '2026-08-13',  # DILEUDA CORINGA DA FONSECA DA SILVA (Antecipa PF, Thiago Macillo/Natal RN) - aprovado manual (Felipe 13/08); risco APPROVED_PENDING_CREDIT + credito PENDING; remover quando base refletir
                   'b4e7eacc-8dc9-445e-9a37-d83cb3ecff80': '2026-08-13',  # DANILO FERREIRA DE LACERDA (Antecipa PF, Fabio Rodrigues/Ribeirao) - BGC_PARCEIRO risco APPROVED_PENDING_CREDIT + credito PENDING; aprovado manual (Felipe 13/08); remover quando base refletir
                   '1d00bb47-a942-4407-8216-98df676b41e9': '2026-08-13',
                   '0b97aa9e-2def-45ec-ad98-034573f178a6': '2026-08-17',
@@ -451,9 +460,11 @@ def mk_deal(r):
     if r['deal_stage']=='BGC_PARCEIRO' and not _apc: risk=''  # em validação Antecipa: não conta como aprovado
     credit = (r.get('latest_credit_analysis_result') or '').strip().lower()  # Antecipa
     credito_ok = (credit == 'approved')
+    if r['deal_id'] in FORCE_DENIED: _apc=False; credito_ok=False  # reprovado manual (Felipe)
     if _apc: risk='APPROVED'  # Felipe 18/08: APPROVED_PENDING_CREDIT = aprovado (falta só o pagamento)
     if credito_ok: risk='APPROVED'  # Felipe 06/08: crédito aprovado (Antecipa) conta como aprovado no Field
     if r['deal_id'] in FORCE_APPROVED: risk='APPROVED'  # aprovado manual
+    if r['deal_id'] in FORCE_DENIED: risk='DENIED'  # reprovado manual (Felipe): ganha de tudo
     # aprovado conta pela DATA DA ANÁLISE DE RISCO; sem risco (WAITING) usa criação
     # a data da APROVACAO NO RISCO manda na analise mais nova (que no Antecipa e' a do
     # pagamento do credito) - ver RISK_APPR_DATE acima (Felipe 25/08)
@@ -559,11 +570,6 @@ ANT_APPROVE = {
  'f9cf93c9-5348-4586-acdb-5a2b1dd49f60': {  # ISMAEL RODRIGUES SILVA - Phillip Faria/Ribeirao SPI - Antecipa PF - aprovado manual (Felipe 12/08)
    'c':'ISMAEL RODRIGUES SILVA','s':'Phillip Faria','praca':'Ribeirao','city':'SERTAOZINHO','uf':'SP',
    'dist':'CPFL','bill':460.09,'mwh':0.206,'stage':'BGC_PENDING_BILLS','acc':True,
-   'tipo':'PF','signed':True,'date':'2026-08-12',
- },
- '77a56fa5-9c4e-476c-b71d-ac08534d6745': {  # DILEUDA CORINGA DA FONSECA DA SILVA - Thiago Macillo/Natal RN - Antecipa PF - aprovado manual (Felipe 13/08); risco APPROVED_PENDING_CREDIT + credito PENDING; remover quando base refletir
-   'c':'DILEUDA CORINGA DA FONSECA DA SILVA','s':'Thiago Macillo','praca':'Natal','city':'NATAL','uf':'RN',
-   'dist':'Cosern','bill':758.16,'mwh':0.49,'stage':'BGC_PARCEIRO','acc':True,
    'tipo':'PF','signed':True,'date':'2026-08-12',
  },
  'b4e7eacc-8dc9-445e-9a37-d83cb3ecff80': {  # DANILO FERREIRA DE LACERDA - Fabio Rodrigues/Ribeirao - Antecipa PF - aprovado manual (Felipe 13/08); BGC_PARCEIRO risco APPROVED_PENDING_CREDIT + credito PENDING; remover quando base refletir
