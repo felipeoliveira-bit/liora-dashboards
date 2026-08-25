@@ -6579,6 +6579,7 @@ loadAll();
         </div>
       </div>
       <select id=&quot;f-tipo&quot;><option value=&quot;&quot;>PF/PJ</option><option value=&quot;PF&quot;>PF</option><option value=&quot;PJ&quot;>PJ</option></select>
+      <button type=&quot;button&quot; class=&quot;ms-btn&quot; id=&quot;f-apr-btn&quot; onclick=&quot;toggleApr()&quot; title=&quot;Mostrar so os clientes aprovados (risco APPROVED ou credito aprovado) - mesma regra do KPI Aprovadas&quot;>✅ Só aprovados</button>
     </div>
     <div class=&quot;tbl-wrap&quot;>
       <table>
@@ -6662,7 +6663,8 @@ function pracaLbl(k){ return PRACA_LABEL[k]||k||'—'; }
 function pracaBadge(k){ return '<span class=&quot;badge-praca b-'+(k||'Outras')+'&quot;>'+esc(pracaLbl(k))+'</span>'; }
 
 let sortKey = &quot;date&quot;, sortDir = -1;
-let stageSel = {};  // multi-selecao de estagio na lista de Propostas (vazio = todos)
+let stageSel = {};
+  let aprOnly = false;   // botao &quot;So aprovados&quot; da lista de Propostas (Felipe 25/08)  // multi-selecao de estagio na lista de Propostas (vazio = todos)
 
 // ===== Período (fuso Brasília, igual ao Rankings) =====
 function localISO(d){
@@ -6973,6 +6975,16 @@ function toggleStageMenu(e){
   el('f-stage-ms').classList.toggle('open');
 }
 
+// Botao &quot;So aprovados&quot; (Felipe 25/08): usa o mesmo x.risk==='APPROVED' que o
+// KPI &quot;Aprovadas no risco&quot;, ja normalizado no build (credito aprovado e
+// APPROVED_PENDING_CREDIT entram como APPROVED). So filtra a lista, nao os KPIs.
+function toggleApr(){
+  aprOnly = !aprOnly;
+  const b = el('f-apr-btn');
+  if(aprOnly) b.classList.add('on'); else b.classList.remove('on');
+  renderList();
+}
+
 function currentRows(){
   const base = baseRows();
   const q = (el(&quot;f-busca&quot;).value||&quot;&quot;).toLowerCase().trim();
@@ -6983,6 +6995,7 @@ function currentRows(){
     if(fdist &amp;&amp; x.dist!==fdist) return false;
     if(nStage &amp;&amp; !stageSel[x.stage]) return false;
     if(ftipo &amp;&amp; x.tipo!==ftipo) return false;
+    if(aprOnly){ if((x.risk||'')!=='APPROVED') return false; }
     if(q){
       const hay = ((x.c||&quot;&quot;)+&quot; &quot;+(x.s||&quot;&quot;)+&quot; &quot;+(x.city||&quot;&quot;)+&quot; &quot;+(x.uf||&quot;&quot;)+&quot; &quot;+(x.dist||&quot;&quot;)).toLowerCase();
       if(hay.indexOf(q)<0) return false;
