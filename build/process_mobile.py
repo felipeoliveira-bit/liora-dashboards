@@ -285,7 +285,15 @@ def build_rawData(deals_path, ag_path, prop_path=None, docs_map=None, uc_map=Non
         # Antecipa, ainda não aprovado) — EXCETO quando o crédito do Antecipa já foi aprovado.
         _apc = apc_ok(r)  # Felipe 18/08: APPROVED_PENDING_CREDIT = aprovado (falta só o pagamento)
         _reached = (_risk=='APPROVED') or _apc or ('aprovado' in _status) or (r['deal_stage']=='REQUEST_TITULARIDADE')
-        approved = forced or credito_ok or _apc or (_reached and _risk!='DENIED' and r['deal_stage']!='BGC_PARCEIRO')
+        # Felipe 25/08: PERDIDO nunca conta como aprovado, em qualquer estagio. Antes o
+        # credito_ok e o _apc passavam na frente do teste de perdido e cliente que
+        # desistiu seguia contando (Dileuda 13/08, Edilaine 24/08). Excecao: 'troca de
+        # titularidade' (perda tecnica) e a LOST_IGNORE. FORCE_APPROVED continua ganhando:
+        # e' decisao manual explicita do Felipe.
+        _lost = (bool((r['deal_lost_at'] or '').strip())
+                 and (r.get('deal_lost_reason') or '').strip().lower() != 'troca de titularidade'
+                 and (cli or '').strip().upper() not in LOST_IGNORE)
+        approved = forced or (not _lost and (credito_ok or _apc or (_reached and _risk!='DENIED' and r['deal_stage']!='BGC_PARCEIRO')))
         aprov = (iso(pdate(r['latest_risk_analysis_created_at']) or pdate(r['deal_created_at'])) if approved else '')
         created = pdate(r['deal_created_at'])
         basis = (pdate(r['latest_risk_analysis_created_at']) or created) if approved else created

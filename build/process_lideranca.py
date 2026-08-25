@@ -519,7 +519,14 @@ if f_ant:
           # Felipe 12/08: a aba Antecipa passa a honrar credito aprovado (mesma regra 06/08 do resto):
           # credito=='approved' conta como APPROVED aqui tambem (antes so risco APPROVED contava, e
           # deals com credito approved + risco APPROVED_PENDING_CREDIT sumiam da aba). Ver memoria antecipa.
-          'risk': ('APPROVED' if (_did in ANT_APPROVE or apc_ok(r) or (r.get('latest_credit_analysis_result') or '').strip().lower()=='approved') else (r.get('latest_risk_analysis_result') or '').strip()),  # apc_ok: Felipe 18/08
+          # Felipe 25/08: perdido nunca conta -> vira 'PERDIDO' (nunca 'APPROVED'), o que
+          # tira o cliente do KPI Aprovadas da aba E da campanha (MISSAO filtra risk=='APPROVED').
+          # ANT_APPROVE/FORCE_APPROVED continuam ganhando (decisao manual do Felipe).
+          'risk': ('APPROVED' if (_did in ANT_APPROVE or _did in FORCE_APPROVED)
+                   else ('PERDIDO' if ((r.get('deal_lost_at') or '').strip()
+                                       and (r.get('deal_lost_reason') or '').strip().lower() != 'troca de titularidade')
+                   else ('APPROVED' if (apc_ok(r) or (r.get('latest_credit_analysis_result') or '').strip().lower()=='approved')
+                         else (r.get('latest_risk_analysis_result') or '').strip()))),  # apc_ok: Felipe 18/08
           'credito': ('approved' if _did in ANT_APPROVE else (r.get('latest_credit_analysis_result') or '').strip()),
           'tipo': _ant_tipo(r.get('product_name')),
           # obs = observacao da analise de risco (Felipe 21/08): da visibilidade
@@ -571,6 +578,10 @@ print('missao:', len(MISSAO), 'aprovados |', len(MISSAO_ROSTER), 'vendedores no 
 # sig(assinado)/apr(aprovado risco) p/ calcular a fatia do Antecipa nos KPIs da aba. ----
 def _gd_apr(r):
     risk=(r.get('latest_risk_analysis_result') or '').strip()
+    # Felipe 25/08: perdido nunca conta (excecao: troca de titularidade). FORCE_APPROVED ganha.
+    if (r.get('deal_id') or '').strip() not in FORCE_APPROVED and (r.get('deal_lost_at') or '').strip() \
+       and (r.get('deal_lost_reason') or '').strip().lower() != 'troca de titularidade':
+        return False
     _apc=apc_ok(r)  # Felipe 18/08
     if (r.get('deal_stage') or '')=='BGC_PARCEIRO' and not _apc: risk=''
     if _apc: risk='APPROVED'
