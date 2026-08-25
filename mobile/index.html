@@ -883,7 +883,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
   <div class="copa-modal" id="copa-modal" onclick="closeCopaFig()"></div>
 
   <div style="position:fixed;bottom:78px;right:8px;font-size:9px;color:#aaa;background:rgba(255,255,255,.85);padding:2px 6px;border-radius:8px;z-index:99;font-family:monospace;pointer-events:none">
-    v2.178 · 24/08
+    v2.179 · 25/08
   </div>
 
   <!-- BOTTOM NAV -->
@@ -1243,7 +1243,7 @@ function misMwhCamp(r){ const m = Number(r.mwh) || 0; return misTemBonus(r) ? m 
 let misVerTodos = false;
 
 function misLiderDaPraca(k){
-  for (const nome in LIDERES) if (LIDERES[nome] === k) return nome;
+  for (const nome in LIDERES) if (liderPracas(nome).indexOf(k) !== -1) return nome;
   return '';
 }
 function misLabel(k){
@@ -1346,10 +1346,11 @@ function renderMissao(){
     return;
   }
   const T = misTimes();
-  const minha = liderPraca(me);
+  const minhas = liderPracas(me);
+  const minha = minhas[0] || '';
   const gestor = isGestor_(me);
   const chaves = Object.keys(T).sort(function(a,b){ return T[b].mwh - T[a].mwh; });
-  const mostrar = (gestor || misVerTodos || !minha) ? chaves : [minha];
+  const mostrar = (gestor || misVerTodos || !minhas.length) ? chaves : chaves.filter(function(k){ return minhas.indexOf(k) !== -1; });
 
   const d = misDias();
   const restam = d > 1 ? ('faltam ' + d + ' dias') : (d === 1 ? 'último dia' : (d === 0 ? 'encerra hoje' : 'encerrada'));
@@ -1374,7 +1375,7 @@ function renderMissao(){
   h += mostrar.map(function(k){ return misCard(T[k]); }).join('');
 
   const regs = misRegistros().filter(function(r){
-    return (gestor || misVerTodos || !minha) ? true : (misPracaDe(r.s) === minha);
+    return (gestor || misVerTodos || !minhas.length) ? true : (minhas.indexOf(misPracaDe(r.s)) !== -1);
   }).sort(function(a,b){ return (b.aprov_date||'').localeCompare(a.aprov_date||'') || (b.mwh - a.mwh); });
 
   h += '<div class="mis-sec">Aprovados que contam <span class="n">' + regs.length + '</span></div>';
@@ -1569,7 +1570,8 @@ function initSellerSelect(keepSelection){
 
   const me = (typeof getCurrentVendedor === 'function') ? getCurrentVendedor() : '';
   const wrap = document.querySelector('.seller-select-wrap');
-  const praça = liderPraca(me);
+  const pracasLider = liderPracas(me);
+  const praça = pracasLider[0] || '';
   const isGestor = isGestor_(me);
 
   // v2.122 — preserva a escolha manual ao reconstruir (senão o select volta sempre p/ "me")
@@ -1593,7 +1595,7 @@ function initSellerSelect(keepSelection){
     const lbl = wrap?.querySelector('label'); if(lbl) lbl.textContent = 'Visualizando vendedor';
   } else if(praça){
     // Líder: vê time da praça
-    const time = lista.filter(v => (SELLER_PRACA[v.nome]||'').toLowerCase() === praça && !isExTime_(v.nome));
+    const time = lista.filter(v => pracasLider.indexOf((SELLER_PRACA[v.nome]||'').toLowerCase()) !== -1 && !isExTime_(v.nome));
     time.forEach(v => {
       const o = document.createElement('option'); o.value = v.nome; o.textContent = v.nome + (v.nome === me ? ' (eu)' : '');
       sel.appendChild(o);
@@ -1742,8 +1744,9 @@ function renderRemProgressLider(seller, teamMwh, meta){
 }
 function renderRemRulesCardLider(seller, pct){
   const faixa = pct < 60 ? 'def' : pct < 105 ? 'prop' : pct < 120 ? 'a105' : pct < 150 ? 'a120' : pct < 200 ? 'a150' : 'a200';
-  const _lpraca = (typeof liderPraca==='function') ? liderPraca(seller) : '';
-  const _meta = (typeof PRACA_DEF!=='undefined' && PRACA_DEF[_lpraca] && PRACA_DEF[_lpraca].meta) ? PRACA_DEF[_lpraca].meta : (typeof METAS!=='undefined' ? (METAS[seller]||0) : 0);
+  const _lpracas = (typeof liderPracas==='function') ? liderPracas(seller) : [];
+  const _metaL = (typeof PRACA_DEF!=='undefined') ? _lpracas.reduce(function(a,k){ return a + ((PRACA_DEF[k] && PRACA_DEF[k].meta) || 0); }, 0) : 0;
+  const _meta = _metaL > 0 ? _metaL : (typeof METAS!=='undefined' ? (METAS[seller]||0) : 0);
   const _fm = v => (+(v).toFixed(1)).toLocaleString('pt-BR');
   const mwhTag = p => _meta>0 ? ` <span style="font-size:11px;color:var(--muted);font-weight:600">· ${_fm(_meta*p/100)} MWh</span>` : '';
   const bandTag = (lo,hi) => _meta>0 ? ` <span style="font-size:11px;color:var(--muted);font-weight:600">· ${_fm(_meta*lo/100)}–${_fm(_meta*hi/100)} MWh</span>` : '';
@@ -1780,14 +1783,17 @@ function renderRemRulesCardLider(seller, pct){
 }
 
 function renderCarteiraLider(seller){
-  const praca = liderPraca(seller);
-  const meta  = (typeof PRACA_DEF!=='undefined' && PRACA_DEF[praca] && PRACA_DEF[praca].meta) ? PRACA_DEF[praca].meta : (METAS[seller] || 0);
-  const teamMwh = teamMwhAprovado(praca);
+  const pracas = liderPracas(seller);
+  const praca = pracas[0] || '';
+  const _mt = (typeof PRACA_DEF!=='undefined') ? pracas.reduce(function(a,k){ return a + ((PRACA_DEF[k] && PRACA_DEF[k].meta) || 0); }, 0) : 0;
+  const meta  = _mt > 0 ? _mt : (METAS[seller] || 0);
+  const pracaLabel = pracas.map(function(k){ return (typeof PRACA_LABEL!=='undefined' && PRACA_LABEL[k]) || k; }).join(' + ');
+  const teamMwh = pracas.reduce(function(a,k){ return a + teamMwhAprovado(k); }, 0);
   const pct = meta>0 ? (teamMwh/meta*100) : 0;
   const pc  = pct>=70?'var(--green)':pct>=40?'var(--blue)':'var(--red)';
   const barW = Math.min(pct,100);
   const membros = VENDEDORES
-    .filter(v => (SELLER_PRACA[v.nome]||'').toLowerCase() === praca && v.nome !== seller && !isOculto_(v.nome))
+    .filter(v => pracas.indexOf((SELLER_PRACA[v.nome]||'').toLowerCase()) !== -1 && v.nome !== seller && !isOculto_(v.nome))
     .map(v => ({
       nome: v.nome,
       mwh:  rawData.filter(x=>x.s===v.nome && noMes(x) && isAprovado(x)).reduce((a,x)=>a+x.mwh,0),
@@ -1797,7 +1803,7 @@ function renderCarteiraLider(seller){
   let html = `
     <button onclick="liderVerTime=false;renderCarteira()" style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-bottom:12px;padding:11px 12px;background:#EEF2FF;border:1px solid #C7D2FE;border-radius:12px;font-size:13px;font-weight:800;color:#3730A3;cursor:pointer;font-family:inherit">👤 Meus clientes</button>
     <div class="card">
-      <div class="card-title">Resultado do Time · ${PRACA_LABEL[praca]||praca}</div>
+      <div class="card-title">Resultado do Time · ${pracaLabel}</div>
       <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px">
         <div>
           <div style="font-size:32px;font-weight:800;color:var(--blue);line-height:1">${teamMwh.toFixed(1)}</div>
@@ -1993,9 +1999,9 @@ renderCarteira();
 // Gestores com visão geral (veem tudo, todas as praças) — v2.140
 const GESTORES = ['Felipe Oliveira','Ana Ribeiro','Raynara Silva'];
 function isGestor_(n){ return GESTORES.indexOf(n) !== -1; }
-const OCULTOS_TIME = ['Ananias Neto','Rosangela Mendes','Franciele Felix','Ana Ribeiro','Ryan Trindade','Antonio Mariano','Camila Couto'];
+const OCULTOS_TIME = ['Ananias Neto','Rosangela Mendes','Franciele Felix','Ana Ribeiro','Ryan Trindade','Antonio Mariano','Camila Couto','Bruno Andrade'];
 // Ex-time (saíram da empresa, base HC) — removidos do seletor 'Visualizando vendedor'. Ryan/Ana continuam (ativos).
-const EX_TIME = ['Thiago Araujo França','Antonio Mariano','Rosangela Mendes','Franciele Felix','Ananias Neto'];
+const EX_TIME = ['Thiago Araujo França','Antonio Mariano','Rosangela Mendes','Franciele Felix','Ananias Neto','Bruno Andrade'];
 function isExTime_(n){ return EX_TIME.indexOf(n) !== -1; }
 function isOculto_(n){ return OCULTOS_TIME.indexOf(n) !== -1; }
 const CAMP_CFG = {
@@ -2252,7 +2258,7 @@ function pendEscopo(){
   const me = (typeof getCurrentVendedor==='function') ? getCurrentVendedor() : '';
   if(!me) return {tipo:'none', me:''};
   if(typeof isGestor_==='function' && isGestor_(me)) return {tipo:'all', me:me};
-  if(typeof isLider==='function' && isLider(me))     return {tipo:'praca', me:me, praca:(typeof liderPraca==='function'?liderPraca(me):'')};
+  if(typeof isLider==='function' && isLider(me))     return {tipo:'praca', me:me, praca:(typeof liderPraca==='function'?liderPraca(me):''), pracas:(typeof liderPracas==='function'?liderPracas(me):[])};
   return {tipo:'self', me:me};
 }
 
@@ -2279,7 +2285,8 @@ function pendBase(ignorarPraca){
     if(e.tipo==='self'){
       if(canonicalVendedor(x.s||'') !== canonicalVendedor(e.me)) return;
     } else if(e.tipo==='praca'){
-      if(String(SELLER_PRACA[x.s]||'').toLowerCase() !== String(e.praca||'').toLowerCase()) return;
+      const _ks = (e.pracas && e.pracas.length) ? e.pracas : [String(e.praca||'').toLowerCase()];
+      if(_ks.indexOf(String(SELLER_PRACA[x.s]||'').toLowerCase()) === -1) return;
     } else if(!ignorarPraca && pendPraca !== 'all'){
       if(((x.praca && x.praca.key) || 'outras') !== pendPraca) return;
     }
@@ -3668,14 +3675,26 @@ const IDENTITY_KEY = 'liora.vendedor.v1';
 let LIDERES = {
   'Kelma Rangel':    'feira',
   'Bruno Borges':    'ce',
-  'Bruno Andrade':   'natal',
   'Adroaldo Bonfim': 'salvador',
   'Caio Lannes':     'spi',
   'João Santos':     'ribeirao',
-  'Mirla Albuquerque': 'rninterior',
+  'Mirla Albuquerque': ['rninterior','natal'],
 };
+// v2.179 (25/08) — Bruno Andrade desligado; a Mirla acumula RN Capital (natal) com o
+// RN Interior. Um líder pode responder por MAIS DE UMA praça: o valor de LIDERES aceita
+// string (1 praça) ou array (N praças). LIDER_EXTRA é reaplicado dentro do loadTeam(),
+// porque a aba "Time" da planilha só tem UMA praça por pessoa e sobrescreveria o array.
+const LIDER_EXTRA = { 'Mirla Albuquerque': ['natal'] };
 function isLider(name){ return !!(name && LIDERES[name]); }
-function liderPraca(name){ return LIDERES[name] || ''; }
+function liderPracas(name){
+  const v = name ? LIDERES[name] : null;
+  if(!v) return [];
+  return Array.isArray(v) ? v.slice() : [v];
+}
+function liderPraca(name){ return liderPracas(name)[0] || ''; }   // compat: 1a praça
+function lideraPraca(name, k){
+  return !!k && liderPracas(name).indexOf(String(k).toLowerCase()) !== -1;
+}
 // v2.156 — permissão de edição: dono, ou líder da praça do dono, ou gestor.
 function canEditLead(lead){
   const me = getCurrentVendedor();
@@ -3684,8 +3703,8 @@ function canEditLead(lead){
   const owner = canonicalVendedor((lead && lead.vendedor) || '');
   if(!owner || owner === meN) return true;          // sem dono ou o próprio dono
   if(isGestor_(me)) return true;                     // gestor edita qualquer lead
-  const pl = liderPraca(me);                         // líder edita os leads da sua praça
-  if(pl) return (SELLER_PRACA[owner] || '').toLowerCase() === pl;
+  const pl = liderPracas(me);                        // líder edita os leads das praças dele
+  if(pl.length) return pl.indexOf((SELLER_PRACA[owner] || '').toLowerCase()) !== -1;
   return false;
 }
 
@@ -3727,7 +3746,7 @@ let CREDENTIALS = {
   'odirley.costa@lioraenergia.com.br':      { nome: 'Odirley Costa',      senha: 'CE' },
   'nubia.andrade@lioraenergia.com.br':      { nome: 'Núbia Andrade',      senha: 'CE' },
   'marcio.galvao@lioraenergia.com.br':      { nome: 'Marcio Galvão',      senha: 'RN' },
-  'bruno.andrade@lioraenergia.com.br':      { nome: 'Bruno Andrade',      senha: 'RN' },
+  // 'bruno.andrade@lioraenergia.com.br' — desligado 25/08 (acesso removido; marcar inativo na aba Time da planilha)
   'rodrigo.ribeiro@lioraenergia.com.br':    { nome: 'Rodrigo Ribeiro',    senha: 'RN' },
   'adroaldo.bonfim@lioraenergia.com.br':    { nome: 'Adroaldo Bonfim',    senha: 'Salvador' },
   'ettore.rossi@lioraenergia.com.br':       { nome: 'Ettore Rossi',       senha: 'Salvador' }, 'tatiane.correia@lioraenergia.com.br': { nome: 'Tatiane Correia', senha: 'Salvador' },
@@ -3799,7 +3818,11 @@ function applyTeam(rows){
     METAS[nome] = meta;
 
     // Posição: líder vê a praça toda; consultor vê só ele
-    if(pos.startsWith('lid') || pos.startsWith('líd')) LIDERES[nome] = key;
+    if(pos.startsWith('lid') || pos.startsWith('líd')){
+      // v2.179 — a planilha só tem 1 praça por pessoa; reaplica as praças extras
+      const _ex = (LIDER_EXTRA[nome] || []).filter(function(k){ return k !== key; });
+      LIDERES[nome] = _ex.length ? [key].concat(_ex) : key;
+    }
     else delete LIDERES[nome];
 
     novoVend.push({ nome, praca: label });
@@ -4346,8 +4369,8 @@ function _leadsListPayload(){
     if(!me || isGestor_(me)) return { scope:{all:true}, aliases: VENDEDOR_ALIASES };
     var names = [me];
     if(isLider(me)){
-      var pk = liderPraca(me);
-      Object.keys(SELLER_PRACA).forEach(function(n){ if(SELLER_PRACA[n]===pk) names.push(n); });
+      var pks = liderPracas(me);
+      Object.keys(SELLER_PRACA).forEach(function(n){ if(pks.indexOf(SELLER_PRACA[n]) !== -1) names.push(n); });
     }
     var keys = {};
     names.forEach(function(n){ keys[canonicalVendedor(n)] = true; });
@@ -6365,8 +6388,8 @@ function renderFunilKanban(el){
   // Aplica scope: meus leads ou (se líder) toda a praça ou (se gestor) time inteiro
   const allLeads = window.leads;
   const GESTOR = 'Felipe Oliveira';
-  const praçaLider = liderPraca(me);
-  const isLiderOuGestor = isGestor_(me) || !!praçaLider;
+  const praçaLider = liderPracas(me);
+  const isLiderOuGestor = isGestor_(me) || !!praçaLider.length;
 
   // Se líder/gestor escolheu um liderado específico, filtra só por ele
   const viewAs = (isLiderOuGestor && funilViewAs) ? funilViewAs : null;
@@ -6374,10 +6397,10 @@ function renderFunilKanban(el){
   const myLeads = me ? allLeads.filter(l => {
     if(viewAs) return canonicalVendedor(l.vendedor) === canonicalVendedor(viewAs);
     if(isGestor_(me)) return true;  // gestor vê tudo
-    if(praçaLider){
+    if(praçaLider.length){
       // líder: vê os próprios + todos os da praça
       const lPraca = (SELLER_PRACA[canonicalVendedor(l.vendedor)] || '').toLowerCase();
-      return lPraca === praçaLider || canonicalVendedor(l.vendedor) === meN;
+      return praçaLider.indexOf(lPraca) !== -1 || canonicalVendedor(l.vendedor) === meN;
     }
     return canonicalVendedor(l.vendedor) === meN;
   }) : [];
@@ -6730,15 +6753,15 @@ function getFunilScopedLeads(){
   if(!me) return [];
   const meN = canonicalVendedor(me);
   const GESTOR = 'Felipe Oliveira';
-  const praçaLider = liderPraca(me);
-  const isLiderOuGestor = isGestor_(me) || !!praçaLider;
+  const praçaLider = liderPracas(me);
+  const isLiderOuGestor = isGestor_(me) || !!praçaLider.length;
   const viewAs = (isLiderOuGestor && funilViewAs) ? funilViewAs : null;
   return window.leads.filter(l => {
     if(viewAs) return canonicalVendedor(l.vendedor) === canonicalVendedor(viewAs);
     if(isGestor_(me)) return true;
-    if(praçaLider){
+    if(praçaLider.length){
       const lPraca = (SELLER_PRACA[canonicalVendedor(l.vendedor)] || '').toLowerCase();
-      return lPraca === praçaLider || canonicalVendedor(l.vendedor) === meN;
+      return praçaLider.indexOf(lPraca) !== -1 || canonicalVendedor(l.vendedor) === meN;
     }
     return canonicalVendedor(l.vendedor) === meN;
   });

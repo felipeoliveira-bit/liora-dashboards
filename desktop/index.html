@@ -241,7 +241,7 @@ table.bau tbody tr.field-row td:first-child { color: #fff; }
 const LEADS_API_URL = 'https://script.google.com/macros/s/AKfycbyk_rqDKe49ZOCtLJkXYNvITqF5wQBjs5Uu1-9-U5HadPsP_tyzulBaCpyeuLpaqokL1w/exec';
 
 // Vendedores ativos agosto 2026
-const VENDEDORES_OCULTOS = ['Camila Couto','Silmara Gomes','Ryan Trindade','Franciele Felix','Rosangela Mendes','Antonio Mariano','Ana Ribeiro']; // saíram do time
+const VENDEDORES_OCULTOS = ['Camila Couto','Silmara Gomes','Ryan Trindade','Franciele Felix','Rosangela Mendes','Antonio Mariano','Ana Ribeiro','Bruno Andrade']; // saíram do time
 const VENDEDORES = [
   {nome:'Silmara Gomes',praca:'CE'},
   {nome:'Luciana Campos',praca:'Salvador'},
@@ -1223,7 +1223,7 @@ td.rk-clk:hover{ text-decoration:underline; }
 <script>
 const LEADS_API_URL = 'https://script.google.com/macros/s/AKfycbyk_rqDKe49ZOCtLJkXYNvITqF5wQBjs5Uu1-9-U5HadPsP_tyzulBaCpyeuLpaqokL1w/exec';
 
-const VENDEDORES_OCULTOS = ['Camila Couto','Silmara Gomes','Ryan Trindade','Franciele Felix','Rosangela Mendes','Antonio Mariano','Ana Ribeiro']; // saiu do time: conta no total/FIELD da praça, mas não renderiza linha individual
+const VENDEDORES_OCULTOS = ['Camila Couto','Silmara Gomes','Ryan Trindade','Franciele Felix','Rosangela Mendes','Antonio Mariano','Ana Ribeiro','Bruno Andrade']; // saiu do time: conta no total/FIELD da praça, mas não renderiza linha individual
 const VENDEDORES = [
   {nome:'Silmara Gomes',praca:'CE'},
   {nome:'Luciana Campos',praca:'Salvador'},
@@ -1972,7 +1972,7 @@ tbody tr:hover { background: #fafbff; }
 const LEADS_API_URL = 'https://script.google.com/macros/s/AKfycbyk_rqDKe49ZOCtLJkXYNvITqF5wQBjs5Uu1-9-U5HadPsP_tyzulBaCpyeuLpaqokL1w/exec';
 
 // ===== VENDEDORES (com novos de junho + aliases) =====
-const VENDEDORES_OCULTOS = ['Camila Couto','Silmara Gomes','Ryan Trindade','Franciele Felix','Rosangela Mendes','Antonio Mariano','Ana Ribeiro']; // saíram do time: ocultar linha individual, total da praça mantém
+const VENDEDORES_OCULTOS = ['Camila Couto','Silmara Gomes','Ryan Trindade','Franciele Felix','Rosangela Mendes','Antonio Mariano','Ana Ribeiro','Bruno Andrade']; // saíram do time: ocultar linha individual, total da praça mantém
 function vExib(l){ return VENDEDORES_OCULTOS.includes(l.vendedor) ? 'Natal' : (l.vendedor||'—'); }
 const VENDEDORES = [
   {nome:'Silmara Gomes',praca:'CE'},
@@ -4736,7 +4736,7 @@ function isNegado(x) {
   return false;
 }
 
-const VENDEDORES_OCULTOS = ['Camila Couto','Silmara Gomes','Ryan Trindade','Franciele Felix','Rosangela Mendes','Antonio Mariano','Ana Ribeiro']; // saíram do time: ocultar linha individual, mas resultado continua somando na praça
+const VENDEDORES_OCULTOS = ['Camila Couto','Silmara Gomes','Ryan Trindade','Franciele Felix','Rosangela Mendes','Antonio Mariano','Ana Ribeiro','Bruno Andrade']; // saíram do time: ocultar linha individual, mas resultado continua somando na praça
 const isAprovado = x => {
   if(x.credito_ok) return true;/*credito aprovado (Antecipa) conta mesmo em BGC_PARCEIRO - alinha CRM 06/08*/
   if (x.stage === 'BGC_PARCEIRO') return false;
@@ -5680,7 +5680,7 @@ table.matrix tbody tr.praca-header td { background: #f0f1f5; font-size: 10px; fo
 const LEADS_API_URL = 'https://script.google.com/macros/s/AKfycbyk_rqDKe49ZOCtLJkXYNvITqF5wQBjs5Uu1-9-U5HadPsP_tyzulBaCpyeuLpaqokL1w/exec';
 
 // 20 vendedores ativos em junho 2026 (Camila Couto removida em 29/05)
-const VENDEDORES_OCULTOS = ['Camila Couto','Silmara Gomes','Ryan Trindade','Franciele Felix','Rosangela Mendes','Antonio Mariano','Ana Ribeiro']; // saíram do time
+const VENDEDORES_OCULTOS = ['Camila Couto','Silmara Gomes','Ryan Trindade','Franciele Felix','Rosangela Mendes','Antonio Mariano','Ana Ribeiro','Bruno Andrade']; // saíram do time
 const VENDEDORES = [
   {nome:'Silmara Gomes',praca:'CE'},
   {nome:'Luciana Campos',praca:'Salvador'},
@@ -6673,7 +6673,7 @@ const PRACA_LABEL = {Salvador:'Salvador',Feira:'Feira',Natal:'RN Capital',RNInte
 const PRACA_COLOR = {Salvador:'#1D9E75',Feira:'#EF9F27',Natal:'#378ADD',RNInterior:'#0EA5A5',SPI:'#7F77DD',Ribeirao:'#A78BFA',CE:'#D4537E',Outras:'#9aa3b5'};
 const PRACA_SORT = ['Salvador','Feira','Natal','RNInterior','SPI','Ribeirao','CE','Outras'];
 // Roster de vendedores ATIVOS (espelho de VENDEDORES - VENDEDORES_OCULTOS do topo; manter em sync)
-const ANT_ROSTER = [{n:'Luciana Campos',p:'Salvador'},{n:'Nicola Popovic',p:'SPI'},{n:'Anderson Correia',p:'SPI'},{n:'Percy Hormazabal',p:'SPI'},{n:'Mecenas Junior',p:'Natal'},{n:'Mirla Albuquerque',l:1,p:'RNInterior'},{n:'Lucas Santos',p:'RNInterior'},{n:'Jefferson Fideli',p:'RNInterior'},{n:'Phillip Faria',p:'Ribeirao'},{n:'Marcel Sousa',p:'Feira'},{n:'Daniel Magnus',p:'Natal'},{n:'Thiago Firmo',p:'Natal'},{n:'Rodrigo Lima',p:'SPI'},{n:'Daniel Junior',p:'SPI'},{n:'Maria Lúcia',p:'Salvador'},{n:'Ettore Rossi',p:'Salvador'},{n:'Tatiane Correia',p:'Salvador'},{n:'Silvia Dias',p:'Salvador'},{n:'Tais Santos',p:'Salvador'},{n:'Adroaldo Bonfim',l:1,p:'Salvador'},{n:'Kelma Rangel',l:1,p:'Feira'},{n:'Lucileide Carlos',p:'Feira'},{n:'Tiago Freitas',p:'Feira'},{n:'Tamires Costa',p:'Feira'},{n:'Alberto Nascimento',p:'Feira'},{n:'Marcio Galvão',p:'Natal'},{n:'Bruno Andrade',l:1,p:'Natal'},{n:'Rodrigo Ribeiro',p:'Natal'},{n:'Bruno Borges',l:1,p:'CE'},{n:'Neilon Nascimento',p:'CE'},{n:'Sabrina Tomazeti',p:'CE'},{n:'Núbia Andrade',p:'CE'},{n:'Odirley Costa',p:'CE'},{n:'Caio Lannes',l:1,p:'SPI'},{n:'Monica Silveira',p:'SPI'},{n:'Ederson Silva',p:'SPI'},{n:'Diego Faria',p:'SPI'},{n:'João Santos',l:1,p:'Ribeirao'},{n:'Olímpio Filho',p:'Ribeirao'},{n:'Fábio Rodrigues',p:'Ribeirao'},{n:'Karianine Sampaio',p:'Ribeirao'},{n:'Olavo Cavalcanti',p:'RNInterior'},{n:'Paulo Lima',p:'Ribeirao'},{n:'Briel Barbosa',p:'SPI'}];
+const ANT_ROSTER = [{n:'Luciana Campos',p:'Salvador'},{n:'Nicola Popovic',p:'SPI'},{n:'Anderson Correia',p:'SPI'},{n:'Percy Hormazabal',p:'SPI'},{n:'Mecenas Junior',p:'Natal'},{n:'Mirla Albuquerque',l:1,p:'RNInterior'},{n:'Lucas Santos',p:'RNInterior'},{n:'Jefferson Fideli',p:'RNInterior'},{n:'Phillip Faria',p:'Ribeirao'},{n:'Marcel Sousa',p:'Feira'},{n:'Daniel Magnus',p:'Natal'},{n:'Thiago Firmo',p:'Natal'},{n:'Rodrigo Lima',p:'SPI'},{n:'Daniel Junior',p:'SPI'},{n:'Maria Lúcia',p:'Salvador'},{n:'Ettore Rossi',p:'Salvador'},{n:'Tatiane Correia',p:'Salvador'},{n:'Silvia Dias',p:'Salvador'},{n:'Tais Santos',p:'Salvador'},{n:'Adroaldo Bonfim',l:1,p:'Salvador'},{n:'Kelma Rangel',l:1,p:'Feira'},{n:'Lucileide Carlos',p:'Feira'},{n:'Tiago Freitas',p:'Feira'},{n:'Tamires Costa',p:'Feira'},{n:'Alberto Nascimento',p:'Feira'},{n:'Marcio Galvão',p:'Natal'},{n:'Rodrigo Ribeiro',p:'Natal'},{n:'Bruno Borges',l:1,p:'CE'},{n:'Neilon Nascimento',p:'CE'},{n:'Sabrina Tomazeti',p:'CE'},{n:'Núbia Andrade',p:'CE'},{n:'Odirley Costa',p:'CE'},{n:'Caio Lannes',l:1,p:'SPI'},{n:'Monica Silveira',p:'SPI'},{n:'Ederson Silva',p:'SPI'},{n:'Diego Faria',p:'SPI'},{n:'João Santos',l:1,p:'Ribeirao'},{n:'Olímpio Filho',p:'Ribeirao'},{n:'Fábio Rodrigues',p:'Ribeirao'},{n:'Karianine Sampaio',p:'Ribeirao'},{n:'Olavo Cavalcanti',p:'RNInterior'},{n:'Paulo Lima',p:'Ribeirao'},{n:'Briel Barbosa',p:'SPI'}];
 // Normaliza o nome do vendedor p/ o do roster (acento/espaco duplo geram linha duplicada). Felipe 17/08.
 function _antKey(n){ return String(n||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim().toLowerCase(); }
 const _ANT_CANON = {}; ANT_ROSTER.forEach(function(v){ _ANT_CANON[_antKey(v.n)] = v.n; });
@@ -7314,7 +7314,7 @@ const MIS_ROXO = '#534AB7';
 function temBonus(r){ return (r.adate || '') >= MIS_BONUS_INI; }
 function mwhCamp(r){ const m = Number(r.mwh) || 0; return temBonus(r) ? m * MIS_BONUS : m; }
 const MIS_LIDER = {
-  'Salvador':'Adroaldo Bonfim', 'Feira':'Kelma Rangel', 'Natal':'Bruno Andrade',
+  'Salvador':'Adroaldo Bonfim', 'Feira':'Kelma Rangel', 'Natal':'Mirla Albuquerque',
   'RNInterior':'Mirla Albuquerque', 'SPI':'Caio Lannes', 'Ribeirao':'João Santos', 'CE':'Bruno Borges'
 };
 const MIS_LABEL = {

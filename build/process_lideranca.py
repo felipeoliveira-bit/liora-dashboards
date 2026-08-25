@@ -678,7 +678,8 @@ MISSAO_FORA = {'Felipe Oliveira','Ana Ribeiro','Raynara Silva','Camila Couto',
                'Thiago Araujo França',  # espelha OCULTOS_TIME + EX_TIME do mobile (os 2 dashboards tem de bater)
                # Felipe 14/08: LIDER nao entra no pre-requisito (nao precisa vender 1 Antecipa);
                # o que ele vender continua somando no MWh do time.
-               'Adroaldo Bonfim','Kelma Rangel','Bruno Andrade','Mirla Albuquerque','Caio Lannes','João Santos','Bruno Borges'}
+               'Adroaldo Bonfim','Kelma Rangel','Mirla Albuquerque','Caio Lannes','João Santos','Bruno Borges',
+               'Bruno Andrade'}  # desligado 25/08 (Mirla assumiu RN Capital)
 _ros = set()
 for _em, _pr in PRACA_TITLE.items():
     if _pr == 'Outras': continue
@@ -732,7 +733,6 @@ ROSTER_ATIVO = {
  'marcio.galvao@lioraenergia.com.br': ('consultor','2026-02-02'),
  'caio.lannes@lioraenergia.com.br': ('lider','2026-02-25'),
  'tais.santos@lioraenergia.com.br': ('consultor','2026-03-16'),
- 'bruno.andrade@lioraenergia.com.br': ('lider','2026-04-09'),
  'monica.silveira@lioraenergia.com.br': ('consultor','2026-04-15'),
  'tiago.freitas@lioraenergia.com.br': ('consultor','2026-04-15'),
  'bruno.borges@lioraenergia.com.br': ('lider','2026-04-15'),
