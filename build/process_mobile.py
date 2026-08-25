@@ -215,21 +215,95 @@ FORCE_APPROVED = {
 # latest_risk_analysis_created_at (a analise mais nova), a venda pulava para a semana
 # do PAGAMENTO e o vendedor era pago DE NOVO por um cliente ja pago na semana anterior
 # (relato do Joao 25/08: Diogenes e Bruna do Fabio, risco 22/08, reapareceram em 24/08).
-# A regra definitiva esta no slice: RISK_SQL (build/mb_export.py) devolve appr_created =
-# inicio da sequencia aprovadora, e o slice recarimba latest_risk_analysis_created_at.
-# Este mapa e' o CINTO DE SEGURANCA: vale enquanto o export nao trouxer a coluna nova.
-# Deals ja aprovados - so corrige a DATA (nao forca aprovacao). Pode sair quando o log
-# do slice mostrar 'data da aprovacao no risco: N deal(s) recarimbado(s)'.
+# Regra: vale o inicio da sequencia aprovadora (analise mais antiga a partir da qual
+# todas aprovaram). Deal reprovado e reaprovado depois usa a reaprovacao.
+#
+# TRES CAMADAS, nesta ordem de forca (FORCE_APPROVED ganha de todas):
+#  1. mapa abaixo - os 35 deals de agosto apurados na liora_silver.risk_analysis (25/08).
+#     Pode ser esvaziado na virada do mes.
+#  2. LEDGER (PREV_APROV, logo abaixo) - a data de uma venda ja publicada como aprovada
+#     nunca anda para FRENTE. Cobre os casos novos sozinho, sem depender de export.
+#  3. slice - coluna appr_created do risk_real.csv (RISK_SQL em build/mb_export.py),
+#     que recarimba latest_risk_analysis_created_at. E' a camada exata; depende de a
+#     query do export trazer a coluna nova.
 RISK_APPR_DATE = {
- 'b43f455a-0b07-455f-83b6-8558186432d2': '2026-08-19',  # DANIELA CAMPOS AMARAL (Antecipa PF, Ederson Silva/SPI) - risco APC 19/08 18:17, pagamento 24/08 12:08
- '0dadf9d4-4e2a-44aa-94f3-feb2236c0e15': '2026-08-20',  # DEIVID MARCIEL DA SILVA SAMPAIO (Antecipa PF, Karianine/Ribeirao) - risco APC 20/08 16:00, pagamento 24/08 11:38
- '4e4fdd43-0a52-4199-9a21-1ce4de5d06b5': '2026-08-20',  # JOSE PAULO APARECIDO CORREIA (Antecipa PF, Karianine/Ribeirao) - risco APC 20/08 16:55, pagamento 24/08 11:56
- '81b409e1-1596-47f5-aaa8-1ea27d44c58a': '2026-08-20',  # EMILE RAYLANE DOS SANTOS SILVA (Antecipa PF, Tamires Costa) - risco APC 20/08 18:47, pagamento 24/08 11:50
- '5a3e3021-b5d2-482a-ac49-fd720f76beb0': '2026-08-20',  # MARCELO BRAZ DA SILVA (Antecipa PF, Ederson Silva/SPI) - risco APC 20/08 19:09, pagamento 24/08 11:30
- '7a7e8fed-a442-42be-9d33-6e99c1a63e2b': '2026-08-21',  # VANESSA PAULA GOMES DA SILVA (Antecipa PF, Lucas Santos) - risco APC 21/08 13:20, pagamento 24/08 11:19
- 'ec28eba4-c245-4807-bcef-c4722c0197b9': '2026-08-22',  # DIOGENES DE FIGUEIREDO LIMA JUNIOR (Antecipa PF, Fabio Rodrigues/Ribeirao) - risco APC 22/08 16:26, pagamento 24/08 21:57
- '98d40580-78bd-4a62-b1d1-7bf346c549a0': '2026-08-22',  # BRUNA HELENA NUNES DE LACERDA (Antecipa PJ, Fabio Rodrigues/Ribeirao) - risco APC 22/08 18:05, pagamento 24/08 22:03
+ '309da0a1-7653-4c00-8cd5-49c6217f55a4': '2026-08-03',  # Clinica Ts Health LTDA (Bruno Borges, LIORA_B_ - GD, nao Antecipa) - risco 03/08 17:28, 2a analise 04/08 14:25
+ '41e3cca5-5417-4a81-af4f-28bc8ee70c5d': '2026-08-05',  # DANIELE LUZ DE ALMEIDA (Luciana Sobral, ANTECIPA PF) - risco 05/08 18:13, credito pago 07/08 14:34
+ 'f0a1f2b4-0601-4c35-9ef4-92c2087f2202': '2026-08-05',  # THAIS DA SILVA DANIEL (Odirley Costa, ANTECIPA PF) - risco 05/08 13:16, credito pago 07/08 14:30
+ '631969e6-b404-4a74-b6a8-9a258df0fa43': '2026-08-06',  # JURACI CARLOS DE FRANCA (Ederson Silva, ANTECIPA PF) - risco 06/08 14:20, credito pago 11/08 13:58
+ '269e9609-8761-42a3-a979-f63b0ddb7886': '2026-08-06',  # KELY ROSA DA SILVA (Ederson Silva, ANTECIPA PF) - risco 06/08 14:59, credito pago 10/08 07:53
+ 'ac6472e0-eee1-4423-9a4b-662a6d0bc06c': '2026-08-06',  # LEANDRO GABRIEL DA SILVA DE CARVALHO (Ederson Silva, ANTECIPA PF) - risco 06/08 14:15, credito pago 12/08 14:32
+ '22e0278a-2068-4f35-ace0-27eec743c332': '2026-08-06',  # LUZIANA RIBEIRO SALES (Ederson Silva, ANTECIPA PF) - risco 06/08 15:18, credito pago 19/08 09:33
+ '54fa2b2a-7b2c-49f4-b98e-36bc523a6be3': '2026-08-08',  # Francisco Jairo Rodrigues (Neilon Nascimento, ANTECIPA PF) - risco 08/08 14:38, credito pago 11/08 13:53
+ '83bf2289-52be-43e8-bd76-a1b8e9c9e734': '2026-08-10',  # DGN STORE & ESTACIONAMENTO (Percy Hormazabal, ANTECIPA PJ) - risco 10/08 19:00, credito pago 12/08 14:26
+ '42d73385-cf0f-4a56-bdb6-0d81161087f2': '2026-08-11',  # Maiza pereira da Silva (Bruno Borges, ANTECIPA PF) - risco 11/08 12:10, credito pago 12/08 10:34
+ 'ceb1e43b-54f4-419a-8278-6b0b300300e1': '2026-08-12',  # ANTONIO MORENO (Ederson Silva, ANTECIPA PF) - risco 12/08 14:06, credito pago 20/08 19:09
+ 'e70a63ca-e4ee-4ad5-af68-433548b49305': '2026-08-12',  # MARINA DA SILVA (Ederson Silva, ANTECIPA PF) - risco 12/08 17:12, credito pago 14/08 14:06
+ 'f9cf93c9-5348-4586-acdb-5a2b1dd49f60': '2026-08-12',  # ISMAEL RODRIGUES SILVA (Phillip Faria, ANTECIPA PF) - risco 12/08 15:42, credito pago 14/08 14:10
+ '1d00bb47-a942-4407-8216-98df676b41e9': '2026-08-13',  # ALESSANDRA DELFINO (Phillip Faria, ANTECIPA PF) - risco 13/08 14:05, credito pago 14/08 20:02
+ 'b4e7eacc-8dc9-445e-9a37-d83cb3ecff80': '2026-08-13',  # DANILO FERREIRA DE LACERDA (Fabio Rodrigues, ANTECIPA PF) - risco 13/08 12:15, credito pago 14/08 19:58
+ '7078748d-07a0-454d-a500-cfdb559b954f': '2026-08-14',  # MARIA DE LOURDES BRITO DA COSTA (Ederson Silva, ANTECIPA PF) - risco 14/08 16:58, credito pago 18/08 13:24
+ 'dabf7abd-1266-40b0-bb0b-6b593cfca457': '2026-08-15',  # MATEUS BERNARDINO DE MELO (Odirley Costa, ANTECIPA PF) - risco 15/08 11:04, credito pago 18/08 13:18
+ '85ca8818-734b-4c32-bbb4-635d4d9493f2': '2026-08-17',  # Eliano Barbosa dos santos (Ederson Silva, ANTECIPA PF) - risco 17/08 13:16, credito pago 18/08 19:07
+ '0b97aa9e-2def-45ec-ad98-034573f178a6': '2026-08-17',  # Jonas Emer Coquely (Olimpio Filho, ANTECIPA PJ) - risco 17/08 17:13, credito pago 18/08 19:12
+ '25611c90-3b9b-4b2f-a42e-41d22dcebd7a': '2026-08-17',  # Thais Cristina Flosino (Olimpio Filho, ANTECIPA PJ) - risco 17/08 16:30, credito pago 24/08 12:26
+ '2b4ac293-dd90-4926-b56f-f31d43f7ac8b': '2026-08-17',  # Acougue Polegatto Ltda (Joao Felipe, ANTECIPA PJ) - risco 17/08 13:40, credito pago 18/08 19:24
+ '3f157076-50ad-4108-b71d-b70527a45887': '2026-08-18',  # Nelo Minghe Neto (2a UC) (Fabio Rodrigues, ANTECIPA PJ) - risco 18/08 17:40, credito pago 20/08 18:57
+ 'e6aae19f-6a23-4b53-9b72-7c5121d03a69': '2026-08-18',  # VICTOR HUGO GOULART DA SILVA (Olimpio Filho, ANTECIPA PF) - risco 18/08 18:08, credito pago 20/08 18:51
+ '18a28a63-cd00-4bde-97e0-f04151fe5a2d': '2026-08-18',  # Nelo Minghe Neto (Fabio Rodrigues, ANTECIPA PJ) - risco 18/08 17:46, credito pago 20/08 00:47
+ '67505be8-e7a4-496f-a8e3-a711909fa2fc': '2026-08-19',  # Alexandre Zaneti Arantes (Karianine Sampaio, ANTECIPA PJ) - risco 19/08 13:57, credito pago 20/08 01:14
+ '2a50c11b-55c8-4f23-810f-438c71f90696': '2026-08-19',  # ROSEMEIRE DIAS DE ALMEIDA (Ettore Rossi, ANTECIPA PF) - risco 19/08 09:33, credito pago 20/08 00:23
+ 'b43f455a-0b07-455f-83b6-8558186432d2': '2026-08-19',  # DANIELA CAMPOS AMARAL (Ederson Silva, ANTECIPA PF) - risco 19/08 18:17, credito pago 24/08 12:08
+ '77a74bf3-4cb4-427e-9548-8be61dac8f85': '2026-08-19',  # VALDENIA AMARO MARTINS (Odirley Costa, ANTECIPA PF) - risco 19/08 17:40, credito pago 20/08 18:47
+ '0dadf9d4-4e2a-44aa-94f3-feb2236c0e15': '2026-08-20',  # DEIVID MARCIEL DA SILVA SAMPAIO (Karianine Sampaio, ANTECIPA PF) - risco 20/08 16:00, credito pago 24/08 11:38
+ '5a3e3021-b5d2-482a-ac49-fd720f76beb0': '2026-08-20',  # MARCELO BRAZ DA SILVA (Ederson Silva, ANTECIPA PF) - risco 20/08 19:09, credito pago 24/08 11:30
+ '81b409e1-1596-47f5-aaa8-1ea27d44c58a': '2026-08-20',  # Emile Raylane dos Santos silva (Tamires Costa, ANTECIPA PF) - risco 20/08 18:47, credito pago 24/08 11:50
+ '4e4fdd43-0a52-4199-9a21-1ce4de5d06b5': '2026-08-20',  # JOSE PAULO APARECIDO CORREIA (Karianine Sampaio, ANTECIPA PF) - risco 20/08 16:55, credito pago 24/08 11:56
+ '7a7e8fed-a442-42be-9d33-6e99c1a63e2b': '2026-08-21',  # VANESSA PAULA GOMES DA SILVA (Lucas Santos, ANTECIPA PF) - risco 21/08 13:20, credito pago 24/08 11:19
+ '98d40580-78bd-4a62-b1d1-7bf346c549a0': '2026-08-22',  # Bruna Helena Nunes de lacerda (Fabio Rodrigues, ANTECIPA PJ) - risco 22/08 18:05, credito pago 24/08 22:03
+ 'ec28eba4-c245-4807-bcef-c4722c0197b9': '2026-08-22',  # DIOGENES DE FIGUEIREDO LIMA JUNIOR (Fabio Rodrigues, ANTECIPA PF) - risco 22/08 16:26, credito pago 24/08 21:57
 }
+
+# ---- LEDGER: venda aprovada nao muda de dia (Felipe 25/08) ---------------
+# Le o rawData do mobile JA PUBLICADO (../mobile/index.html deste mesmo repo clonado)
+# e guarda deal_id -> aprov_date. Se a venda ja estava aprovada num dia, esse dia manda:
+# a reaprovacao de risco que o Antecipa gera no pagamento do credito nao muda mais a
+# semana da venda. Como o rebuild publica a cada ~2h, a aprovacao original (APPROVED_
+# PENDING_CREDIT) sempre e' capturada dias antes do pagamento. So anda para TRAS.
+# Fail-safe: sem arquivo/sem match -> {} e nada muda. Escape hatch: FORCE_APPROVED.
+def _load_prev_aprov():
+    import os as _os, re as _re, json as _json, sys as _sys
+    p = _os.environ.get('PREV_MOBILE') or _os.path.join(
+        _os.path.dirname(_os.path.abspath(__file__)), '..', 'mobile', 'index.html')
+    try:
+        t = open(p, encoding='utf-8').read()
+        m = _re.search(r'const rawData\s*=\s*(\[.*?\]);', t, _re.S)
+        if not m:
+            return {}
+        out = {}
+        for r in _json.loads(m.group(1)):
+            did = (r.get('deal_id') or '').strip()
+            a = (r.get('aprov_date') or '').strip()
+            if did and a:
+                out[did] = a[:10]
+        print('ledger de datas: %d aprovado(s) no publicado (%s)'
+              % (len(out), _os.path.basename(p)))
+        return out
+    except Exception as _e:
+        print('aviso ledger de datas:', _e, file=_sys.stderr)
+        return {}
+PREV_APROV = _load_prev_aprov()
+
+def appr_date_of(deal_id, calc, aprovado=True):
+    """Data de aprovacao final: mapa > ledger > calculada. Nunca anda para frente."""
+    fix = RISK_APPR_DATE.get(deal_id)
+    d = fix or (calc or '')
+    if aprovado:
+        prev = PREV_APROV.get(deal_id) or ''
+        if prev and (not d or prev < d):
+            d = prev
+    return d or ''
+
 # Felipe 25/08 (final): a lista e' INVERTIDA de proposito. So estes motivos DESFAZEM a
 # venda aprovada: o cliente desistiu, ou o credito foi reprovado. Todo o resto mantem o
 # aprovado. 'UC Desligada' (16 clientes / 30,77 MWh em agosto) NAO e' reprovacao: e' o
@@ -327,7 +401,7 @@ def build_rawData(deals_path, ag_path, prop_path=None, docs_map=None, uc_map=Non
         approved = forced or (not _lost and (credito_ok or _apc or (_reached and _risk!='DENIED' and r['deal_stage']!='BGC_PARCEIRO')))
         # data do risco: o mapa RISK_APPR_DATE (aprovacao no risco) manda na analise
         # mais nova, que no Antecipa e' a do pagamento do credito (Felipe 25/08)
-        _rdt = pdate(RISK_APPR_DATE.get(did)) or pdate(r['latest_risk_analysis_created_at'])
+        _rdt = pdate(appr_date_of(did, iso(pdate(r['latest_risk_analysis_created_at'])), approved))
         aprov = (iso(_rdt or pdate(r['deal_created_at'])) if approved else '')
         created = pdate(r['deal_created_at'])
         basis = (_rdt or created) if approved else created
