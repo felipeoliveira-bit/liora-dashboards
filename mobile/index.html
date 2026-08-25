@@ -2859,8 +2859,17 @@ function openClienteDetalhes(dealId){
          <div class="cd-acao">${escapeHtml(_obsTxt)}</div>
        </div>`
     : '';
-  // Situação Antecipa (crédito) — bloco explicado, só p/ deals do Antecipa
-  const creditBlock = lead.credito ? (function(){
+  // Situação Antecipa (crédito) — bloco explicado, só p/ deals do Antecipa.
+  // Felipe 25/08: "aprovou no risco? ótimo, pode contar como aprovado" — o time não
+  // deve ver DUAS aprovações. Se o risco JÁ aprovou e o crédito também está OK, o
+  // bloco de crédito sai (não muda o resultado, que já conta uma vez só). Crédito
+  // PENDENTE ou REJEITADO continua aparecendo: aí é pendência/alerta útil, e o
+  // rejeitado ainda derruba o risco depois.
+  const _credEtapa = String(lead.credito || '').trim();
+  const _credRuim = ['ANÁLISE_DE_CRÉDITO_REJEITADA','PAGAMENTO_REJEITADO'];
+  const _credOk = (lead.credito_ok === true) || _credEtapa === 'PAGAMENTO_REALIZADO';
+  const _escondeCred = (lead.rapr === true) && _credRuim.indexOf(_credEtapa) < 0 && _credOk;
+  const creditBlock = (lead.credito && !_escondeCred) ? (function(){
     var info = CREDIT_DESC[lead.credito];
     var label = info ? info[0]
       : lead.credito.charAt(0) + lead.credito.slice(1).toLowerCase().replace(/_/g,' ');
