@@ -185,13 +185,13 @@ PRACA_TITLE = {  # email -> praça (Title) usada no RAW
  'tiago.freitas@lioraenergia.com.br':'Feira','tamires.costa@lioraenergia.com.br':'Feira','thiago.araujo@lioraenergia.com.br':'Natal','camila.couto@lioraenergia.com.br':'Feira',
  'briel.barbosa@lioraenergia.com.br':'SPI','olimpio.filho@lioraenergia.com.br':'Ribeirao','fabio.rodrigues@lioraenergia.com.br':'Ribeirao',  # novos 10/08
  'karianine.sampaio@lioraenergia.com.br':'Ribeirao',  # nova 18/08 (Pradopolis/SP, time Ribeirao - Felipe 18/08)
- 'olavocavalcanti@lioraenergia.com.br':'RN Interior','olavo.cavaldanti@lioraenergia.com.br':'RN Interior','paulo.lima@lioraenergia.com.br':'Ribeirao','s3agronegocios@gmail.com':'Ribeirao',  # Paulo Lima vende com o gmail na base (25/08)  # novos 24/08 (Olavo Cavalcanti - Mossoro/RN Interior; Paulo Lima - Ribeirao)
+ 'olavocavalcanti@lioraenergia.com.br':'RN Interior','olavo.cavaldanti@lioraenergia.com.br':'RN Interior','paulo.lima@lioraenergia.com.br':'Ribeirao',  # novos 24/08 (Olavo Cavalcanti - Mossoro/RN Interior; Paulo Lima - Ribeirao)
 }
 EMAIL2NAME = {  # email -> nome canônico do vendedor (resolve nomes variáveis do CRM)
  'silmara.gomes@lioraenergia.com.br':'Silmara Gomes',
  'briel.barbosa@lioraenergia.com.br':'Briel Barbosa','olimpio.filho@lioraenergia.com.br':'Olímpio Filho','fabio.rodrigues@lioraenergia.com.br':'Fábio Rodrigues',  # novos 10/08
  'karianine.sampaio@lioraenergia.com.br':'Karianine Sampaio',  # nova 18/08 (CRM manda 'karianine Sampaio' minusculo)
- 'olavocavalcanti@lioraenergia.com.br':'Olavo Cavalcanti','olavo.cavaldanti@lioraenergia.com.br':'Olavo Cavalcanti','paulo.lima@lioraenergia.com.br':'Paulo Lima','s3agronegocios@gmail.com':'Paulo Lima',  # novos 24/08 (Olavo Cavalcanti - Mossoro/RN Interior; Paulo Lima - Ribeirao)
+ 'olavocavalcanti@lioraenergia.com.br':'Olavo Cavalcanti','olavo.cavaldanti@lioraenergia.com.br':'Olavo Cavalcanti','paulo.lima@lioraenergia.com.br':'Paulo Lima',  # novos 24/08 (Olavo Cavalcanti - Mossoro/RN Interior; Paulo Lima - Ribeirao)
  'luciana.campos@lioraenergia.com.br':'Luciana Campos',
  'nicola.popovic@lioraenergia.com.br':'Nicola Popovic',
  'nha.negocios@gmail.com':'Anderson Correia',
@@ -295,6 +295,28 @@ FORCE_APPROVED = {
                   '18a28a63-cd00-4bde-97e0-f04151fe5a2d': '2026-08-19',  # NELO MINGHE NETO (Antecipa PJ, Fabio Rodrigues/Ribeirao, 0.905 MWh) - risco APPROVED 20/08 00:47
                   '67505be8-e7a4-496f-a8e3-a711909fa2fc': '2026-08-19',  # ALEXANDRE ZANETI ARANTES (Antecipa PJ, Karianine Sampaio/Ribeirao, 0.871 MWh) - risco APPROVED 20/08 01:14
                   }  # ALEXANDRE ZANETI ARANTES (Antecipa PJ, Karianine Sampaio/Ribeirao, 0.871 MWh) - risco APPROVED 20/08 01:14
+
+# ---- DATA DA VENDA = APROVACAO NO RISCO (Felipe 25/08) --------------------
+# O Antecipa gera uma SEGUNDA analise de risco APPROVED quando o CREDITO e' pago,
+# dias depois do APPROVED_PENDING_CREDIT que ja aprovou a venda. Como a data vem de
+# latest_risk_analysis_created_at (a analise mais nova), a venda pulava para a semana
+# do PAGAMENTO e o vendedor era pago DE NOVO por um cliente ja pago na semana anterior
+# (relato do Joao 25/08: Diogenes e Bruna do Fabio, risco 22/08, reapareceram em 24/08).
+# A regra definitiva esta no slice: RISK_SQL (build/mb_export.py) devolve appr_created =
+# inicio da sequencia aprovadora, e o slice recarimba latest_risk_analysis_created_at.
+# Este mapa e' o CINTO DE SEGURANCA: vale enquanto o export nao trouxer a coluna nova.
+# Deals ja aprovados - so corrige a DATA (nao forca aprovacao). Pode sair quando o log
+# do slice mostrar 'data da aprovacao no risco: N deal(s) recarimbado(s)'.
+RISK_APPR_DATE = {
+ 'b43f455a-0b07-455f-83b6-8558186432d2': '2026-08-19',  # DANIELA CAMPOS AMARAL (Antecipa PF, Ederson Silva/SPI) - risco APC 19/08 18:17, pagamento 24/08 12:08
+ '0dadf9d4-4e2a-44aa-94f3-feb2236c0e15': '2026-08-20',  # DEIVID MARCIEL DA SILVA SAMPAIO (Antecipa PF, Karianine/Ribeirao) - risco APC 20/08 16:00, pagamento 24/08 11:38
+ '4e4fdd43-0a52-4199-9a21-1ce4de5d06b5': '2026-08-20',  # JOSE PAULO APARECIDO CORREIA (Antecipa PF, Karianine/Ribeirao) - risco APC 20/08 16:55, pagamento 24/08 11:56
+ '81b409e1-1596-47f5-aaa8-1ea27d44c58a': '2026-08-20',  # EMILE RAYLANE DOS SANTOS SILVA (Antecipa PF, Tamires Costa) - risco APC 20/08 18:47, pagamento 24/08 11:50
+ '5a3e3021-b5d2-482a-ac49-fd720f76beb0': '2026-08-20',  # MARCELO BRAZ DA SILVA (Antecipa PF, Ederson Silva/SPI) - risco APC 20/08 19:09, pagamento 24/08 11:30
+ '7a7e8fed-a442-42be-9d33-6e99c1a63e2b': '2026-08-21',  # VANESSA PAULA GOMES DA SILVA (Antecipa PF, Lucas Santos) - risco APC 21/08 13:20, pagamento 24/08 11:19
+ 'ec28eba4-c245-4807-bcef-c4722c0197b9': '2026-08-22',  # DIOGENES DE FIGUEIREDO LIMA JUNIOR (Antecipa PF, Fabio Rodrigues/Ribeirao) - risco APC 22/08 16:26, pagamento 24/08 21:57
+ '98d40580-78bd-4a62-b1d1-7bf346c549a0': '2026-08-22',  # BRUNA HELENA NUNES DE LACERDA (Antecipa PJ, Fabio Rodrigues/Ribeirao) - risco APC 22/08 18:05, pagamento 24/08 22:03
+}
 def mwh_of(client, raw, did=None):
     if did is not None:
         ovid = CONSUMPTION_OVERRIDE_BY_ID.get(did)
@@ -359,7 +381,9 @@ def mk_deal(r):
     if credito_ok: risk='APPROVED'  # Felipe 06/08: crédito aprovado (Antecipa) conta como aprovado no Field
     if r['deal_id'] in FORCE_APPROVED: risk='APPROVED'  # aprovado manual
     # aprovado conta pela DATA DA ANÁLISE DE RISCO; sem risco (WAITING) usa criação
-    d = pdate(r['latest_risk_analysis_created_at']) or pdate(r['deal_created_at'])
+    # a data da APROVACAO NO RISCO manda na analise mais nova (que no Antecipa e' a do
+    # pagamento do credito) - ver RISK_APPR_DATE acima (Felipe 25/08)
+    d = RISK_APPR_DATE.get(r['deal_id']) or pdate(r['latest_risk_analysis_created_at']) or pdate(r['deal_created_at'])
     if r['deal_id'] in FORCE_APPROVED and FORCE_APPROVED[r['deal_id']]: d = FORCE_APPROVED[r['deal_id']]  # data de aprovação manual
     forced = r['deal_id'] in FORCE_APPROVED
     # o isAprovado() do HTML descarta BGC_PARCEIRO ANTES de olhar o risco, entao o
@@ -513,7 +537,7 @@ if f_ant:
         # pela data em que foram aprovados dentro do filtro (Felipe 12/08), nao pela geracao.
         # FORCE_APPROVED/ANT_APPROVE guardam a data da aprovacao MANUAL (Felipe): ela ganha
         # do risco da base, senao o deal forcado entra na aba com a data errada (Missao/aprovados por data).
-        _adate = FORCE_APPROVED.get(_did) or pdate(r.get('latest_risk_analysis_created_at')) or (d or '')
+        _adate = FORCE_APPROVED.get(_did) or RISK_APPR_DATE.get(_did) or pdate(r.get('latest_risk_analysis_created_at')) or (d or '')
         ANTECIPA.append({
           'c': _cli,
           's': seller_of(_em, _cli),
@@ -601,7 +625,7 @@ ANT_FIELD=[]
 for r in prop:  # GD field (FS_Liora)
     _cli=(r.get('current_client_name') or '').strip(); _em=r.get('sales_person_email')
     _d=pdate(r.get('proposal_created_at')) or pdate(r.get('deal_created_at'))
-    ANT_FIELD.append({'date':_d or '','adate':(pdate(r.get('latest_risk_analysis_created_at')) or (_d or '')),'praca':_ANT_PRACA_KEY.get(praca_of(_em,_cli),'Outras'),
+    ANT_FIELD.append({'date':_d or '','adate':(RISK_APPR_DATE.get((r.get('deal_id') or '').strip()) or pdate(r.get('latest_risk_analysis_created_at')) or (_d or '')),'praca':_ANT_PRACA_KEY.get(praca_of(_em,_cli),'Outras'),
                       's':seller_of(_em,_cli),
                       'sig':bool((r.get('latest_contract_signature_signed_at') or '').strip()),
                       'apr':_gd_apr(r)})
@@ -665,8 +689,7 @@ ROSTER_ATIVO = {
  'karianine.sampaio@lioraenergia.com.br': ('consultor','2026-08-18'),
  'olavocavalcanti@lioraenergia.com.br': ('consultor','2026-08-24'),
  'olavo.cavaldanti@lioraenergia.com.br': ('consultor','2026-08-24'),  # Mossoro / RN Interior
- 'paulo.lima@lioraenergia.com.br': ('consultor','2026-08-24'),
- 's3agronegocios@gmail.com': ('consultor','2026-08-24'),   # mesmo vendedor, e-mail real do CRM        # Ribeirao Preto SPI
+ 'paulo.lima@lioraenergia.com.br': ('consultor','2026-08-24'),        # Ribeirao Preto SPI
  'fabio.rodrigues@lioraenergia.com.br': ('consultor','2026-08-10'),
 }
 

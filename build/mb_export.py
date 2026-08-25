@@ -73,10 +73,36 @@ best AS (
   SELECT co.deal_id, r.result, r.created_at,
          ROW_NUMBER() OVER (PARTITION BY co.deal_id ORDER BY r.created_at DESC) rn
   FROM ra r JOIN contr co ON co.contract_id = r.contract_id WHERE r.rn = 1
+),
+-- DATA DA APROVACAO NO RISCO (Felipe 25/08) --------------------------------
+-- O Antecipa gera uma SEGUNDA analise de risco (APPROVED) quando o credito e'
+-- pago, dias depois da aprovacao de verdade (APPROVED_PENDING_CREDIT). Se a
+-- venda for carimbada pela analise MAIS NOVA ela pula para a semana do
+-- pagamento e o vendedor e' pago 2x pela mesma venda. `appr_created` devolve o
+-- INICIO da sequencia aprovadora atual: a analise mais antiga a partir da qual
+-- todas as seguintes aprovaram (APPROVED ou APPROVED_PENDING_CREDIT). Se o deal
+-- foi reprovado e reaprovado depois, vale a reaprovacao (nao a aprovacao velha).
+hist AS (
+  SELECT co.deal_id, r.created_at,
+         ROW_NUMBER() OVER (PARTITION BY co.deal_id ORDER BY r.created_at DESC) rn,
+         CASE WHEN r.result IN ('APPROVED','APPROVED_PENDING_CREDIT') THEN 0 ELSE 1 END AS nao_aprov
+  FROM `liora_silver.risk_analysis` r JOIN contr co ON co.contract_id = r.contract_id
+),
+corte AS (
+  SELECT deal_id, MIN(CASE WHEN nao_aprov = 1 THEN rn END) AS rn_nao_aprov
+  FROM hist GROUP BY deal_id
+),
+appr AS (
+  SELECT h.deal_id, MIN(h.created_at) AS appr_created
+  FROM hist h LEFT JOIN corte c ON c.deal_id = h.deal_id
+  WHERE h.nao_aprov = 0 AND (c.rn_nao_aprov IS NULL OR h.rn < c.rn_nao_aprov)
+  GROUP BY h.deal_id
 )
-SELECT deal_id, result AS real_result,
-       FORMAT_TIMESTAMP('%Y-%m-%dT%H:%M:%S', created_at, 'America/Sao_Paulo') AS real_created
-FROM best WHERE rn = 1
+SELECT b.deal_id, b.result AS real_result,
+       FORMAT_TIMESTAMP('%Y-%m-%dT%H:%M:%S', b.created_at, 'America/Sao_Paulo') AS real_created,
+       FORMAT_TIMESTAMP('%Y-%m-%dT%H:%M:%S', a.appr_created, 'America/Sao_Paulo') AS appr_created
+FROM best b LEFT JOIN appr a ON a.deal_id = b.deal_id
+WHERE b.rn = 1
 """
 
 SBG_SQL = r"""

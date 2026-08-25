@@ -71,6 +71,43 @@ def load_risk_real(base_path):
     return m
 
 
+def load_appr_date(base_path):
+    # Mapa deal_id -> data da APROVACAO NO RISCO (coluna appr_created do risk_real.csv;
+    # ver RISK_SQL em mb_export.py). Vazio se o CSV nao tiver a coluna (export antigo)
+    # - nesse caso nada muda e a data segue vindo da analise mais nova.
+    p=os.path.join(os.path.dirname(os.path.abspath(base_path)), 'risk_real.csv')
+    if not os.path.isfile(p): return {}
+    m={}
+    with open(p, encoding='utf-8-sig') as fh:
+        rd=csv.DictReader(fh)
+        if 'appr_created' not in (rd.fieldnames or []): return {}
+        for r in rd:
+            did=(r.get('deal_id') or '').strip(); v=(r.get('appr_created') or '').strip()
+            if did and v: m[did]=v
+    return m
+
+
+def apply_appr_date(base, appr):
+    # DATA DA VENDA = APROVACAO NO RISCO, NAO A DO CREDITO (Felipe 25/08).
+    # O Antecipa gera uma SEGUNDA analise de risco APPROVED quando o credito e' pago,
+    # dias depois do APPROVED_PENDING_CREDIT que ja aprovou a venda. Como o pipeline
+    # carimba a venda por latest_risk_analysis_created_at, ela pulava para a semana do
+    # PAGAMENTO e o vendedor era pago 2x pela mesma venda na campanha (Diogenes e Bruna
+    # do Fabio: risco 22/08, pagamento 24/08 -> reapareciam na semana 24-30/08).
+    # Aqui a data volta para o inicio da sequencia aprovadora. So anda para TRAS: se o
+    # card ja tem data mais antiga, ela manda (preserva override/atribuicao existente).
+    # O total do mes nao muda - so o dia/semana em que a venda cai.
+    if not appr: return 0
+    n=0
+    for r in base:
+        v=appr.get((r.get('deal_id') or '').strip())
+        if not v: continue
+        cur=(r.get('latest_risk_analysis_created_at') or '').strip()
+        if cur and v[:10] < cur[:10]:
+            r['latest_risk_analysis_created_at']=v; n+=1
+    return n
+
+
 # --- AUGMENTO FONTE-VIVA (funil sales_b_group) -------------------------------
 # Funde os deals Field FRESCOS do funil ao vivo (mb_export -> sbg_field.csv) na
 # base do card818, que atrasa umas horas (job de curadoria periodico). Corrige o
@@ -242,6 +279,8 @@ def main():
     if npatch or napp: print('augmento funil vivo: %d atualizado(s), %d anexado(s)' % (npatch,napp))
     ncorr=apply_risk_real(base, load_risk_real(base_path))
     if ncorr: print('risco real: %d deal(s) com resultado corrigido vs card818' % ncorr)
+    nappr=apply_appr_date(base, load_appr_date(base_path))
+    print('data da aprovacao no risco: %d deal(s) recarimbado(s) (Antecipa pago depois)' % nappr)
     fs=[r for r in base if r['internal_sales_classification']=='FS_Liora']
     # Operacao de campo: deals de Field Sales as vezes vem com classificacao
     # 'Outro' (tag errada). Para APROVADOS/analisados contamos pela operacao
