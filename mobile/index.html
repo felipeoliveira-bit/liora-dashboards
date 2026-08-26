@@ -986,6 +986,16 @@ function isAprovado(x){
   return !!x.aprov_date && (!x.lost_at || x.stage !== 'BACKGROUND_CHECKING' || (x.lost_reason||'').trim().toLowerCase() === 'troca de titularidade');
 }
 
+// ── PERDIDO: teste unico e explicito (Felipe 26/08) ──────────────────
+// Antes cada tela improvisava o teste de perdido e todas caiam no isNegado(),
+// que reconhece SO motivo de RISCO ('analise de risco'/'reprovado'). Motivo
+// COMERCIAL ('Cliente desistiu', 'Telefone incorreto', 'Cliente possui Energia
+// Solar') nao era negado, e o perdido vazava: entrou nas Pendencias do time,
+// no 'MWh em pendencia' do vendedor e ficou com selo 'N/A' na ficha.
+// USE ESTE HELPER em toda tela nova - nao repita o par !isAprovado && !isNegado.
+// Excecao: perda POS-VENDA (troca de titularidade) segue aprovada via isAprovado.
+function isPerdido(x){ return !!(x && x.lost_at) && !isAprovado(x); }
+
 function isNegado(x){
   if(x.stage === 'BGC_PARCEIRO') return !!x.lost_at && (x.lost_reason||'').trim() !== ''; // perdido na validação Antecipa (ex.: reprovado no crédito) = negado
   if(x.stage !== 'BACKGROUND_CHECKING'){
@@ -1030,6 +1040,10 @@ function getStatusInfo(x){
   if(isBGC(x))       return {label:'BGC',bg:'#EEEDFE',color:'#534AB7'};
   if(isAgDocs(x))    return {label:'Ag. Docs',bg:'#FFF8E1',color:'#795500'};
   if(isOutros(x))    return {label:'Outros',bg:'#f0f0f0',color:'#666'};
+  // Felipe 26/08: perdido por motivo comercial nao cai em isNegado e vinha com
+  // selo 'N/A' (o x.status cru). Fica DEPOIS de Negado/BGC/Ag.Docs p/ nao mudar
+  // o selo de quem ja estava certo.
+  if(isPerdido(x))   return {label:'Perdido',bg:'#FCEBEB',color:'#A32D2D'};
   return {label:x.status||'—',bg:'#f0f0f0',color:'#666'};
 }
 
@@ -1944,7 +1958,9 @@ function renderCarteira(){
   const meta = METAS[seller]||0;
   const pct = meta>0?Math.min((myAprov/meta)*100,100):0;
   const pc = pct>=70?'var(--green)':pct>=40?'var(--blue)':'var(--red)';
-  const myPend = myDeals.filter(x=>!isAprovado(x)&&!isNegado(x)).reduce((a,x)=>a+x.mwh,0);
+  // Felipe 26/08: perdido nao e' pendencia. O par !isAprovado&&!isNegado deixava
+  // passar 13 clientes / 4,47 MWh perdidos por motivo comercial.
+  const myPend = myDeals.filter(x=>!isAprovado(x)&&!isNegado(x)&&!isPerdido(x)).reduce((a,x)=>a+x.mwh,0);
   const campPartsSemana = campParts(CAMP_CFG.semana, myDeals.filter(x=>noPeriodo(x,CAMP_CFG.semana.ini,CAMP_CFG.semana.end)&&isAprovado(x)));
   const campValSemana = campPartsSemana.total;
   const campValAntecipa = campVal(CAMP_CFG.antecipa, myDeals.filter(x=>noPeriodo(x,CAMP_CFG.antecipa.ini,CAMP_CFG.antecipa.end)&&isAprovado(x)&&campMatch(CAMP_CFG.antecipa,x)));
@@ -1996,7 +2012,7 @@ function renderCarteira(){
 
   // Sort: ag.docs/bgc/em-andamento first, depois aprovados, negados por último
   const sorted = [...myDeals].sort((a,b)=>{
-    const order = x => isAgDocs(x)?0:isBGC(x)?1:isAprovado(x)?3:isNegado(x)?4:2;
+    const order = x => isAgDocs(x)?0:isBGC(x)?1:isAprovado(x)?3:(isNegado(x)||isPerdido(x))?4:2;
     return order(a)-order(b)||(b.idle-a.idle);
   });
 
@@ -2320,8 +2336,7 @@ function pendDe(x){
   // Solar') nao era negado, entao o perdido voltava pro card (10 clientes / 3,5 MWh).
   // Excecao mantida: perda POS-VENDA (troca de titularidade) continua aprovada, e se
   // tiver Antecipa pendurado ainda tem dinheiro pra buscar.
-  const _apr = (typeof isAprovado==='function') && isAprovado(x);
-  if(x.lost_at && !_apr) return out;
+  if(typeof isPerdido==='function' && isPerdido(x)) return out;
   if(typeof isAgDocs==='function' && isAgDocs(x)){
     const d = (x.docs||'').trim();
     if(d === '__OK__') out.push({k:'docs', ico:'📄', txt:'Documentos recebidos — aguardando processamento', ok:true});
