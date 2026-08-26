@@ -24,6 +24,15 @@ EXCLUDE_DEALS = {
     # parado, "Cliente que se perdeu no funil") - pedido Felipe 15/07: vai virar
     # perdido, tirar da lista ja. Remover quando a base marcar como lost.
     '638a08a6-845f-4eab-a290-24366dfc131e',
+    # Mw Safaty Ltda (SP, COLLECTING INFORMATION) - vend. Raynara Silva (suporte,
+    # nao deveria criar lead). Felipe 07/08: vai virar perdido, tirar do CRM ja.
+    # Remover quando a base marcar como lost.
+    '4b4d439b-88d0-4838-bbd4-48ef5c0b256e',
+    # Maria Solange Tavares (Parnamirim/Cosern, WAITING_DOCUMENTS, 14d parado,
+    # vend. Marcio Galvao) - obs de risco: fatura com energia injetada de outra
+    # GD. Felipe 26/08: cliente ja foi dado perdido, tirar das pendencias ja.
+    # Remover quando a base marcar como lost.
+    '7675267f-d62e-4fad-877e-5701a52b4ca9',
 }
 
 MESES = {'janeiro':1,'fevereiro':2,'março':3,'marco':3,'abril':4,'maio':5,'junho':6,
