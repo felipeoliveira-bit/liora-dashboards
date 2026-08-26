@@ -682,7 +682,11 @@ function renderTarefas() {
     }
     // Hoje: Criados tem prioridade; Ag.Hoje = agendado hoje E NÃO criado hoje
     const criHoje = l.createdAt &amp;&amp; localISO(new Date(l.createdAt)) === _hojeISO;
-    const agHoje = String(l.proximaInteracao||'').slice(0,10) === _hojeISO &amp;&amp; l.stage !== 'ganho' &amp;&amp; l.stage !== 'perdido' &amp;&amp; !criHoje;
+    // Felipe 26/08: Ag. NAO desconta mais o criado no periodo. A regra antiga
+    // (&amp;&amp; !criado) zerava a coluna sempre que o periodo era largo o bastante p/
+    // conter a criacao do lead - com o filtro 'Tudo' dava 0 em todas as pracas.
+    // Total continua sendo a UNIAO (conta o lead uma vez so).
+    const agHoje = String(l.proximaInteracao||'').slice(0,10) === _hojeISO &amp;&amp; l.stage !== 'ganho' &amp;&amp; l.stage !== 'perdido';
     if (agHoje) byP[p].agHoje++;
     if (criHoje) byP[p].criadosHoje++;
     if (agHoje || criHoje) byP[p].totalHoje++;
@@ -863,7 +867,7 @@ function openBauLeadList(praca, vendEnc, bucket){
     if(bucket==='propostas') return l.stage==='propostas_geradas';
     if(bucket==='perdido') return l.stage==='perdido';
     if(bucket==='atrasados'){ if(l.stage==='ganho'||l.stage==='perdido'||!l.proximaInteracao) return false; var d=new Date(l.proximaInteracao); return !isNaN(d) &amp;&amp; localISO(d) < TODAY_ISO; }
-    if(bucket==='agHoje'){ var crA=l.createdAt &amp;&amp; localISO(new Date(l.createdAt))===TODAY_ISO; return String(l.proximaInteracao||'').slice(0,10)===TODAY_ISO &amp;&amp; l.stage!=='ganho' &amp;&amp; l.stage!=='perdido' &amp;&amp; !crA; }
+    if(bucket==='agHoje'){ return String(l.proximaInteracao||'').slice(0,10)===TODAY_ISO &amp;&amp; l.stage!=='ganho' &amp;&amp; l.stage!=='perdido'; }
     if(bucket==='criadosHoje'){ return l.createdAt &amp;&amp; localISO(new Date(l.createdAt))===TODAY_ISO; }
     if(bucket==='totalHoje'){ var crT=l.createdAt &amp;&amp; localISO(new Date(l.createdAt))===TODAY_ISO; var agT=String(l.proximaInteracao||'').slice(0,10)===TODAY_ISO &amp;&amp; l.stage!=='ganho' &amp;&amp; l.stage!=='perdido' &amp;&amp; !crT; return agT||crT; }
     return false;
@@ -1524,7 +1528,11 @@ function aggTarefas() {
     }
     // Hoje: Criados tem prioridade; Ag.Hoje = agendado hoje E NÃO criado hoje
     const criHoje = leadCreatedInPeriod(l);
-    const agHoje = dateInRealPeriod(String(l.proximaInteracao||'').slice(0,10)) &amp;&amp; l.stage !== 'ganho' &amp;&amp; l.stage !== 'perdido' &amp;&amp; !criHoje;
+    // Felipe 26/08: Ag. NAO desconta mais o criado no periodo. A regra antiga
+    // (&amp;&amp; !criado) zerava a coluna sempre que o periodo era largo o bastante p/
+    // conter a criacao do lead - com o filtro 'Tudo' dava 0 em todas as pracas.
+    // Total continua sendo a UNIAO (conta o lead uma vez so).
+    const agHoje = dateInRealPeriod(String(l.proximaInteracao||'').slice(0,10)) &amp;&amp; l.stage !== 'ganho' &amp;&amp; l.stage !== 'perdido';
     if (agHoje) byV[v].agHoje++;
     if (criHoje) byV[v].criadosHoje++;
     if (agHoje || criHoje) byV[v].totalHoje++;
@@ -1690,8 +1698,7 @@ function rkBucketFilter(l, bucket){
     return !isNaN(d) &amp;&amp; localISO(d) < TODAY_ISO;
   }
   if (bucket === 'agHoje'){
-    const crA = leadCreatedInPeriod(l);
-    return dateInRealPeriod(String(l.proximaInteracao||'').slice(0,10)) &amp;&amp; l.stage !== 'ganho' &amp;&amp; l.stage !== 'perdido' &amp;&amp; !crA;
+    return dateInRealPeriod(String(l.proximaInteracao||'').slice(0,10)) &amp;&amp; l.stage !== 'ganho' &amp;&amp; l.stage !== 'perdido';
   }
   if (bucket === 'criadosHoje'){
     return leadCreatedInPeriod(l);
@@ -2514,7 +2521,7 @@ function openAgendaList(praca, vendEnc, bucket){
   const _matchBucket = l => {
     const cr = _criadoHojeFn(l);
     const op = l.stage !== 'ganho' &amp;&amp; l.stage !== 'perdido';
-    const ag = op &amp;&amp; _agHojeFn(l) &amp;&amp; !cr;
+    const ag = op &amp;&amp; _agHojeFn(l);
     if(bucket==='agHoje') return ag;
     if(bucket==='criadosHoje') return cr;
     if(bucket==='totalHoje') return cr || ag;
@@ -2557,7 +2564,7 @@ function renderAgenda(d) {
     const p = pracaOf(l);
     const open = l.stage !== 'ganho' &amp;&amp; l.stage !== 'perdido';
     const cr = criadoHojeFn(l);
-    const ag = open &amp;&amp; agHojeFn(l) &amp;&amp; !cr;
+    const ag = open &amp;&amp; agHojeFn(l);
     if(!ag &amp;&amp; !cr) return;
     if(!byPraca[p]) byPraca[p] = {late:0,today:0,tomorrow:0,future:0,total:0,agHoje:0,criadosHoje:0,totalHoje:0,vend:{}};
     const o = byPraca[p];
