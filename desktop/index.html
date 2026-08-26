@@ -7018,7 +7018,11 @@ function toggleApr(){
 }
 
 function currentRows(){
-  const base = baseRows();
+  // Felipe 26/08: com 'So aprovados' ligado a lista parte de apprRows() (data da
+  // APROVACAO, adate) e nao de baseRows() (data de GERACAO). Antes o KPI 'Aprovadas
+  // no risco' dava 9 e a lista 8 no mesmo filtro: o cliente aprovado no dia mas com
+  // proposta gerada em dia anterior entrava no KPI e sumia da lista.
+  const base = aprOnly ? apprRows() : baseRows();
   const q = (el(&quot;f-busca&quot;).value||&quot;&quot;).toLowerCase().trim();
   const fuf = el(&quot;f-uf&quot;).value, fdist = el(&quot;f-dist&quot;).value, ftipo = el(&quot;f-tipo&quot;).value;
   const nStage = Object.keys(stageSel).length;
@@ -7105,6 +7109,17 @@ function antObsCell(t){
   return '<td style=&quot;max-width:280px&quot; title=&quot;'+esc(v)+'&quot;>'+esc(sh)+'</td>';
 }
 
+// Felipe 26/08: com 'So aprovados' ligado a lista conta pela data da APROVACAO,
+// entao pode aparecer proposta gerada em dia anterior ao filtro. Este selo deixa
+// explicito quando a aprovacao caiu em outro dia que nao o da geracao.
+function aprDateHint(x){
+  if(!aprOnly) return '';
+  if(!x.adate || x.adate===x.date) return '';
+  return ' <span class=' + String.fromCharCode(39) + 'pill ok' + String.fromCharCode(39)
+       + ' title=' + String.fromCharCode(39) + 'aprovada em ' + ddmm(x.adate) + String.fromCharCode(39)
+       + '>apr. ' + ddmm(x.adate) + '</span>';
+}
+
 function renderList(){
   const rows = currentRows();
   const body = el(&quot;ant-tbody&quot;);
@@ -7123,12 +7138,12 @@ function renderList(){
         + '<td class=&quot;num&quot;>'+brl(x.bill)+&quot;</td>&quot;
         + '<td class=&quot;num&quot;>'+(x.mwh||0).toLocaleString(&quot;pt-BR&quot;,{minimumFractionDigits:2,maximumFractionDigits:2})+&quot;</td>&quot;
         + &quot;<td>&quot;+esc(stLbl(x.stage))+&quot;</td>&quot;
-        + &quot;<td>&quot;+ddmm(x.date)+&quot;</td>&quot;
+        + &quot;<td>&quot;+ddmm(x.date)+aprDateHint(x)+&quot;</td>&quot;
         + antObsCell(x.obs)
         + &quot;</tr>&quot;;
     }).join(&quot;&quot;);
   }
-  const base = baseRows();
+  const base = aprOnly ? apprRows() : baseRows();
   el(&quot;ant-lista-cnt&quot;).textContent = rows.length + &quot; de &quot; + base.length;
   el(&quot;ant-lista-foot&quot;).textContent = &quot;Mostrando &quot; + rows.length + &quot; proposta(s).&quot;;
 }
