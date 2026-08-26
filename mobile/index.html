@@ -1084,6 +1084,10 @@ function getAcao(x){
   if(x.lost_at && isAprovado(x)) return 'Sem próxima ação';
   if(isAprovado(x)) return '✅ Processo concluído — acompanhar ativação';
   if(isNegado(x)){ const _mot=(x.motivo&&x.motivo.trim())||(x.lost_reason||'').trim(); return _mot ? ('🔍 Motivo da negativa: ' + _mot) : '🔍 Entender motivo da negativa e avaliar reativação'; };
+  // Felipe 26/08: perdido por motivo comercial nao cai em isNegado() e caia no
+  // '📋 Verificar situação' generico do fim da funcao - o card mostrava LEAD PERDIDO
+  // e pedia acao ao mesmo tempo.
+  if(x.lost_at){ const _lm=(x.lost_reason||'').trim(); return _lm ? ('❌ Lead perdido — ' + _lm) : '❌ Lead perdido'; }
   if(isAgDocs(x)){
     if(x.docs==='__OK__') return '✅ Documentos recebidos — aguardando processamento';
     if(x.docs && x.docs.trim()) return '📄 Pendente: ' + x.docs.trim();
@@ -2308,6 +2312,16 @@ function pendEscopo(){
 // O que está pendente neste cliente (pode ser mais de uma coisa ao mesmo tempo).
 function pendDe(x){
   const out = [];
+  // Felipe 26/08: cliente PERDIDO nao e' pendencia - nao ha o que cobrar.
+  // isAgDocs ja filtrava lost_at, mas os ramos 'risco' (obsAnalise) e 'antecipa'
+  // (pendAntecipa) nao olhavam lost_at nenhum: obsAnalise so silencia quem cai em
+  // isNegado(), e isNegado() reconhece apenas motivo com 'analise de risco'/'reprovado'.
+  // Motivo COMERCIAL ('Cliente desistiu', 'Telefone incorreto', 'Cliente possui Energia
+  // Solar') nao era negado, entao o perdido voltava pro card (10 clientes / 3,5 MWh).
+  // Excecao mantida: perda POS-VENDA (troca de titularidade) continua aprovada, e se
+  // tiver Antecipa pendurado ainda tem dinheiro pra buscar.
+  const _apr = (typeof isAprovado==='function') && isAprovado(x);
+  if(x.lost_at && !_apr) return out;
   if(typeof isAgDocs==='function' && isAgDocs(x)){
     const d = (x.docs||'').trim();
     if(d === '__OK__') out.push({k:'docs', ico:'📄', txt:'Documentos recebidos — aguardando processamento', ok:true});
