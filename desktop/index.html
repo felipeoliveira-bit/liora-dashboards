@@ -5091,7 +5091,7 @@ function renderCampanha() {
       const stageLabel = STAGE_LABEL[x.stage] || x.stage;
       tot+=x.mwh;
       html2+=`<tr>
-        <td style=&quot;font-weight:600&quot;>${x.c}</td>
+        <td style=&quot;font-weight:600&quot;>${x.c}${x.sig ? '<div style=&quot;font-size:10px;color:#6D28D9;font-weight:600&quot;>\u270D\uFE0F assinou: '+x.sig+'</div>' : ''}</td>
         <td style=&quot;font-size:12px;color:#666&quot;>${x.s}</td>
         <td style=&quot;font-size:12px;color:#666&quot;><span style=&quot;display:inline-block;width:8px;height:8px;border-radius:50%;background:${col};margin-right:5px;vertical-align:middle&quot;></span>${opLabel}</td>
         <td style=&quot;text-align:right;font-size:11px;color:#888&quot;>${x.city}</td>
@@ -5226,7 +5226,7 @@ function openFunilList(opKey, sellerEnc, bucketKey){
   d.sort((a,b)=>(b.mwh||0)-(a.mwh||0));
   const opLbl = (OP_COLS.find(o=>o.key===opKey)||{}).label || (opKey||'Todas');
   const titWho = seller || opLbl || 'Total';
-  let rows = d.map(x => '<tr><td><strong>'+(x.c||'—')+'</strong></td><td>'+(x.s||'—')+'</td><td class=&quot;num&quot;>'+fmtMwh(x.mwh||0)+'</td><td>'+(x.stage||'—')+'</td><td>'+(x.status||'—')+'</td><td>'+(x.city||'—')+'</td></tr>').join('');
+  let rows = d.map(x => '<tr><td><strong>'+(x.c||'—')+'</strong>'+(x.sig ? '<div style=&quot;font-size:10px;color:#6D28D9;font-weight:600&quot;>\u270D\uFE0F assinou: '+x.sig+'</div>' : '')+'</td><td>'+(x.s||'—')+'</td><td class=&quot;num&quot;>'+fmtMwh(x.mwh||0)+'</td><td>'+(x.stage||'—')+'</td><td>'+(x.status||'—')+'</td><td>'+(x.city||'—')+'</td></tr>').join('');
   if (!rows) rows = '<tr><td colspan=&quot;6&quot; class=&quot;fnld-empty&quot;>Nenhum cliente nesta categoria.</td></tr>';
   const totMwh = d.reduce((a,x)=>a+(x.mwh||0),0);
   const modal = document.getElementById('fn-ld-modal');
@@ -5393,7 +5393,7 @@ function render() {
       const prio = PRIO[acao.prioridade];
       const idleColor = x.idle>=8?'#A32D2D':x.idle>=5?'#854F0B':'#888';
       return `<div class=&quot;row&quot; style=&quot;grid-template-columns:${cols}&quot;>
-        <div><div class=&quot;cname&quot;>${x.c}</div><div style=&quot;font-size:10px;color:#aaa;margin-top:2px&quot;>${x.city}</div></div>
+        <div><div class=&quot;cname&quot;>${x.c}</div>${x.sig ? '<div style=&quot;font-size:10px;color:#6D28D9;margin-top:2px;font-weight:600&quot;>\u270D\uFE0F assinou: '+x.sig+'</div>' : ''}<div style=&quot;font-size:10px;color:#aaa;margin-top:2px&quot;>${x.city}</div></div>
         <div class=&quot;cseller&quot;>${x.s}</div>
         <div style=&quot;font-size:11px;color:#888&quot; title=&quot;${STAGE_DESC[x.stage]||''}&quot;>${STAGE_LABEL[x.stage]||x.stage}</div>
         <div style=&quot;font-size:12px;text-align:right;font-weight:500&quot;>${x.mwh>0?x.mwh.toFixed(2):'—'}</div>
@@ -7040,7 +7040,7 @@ function currentRows(){
     if(ftipo &amp;&amp; x.tipo!==ftipo) return false;
     if(aprOnly){ if((x.risk||'')!=='APPROVED') return false; }
     if(q){
-      const hay = ((x.c||&quot;&quot;)+&quot; &quot;+(x.s||&quot;&quot;)+&quot; &quot;+(x.city||&quot;&quot;)+&quot; &quot;+(x.uf||&quot;&quot;)+&quot; &quot;+(x.dist||&quot;&quot;)).toLowerCase();
+      const hay = ((x.c||&quot;&quot;)+&quot; &quot;+(x.sig||&quot;&quot;)+&quot; &quot;+(x.s||&quot;&quot;)+&quot; &quot;+(x.city||&quot;&quot;)+&quot; &quot;+(x.uf||&quot;&quot;)+&quot; &quot;+(x.dist||&quot;&quot;)).toLowerCase();
       if(hay.indexOf(q)<0) return false;
     }
     return true;
@@ -7094,7 +7094,7 @@ function openKpi(key){
     + '<th class=&quot;num&quot;>Fatura</th><th class=&quot;num&quot;>MWh</th><th>Estágio</th><th>'
     + (dk==='adate' ? 'Aprovado em' : 'Data') + '</th><th>Análise de risco</th></tr></thead><tbody>'
     + rows.map(function(x){
-        return '<tr><td>'+esc(x.c||'—')+'</td><td>'+esc(x.s||'—')+'</td><td>'+pracaBadge(x.praca)+'</td>'
+        return '<tr><td>'+esc(x.c||'—')+(x.sig ? '<div style=&quot;font-size:10px;color:#6D28D9;font-weight:600&quot;>\u270D\uFE0F assinou: '+esc(x.sig)+'</div>' : '')+'</td><td>'+esc(x.s||'—')+'</td><td>'+pracaBadge(x.praca)+'</td>'
           + '<td>'+esc((x.city||'—')+(x.uf?' / '+x.uf:''))+'</td><td>'+esc(x.dist||'—')+'</td>'
           + '<td><span class=&quot;pill '+(x.tipo==='PJ'?'pj':'pf')+'&quot;>'+esc(x.tipo||'-')+'</span></td>'
           + '<td class=&quot;num&quot;>'+brl(x.bill)+'</td>'
@@ -7136,7 +7136,7 @@ function renderList(){
       const tipoCls = x.tipo===&quot;PJ&quot;?&quot;pj&quot;:&quot;pf&quot;;
       const accHtml = x.acc ? '<span class=&quot;pill ok&quot;>aceita</span>' : '<span class=&quot;pill no&quot;>—</span>';
       return &quot;<tr>&quot;
-        + &quot;<td>&quot;+esc(x.c||&quot;—&quot;)+&quot;</td>&quot;
+        + &quot;<td>&quot;+esc(x.c||&quot;—&quot;)+(x.sig ? &quot;<div style='font-size:10px;color:#6D28D9;font-weight:600'>\u270D\uFE0F assinou: &quot;+esc(x.sig)+&quot;</div>&quot; : &quot;&quot;)+&quot;</td>&quot;
         + &quot;<td>&quot;+esc(x.s||&quot;—&quot;)+&quot;</td>&quot;
         + &quot;<td>&quot;+pracaBadge(x.praca)+&quot;</td>&quot;
         + &quot;<td>&quot;+esc((x.city||&quot;—&quot;)+(x.uf?&quot; / &quot;+x.uf:&quot;&quot;))+&quot;</td>&quot;
@@ -7434,7 +7434,7 @@ function render(){
     regs.map(function(r){
       const _b = temBonus(r);
       return '<tr' + (_b ? ' style=&quot;background:#FAF9FF&quot;' : '') + '><td class=&quot;muted&quot;>' + fmtData(r.adate) + '</td>' +
-             '<td>' + (r.c || '—') +
+             '<td>' + (r.c || '—') + (r.sig ? '<div style=&quot;font-size:10px;color:#6D28D9;font-weight:600&quot;>\u270D\uFE0F assinou: '+r.sig+'</div>' : '') +
                (_b ? ' <span style=&quot;display:inline-block;background:#F3F1FF;color:' + MIS_ROXO + ';border-radius:20px;padding:1px 7px;font-size:10px;font-weight:800&quot;>1,5×</span>' : '') + '</td>' +
              '<td>' + (r.s || '—') + '</td>' +
              '<td class=&quot;muted&quot;>' + (MIS_LABEL[r.praca] || r.praca) + '</td>' +

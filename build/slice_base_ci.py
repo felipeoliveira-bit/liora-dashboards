@@ -264,6 +264,61 @@ def apply_risk_real(base, real):
     if nd: print('risco real: %d deal(s) com DATA de aprovacao movida p/ a analise real' % nd)
     return n
 
+# -----------------------------------------------------------------------------
+# QUEM ASSINOU (Felipe 27/08) - `current_client_name` e' o TITULAR PARSEADO DA
+# FATURA, nao quem assinou o contrato. Quando a UC esta no nome de um parente ou
+# do antigo dono, o card mostra uma pessoa e o vendedor procura por outra
+# (Helenita x MAURICIO JOSE BONFIM, Olimpio Filho, 25/08). O signatario vem de
+# `contracts.contract_metadata.client_name` (SIGNER_SQL no mb_export.py).
+# NAO trocamos o titular pelo signatario: o signatario e' DIGITADO pelo vendedor
+# e quase sempre e' pior (typo, so o primeiro nome, apelido: 'Dr Marcelo',
+# 'Rferraz', 'DOIS IRMAOS 71-A'). Gravamos na coluna `signer_name` SO quando e'
+# outra PESSOA -> 0,6% da base (59 de 9.806 deals com contrato em ago/26).
+# Espelha o apply_signer do automacao/slice_base.py: mexeu num, mexe no outro.
+# -----------------------------------------------------------------------------
+SIGNER_COL='signer_name'
+
+def _sig_norm(s):
+    import unicodedata
+    s=unicodedata.normalize('NFKD',(s or '')).encode('ascii','ignore').decode()
+    s=re.sub(r'[^a-z0-9 ]+',' ',s.lower())
+    return re.sub(r'\s+',' ',s).strip()
+
+def mesma_pessoa(titular, signer):
+    # True = mesmo nome escrito de outro jeito (typo, acento, abreviacao, so o
+    # primeiro nome, apelido). False = pessoa de fato diferente.
+    # Calibrado contra os 35 casos divergentes do Field em agosto/26 (35/35).
+    from difflib import SequenceMatcher
+    a,b=_sig_norm(titular),_sig_norm(signer)
+    if not a or not b or a==b: return True
+    sa,sb=a.replace(' ',''),b.replace(' ','')
+    if sa.startswith(sb) or sb.startswith(sa): return True    # truncado / colado
+    ta=[t for t in a.split() if len(t)>=2]
+    tb=[t for t in b.split() if len(t)>=2]
+    if not ta or not tb: return True
+    Sa,Sb=set(ta),set(tb)
+    if Sa<=Sb or Sb<=Sa: return True                          # subconjunto
+    if ta[0] in Sb or tb[0] in Sa: return True                # primeiro nome bate
+    if SequenceMatcher(None,sa,sb).ratio()>=0.82: return True # typo
+    return False
+
+def apply_signer(base, fields, base_path):
+    if SIGNER_COL not in fields: fields.append(SIGNER_COL)
+    for r in base: r[SIGNER_COL]=''
+    p=os.path.join(os.path.dirname(os.path.abspath(base_path)), 'signer.csv')
+    if not os.path.isfile(p): return 0
+    sig={}
+    with open(p, encoding='utf-8-sig') as fh:
+        for r in csv.DictReader(fh):
+            did=(r.get('deal_id') or '').strip(); nome=(r.get('signer_name') or '').strip()
+            if did and nome: sig[did]=nome
+    n=0
+    for r in base:
+        nome=sig.get((r.get('deal_id') or '').strip())
+        if nome and not mesma_pessoa((r.get('current_client_name') or '').strip(), nome):
+            r[SIGNER_COL]=nome; n+=1
+    return n
+
 def main():
     base_path=sys.argv[1]; work=sys.argv[2]
     os.makedirs(work, exist_ok=True)
@@ -289,6 +344,8 @@ def main():
     ncorr=apply_risk_real(base, load_risk_real(base_path))
     if ncorr: print('risco real: %d deal(s) com resultado corrigido vs card818' % ncorr)
     nappr=apply_appr_date(base, load_appr_date(base_path))
+    nsig=apply_signer(base, fields, base_path)
+    print('quem assinou: %d deal(s) assinado(s) por outra pessoa' % nsig)
     print('data da aprovacao no risco: %d deal(s) recarimbado(s) (Antecipa pago depois)' % nappr)
     fs=[r for r in base if r['internal_sales_classification']=='FS_Liora']
     # Operacao de campo: deals de Field Sales as vezes vem com classificacao

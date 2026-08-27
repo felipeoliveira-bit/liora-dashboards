@@ -479,6 +479,7 @@ def mk_deal(r):
     _prod_ov = PRODUCT_OVERRIDE.get((r.get('deal_id') or '').strip(), {})  # venda Antecipa registrada com produto errado (Felipe 18/08)
     return {
       'c': r['current_client_name'],
+      'sig': (r.get('signer_name') or '').strip(),  # quem assinou, so quando e' outra pessoa (Felipe 27/08)
       's': seller_of(r['sales_person_email'], r['current_client_name']),
       'op': op_of(r['sales_person_email'], r['current_client_name']),
       'risk': risk,
@@ -529,6 +530,7 @@ for r in prop:
       'bill_cost': round(fnum(r['current_total_bill_cost (R$)']), 2),  # R$ CRU (sem /1000!)
       'consumption_mwh': mwh_of(r['current_client_name'], r['current_consumption_filled'], r['deal_id']),
       'current_client_name': r['current_client_name'],
+      'sig': (r.get('signer_name') or '').strip(),
       'current_client_state': r['current_client_state'],
       'deal_stage': r['deal_stage'],
       'accepted_proposal': (r['accepted_proposal'] or '').strip().lower() == 'true',
@@ -621,6 +623,7 @@ if f_ant:
         _adate = FORCE_APPROVED.get(_did) or appr_date_of(_did, pdate(r.get('latest_risk_analysis_created_at'))) or (d or '')
         ANTECIPA.append({
           'c': _cli,
+          'sig': (r.get('signer_name') or '').strip(),
           's': seller_of(_em, _cli),
           'praca': _ANT_PRACA_KEY.get(praca_of(_em, _cli), 'Outras'),
           'city': (r.get('current_client_city') or '').strip(),
@@ -665,6 +668,7 @@ io.open('new_ANTECIPA.json','w').write(json.dumps(ANTECIPA, ensure_ascii=False))
 # e hoje"), a vigencia oficial do material e 17-23/08 -> Felipe optou por 13/08.
 MISSAO_INI, MISSAO_FIM = '2026-08-24', '2026-08-30'
 MISSAO = [{'s':x['s'], 'praca':x['praca'], 'mwh':x['mwh'], 'c':x['c'], 'tipo':x.get('tipo',''),
+           'sig':x.get('sig',''),
            'adate':(x.get('adate') or x.get('date') or '')}
           for x in ANTECIPA
           if x.get('risk')=='APPROVED' and MISSAO_INI <= (x.get('adate') or x.get('date') or '') <= MISSAO_FIM]

@@ -166,6 +166,30 @@ SELECT deal_id, uc FROM joined WHERE rn2 = 1
 # em 15/08: ultima proposta 14/08 18:48 UTC), TODA proposta criada depois some do card818
 # - inclusive aprovados do dia. Este recorte traz, direto do BRONZE, os deals que ainda
 # nao chegaram na gold. Com o dbt em dia ele volta vazio, entao pode ficar sempre ligado.
+# QUEM ASSINOU (Felipe 27/08): `current_client_name` do card818 e' o TITULAR
+# PARSEADO DA FATURA. Quando a UC esta no nome de um parente/antigo dono, o card
+# mostra uma pessoa e o vendedor procura por outra (Helenita x MAURICIO JOSE
+# BONFIM, 25/08). O nome de quem assinou o contrato vive no contract_metadata.
+# O slice grava so' quando e' outra PESSOA (ver mesma_pessoa no slice_base_ci.py).
+SIGNER_SQL = r"""
+WITH ct AS (
+  SELECT distributed_generation_proposal_id AS pid,
+         JSON_VALUE(contract_metadata,'$.client_name') AS signer_name
+  FROM (
+    SELECT distributed_generation_proposal_id, contract_metadata, created_at, deleted_at,
+           ROW_NUMBER() OVER (PARTITION BY distributed_generation_proposal_id ORDER BY created_at DESC) rn
+    FROM `liora_bronze.contracts`) WHERE rn=1 AND deleted_at IS NULL),
+dgp AS (
+  SELECT id, deal_id FROM (
+    SELECT id, deal_id, deleted_at,
+           ROW_NUMBER() OVER (PARTITION BY id ORDER BY _ingested_at DESC) rn
+    FROM `liora_bronze.distributed_generation_proposals`) WHERE rn=1 AND deleted_at IS NULL)
+SELECT dgp.deal_id, ANY_VALUE(ct.signer_name) AS signer_name
+FROM ct JOIN dgp ON dgp.id = ct.pid
+WHERE ct.signer_name IS NOT NULL AND TRIM(ct.signer_name) != ''
+GROUP BY dgp.deal_id
+"""
+
 BRONZE_GAP_SQL = r"""
 WITH cutoff AS (
   SELECT TIMESTAMP(MAX(created_at)) t FROM `liora_silver.distributed_generation_proposals`
@@ -471,6 +495,15 @@ def main():
         try: os.remove(os.path.join(OUT, 'risk_real.csv'))
         except Exception: pass
         print('aviso: risk_real falhou (segue sem ele): %s' % e, file=sys.stderr)
+    # quem assinou o contrato (opcional) - nome do signatario por deal, p/ o card
+    # mostrar "assinou: X" quando o titular da fatura e' outra pessoa (Felipe 27/08).
+    try:
+        sg = export_sql_csv(DATABASE_ID, SIGNER_SQL, os.path.join(OUT, 'signer.csv'))
+        print('signer.csv OK: %d linhas' % sg)
+    except Exception as e:
+        try: os.remove(os.path.join(OUT, 'signer.csv'))
+        except Exception: pass
+        print('aviso: signer falhou (cards seguem so com o titular): %s' % e, file=sys.stderr)
     # bronze_gap (opcional) - deals que ainda nao chegaram na gold (dbt atrasado).
     try:
         bg = export_sql_csv(DATABASE_ID, BRONZE_GAP_SQL, os.path.join(OUT, 'bronze_gap.csv'))
