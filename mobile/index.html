@@ -2337,6 +2337,15 @@ function pendDe(x){
   // Excecao mantida: perda POS-VENDA (troca de titularidade) continua aprovada, e se
   // tiver Antecipa pendurado ainda tem dinheiro pra buscar.
   if(typeof isPerdido==='function' && isPerdido(x)) return out;
+  // ⚠️ Felipe 26/08: cliente APROVADO nao e' pendencia de venda. Sobra so o ramo
+  // 'antecipa' (o pagamento ainda tem dinheiro a buscar); os ramos 'docs' e 'risco'
+  // saem, porque a obs de risco dele e' HISTORICA (ja foi aprovado) e poluia o chip
+  // Analise com 16 cards ja resolvidos ("1 fatura vencida ref JUL/26" em quem passou).
+  // Quem nao tem Antecipa pendurado sai da aba inteira.
+  if(typeof isAprovado==='function' && isAprovado(x)){
+    const _a = (typeof pendAntecipa==='function') ? pendAntecipa(x) : '';
+    return _a ? [{k:'antecipa', ico:'⏳', txt:_a}] : out;
+  }
   if(typeof isAgDocs==='function' && isAgDocs(x)){
     const d = (x.docs||'').trim();
     if(d === '__OK__') out.push({k:'docs', ico:'📄', txt:'Documentos recebidos — aguardando processamento', ok:true});
@@ -2475,10 +2484,14 @@ function renderPendencias(){
     return;
   }
   const base  = pendBase();
+  // 'Todas' e o header contam SO o nao-aprovado, pra bater com o card do Field
+  // ("MWh travados"). O chip Antecipa segue mostrando o aprovado com pagamento
+  // pendurado - la o rotulo e' Antecipa, nao pendencia de venda.
+  const naoApr = base.filter(function(r){ return !(typeof isAprovado==='function' && isAprovado(r.x)); });
   const nDocs = base.filter(function(r){ return r.pend.some(function(p){ return p.k==='docs'; }); }).length;
   const nRisk = base.filter(function(r){ return r.pend.some(function(p){ return p.k==='risco'; }); }).length;
   const nAnt  = base.filter(function(r){ return r.pend.some(function(p){ return p.k==='antecipa'; }); }).length;
-  const rows  = pendFiltro==='all' ? base : base.filter(function(r){ return r.pend.some(function(p){ return p.k===pendFiltro; }); })
+  const rows  = pendFiltro==='all' ? naoApr : base.filter(function(r){ return r.pend.some(function(p){ return p.k===pendFiltro; }); })
                   .map(function(r){ return {x:r.x, pend:r.pend.filter(function(p){ return p.k===pendFiltro; })}; });
   const mwh   = rows.reduce(function(a,r){ return a + (r.x.mwh||0); }, 0);
   const alvo  = e.tipo==='self' ? 'Seus clientes'
@@ -2489,11 +2502,11 @@ function renderPendencias(){
     + '<div class="camp-header" style="background:linear-gradient(135deg,#F59E0B 0%,#B45309 100%)">'
     + '<div class="camp-title">Pendências · ' + escapeHtml(alvo) + '</div>'
     + '<div class="camp-period">' + rows.length + ' cliente' + (rows.length===1?'':'s') + '</div>'
-    + '<div class="camp-sub">' + mwh.toFixed(1) + ' MWh travados · toque no cliente pra ver o detalhe</div>'
+    + '<div class="camp-sub">' + mwh.toFixed(1) + (pendFiltro==='antecipa' ? ' MWh com Antecipa a receber' : ' MWh travados') + ' · toque no cliente pra ver o detalhe</div>'
     + '</div>';
 
   h += '<div style="display:flex;gap:6px;margin-bottom:10px">'
-    + pendChip('all','📋','Todas', base.length, pendFiltro==='all')
+    + pendChip('all','📋','Todas', naoApr.length, pendFiltro==='all')
     + pendChip('docs','📄','Docs', nDocs, pendFiltro==='docs')
     + pendChip('risco','🔎','Análise', nRisk, pendFiltro==='risco')
     + pendChip('antecipa','⏳','Antecipa', nAnt, pendFiltro==='antecipa')
