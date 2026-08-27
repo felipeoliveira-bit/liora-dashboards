@@ -2413,10 +2413,22 @@ function pendCard(r){
 
 // Numeros do card do Field: pendencias de TODAS as pracas (o card sempre foi global),
 // independente do filtro/escopo escolhido dentro da aba Pendencias.
+// ⚠️ Felipe 26/08: o card diz "MWh travados", entao NAO pode contar quem JA esta
+// aprovado. Desde o v2.174 o aprovado com Antecipa pendurado continua na ABA (tem
+// acao a fazer, e certo), mas ele vazava pro KPI: 21 dos 71 clientes / 21,2 dos
+// 52,6 MWh eram GD ja aprovada, contada ao mesmo tempo no hero "Aprovado · Agosto"
+// e como "travada". Um unico cliente (11,27 MWh, GD aprovada, so o Antecipa
+// pendente) era 21% do card. O KPI passa a contar SO o nao-aprovado; a aba
+// Pendencias (pendBase/pendDe) segue intacta e continua listando os aprovados
+// com Antecipa pendurado. NAO reaproveite _pendTodas() para a aba.
 function _pendTodas(){
   const out = [];
   try {
-    rawData.forEach(function(x){ const p = pendDe(x); if(p.length) out.push({x:x, pend:p}); });
+    rawData.forEach(function(x){
+      if(typeof isAprovado==='function' && isAprovado(x)) return;   // aprovado nao esta travado
+      const p = pendDe(x);
+      if(p.length) out.push({x:x, pend:p});
+    });
   } catch(e){ console.warn('pendencias (resumo):', e && e.message); return []; }
   return out;
 }
