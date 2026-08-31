@@ -638,7 +638,7 @@ function renderOpCards() {
       metaMes = METAS_SAFRA[praca] || op.meta;
       metaToDate = safraToDate(praca);
     }
-    const pct = metaToDate>0 ? Math.min((mwh/metaToDate)*100, 100) : 0;
+    const pct = metaMes>0 ? (mwh/metaMes)*100 : 0;
     const pc = pct>=100 ? '#1D9E75' : pct>=90 ? '#E0A800' : '#e54a4a';
     return `<div class=&quot;op-card&quot;>
       <div class=&quot;op-name&quot;>${op.label}</div>
