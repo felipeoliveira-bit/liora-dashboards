@@ -459,6 +459,53 @@ def apc_ok(r):
         return False
     return True
 
+# ---- CALIBRACAO ANTECIPA: risco E credito (Felipe 01/09/2026) -------------
+# Ate 31/08 bastava UMA das duas analises para o Antecipa contar como aprovado
+# (credito 'approved' sozinho, ou risco APPROVED sozinho). Isso deixava passar
+# tres casos errados, todos conferidos na gold antes da mudanca:
+#   - SONIA REGINA SPACASSASSI (27/07) risco DENIED + credito approved -> contava
+#   - Larissa Cecilia Sampaio (16/07) risco APPROVED + credito denied  -> contava
+#   - LUIS CLAUDIO SANTOS MARQUES ME e JOAO DA SILVA (30/06) risco APPROVED
+#     sem NENHUMA analise de credito -> contavam (15,82 MWh)
+# Regra nova (decisao do Felipe 01/09, sem excecao para credito ausente):
+#   Antecipa so e' aprovado quando risco in (APPROVED, APPROVED_PENDING_CREDIT)
+#   E credito == 'approved'. Etapa de credito rejeitada/pagamento rejeitado
+#   continua barrando (era o que o apc_ok ja fazia).
+# NAO afeta GD: o gate so roda quando o produto e' ANTECIPA.
+# A excecao continua sendo o FORCE_APPROVED manual, aplicado depois.
+# Agosto/26 fecha igual nas duas regras: 74 deals / 69,385 MWh.
+ANT_RISK_OK = {'APPROVED', 'APPROVED_PENDING_CREDIT'}
+# UNICA excecao ao gate (Felipe 01/09): deal que JA MIGROU nao e' bloqueado. Venda
+# entregue e' venda entregue, mesmo sem registro de analise de credito na base.
+# Caso que motivou: LUIS CLAUDIO SANTOS MARQUES ME (Lucas Danielian, 30/06, 15,402
+# MWh) - ACTIVE MEMBER + ops APROVADO + risco APPROVED, zero analise de credito.
+ANT_MIGRADO_STAGES = {'ACTIVE_MEMBER', 'ACTIVE MEMBER', 'TITULARIDADE_ONGOING',
+                      'TITULARIDADE ONGOING', 'REGISTERING_DG'}
+
+def ant_migrado(r):
+    """Deal que ja chegou na titularidade/migracao: o gate do Antecipa nao se aplica."""
+    if (r.get('deal_stage') or '').strip().upper() in ANT_MIGRADO_STAGES:
+        return True
+    return 'aprovado' in (r.get('ops_tt_status') or '').strip().lower()
+
+def is_antecipa(r):
+    """Produto Antecipa (respeita o PRODUCT_OVERRIDE de venda registrada errado)."""
+    _ov = PRODUCT_OVERRIDE.get((r.get('deal_id') or '').strip(), {})
+    prod = _ov.get('produto') or (r.get('product_name') or '')
+    return 'ANTECIPA' in prod.strip().upper()
+
+def ant_ok(r, credito_ok=None):
+    """True quando o Antecipa esta aprovado nas DUAS analises (risco + credito)."""
+    if (r.get('latest_risk_analysis_result') or '').strip() not in ANT_RISK_OK:
+        return False
+    if credito_ok is None:
+        credito_ok = (r.get('latest_credit_analysis_result') or '').strip().lower() == 'approved'
+    if not credito_ok:
+        return False
+    if (r.get('deal_credit_stage') or '').strip() in CREDIT_STAGE_NEG:
+        return False
+    return True
+
 
 # FORCE_NOTE: nota que aparece no card do cliente forcado (Felipe 01/09: "considerado
 # no card, mas cliente reprovado e o motivo"). Prefixa o campo 'motivo' do rawData —
@@ -483,8 +530,16 @@ def mk_deal(r):
     _apc = apc_ok(r)  # Felipe 18/08: risco aprovado pendente de crédito já conta
     if r['deal_stage']=='BGC_PARCEIRO' and not _apc: risk=''  # em validação Antecipa: não conta como aprovado
     credit = (r.get('latest_credit_analysis_result') or '').strip().lower()  # Antecipa
-    credito_ok = (credit == 'approved')
+    _ov0 = PRODUCT_OVERRIDE.get((r.get('deal_id') or '').strip(), {})  # venda Antecipa registrada com produto errado
+    credito_ok = _ov0.get('credito_ok', credit == 'approved')
     if r['deal_id'] in FORCE_DENIED: _apc=False; credito_ok=False  # reprovado manual (Felipe)
+    # Felipe 01/09: Antecipa so conta com as DUAS analises aprovadas (ver ant_ok).
+    _ant_bloq = (is_antecipa(r) and not ant_ok(r, credito_ok)
+                 and not ant_migrado(r)  # migrado nunca e' bloqueado
+                 and r['deal_id'] not in FORCE_APPROVED)
+    if _ant_bloq:
+        _apc = False; credito_ok = False
+        if risk == 'APPROVED': risk = ''  # risco aprovado sem credito approved nao conta
     if _apc: risk='APPROVED'  # Felipe 18/08: APPROVED_PENDING_CREDIT = aprovado (falta só o pagamento)
     if credito_ok: risk='APPROVED'  # Felipe 06/08: crédito aprovado (Antecipa) conta como aprovado no Field
     if r['deal_id'] in FORCE_APPROVED: risk='APPROVED'  # aprovado manual
@@ -513,7 +568,8 @@ def mk_deal(r):
       'idle': int(fnum(r['idle_days'])),
       'city': r['current_client_city'],
       'produto': _prod_ov.get('produto', (r.get('product_name') or '').strip()),
-      'credito_ok': _prod_ov.get('credito_ok', credito_ok),  # Antecipa: análise de crédito aprovada (Felipe 06/08)
+      'credito_ok': (False if _ant_bloq else _prod_ov.get('credito_ok', credito_ok)),  # Antecipa: análise de crédito aprovada (Felipe 06/08)
+      'ant_bloq': bool(_ant_bloq),  # Antecipa sem as DUAS análises aprovadas: nunca conta (Felipe 01/09)
       'apc': bool(_apc),  # aprovado no risco, pendente de crédito/pagamento (Felipe 18/08)
       'fapr': bool(forced),  # aprovado manual (FORCE_APPROVED) - alimenta a quebra do card
       'rapr': (r['latest_risk_analysis_result'] or '').strip()=='APPROVED',  # risco APPROVED na base (quebra do card)
@@ -666,8 +722,8 @@ if f_ant:
           'risk': ('APPROVED' if (_did in ANT_APPROVE or _did in FORCE_APPROVED)
                    else ('PERDIDO' if ((r.get('deal_lost_at') or '').strip()
                                        and (r.get('deal_lost_reason') or '').strip().lower() in LOST_DESFAZ)
-                   else ('APPROVED' if (apc_ok(r) or (r.get('latest_credit_analysis_result') or '').strip().lower()=='approved')
-                         else (r.get('latest_risk_analysis_result') or '').strip()))),  # apc_ok: Felipe 18/08
+                   else ('APPROVED' if ant_ok(r)
+                         else (r.get('latest_risk_analysis_result') or '').strip()))),  # Felipe 01/09: risco E crédito (era apc_ok OU crédito)
           'credito': ('approved' if _did in ANT_APPROVE else (r.get('latest_credit_analysis_result') or '').strip()),
           'tipo': _ant_tipo(r.get('product_name')),
           # obs = observacao da analise de risco (Felipe 21/08): da visibilidade

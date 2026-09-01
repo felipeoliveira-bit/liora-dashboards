@@ -184,6 +184,43 @@ CONSUMPTION_OVERRIDE_BY_ID = {  # deal_id -> MWh; export do card818 congelou (mo
 PRODUCT_OVERRIDE = {
  '02f320f6-e275-449f-b385-aaec0dfcc541': {'produto':'LIORA_ANTECIPA_PJ','credito_ok':True},  # MARCELO OLIVEIRA VENERANDO (Odirley/CE, CNPJ 15329657000174, 2.62 MWh, aprovado 17/08) - vendido como Antecipa, base traz LIORA_F_ (Felipe 18/08)
 }
+
+# ---- CALIBRACAO ANTECIPA: risco E credito (Felipe 01/09/2026) -------------
+# Espelha o process_lideranca.py (os 2 dashboards tem de bater). Ate 31/08
+# bastava UMA das duas analises; agora o Antecipa so conta como aprovado com
+# risco in (APPROVED, APPROVED_PENDING_CREDIT) E credito == 'approved'.
+# Sem excecao para credito ausente - a excecao e' o FORCE_APPROVED manual.
+# NAO afeta GD: o gate so roda quando o produto e' ANTECIPA.
+ANT_RISK_OK = {'APPROVED', 'APPROVED_PENDING_CREDIT'}
+# UNICA excecao ao gate (Felipe 01/09): deal que JA MIGROU nao e' bloqueado.
+# Caso: LUIS CLAUDIO SANTOS MARQUES ME (30/06, 15,402 MWh) - ACTIVE MEMBER +
+# ops APROVADO + risco APPROVED, zero analise de credito na base.
+ANT_MIGRADO_STAGES = {'ACTIVE_MEMBER', 'ACTIVE MEMBER', 'TITULARIDADE_ONGOING',
+                      'TITULARIDADE ONGOING', 'REGISTERING_DG'}
+
+def ant_migrado(r):
+    """Deal que ja chegou na titularidade/migracao: o gate do Antecipa nao se aplica."""
+    if (r.get('deal_stage') or '').strip().upper() in ANT_MIGRADO_STAGES:
+        return True
+    return 'aprovado' in (r.get('ops_tt_status') or '').strip().lower()
+
+def is_antecipa(r):
+    """Produto Antecipa (respeita o PRODUCT_OVERRIDE de venda registrada errado)."""
+    _ov = PRODUCT_OVERRIDE.get((r.get('deal_id') or '').strip(), {})
+    prod = _ov.get('produto') or (r.get('product_name') or '')
+    return 'ANTECIPA' in prod.strip().upper()
+
+def ant_ok(r, credito_ok=None):
+    """True quando o Antecipa esta aprovado nas DUAS analises (risco + credito)."""
+    if (r.get('latest_risk_analysis_result') or '').strip() not in ANT_RISK_OK:
+        return False
+    if credito_ok is None:
+        credito_ok = (r.get('latest_credit_analysis_result') or '').strip().lower() == 'approved'
+    if not credito_ok:
+        return False
+    if (r.get('deal_credit_stage') or '').strip() in CREDIT_STAGE_NEG:
+        return False
+    return True
 CONSUMPTION_OVERRIDE = {  # cliente (upper/strip) -> MWh; temp ate base corrigir
  'FRANCISCO ALDECI DE QUEIROZ FERNANDES': 5.86,  # base mostra 0.59 (Felipe 03/07)
  'GABRIEL LUCHIARI ALBERTO': 0.567,  # base mostra 0.13; fatura R$526/615 SP CPFL (Felipe 08/07)
@@ -415,14 +452,17 @@ def build_rawData(deals_path, ag_path, prop_path=None, docs_map=None, uc_map=Non
         _risk = (r['latest_risk_analysis_result'] or '').strip()
         _status = (r.get('ops_tt_status') or '').lower()
         _credit = (r.get('latest_credit_analysis_result') or '').strip().lower()  # Antecipa
-        credito_ok = (_credit == 'approved')  # Felipe 06/08: crédito aprovado conta como aprovado
         _prod_ov = PRODUCT_OVERRIDE.get(did, {})  # venda Antecipa registrada com produto errado (Felipe 18/08)
+        credito_ok = _prod_ov.get('credito_ok', _credit == 'approved')  # Felipe 06/08: crédito aprovado conta como aprovado
         # Alinha ao desktop (definição oficial isAprovado): conta como aprovado se risco
         # APPROVED, OU status "aprovado", OU stage REQUEST_TITULARIDADE (fallback p/ deal
         # que avançou sem risco APPROVED). Nunca conta DENIED nem BGC_PARCEIRO (validação
         # Antecipa, ainda não aprovado) — EXCETO quando o crédito do Antecipa já foi aprovado.
         _apc = apc_ok(r)  # Felipe 18/08: APPROVED_PENDING_CREDIT = aprovado (falta só o pagamento)
         if did in FORCE_DENIED: _apc=False; credito_ok=False; _risk='DENIED'  # reprovado manual (Felipe)
+        # Felipe 01/09: Antecipa so conta com as DUAS analises aprovadas (ver ant_ok).
+        _ant_bloq = is_antecipa(r) and not ant_ok(r, credito_ok) and not ant_migrado(r) and not forced
+        if _ant_bloq: _apc=False; credito_ok=False
         _reached = (_risk=='APPROVED') or _apc or ('aprovado' in _status) or (r['deal_stage']=='REQUEST_TITULARIDADE')
         # Felipe 25/08: PERDIDO nunca conta como aprovado, em qualquer estagio. Antes o
         # credito_ok e o _apc passavam na frente do teste de perdido e cliente que
@@ -432,7 +472,7 @@ def build_rawData(deals_path, ag_path, prop_path=None, docs_map=None, uc_map=Non
         _lost = (bool((r['deal_lost_at'] or '').strip())
                  and (r.get('deal_lost_reason') or '').strip().lower() in LOST_DESFAZ
                  and (cli or '').strip().upper() not in LOST_IGNORE)
-        approved = forced or (not _lost and (credito_ok or _apc or (_reached and _risk!='DENIED' and r['deal_stage']!='BGC_PARCEIRO')))
+        approved = forced or (not _lost and not _ant_bloq and (credito_ok or _apc or (_reached and _risk!='DENIED' and r['deal_stage']!='BGC_PARCEIRO')))
         # data do risco: o mapa RISK_APPR_DATE (aprovacao no risco) manda na analise
         # mais nova, que no Antecipa e' a do pagamento do credito (Felipe 25/08)
         _rdt = pdate(appr_date_of(did, iso(pdate(r['latest_risk_analysis_created_at'])), approved))
@@ -449,7 +489,7 @@ def build_rawData(deals_path, ag_path, prop_path=None, docs_map=None, uc_map=Non
             'city':r['current_client_city'],'state':r['current_client_state'],
             'dist':DIST_MAP.get(r['distributor_short_name'], r['distributor_short_name']),
             'produto':_prod_ov.get('produto', (r.get('product_name') or '').strip()),
-            'credito_ok':_prod_ov.get('credito_ok', credito_ok),'credito':credit_pt(r.get('deal_credit_stage')),'apc':bool(_apc),'fapr':bool(forced),'rapr':(_risk=='APPROVED'),
+            'credito_ok':(False if _ant_bloq else credito_ok),'ant_bloq':bool(_ant_bloq),'credito':credit_pt(r.get('deal_credit_stage')),'apc':bool(_apc),'fapr':bool(forced),'rapr':(_risk=='APPROVED'),
             'deal_id':did,'uc':uc_map.get(did,''),'tel':r['client_phone_number'],'cnpj':r['current_client_cnpj'],'cpf':r['current_client_cpf'],
             'fatura':pfloat(r['current_total_bill_cost (R$)']),'semana':semana(basis),
             'lost_at':('' if (forced or (cli or '').strip().upper() in LOST_IGNORE) else r['deal_lost_at']),'lost_reason':('' if (forced or (cli or '').strip().upper() in LOST_IGNORE) else r['deal_lost_reason']),

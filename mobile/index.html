@@ -982,6 +982,7 @@ function isCoelba(x){ return distType(x) === 'coelba'; }
 // A data de aprovação (p/ mês/campanha) é essa mesma coluna. CPFL/Enel ainda em
 // proposta não têm essa coluna preenchida → não contam como aprovado (correto).
 function isAprovado(x){
+  if(x.ant_bloq) return false;/*Felipe 01/09: Antecipa so conta com risco E credito aprovados*/ 
   if(x.credito_ok) return true; // Antecipa: crédito aprovado conta como aprovado (Felipe 06/08)
   if(x.stage === 'BGC_PARCEIRO') return false; // em validação Antecipa
   return !!x.aprov_date && (!x.lost_at || x.stage !== 'BACKGROUND_CHECKING' || (x.lost_reason||'').trim().toLowerCase() === 'troca de titularidade');
