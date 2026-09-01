@@ -105,3 +105,4 @@ print('   mobile carimbado ->', STAMP_TS)
 
 print('BUILD OK @ %s (data %s)' % (TS, STAMP_TS))
 _dp=DESK; _dh=open(_dp,encoding='utf-8').read(); _dh=_dh.replace("const pct = metaToDate>0 ? Math.min((mwh/metaToDate)*100, 100) : 0;","const pct = metaMes>0 ? (mwh/metaMes)*100 : 0;"); open(_dp,'w',encoding='utf-8').write(_dh); print('patch op-card aplicado')
+_mp=MOB; _mh=open(_mp,encoding='utf-8').read(); _mh=_mh.replace(">ver comprovante ", ">ver comprovante (UC ${escapeHtml(String(p.uc||''))}) "); open(_mp,'w',encoding='utf-8').write(_mh); print('patch comprovante-uc aplicado')
