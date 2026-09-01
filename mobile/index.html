@@ -2072,14 +2072,14 @@ function isExTime_(n){ return EX_TIME.indexOf(n) !== -1; }
 function isOculto_(n){ return OCULTOS_TIME.indexOf(n) !== -1; }
 const CAMP_CFG = {
   semana: { key:'semana', btn:'MWh', title:'Campanha da Semana',
-    ini:'2026-08-24', end:'2026-08-31', period:'24 a 31/08/2026 \u00b7 23h59 \u00b7 pgto 01/09',
-    desc:'Remunera\u00e7\u00e3o vari\u00e1vel <b>individual</b> pelos MWh <b>aprovados</b> no per\u00edodo de 24/08 a 31/08. Pagamento no dia 01/09.',
+    ini:'2026-09-01', end:'2026-09-07', period:'01 a 07/09/2026 \u00b7 23h59 \u00b7 pgto 09/09',
+    desc:'Remunera\u00e7\u00e3o vari\u00e1vel <b>individual</b> pelos MWh <b>aprovados</b> no per\u00edodo de 01/09 a 07/09. Pagamento no dia 09/09. <b>Pr\u00e9-requisito:</b> 1 venda de Antecipa aprovada na semana.',
     metric:'mwh', unit:'MWh camp.', tierUnit:'MWh', totalWord:'Total acumulado',
     antecipaBonus:1.5,
     tiers:[ {v:15,label:'R$ 2.500',tier:3},{v:8,label:'R$ 1.500',tier:2},{v:5,label:'R$ 750',tier:1} ] },
   antecipa: { key:'antecipa', btn:'\u26a1 Antecipa', title:'\u26a1 Bateu Levou Antecipa',
-    ini:'2026-08-24', end:'2026-08-31', period:'24 a 31/08/2026 \u00b7 23h59 \u00b7 pgto 01/09',
-    desc:'Campanha rel\u00e2mpago <b>individual</b> por <b>clientes com produto Antecipa vigente</b> (aprovado) no per\u00edodo de 24/08 a 31/08. Pagamento no dia 01/09.',
+    ini:'2026-09-01', end:'2026-09-07', period:'01 a 07/09/2026 \u00b7 23h59 \u00b7 pgto 09/09',
+    desc:'Campanha rel\u00e2mpago <b>individual</b> por <b>clientes com produto Antecipa vigente</b> (aprovado) no per\u00edodo de 01/09 a 07/09. Pagamento no dia 09/09.',
     metric:'count', unit:'antecipa', tierUnit:'clientes', totalWord:'Total',
     tiers:[ {v:10,label:'R$ 750',tier:3},{v:8,label:'R$ 500',tier:2},{v:5,label:'R$ 250',tier:1} ] }
 };
