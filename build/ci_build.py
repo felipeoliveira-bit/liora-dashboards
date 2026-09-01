@@ -53,7 +53,7 @@ def _min_bytes(path):
     if not os.path.isfile(path):
         return 0
     base = os.path.getsize(path)
-    factor = 0.25 if NOW.day <= 5 else 0.9
+    factor = 0.06 if NOW.day <= 5 else 0.9
     return int(base * factor)
 
 # 0) limpa work
