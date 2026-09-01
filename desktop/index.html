@@ -7284,7 +7284,7 @@ else initEvents();
       <div class=&quot;sub&quot;>MWh aprovados em clientes Antecipa · soma do time · quanto mais o time aprova, mais o <b>líder</b> ganha</div>
     </div>
     <div class=&quot;hd-right&quot;>
-      <span class=&quot;pill&quot; id=&quot;pill-prazo&quot;>24/08 a 30/08</span>
+      <span class=&quot;pill&quot; id=&quot;pill-prazo&quot;>24/08 a 31/08</span>
       <span class=&quot;pill alt&quot;>Pagamento 01/09</span>
       <span class=&quot;pill ghost&quot; id=&quot;pill-restam&quot;></span>
     </div>
@@ -7293,7 +7293,7 @@ else initEvents();
   <div class=&quot;tiers&quot; id=&quot;tiers&quot;></div>
 
   <div style=&quot;background:#F3F1FF;border:1px solid #D9D4FF;border-radius:14px;padding:12px 16px;margin-bottom:18px;display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap&quot;>
-    <div style=&quot;font-size:13.5px;font-weight:800;color:#534AB7&quot;>⚡ Cliente aprovado de 24 a 30/08 vale 1,5×</div>
+    <div style=&quot;font-size:13.5px;font-weight:800;color:#534AB7&quot;>⚡ Cliente aprovado de 24 a 31/08 vale 1,5×</div>
     <div style=&quot;font-size:12px;color:#4A4A4A&quot;>Cliente de 2 MWh conta como <b style=&quot;color:#534AB7&quot;>3 MWh</b> pro time · vale para todo aprovado da semana</div>
     <div style=&quot;font-size:11.5px;color:#8a8a9e&quot;><span style=&quot;color:#0201F3;font-weight:700&quot;>azul</span> = MWh normal · <span style=&quot;color:#534AB7;font-weight:700&quot;>roxo</span> = bônus</div>
   </div>
@@ -7309,8 +7309,8 @@ else initEvents();
   <div class=&quot;card&quot;><div id=&quot;lista&quot;></div></div>
 
   <div class=&quot;foot&quot;>
-    Todo aprovado de <b>24 a 30/08</b> conta <b>1,5×</b> o MWh.
-    Conta: cliente <b>Antecipa</b> do Field Sales com <b>análise aprovada</b> (risco ou crédito) entre 24/08 e 30/08, pela data da aprovação.<br>
+    Todo aprovado de <b>24 a 31/08</b> conta <b>1,5×</b> o MWh.
+    Conta: cliente <b>Antecipa</b> do Field Sales com <b>análise aprovada</b> (risco ou crédito) entre 24/08 e 31/08, pela data da aprovação.<br>
     Quem recebe é o <b>líder</b>, na remuneração variável de 01/09, pelo resultado do time.<br>Pré-requisito: <b>1 venda de Antecipa por vendedor</b> do time — sem isso o prêmio não é liberado, por maior que seja o MWh. O líder não entra nessa conta (mas o que ele vender soma no MWh do time).
   </div>
 </div>
@@ -7325,10 +7325,10 @@ const MISSAO_ROSTER = [[&quot;CE&quot;,&quot;Neilon Nascimento&quot;],[&quot;CE&
 
 // ===================== config da campanha =====================
 const MIS_INI = '2026-08-24';
-const MIS_FIM = '2026-08-30';
+const MIS_FIM = '2026-08-31';
 const MIS_TIERS = [{mwh:5, premio:750}, {mwh:8, premio:1500}, {mwh:15, premio:3000}];
 const MIS_MAX = 15;
-// Felipe 24/08: campanha recalibrada p/ 24-30/08 (mesmas regras). A janela toda
+// Felipe 24/08: campanha recalibrada p/ 24-30/08; 01/09: esticada ate 31/08. A janela toda
 // vale 1,5x -- nao existe periodo de largada nesta semana.
 const MIS_BONUS_INI = '2026-08-24';
 const MIS_BONUS = 1.5;
