@@ -13,7 +13,7 @@ try:
     TODAY = datetime.datetime.now(ZoneInfo('America/Sao_Paulo')).date()
 except Exception:
     TODAY = datetime.date.today()
-
+TODAY = (lambda p: min(TODAY, datetime.date(TODAY.year,int(open(p).read().split('-')[-1].strip().split('/')[1]),int(open(p).read().split('-')[-1].strip().split('/')[0]))) if os.path.exists(p) else TODAY)(os.path.join(sys.argv[2],'data_ts.txt'))
 # Deals duplicados a excluir de TODOS os recortes (mesmo cliente aberto p/
 # vendedores diferentes). Mantemos so o deal original. Espelha automacao/slice_base.py.
 EXCLUDE_DEALS = {
