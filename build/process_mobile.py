@@ -216,6 +216,12 @@ FORCE_APPROVED = {
                   '2a50c11b-55c8-4f23-810f-438c71f90696': '2026-08-19',  # ROSEMEIRE DIAS DE ALMEIDA (Antecipa PF, Ettore Rossi/Salvador, 1.29 MWh) - risco APPROVED 20/08 00:23
                   '18a28a63-cd00-4bde-97e0-f04151fe5a2d': '2026-08-19',  # NELO MINGHE NETO (Antecipa PJ, Fabio Rodrigues/Ribeirao, 0.905 MWh) - risco APPROVED 20/08 00:47
                   '67505be8-e7a4-496f-a8e3-a711909fa2fc': '2026-08-19',  # ALEXANDRE ZANETI ARANTES (Antecipa PJ, Karianine Sampaio/Ribeirao, 0.871 MWh) - risco APPROVED 20/08 01:14
+                  # Felipe 01/09 (00h30): 5 aprovacoes manuais do fechamento de agosto, todas carimbadas 31/08 a pedido dele.
+                  'fe00362b-896b-40f7-86cc-7a24d444de58': '2026-08-31',  # MARIA LUISA DA SILVA DE ASSIS (Antecipa PF, Olimpio Filho/Ribeirao, 0.221 MWh) - risco DENIED 31/08 22:14 (fatura ilegivel, 3 devolutivas) + lost_at; Felipe mandou contar. NAO remover sem falar com ele.
+                  '8ba12fdb-f575-4bff-a843-cd29175536b2': '2026-08-31',  # ROBERTO MACARIO JUNIOR (Antecipa PJ, Paulo Lima/Ribeirao, 11.274 MWh) - APPROVED_PENDING_CREDIT 26/08 mas credit_stage PAYMENT_REJECTED (apc_ok barra); remover quando o pagamento entrar
+                  'c8815842-0a4e-4b24-8a65-405fa9c3fa90': '2026-08-31',  # ARTHUR BORGES VEIGA (Antecipa PJ, Paulo Lima/Ribeirao, 4.493 MWh) - APPROVED_PENDING_CREDIT 27/08 mas credit_stage CREDIT_ANALISYS_REJECTED (apc_ok barra); remover quando o credito entrar
+                  '05e5601a-7865-4320-a523-b76169b41e91': '2026-08-31',  # MG E CB ALIMENTOS LTDA (GD LIORA_B_, Diego Faria/SPI Campinas, 5.236 MWh) - SCHEDULED_TITULARIDADE com risco ainda MANUAL; remover quando a base refletir
+                  '6f69c433-a8d8-40f2-9b8a-6988f2c07e3e': '2026-08-31',  # FAB ALIMENTOS EIRELI (GD LIORA_B_, Diego Faria/SPI Campinas, 3.080 MWh) - SCHEDULED_TITULARIDADE com risco ainda MANUAL; remover quando a base refletir
                   }  # ALEXANDRE ZANETI ARANTES (Antecipa PJ, Karianine Sampaio/Ribeirao, 0.871 MWh) - risco APPROVED 20/08 01:14
 
 # ---- DATA DA VENDA = APROVACAO NO RISCO (Felipe 25/08) --------------------
