@@ -59,8 +59,6 @@ payload = {
  'HC_PROP': json.load(open('new_HC_PROP.json')),
  'ANTECIPA': json.load(open('new_ANTECIPA.json')),
  'ANT_FIELD': json.load(open('new_ANT_FIELD.json')),
- 'MISSAO': json.load(open('new_MISSAO.json')),
- 'MISSAO_ROSTER': json.load(open('new_MISSAO_ROSTER.json')),
  'HIST':    json.load(open('new_HIST.json')),
 }
 
