@@ -459,6 +459,24 @@ def apc_ok(r):
         return False
     return True
 
+
+# FORCE_NOTE: nota que aparece no card do cliente forcado (Felipe 01/09: "considerado
+# no card, mas cliente reprovado e o motivo"). Prefixa o campo 'motivo' do rawData —
+# o card do desktop e a aba de detalhe do mobile imprimem esse campo. Chave = deal_id.
+FORCE_NOTE = {
+  'fe00362b-896b-40f7-86cc-7a24d444de58': '⚠️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 01/09) — cliente REPROVADO na analise de risco em 31/08: faturas vencidas 29/07 e 26/08, e antes o analista devolveu 3x pedindo fatura legivel.',
+  '8ba12fdb-f575-4bff-a843-cd29175536b2': '⚠️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 01/09) — Antecipa com PAGAMENTO REJEITADO na base; o risco aprovou pendente de credito em 26/08.',
+  'c8815842-0a4e-4b24-8a65-405fa9c3fa90': '⚠️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 01/09) — ANALISE DE CREDITO REPROVADA na base; o risco aprovou pendente de credito em 27/08.',
+  '05e5601a-7865-4320-a523-b76169b41e91': 'ℹ️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 01/09) — titularidade agendada, risco ainda sem carimbo (MANUAL) na base.',
+  '6f69c433-a8d8-40f2-9b8a-6988f2c07e3e': 'ℹ️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 01/09) — titularidade agendada, risco ainda sem carimbo (MANUAL) na base.',
+}
+def force_note(did, txt):
+    """Prefixa a nota do aprovado manual no motivo, preservando o texto original."""
+    n = FORCE_NOTE.get((did or '').strip())
+    if not n: return txt
+    t = (txt or '').strip()
+    return (n + ' | ' + t) if t else n
+
 # ---- rawData (deals + aguardando, dedup por deal_id) ---------------------
 def mk_deal(r):
     risk = (r['latest_risk_analysis_result'] or '').strip()
@@ -503,7 +521,7 @@ def mk_deal(r):
       'semana': semana(d),
       'lost_at': ('' if (forced or norm(r['current_client_name']) in LOST_IGNORE) else (r['deal_lost_at'] or '')),
       'lost_reason': ('' if (forced or norm(r['current_client_name']) in LOST_IGNORE) else (r['deal_lost_reason'] or '')),
-      'motivo': (('CANCELADO — '+(r.get('deal_lost_reason') or '').strip()) if ((r.get('latest_risk_analysis_result') or '').strip()=='APPROVED' and (r.get('deal_lost_at') or '').strip() and r.get('deal_stage')=='BACKGROUND_CHECKING' and (r.get('deal_lost_reason') or '').strip().lower()!='troca de titularidade') else (r.get('latest_risk_analysis_comments') or '').strip()),
+      'motivo': force_note(r.get('deal_id'), (('CANCELADO — '+(r.get('deal_lost_reason') or '').strip()) if ((r.get('latest_risk_analysis_result') or '').strip()=='APPROVED' and (r.get('deal_lost_at') or '').strip() and r.get('deal_stage')=='BACKGROUND_CHECKING' and (r.get('deal_lost_reason') or '').strip().lower()!='troca de titularidade') else (r.get('latest_risk_analysis_comments') or '').strip())),
       'docs': DOCS.get((r.get('latest_contract_id') or '').strip(),''),
       'uc': UC.get(r['deal_id'],''),
       'date': d or '',
@@ -654,7 +672,7 @@ if f_ant:
           'tipo': _ant_tipo(r.get('product_name')),
           # obs = observacao da analise de risco (Felipe 21/08): da visibilidade
           # ao time do que travou o cliente (fatura vencida, baixa_renda, etc).
-          'obs': clean_obs(r.get('latest_risk_analysis_comments')),
+          'obs': force_note(_did, clean_obs(r.get('latest_risk_analysis_comments'))),
           'signed': bool((r.get('latest_contract_signature_signed_at') or '').strip()),
           'date': d or '',
           'adate': _adate,

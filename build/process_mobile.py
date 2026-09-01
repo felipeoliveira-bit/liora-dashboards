@@ -332,6 +332,24 @@ LOST_IGNORE = {  # ignora lost_at/lost_reason (falso 'nao aceito pela distribuid
  'FRANCISCO ALDECI DE QUEIROZ FERNANDES',  # reprovado e erro; ignorar (Felipe 03/07)
  'ANTÔNIO EDMILSON LEITE',  # dup denied em BGC, forçado aprovado (Felipe 15/07)
 }
+
+# FORCE_NOTE: nota que aparece no card do cliente forcado (Felipe 01/09: "considerado
+# no card, mas cliente reprovado e o motivo"). Prefixa o campo 'motivo' do rawData —
+# o card do desktop e a aba de detalhe do mobile imprimem esse campo. Chave = deal_id.
+FORCE_NOTE = {
+  'fe00362b-896b-40f7-86cc-7a24d444de58': '⚠️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 01/09) — cliente REPROVADO na analise de risco em 31/08: faturas vencidas 29/07 e 26/08, e antes o analista devolveu 3x pedindo fatura legivel.',
+  '8ba12fdb-f575-4bff-a843-cd29175536b2': '⚠️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 01/09) — Antecipa com PAGAMENTO REJEITADO na base; o risco aprovou pendente de credito em 26/08.',
+  'c8815842-0a4e-4b24-8a65-405fa9c3fa90': '⚠️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 01/09) — ANALISE DE CREDITO REPROVADA na base; o risco aprovou pendente de credito em 27/08.',
+  '05e5601a-7865-4320-a523-b76169b41e91': 'ℹ️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 01/09) — titularidade agendada, risco ainda sem carimbo (MANUAL) na base.',
+  '6f69c433-a8d8-40f2-9b8a-6988f2c07e3e': 'ℹ️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 01/09) — titularidade agendada, risco ainda sem carimbo (MANUAL) na base.',
+}
+def force_note(did, txt):
+    """Prefixa a nota do aprovado manual no motivo, preservando o texto original."""
+    n = FORCE_NOTE.get((did or '').strip())
+    if not n: return txt
+    t = (txt or '').strip()
+    return (n + ' | ' + t) if t else n
+
 # INJECT_DEALS: deals ausentes da base viva, adicionados manualmente (Felipe).
 INJECT_DEALS = []  # 25/08: Marli Merces (f8ba2c6d) e Chesser 2a UC (e607c712) ja estao na gold
                    # viva com risco APPROVED -> o inject virava DUPLICATA no desktop
@@ -435,7 +453,7 @@ def build_rawData(deals_path, ag_path, prop_path=None, docs_map=None, uc_map=Non
             'deal_id':did,'uc':uc_map.get(did,''),'tel':r['client_phone_number'],'cnpj':r['current_client_cnpj'],'cpf':r['current_client_cpf'],
             'fatura':pfloat(r['current_total_bill_cost (R$)']),'semana':semana(basis),
             'lost_at':('' if (forced or (cli or '').strip().upper() in LOST_IGNORE) else r['deal_lost_at']),'lost_reason':('' if (forced or (cli or '').strip().upper() in LOST_IGNORE) else r['deal_lost_reason']),
-            'motivo':(('CANCELADO — '+(r.get('deal_lost_reason') or '').strip()) if ((r.get('latest_risk_analysis_result') or '').strip()=='APPROVED' and (r.get('deal_lost_at') or '').strip() and r.get('deal_stage')=='BACKGROUND_CHECKING' and (r.get('deal_lost_reason') or '').strip().lower()!='troca de titularidade') else clean_obs(r.get('latest_risk_analysis_comments'))),
+            'motivo':force_note(r.get('deal_id'), (('CANCELADO — '+(r.get('deal_lost_reason') or '').strip()) if ((r.get('latest_risk_analysis_result') or '').strip()=='APPROVED' and (r.get('deal_lost_at') or '').strip() and r.get('deal_stage')=='BACKGROUND_CHECKING' and (r.get('deal_lost_reason') or '').strip().lower()!='troca de titularidade') else clean_obs(r.get('latest_risk_analysis_comments')))),
             'date':iso(created),'aprov_date':aprov,
             'docs':docs_map.get((r.get('latest_contract_id') or '').strip(),''),
             'cid':(r.get('latest_contract_id') or '').strip(),   # cruza c/ a planilha de pagamentos do Antecipa (action pagAntecipa)
