@@ -96,6 +96,51 @@ def load_appr_date(base_path):
     return m
 
 
+def load_credit_date(base_path):
+    # Mapa deal_id -> data da APROVACAO DO CREDITO (coluna credit_appr do
+    # risk_real.csv; ver RISK_SQL em mb_export.py). So vem preenchida para
+    # Antecipa com credito 'approved'. Vazio se o CSV for de um export antigo
+    # sem a coluna - nesse caso nada muda e a data segue a do risco.
+    p=os.path.join(os.path.dirname(os.path.abspath(base_path)), 'risk_real.csv')
+    if not os.path.isfile(p): return {}
+    m={}
+    with open(p, encoding='utf-8-sig') as fh:
+        rd=csv.DictReader(fh)
+        if 'credit_appr' not in (rd.fieldnames or []): return {}
+        for r in rd:
+            did=(r.get('deal_id') or '').strip(); v=(r.get('credit_appr') or '').strip()
+            if did and v: m[did]=v
+    return m
+
+
+def apply_credit_date(base, cred):
+    # DATA DA VENDA DO ANTECIPA = APROVACAO DO CREDITO (Felipe 02/09).
+    # Inverte o criterio anterior (data da aprovacao no risco, 25/08): o que
+    # carimba a venda agora e' o momento em que o CREDITO foi aprovado.
+    #
+    # TRAVA DE MES FECHADO - nao remover. Deal cuja aprovacao no risco caiu em
+    # mes JA FECHADO E PAGO nao migra: ele ja foi contado e remunerado la, e
+    # traze-lo para o mes corrente paga o vendedor 2x. Conferido em 02/09 no
+    # build congelado de agosto (commit b37fd7f): Traumasport (Bruno, 0,555),
+    # Renata Cristiane e Athos Mateus (Ederson, 0,481+0,371) entraram nos
+    # aprovados de 31/08, semana S13, pagos em 01/09 - somam 1,407 MWh.
+    # A trava vale nos DOIS sentidos: tambem nao empurramos a venda para TRAS
+    # (credito em mes fechado, risco no corrente), senao ela some do pagamento.
+    # So trocamos a data quando as DUAS pontas estao no mes corrente/aberto.
+    if not cred: return 0
+    n=0
+    for r in base:
+        v=cred.get((r.get('deal_id') or '').strip())
+        if not v: continue
+        cur=(r.get('latest_risk_analysis_created_at') or '').strip()
+        if not cur: continue
+        if not in_cur_month(cur): continue   # risco em mes fechado -> fica la
+        if not in_cur_month(v):   continue   # credito em mes fechado -> nao volta
+        if v[:10]==cur[:10]: continue
+        r['latest_risk_analysis_created_at']=v; n+=1
+    return n
+
+
 def apply_appr_date(base, appr):
     # DATA DA VENDA = APROVACAO NO RISCO, NAO A DO CREDITO (Felipe 25/08).
     # O Antecipa gera uma SEGUNDA analise de risco APPROVED quando o credito e' pago,
@@ -344,6 +389,8 @@ def main():
     ncorr=apply_risk_real(base, load_risk_real(base_path))
     if ncorr: print('risco real: %d deal(s) com resultado corrigido vs card818' % ncorr)
     nappr=apply_appr_date(base, load_appr_date(base_path))
+    ncred=apply_credit_date(base, load_credit_date(base_path))
+    print('data da aprovacao do CREDITO: %d deal(s) recarimbado(s) (trava de mes fechado ativa)' % ncred)
     nsig=apply_signer(base, fields, base_path)
     print('quem assinou: %d deal(s) assinado(s) por outra pessoa' % nsig)
     print('data da aprovacao no risco: %d deal(s) recarimbado(s) (Antecipa pago depois)' % nappr)

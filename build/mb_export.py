@@ -98,10 +98,27 @@ appr AS (
   WHERE h.nao_aprov = 0 AND (c.rn_nao_aprov IS NULL OR h.rn < c.rn_nao_aprov)
   GROUP BY h.deal_id
 )
+-- DATA DA APROVACAO DO CREDITO (Felipe 02/09) ------------------------------
+-- Passa a ser o criterio de data do Antecipa (ver apply_credit_date no
+-- slice_base_ci.py). `latest_credit_analysis_date` da gold ja vem em horario de
+-- BRASILIA (DATETIME sem tz) - NAO converter de novo, senao a venda anda 3h.
+-- A gold tem 1 linha por UC, entao agregamos por deal_id (MAX) para o join nao
+-- multiplicar as linhas do risco.
+cred AS (
+  SELECT deal_id, MAX(latest_credit_analysis_date) AS credit_at
+  FROM `liora_gold.sales_management`
+  WHERE LOWER(latest_credit_analysis_result) = 'approved'
+    AND UPPER(product_name) LIKE 'LIORA_ANTECIPA%'
+    AND latest_credit_analysis_date IS NOT NULL
+  GROUP BY deal_id
+)
 SELECT b.deal_id, b.result AS real_result,
        FORMAT_TIMESTAMP('%Y-%m-%dT%H:%M:%S', b.created_at, 'America/Sao_Paulo') AS real_created,
-       FORMAT_TIMESTAMP('%Y-%m-%dT%H:%M:%S', a.appr_created, 'America/Sao_Paulo') AS appr_created
-FROM best b LEFT JOIN appr a ON a.deal_id = b.deal_id
+       FORMAT_TIMESTAMP('%Y-%m-%dT%H:%M:%S', a.appr_created, 'America/Sao_Paulo') AS appr_created,
+       FORMAT_DATETIME('%Y-%m-%dT%H:%M:%S', cr.credit_at) AS credit_appr
+FROM best b
+LEFT JOIN appr a ON a.deal_id = b.deal_id
+LEFT JOIN cred cr ON cr.deal_id = b.deal_id
 WHERE b.rn = 1
 """
 
