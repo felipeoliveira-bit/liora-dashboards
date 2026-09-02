@@ -3176,7 +3176,7 @@ async function _loadPagAntecipa(cid){
     const linhas = lista.map(function(p, i){
       let url = String(p.comprovante || '').trim(); if(url.indexOf('1TAfY8Wcnkhr6sMVYGHN8qexYLEjBXJc2')>=0) url='';
       const link = /^https?:\/\//i.test(url)
-        ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener" class="cd-row-v-link" style="text-decoration:none" onclick="event.stopPropagation()">ver comprovante (UC ${escapeHtml(String(p.uc||''))}) (UC ${escapeHtml(String(p.uc||''))}) (UC ${escapeHtml(String(p.uc||''))}) (UC ${escapeHtml(String(p.uc||''))}) (UC ${escapeHtml(String(p.uc||''))}) (UC ${escapeHtml(String(p.uc||''))}) (UC ${escapeHtml(String(p.uc||''))}) (UC ${escapeHtml(String(p.uc||''))}) (UC ${escapeHtml(String(p.uc||''))}) ›</a>`
+        ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener" class="cd-row-v-link" style="text-decoration:none" onclick="event.stopPropagation()">ver comprovante (UC ${escapeHtml(String(p.uc||''))}) (UC ${escapeHtml(String(p.uc||''))}) (UC ${escapeHtml(String(p.uc||''))}) (UC ${escapeHtml(String(p.uc||''))}) (UC ${escapeHtml(String(p.uc||''))}) (UC ${escapeHtml(String(p.uc||''))}) (UC ${escapeHtml(String(p.uc||''))}) (UC ${escapeHtml(String(p.uc||''))}) (UC ${escapeHtml(String(p.uc||''))}) (UC ${escapeHtml(String(p.uc||''))}) ›</a>`
         : '<span style="color:var(--muted)">sem comprovante</span>';
       const rot = (lista.length > 1 ? ('Parcela ' + (i+1)) : 'Valor') + (p.data ? ' · ' + escapeHtml(p.data) : '');
       const st  = /transferid/i.test(p.status || '') ? '' :
