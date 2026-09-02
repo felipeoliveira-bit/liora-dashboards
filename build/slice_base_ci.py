@@ -113,6 +113,21 @@ def load_credit_date(base_path):
     return m
 
 
+# EXCECAO da trava de mes fechado (Felipe 02/09) - deal que DEVE migrar mesmo
+# tendo sido contado no mes anterior. Cada entrada aqui e' um PAGAMENTO EM
+# DUPLICIDADE consciente: a venda ja foi paga no mes fechado e vai contar de novo.
+# Colocar so por decisao explicita do Felipe, com o motivo e o MWh.
+CREDIT_DATE_FORCE = {
+    # Traumasport 0,555 MWh (Bruno Borges, [FS] Liora Antecipa PJ) - risco em
+    # 31/08 19:11, credito aprovado 01/09 06:45. Ja entrou nos aprovados de
+    # agosto (build b37fd7f, semana S13) e foi pago: o Bruno fechou agosto com
+    # 12,004 MWh, que e' o "12" da planilha de fechamento; sem este cliente
+    # daria 11,449. Felipe 02/09 pediu para contar em setembro assim mesmo,
+    # ciente da duplicidade, para o vendedor ver os 3 Antecipa juntos.
+    '31d7d3d6-b51f-4af5-81b7-1cc6f325268e',
+}
+
+
 def apply_credit_date(base, cred):
     # DATA DA VENDA DO ANTECIPA = APROVACAO DO CREDITO (Felipe 02/09).
     # Inverte o criterio anterior (data da aprovacao no risco, 25/08): o que
@@ -134,7 +149,8 @@ def apply_credit_date(base, cred):
         if not v: continue
         cur=(r.get('latest_risk_analysis_created_at') or '').strip()
         if not cur: continue
-        if not in_cur_month(cur): continue   # risco em mes fechado -> fica la
+        forcado = (r.get('deal_id') or '').strip() in CREDIT_DATE_FORCE
+        if not forcado and not in_cur_month(cur): continue   # risco em mes fechado -> fica la
         if not in_cur_month(v):   continue   # credito em mes fechado -> nao volta
         if v[:10]==cur[:10]: continue
         r['latest_risk_analysis_created_at']=v; n+=1
