@@ -396,14 +396,31 @@ def _load_prev_aprov():
         return {}
 PREV_APROV = _load_prev_aprov()
 
+def _mesma_semana_paga(a, b):
+    # True se as duas datas caem no mesmo mes E na mesma semana de campanha.
+    a = (a or '')[:10]; b = (b or '')[:10]
+    if len(a) < 10 or len(b) < 10 or a[:7] != b[:7]:
+        return False
+    return semana(a) == semana(b)
+
+
 def appr_date_of(deal_id, calc, aprovado=True):
-    """Data de aprovacao final: mapa > ledger > calculada. Nunca anda para frente."""
+    """Data de aprovacao final: mapa > ledger > calculada.
+
+    O ledger (25/08) segura a data para TRAS. Excecao aberta em 02/09 para a regra
+    da aprovacao do CREDITO (ver apply_credit_date no slice): a data PODE andar
+    para frente quando o destino cai no MESMO mes e na MESMA semana ja publicada -
+    ai o dia no card fica correto e o PAGAMENTO nao muda de semana. Se o passo
+    cruzaria a fronteira da semana (ou do mes), o ledger continua mandando: venda
+    ja paga numa semana nao migra para a seguinte.
+    """
     fix = RISK_APPR_DATE.get(deal_id)
     d = fix or (calc or '')
     if aprovado:
         prev = PREV_APROV.get(deal_id) or ''
         if prev and (not d or prev < d):
-            d = prev
+            if not (d and _mesma_semana_paga(prev, d)):
+                d = prev
     return d or ''
 
 def mwh_of(client, raw, did=None):
