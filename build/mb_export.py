@@ -509,9 +509,18 @@ def main():
         except Exception as _e:
             print('aviso: nao consegui medir o frescor do risk_real: %s' % _e, file=sys.stderr)
     except Exception as e:
+        # ABORT (Felipe 02/09) - antes isso era so um aviso e o build seguia SEM o
+        # risk_real. Como e' ele que carrega a correcao do risco e as DATAS de
+        # aprovacao, seguir sem ele publica a venda no mes/semana errados com o
+        # ciclo VERDE e o validate_html passando - ninguem percebe. Foi assim que
+        # uma virgula faltando no RISK_SQL (02/09) jogou 2 aprovados de 31/08 para
+        # setembro. Agora o ciclo PARA: o Netlify mantem a ultima versao boa no ar
+        # e fica o X vermelho no Actions.
         try: os.remove(os.path.join(OUT, 'risk_real.csv'))
         except Exception: pass
-        print('aviso: risk_real falhou (segue sem ele): %s' % e, file=sys.stderr)
+        print('ABORT: risk_real falhou - NAO publicamos sem a correcao de datas: %s'
+              % e, file=sys.stderr)
+        sys.exit(5)
     # quem assinou o contrato (opcional) - nome do signatario por deal, p/ o card
     # mostrar "assinou: X" quando o titular da fatura e' outra pessoa (Felipe 27/08).
     try:
