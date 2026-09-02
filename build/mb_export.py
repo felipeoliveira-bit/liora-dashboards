@@ -97,7 +97,7 @@ appr AS (
   FROM hist h LEFT JOIN corte c ON c.deal_id = h.deal_id
   WHERE h.nao_aprov = 0 AND (c.rn_nao_aprov IS NULL OR h.rn < c.rn_nao_aprov)
   GROUP BY h.deal_id
-)
+),
 -- DATA DA APROVACAO DO CREDITO (Felipe 02/09) ------------------------------
 -- Passa a ser o criterio de data do Antecipa (ver apply_credit_date no
 -- slice_base_ci.py). `latest_credit_analysis_date` da gold ja vem em horario de
