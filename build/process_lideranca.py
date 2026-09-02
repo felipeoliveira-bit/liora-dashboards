@@ -599,10 +599,23 @@ def mk_deal(r):
       'uc': UC.get(r['deal_id'],''),
       'date': d or '',
     }
+# SO NO CRM MOBILE (Felipe 02/09): deal que o slice liberou via CREDIT_DATE_FORCE
+# para o vendedor ver a venda, mas que NAO pode entrar no dash de lideres nem no
+# fechamento - a venda ja foi contada e paga no mes anterior. Excecao consciente a
+# regra "todo override vai nos dois dashboards" (Felipe 07/08): aqui a assimetria e'
+# o objetivo, e' ela que evita o pagamento em duplicidade.
+SO_MOBILE_DEALS = {
+    # Traumasport 0,555 MWh (Bruno Borges, Antecipa PJ). Ja entrou nos aprovados de
+    # agosto (build b37fd7f, semana S13): o Bruno fechou agosto com 12,004 MWh, o
+    # "12" da planilha de fechamento; sem esse cliente daria 11,449.
+    '31d7d3d6-b51f-4af5-81b7-1cc6f325268e',
+}
+
 seen = set(); rawData = []
 for r in deals + agu:                 # aguardando entra como deals extras
     did = r['deal_id']
     if did in seen: continue           # dedup por deal_id (clientes multi-UC)
+    if did in SO_MOBILE_DEALS: continue  # aparece so no CRM mobile - ver acima
     seen.add(did)
     rawData.append(mk_deal(r))
 for r in prop:                        # injeta aprovados manuais ausentes dos recortes
