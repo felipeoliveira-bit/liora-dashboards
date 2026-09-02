@@ -1422,7 +1422,7 @@ function updateMissaoNav(){
   const nav = document.getElementById('nav-missao');
   if (!nav) return;
   const me = (typeof getCurrentVendedor === 'function') ? getCurrentVendedor() : '';
-  const pode = !!me && (isLider(me) || isGestor_(me));
+  const pode = false; // Felipe: aba Missao fora do ar
   nav.style.display = pode ? '' : 'none';
   if (!pode && currentScreen === 'missao') setScreen('resumo');
 }
