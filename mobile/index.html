@@ -981,8 +981,14 @@ function isCoelba(x){ return distType(x) === 'coelba'; }
 // latest_risk_analysis_created_at preenchido (campo aprov_date) e não está perdido.
 // A data de aprovação (p/ mês/campanha) é essa mesma coluna. CPFL/Enel ainda em
 // proposta não têm essa coluna preenchida → não contam como aprovado (correto).
+// Felipe 25/08: SO estes 2 motivos desfazem a venda. O teste vem ANTES do
+// credito_ok, senao Antecipa com credito aprovado e perdido por 'Cliente
+// desistiu' continua contando (caso Maria Suely, 03/09). O desktop ja tinha
+// esse guard no topo; o mobile nao, e os dois divergiam.
+const LOST_DESFAZ = ['cliente desistiu','reprovado na analise de credito','reprovado na análise de crédito'];
 function isAprovado(x){
   if(x.ant_bloq) return false;/*Felipe 01/09: Antecipa so conta com risco E credito aprovados*/ 
+  if(x.lost_at && LOST_DESFAZ.indexOf((x.lost_reason||'').trim().toLowerCase()) >= 0) return false;
   if(x.credito_ok) return true; // Antecipa: crédito aprovado conta como aprovado (Felipe 06/08)
   if(x.stage === 'BGC_PARCEIRO') return false; // em validação Antecipa
   return !!x.aprov_date && (!x.lost_at || x.stage !== 'BACKGROUND_CHECKING' || (x.lost_reason||'').trim().toLowerCase() === 'troca de titularidade');
