@@ -185,13 +185,13 @@ PRACA_TITLE = {  # email -> praça (Title) usada no RAW
  'tiago.freitas@lioraenergia.com.br':'Feira','tamires.costa@lioraenergia.com.br':'Feira','thiago.araujo@lioraenergia.com.br':'Natal','camila.couto@lioraenergia.com.br':'Feira',
  'briel.barbosa@lioraenergia.com.br':'SPI','olimpio.filho@lioraenergia.com.br':'Ribeirao','fabio.rodrigues@lioraenergia.com.br':'Ribeirao',  # novos 10/08
  'karianine.sampaio@lioraenergia.com.br':'Ribeirao',  # nova 18/08 (Pradopolis/SP, time Ribeirao - Felipe 18/08)
- 'olavocavalcanti@lioraenergia.com.br':'RN Interior','olavo.cavaldanti@lioraenergia.com.br':'RN Interior','paulo.lima@lioraenergia.com.br':'Ribeirao',  # novos 24/08 (Olavo Cavalcanti - Mossoro/RN Interior; Paulo Lima - Ribeirao)
+ 'olavocavalcanti@lioraenergia.com.br':'RN Interior','olavo.cavaldanti@lioraenergia.com.br':'RN Interior','francisco.oliveira@lioraenergia.com.br':'RN Interior','paulo.lima@lioraenergia.com.br':'Ribeirao',  # novos 24/08 (Olavo Cavalcanti - Mossoro/RN Interior; Paulo Lima - Ribeirao)
 }
 EMAIL2NAME = {  # email -> nome canônico do vendedor (resolve nomes variáveis do CRM)
  'silmara.gomes@lioraenergia.com.br':'Silmara Gomes',
  'briel.barbosa@lioraenergia.com.br':'Briel Barbosa','olimpio.filho@lioraenergia.com.br':'Olímpio Filho','fabio.rodrigues@lioraenergia.com.br':'Fábio Rodrigues',  # novos 10/08
  'karianine.sampaio@lioraenergia.com.br':'Karianine Sampaio',  # nova 18/08 (CRM manda 'karianine Sampaio' minusculo)
- 'olavocavalcanti@lioraenergia.com.br':'Olavo Cavalcanti','olavo.cavaldanti@lioraenergia.com.br':'Olavo Cavalcanti','paulo.lima@lioraenergia.com.br':'Paulo Lima',  # novos 24/08 (Olavo Cavalcanti - Mossoro/RN Interior; Paulo Lima - Ribeirao)
+ 'olavocavalcanti@lioraenergia.com.br':'Olavo Cavalcanti','olavo.cavaldanti@lioraenergia.com.br':'Olavo Cavalcanti','francisco.oliveira@lioraenergia.com.br':'Doni Oliveira','paulo.lima@lioraenergia.com.br':'Paulo Lima',  # novos 24/08 (Olavo Cavalcanti - Mossoro/RN Interior; Paulo Lima - Ribeirao)
  'luciana.campos@lioraenergia.com.br':'Luciana Campos',
  'nicola.popovic@lioraenergia.com.br':'Nicola Popovic',
  'nha.negocios@gmail.com':'Anderson Correia',
@@ -901,6 +901,7 @@ ROSTER_ATIVO = {
  'karianine.sampaio@lioraenergia.com.br': ('consultor','2026-08-18'),
  'olavocavalcanti@lioraenergia.com.br': ('consultor','2026-08-24'),
  'olavo.cavaldanti@lioraenergia.com.br': ('consultor','2026-08-24'),  # Mossoro / RN Interior
+ 'francisco.oliveira@lioraenergia.com.br': ('consultor','2026-08-31'),  # Doni Oliveira (Francisco/Mossoro - RN Interior) cadastrado 03/09, admissao 31/08
  'paulo.lima@lioraenergia.com.br': ('consultor','2026-08-24'),        # Ribeirao Preto SPI
  'fabio.rodrigues@lioraenergia.com.br': ('consultor','2026-08-10'),
 }
