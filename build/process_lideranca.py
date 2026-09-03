@@ -512,9 +512,26 @@ def is_antecipa(r):
     return 'ANTECIPA' in prod.strip().upper()
 
 def ant_ok(r, credito_ok=None):
-    """True quando o Antecipa esta aprovado nas DUAS analises (risco + credito)."""
-    if (r.get('latest_risk_analysis_result') or '').strip() not in ANT_RISK_OK:
+    """Antecipa aprovado. Risco APPROVED exige credito 'approved'; APPROVED_PENDING_
+    CREDIT conta a partir da aprovacao no RISCO (Felipe 03/09)."""
+    _risk = (r.get('latest_risk_analysis_result') or '').strip()
+    if _risk not in ANT_RISK_OK:
         return False
+    # APPROVED_PENDING_CREDIT: conta ja na aprovacao do risco, sem esperar a analise
+    # de credito (Felipe 03/09). Motivo: a venda que o risco aprova as 17h so
+    # aparecia no dia seguinte, quando o credito era analisado. Credito NEGADO (ou
+    # etapa de credito/pagamento rejeitada) continua barrando - e' o apc_ok.
+    # Caso que delimita a regra: Rodrigo Henrique da Silva (Ederson, 0,245 MWh) -
+    # risco APPROVED_PENDING_CREDIT 01/09 17:05, credito DENIED 02/09 10:35
+    # (score 208, 'historico crescente de debitos') -> NAO conta.
+    # Os 3 furos fechados em 01/09 seguem fechados: risco DENIED + credito approved
+    # cai no ANT_RISK_OK; risco APPROVED sem nenhuma analise de credito continua
+    # exigindo credito 'approved' logo abaixo.
+    if _risk == 'APPROVED_PENDING_CREDIT':
+        _ov = PRODUCT_OVERRIDE.get((r.get('deal_id') or '').strip(), {})
+        if _ov.get('credito_ok') is False:
+            return False
+        return apc_ok(r)
     if credito_ok is None:
         credito_ok = (r.get('latest_credit_analysis_result') or '').strip().lower() == 'approved'
     if not credito_ok:
