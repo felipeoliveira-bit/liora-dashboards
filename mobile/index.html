@@ -1090,7 +1090,20 @@ function pendAntecipa(x){
 function obsAnaliseHtml(x){
   let h = '';
   const a = pendAntecipa(x);
-  if(a) h += '<div class="acao-text" style="background:#F3F1FF;border:1px solid #D6D0FB;color:#4C41B0;border-radius:10px;padding:8px 10px;margin-top:6px">\u23F3 ' + escapeHtml(a) + '</div>';
+  if(a){
+    // Felipe 03/09: risco APPROVED_PENDING_CREDIT + CREDITO APROVADO nao e' pendencia.
+    // O que falta e' so concluir o pagamento (confirmacao do cliente / aprovacao do
+    // deposito). Antes caia no selo roxo de "aguardando" e o vendedor lia como
+    // "nao aprovado". Agora vira linha informativa com o selo de aprovado.
+    // Credito NEGADO/REJEITADO nao entra aqui: o pendAntecipa ja corta pelo
+    // PEND_ANT_FIM e o ant_bloq zera o credito_ok.
+    var _credAprov = !!(x && x.apc === true && x.credito_ok === true);
+    var _sep = a.indexOf(' \u00b7 ');
+    var _resto = _sep >= 0 ? a.slice(_sep + 3) : a;
+    h += _credAprov
+      ? '<div class="acao-text" style="background:#F1FAF5;border:1px solid #C6EBD8;color:#0B7A4B;border-radius:10px;padding:8px 10px;margin-top:6px">\u2705 Cr\u00e9dito aprovado \u00b7 ' + escapeHtml(_resto) + '</div>'
+      : '<div class="acao-text" style="background:#F3F1FF;border:1px solid #D6D0FB;color:#4C41B0;border-radius:10px;padding:8px 10px;margin-top:6px">\u23F3 ' + escapeHtml(a) + '</div>';
+  }
   const v = obsAnalise(x);
   if(v) h += '<div class="acao-text" style="background:#FFF8E1;border:1px solid #F5E0A3;color:#795500;border-radius:10px;padding:8px 10px;margin-top:6px">\u{1F50E} An\u00e1lise de risco: ' + escapeHtml(v) + '</div>';
   return h;
