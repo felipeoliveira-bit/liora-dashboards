@@ -6918,9 +6918,15 @@ function _zerCel(a){
   var p = Math.round(a.zer/a.tim*100);
   return a.zer + ' <span style=&quot;color:#8a8a99;font-weight:600&quot;>(' + p + '% do time)</span>';
 }
+// Felipe 04/09: mesma celula, para qualquer contador de agentes zerados.
+function _zerCelN(n, tim){
+  if(!tim) return n || 0;
+  var p = Math.round((n||0)/tim*100);
+  return (n||0) + ' <span style=&quot;color:#8a8a99;font-weight:600&quot;>(' + p + '% do time)</span>';
+}
 function renderPracaBreak(rows){
   const agg = {};
-  function _slotP(k){ if(!agg[k]) agg[k] = {ger:0, ace:0, ass:0, apr:0, zer:0, tim:0, billSum:0, billN:0}; return agg[k]; }
+  function _slotP(k){ if(!agg[k]) agg[k] = {ger:0, ace:0, ass:0, apr:0, zer:0, zap:0, tim:0, billSum:0, billN:0}; return agg[k]; }
   rows.forEach(function(x){
     const a = _slotP(x.praca||&quot;Outras&quot;);
     a.ger++;
@@ -6930,34 +6936,40 @@ function renderPracaBreak(rows){
   });
   // Aprovadas: por DATA de aprovacao no periodo; une chaves de praca (Felipe 12/08).
   apprRows().forEach(function(x){ _slotP(x.praca||&quot;Outras&quot;).apr++; });
-  // Agentes zerados: vendedor ATIVO do roster sem nenhuma proposta/assinatura/aprovacao no periodo (Felipe 17/08).
-  const _ativo = {};
-  rows.forEach(function(x){ _ativo[_antKey(x.s)] = 1; });
-  apprRows().forEach(function(x){ _ativo[_antKey(x.s)] = 1; });
+  // Agentes zerados, DOIS recortes independentes (Felipe 04/09):
+  //   zer = consultor ativo sem nenhuma PROPOSTA Antecipa gerada no periodo
+  //   zap = consultor ativo sem nenhuma venda APROVADA no periodo (por data de aprovacao)
+  // Antes era um contador so, que misturava proposta+assinatura+aprovacao (Felipe 17/08).
+  // Lider de operacao continua fora das duas contas.
+  const _temProp = {}, _temApr = {};
+  rows.forEach(function(x){ _temProp[_antKey(x.s)] = 1; });
+  apprRows().forEach(function(x){ _temApr[_antKey(x.s)] = 1; });
   ANT_ROSTER.forEach(function(v){
-    if(v.l) return;   // lider nao entra na conta de agentes zerados da praca (Felipe 17/08)
+    if(v.l) return;
     if(antPraca!=='all' &amp;&amp; v.p!==antPraca) return;
     if(antPessoa!=='all' &amp;&amp; v.n!==antPessoa) return;
     var _sp = _slotP(v.p); _sp.tim++;
-    if(!_ativo[_antKey(v.n)]) _sp.zer++;
+    var _k = _antKey(v.n);
+    if(!_temProp[_k]) _sp.zer++;
+    if(!_temApr[_k]) _sp.zap++;
   });
   const keys = Object.keys(agg).sort(function(a,b){
     if(pracaSort.k===null){ return PRACA_SORT.indexOf(a)-PRACA_SORT.indexOf(b); }
     if(pracaSort.k==='reg'){ var r=PRACA_SORT.indexOf(a)-PRACA_SORT.indexOf(b); return pracaSort.dir===1?r:-r; }
     if(pracaSort.k==='name'){ return pracaSort.dir===1?a.localeCompare(b,'pt-BR'):b.localeCompare(a,'pt-BR'); }
-    function _v(n){ var z=agg[n]; if(pracaSort.k==='ass')return z.ass; if(pracaSort.k==='apr')return z.apr; if(pracaSort.k==='zer')return z.zer; if(pracaSort.k==='tk')return z.billN?z.billSum/z.billN:0; return z.ger; }
+    function _v(n){ var z=agg[n]; if(pracaSort.k==='ass')return z.ass; if(pracaSort.k==='apr')return z.apr; if(pracaSort.k==='zer')return z.zer; if(pracaSort.k==='zap')return z.zap; if(pracaSort.k==='tk')return z.billN?z.billSum/z.billN:0; return z.ger; }
     var d = pracaSort.dir===1 ? (_v(a)-_v(b)) : (_v(b)-_v(a));
     return d || (PRACA_SORT.indexOf(a)-PRACA_SORT.indexOf(b));
   });
   if(!keys.length){ el(&quot;ant-praca&quot;).innerHTML = '<div class=&quot;empty&quot; style=&quot;padding:14px 0&quot;>sem dados</div>'; return; }
-  const tot = {ger:0, ace:0, ass:0, apr:0, zer:0, tim:0, billSum:0, billN:0};
-  keys.forEach(function(k){ tot.ger+=agg[k].ger; tot.ace+=agg[k].ace; tot.ass+=agg[k].ass; tot.apr+=agg[k].apr; tot.zer+=agg[k].zer; tot.tim+=agg[k].tim; tot.billSum+=agg[k].billSum; tot.billN+=agg[k].billN; });
-  let html = '<table class=&quot;ptbl&quot;>' + _antHead('setPracaSort', pracaSort, [['reg','Praça'],['ger','Geradas Antecipa'],['ass','Assinadas'],['apr','Aprovadas'],['tk','Ticket médio'],['zer','Agentes zerados','Consultores ativos da praça sem nenhuma proposta, assinatura ou aprovação no período. Não inclui líderes de operação.']]) + '<tbody>';
+  const tot = {ger:0, ace:0, ass:0, apr:0, zer:0, zap:0, tim:0, billSum:0, billN:0};
+  keys.forEach(function(k){ tot.ger+=agg[k].ger; tot.ace+=agg[k].ace; tot.ass+=agg[k].ass; tot.apr+=agg[k].apr; tot.zer+=agg[k].zer; tot.zap+=agg[k].zap; tot.tim+=agg[k].tim; tot.billSum+=agg[k].billSum; tot.billN+=agg[k].billN; });
+  let html = '<table class=&quot;ptbl&quot;>' + _antHead('setPracaSort', pracaSort, [['reg','Praça'],['ger','Geradas Antecipa'],['ass','Assinadas'],['apr','Aprovadas'],['tk','Ticket médio'],['zer','Agentes com zero propostas','Consultores ativos da praça que não geraram NENHUMA proposta Antecipa no período. Não inclui líderes de operação.'],['zap','Agentes com zero aprovadas','Consultores ativos da praça sem NENHUMA venda Antecipa aprovada no período (contada pela data de aprovação). Não inclui líderes de operação.']]) + '<tbody>';
   keys.forEach(function(k){
     const a = agg[k];
-    html += &quot;<tr><td>&quot;+pracaBadge(k)+&quot;</td><td>&quot;+a.ger+&quot;</td><td>&quot;+a.ass+&quot;</td><td>&quot;+a.apr+&quot;</td><td>&quot;+brl(a.billN?a.billSum/a.billN:0)+&quot;</td><td>&quot;+_zerCel(a)+&quot;</td></tr>&quot;;
+    html += &quot;<tr><td>&quot;+pracaBadge(k)+&quot;</td><td>&quot;+a.ger+&quot;</td><td>&quot;+a.ass+&quot;</td><td>&quot;+a.apr+&quot;</td><td>&quot;+brl(a.billN?a.billSum/a.billN:0)+&quot;</td><td>&quot;+_zerCelN(a.zer,a.tim)+&quot;</td><td>&quot;+_zerCelN(a.zap,a.tim)+&quot;</td></tr>&quot;;
   });
-  html += '<tr class=&quot;tot&quot;><td>Total</td><td>'+tot.ger+'</td><td>'+tot.ass+'</td><td>'+tot.apr+'</td><td>'+brl(tot.billN?tot.billSum/tot.billN:0)+'</td><td>'+_zerCel(tot)+'</td></tr>';
+  html += '<tr class=&quot;tot&quot;><td>Total</td><td>'+tot.ger+'</td><td>'+tot.ass+'</td><td>'+tot.apr+'</td><td>'+brl(tot.billN?tot.billSum/tot.billN:0)+'</td><td>'+_zerCelN(tot.zer,tot.tim)+'</td><td>'+_zerCelN(tot.zap,tot.tim)+'</td></tr>';
   html += &quot;</tbody></table>&quot;;
   el(&quot;ant-praca&quot;).innerHTML = html;
 }
