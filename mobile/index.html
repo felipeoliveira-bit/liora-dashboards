@@ -361,6 +361,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
 .uni-bar-fill { height:100%; border-radius:4px; }
 .uni-sub2 { display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:10.5px; color:var(--muted); margin:7px 0 10px; }
 .uni-conv { font-weight:800; white-space:nowrap; flex-shrink:0; }
+.uni-ant { display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:10.5px; color:var(--muted); margin:-6px 0 10px; padding-top:6px; border-top:1px dashed #ECEBF7; }
 .uni-ritmo-lbl { font-size:9.5px; font-weight:800; color:var(--blue); text-transform:uppercase; letter-spacing:.05em; margin-bottom:7px; display:flex; align-items:center; gap:4px; }
 .metas-table-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; padding-bottom: 6px; border-bottom: 1px solid #ECECF5; }
 .metas-table-title { font-size: 12px; font-weight: 800; color: var(--ink); text-transform: uppercase; letter-spacing: .04em; }
@@ -1172,6 +1173,12 @@ let SELLER_PRACA = {
   'Bruno Borges':'ce','Neilon Nascimento':'ce','Sabrina Tomazeti':'ce','Núbia Andrade':'ce','Odirley Costa':'ce',
   'Briel Barbosa':'spi','Olímpio Filho':'ribeirao','Fábio Rodrigues':'ribeirao','Karianine Sampaio':'ribeirao', // novos 10/08 + 18/08
 };
+// Felipe 04/09: meta de Antecipa por praca = 45% da meta de GD da praca.
+// Derivada de PRACA_DEF[k].meta de proposito — quando a meta da praca mudar,
+// a do Antecipa acompanha sozinha, sem tabela paralela p/ esquecer de virar.
+const ANT_META_PCT = 0.45;
+function antMetaMes(metaGd){ return metaGd * ANT_META_PCT; }
+
 function getPracaKey(city, seller){
   if(seller && SELLER_PRACA[seller]) return SELLER_PRACA[seller];
   return 'outras';
@@ -1541,6 +1548,12 @@ function renderResumo(){
   pracas.forEach(p => {
     const aprovMwh = rawData.filter(x => x.praca.key===p.key && noMes(x) && isAprovado(x)).reduce((a,x)=>a+x.mwh,0);
     const mtd = metaToDate(p.meta);
+    // ⚡ Antecipa: mesma regua to-date, meta = 45% da meta de GD da praca
+    const antMwh = rawData.filter(x => x.praca.key===p.key && noMes(x) && isAntecipaDeal(x)).reduce((a,x)=>a+x.mwh,0);
+    const antMetaM = antMetaMes(p.meta);
+    const antMtd = metaToDate(antMetaM);
+    const antPct = antMtd>0 ? (antMwh/antMtd)*100 : 0;
+    const antColor = antPct>=100?'var(--green)':antPct>=70?'var(--purple)':'var(--red)';
     const pctTD = mtd>0 ? (aprovMwh/mtd)*100 : 0;
     const pctColor = pctTD>=100?'var(--green)':pctTD>=70?'var(--blue)':'var(--red)';
     const falta = Math.max(0, p.meta - aprovMwh);
@@ -1568,6 +1581,10 @@ function renderResumo(){
           <span><b style="color:var(--ink)">${aprovMwh.toFixed(1)}</b> / ${mtd.toFixed(1)} MWh · atingimento to-date</span>
           <span>meta do mês: ${p.meta} MWh</span>
         </div>
+        <div class="uni-ant">
+          <span>⚡ <b style="color:var(--purple)">${antMwh.toFixed(1)}</b> / ${antMtd.toFixed(1)} MWh Antecipa · <b style="color:${antColor}">${antPct.toFixed(0)}%</b></span>
+          <span>meta do mês: ${antMetaM.toFixed(1)} MWh</span>
+        </div>
         ${batida
           ? `<div class="exec-batida">✅ meta do mês batida</div>`
           : `<div class="uni-ritmo-lbl">🏃 ritmo diário p/ bater a meta do mês</div>
@@ -1593,7 +1610,7 @@ function renderResumo(){
         <div class="exec-total-conv" style="margin-top:3px">📅 realizado hoje: <b>${hojeMwhTot.toFixed(1)} MWh · ${hojePropTot} propostas</b></div>
       </div>
       ${uniRows}
-      <div class="exec-note">% e barra = atingimento to-date (aprovado ÷ meta proporcional aos dias úteis do mês). <b>Ritmo diário</b> = o que falta da meta do mês ÷ dias úteis restantes — se não entregar hoje, sobe amanhã. Propostas/dia estimadas pela conversão-alvo do BP (~${CONV_BP}%). <b>✓/✗ hoje</b> = realizado do dia vs a meta do dia. Toque numa praça p/ ver os clientes.</div>
+      <div class="exec-note">% e barra = atingimento to-date (aprovado ÷ meta proporcional aos dias úteis do mês). <b>Ritmo diário</b> = o que falta da meta do mês ÷ dias úteis restantes — se não entregar hoje, sobe amanhã. Propostas/dia estimadas pela conversão-alvo do BP (~${CONV_BP}%). <b>✓/✗ hoje</b> = realizado do dia vs a meta do dia. <b>⚡ Antecipa</b> = MWh aprovado em clientes Antecipa contra ${(ANT_META_PCT*100).toFixed(0)}% da meta da praça, mesma régua to-date. Toque numa praça p/ ver os clientes.</div>
     </div>`;
   document.getElementById('s1-content').innerHTML = html;
 }

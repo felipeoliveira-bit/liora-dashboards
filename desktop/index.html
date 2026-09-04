@@ -639,12 +639,20 @@ function renderOpCards() {
     }
     const pct = metaMes>0 ? (mwh/metaMes)*100 : 0;
     const pc = pct>=100 ? '#1D9E75' : pct>=90 ? '#E0A800' : '#e54a4a';
+    // Antecipa (Felipe 04/09): meta = 45% da meta de GD da praca, mesma regua to-date
+    const ANT_META_PCT = 0.45;
+    const antMwh = deals.filter(x => noMes(x) &amp;&amp; isAprovado(x) &amp;&amp; /ANTECIPA/i.test(x.produto||'')).reduce((a,x)=>a+(x.mwh||0), 0);
+    const antMetaM = metaMes * ANT_META_PCT;
+    const antMetaTD = metaToDate * ANT_META_PCT;
+    const antPct = antMetaTD>0 ? (antMwh/antMetaTD)*100 : 0;
+    const apc = antPct>=100 ? '#1D9E75' : antPct>=70 ? '#7F77DD' : '#e54a4a';
     return `<div class=&quot;op-card&quot;>
       <div class=&quot;op-name&quot;>${op.label}</div>
       <div class=&quot;op-mwh&quot;>${fmtMwh(mwh)} <span style=&quot;font-size:10px;color:var(--text3);font-weight:400&quot;>MWh aprovado</span></div>
       <div class=&quot;op-meta&quot;>meta ${fmtMwh(metaToDate)} MWh <span style=&quot;font-size:9px;color:var(--text3)&quot;>(hoje)</span><div style=&quot;font-size:9px;color:var(--text3);margin-top:1px&quot;>de ${fmtMwh(metaMes)} MWh no mês</div></div>
       <div class=&quot;op-bar-bg&quot;><div class=&quot;op-bar-fill&quot; style=&quot;width:${pct.toFixed(0)}%;background:${pc}&quot;></div></div>
       <div class=&quot;op-pct&quot; style=&quot;color:${pc}&quot;>${pct.toFixed(0)}% da meta</div>
+      <div style=&quot;margin-top:7px;padding-top:6px;border-top:1px dashed #ECEBF7;font-size:10.5px;color:#666;line-height:1.45&quot;>⚡ Antecipa <b style=&quot;color:#7F77DD&quot;>${fmtMwh(antMwh)}</b> / ${fmtMwh(antMetaTD)} MWh <b style=&quot;color:${apc}&quot;>${antPct.toFixed(0)}%</b><div style=&quot;font-size:9px;color:#aaa;margin-top:1px&quot;>de ${fmtMwh(antMetaM)} MWh no mês</div></div>
     </div>`;
   }).join('');
 }
@@ -5293,6 +5301,13 @@ function buildOpCards() {
     const isToDate = (META_MODE === 'bp' &amp;&amp; bpToday !== null) || (META_MODE === 'safra' &amp;&amp; safraToday !== null);
     const pct = Math.min((mwhAprov/metaUsada)*100,100);
     const pc = pct>=100?'#1D9E57':pct>=90?'#E0A800':'#E24B4A';
+    // Antecipa (Felipe 04/09): meta = 45% da meta de GD da praca, mesma regua to-date
+    const ANT_META_PCT = 0.45;
+    const antMwh = opData.filter(x => noMesAtual(x) &amp;&amp; isAprovado(x) &amp;&amp; /ANTECIPA/i.test(x.produto||'')).reduce((a,x)=>a+(x.mwh||0), 0);
+    const antMetaM = metaFullMes * ANT_META_PCT;
+    const antMetaTD = metaUsada * ANT_META_PCT;
+    const antPct = antMetaTD>0 ? (antMwh/antMetaTD)*100 : 0;
+    const apc = antPct>=100 ? '#1D9E57' : antPct>=70 ? '#7F77DD' : '#E24B4A';
     const isActive = op.key === currentOp;
 
     // Show filtered MWh when a filter is active
@@ -5311,6 +5326,7 @@ function buildOpCards() {
         ${isToDate ? `<div style=&quot;font-size:9px;color:#aaa;margin-top:1px&quot;>de ${fmtMwh(metaFullMes)} MWh no mês</div>` : ''}
       </div>
       <div class=&quot;op-bar-bg&quot;><div class=&quot;op-bar-fill&quot; style=&quot;width:${pct.toFixed(0)}%;background:${pc}&quot;></div></div>
+      <div style=&quot;margin-top:7px;padding-top:6px;border-top:1px dashed #ECEBF7;font-size:10.5px;color:#666;line-height:1.45&quot;>⚡ Antecipa <b style=&quot;color:#7F77DD&quot;>${fmtMwh(antMwh)}</b> / ${fmtMwh(antMetaTD)} MWh <b style=&quot;color:${apc}&quot;>${antPct.toFixed(0)}%</b>${isToDate ? `<div style=&quot;font-size:9px;color:#aaa;margin-top:1px&quot;>de ${fmtMwh(antMetaM)} MWh no mês</div>` : ''}</div>
       <div class=&quot;op-pct&quot; style=&quot;color:${pc}&quot;>${pct.toFixed(0)}% da meta</div>
     </div>`;
   }).join('');
