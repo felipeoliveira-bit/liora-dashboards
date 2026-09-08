@@ -179,7 +179,8 @@ PRACA_TITLE = {  # email -> praça (Title) usada no RAW
  'franciele.felix@lioraenergia.com.br':'SPI','kelma.rangel@lioraenergia.com.br':'Feira',
  'lucileide.carlos@lioraenergia.com.br':'Feira','marcio.galvao@lioraenergia.com.br':'Natal',
  'maria.lucia@lioraenergia.com.br':'Salvador','neilon.nascimento@lioraenergia.com.br':'CE','sabrina.tomazeti@lioraenergia.com.br':'CE',
- 'nubia.andrade@lioraenergia.com.br':'CE','odirley.costa@lioraenergia.com.br':'CE',  # Felipe 07/08: sao CE (alinha ao CRM); antes 'Outras'
+ 'nubia.andrade@lioraenergia.com.br':'CE','odirley.costa@lioraenergia.com.br':'CE',
+ 'nailson.oliveira@lioraenergia.com.br':'CE', 'samuel.santos@lioraenergia.com.br':'CE', 'francisco.monteiro@lioraenergia.com.br':'CE',  # novos CE 08/09  # Felipe 07/08: sao CE (alinha ao CRM); antes 'Outras'
  'rodrigo.ribeiro@lioraenergia.com.br':'Natal','rosangela.mendes@lioraenergia.com.br':'Feira',
  'ryan.trindade@lioraenergia.com.br':'Feira','alberto.nascimento@lioraenergia.com.br':'Feira','marcel.sousa@lioraenergia.com.br':'Feira','jefferson.fideli@lioraenergia.com.br':'RN Interior','phillip.faria@lioraenergia.com.br':'Ribeirao','tais.santos@lioraenergia.com.br':'Salvador',
  'tiago.freitas@lioraenergia.com.br':'Feira','tamires.costa@lioraenergia.com.br':'Feira','thiago.araujo@lioraenergia.com.br':'Natal','camila.couto@lioraenergia.com.br':'Feira',
@@ -218,6 +219,7 @@ EMAIL2NAME = {  # email -> nome canônico do vendedor (resolve nomes variáveis 
  'lucileide.carlos@lioraenergia.com.br':'Lucileide Carlos','marcio.galvao@lioraenergia.com.br':'Marcio Galvão',
  'maria.lucia@lioraenergia.com.br':'Maria Lúcia','neilon.nascimento@lioraenergia.com.br':'Neilon Nascimento','sabrina.tomazeti@lioraenergia.com.br':'Sabrina Tomazeti',
  'nubia.andrade@lioraenergia.com.br':'Nubia  Andrade','odirley.costa@lioraenergia.com.br':'Odirley Costa',
+ 'nailson.oliveira@lioraenergia.com.br':'Nailson Oliveira', 'samuel.santos@lioraenergia.com.br':'Samuel Santos', 'francisco.monteiro@lioraenergia.com.br':'Francisco Monteiro',  # novos CE 08/09
  'rodrigo.ribeiro@lioraenergia.com.br':'Rodrigo Ribeiro','rosangela.mendes@lioraenergia.com.br':'Rosangela Mendes',
  'ryan.trindade@lioraenergia.com.br':'Ryan Trindade','alberto.nascimento@lioraenergia.com.br':'Alberto Nascimento','marcel.sousa@lioraenergia.com.br':'Marcel Sousa','jefferson.fideli@lioraenergia.com.br':'Jefferson Fideli','phillip.faria@lioraenergia.com.br':'Phillip Faria','tais.santos@lioraenergia.com.br':'Tais Santos',
  'tiago.freitas@lioraenergia.com.br':'Tiago Freitas','tamires.costa@lioraenergia.com.br':'Tamires Costa','thiago.araujo@lioraenergia.com.br':'Thiago Araujo França','camila.couto@lioraenergia.com.br':'Camila Couto',
@@ -874,6 +876,9 @@ ROSTER_ATIVO = {
  'neilon.nascimento@lioraenergia.com.br': ('consultor','2026-06-01'),
  'rodrigo.ribeiro@lioraenergia.com.br': ('consultor','2026-06-01'),
  'odirley.costa@lioraenergia.com.br': ('consultor','2026-06-15'),
+ 'nailson.oliveira@lioraenergia.com.br': ('consultor','2026-09-08'),
+ 'samuel.santos@lioraenergia.com.br': ('consultor','2026-09-08'),
+ 'francisco.monteiro@lioraenergia.com.br': ('consultor','2026-09-08'),
  'nubia.andrade@lioraenergia.com.br': ('consultor','2026-06-15'),
  'mecenas.junior@lioraenergia.com.br': ('consultor','2026-06-24'),
  'luciana.campos@lioraenergia.com.br': ('consultor','2026-06-25'),

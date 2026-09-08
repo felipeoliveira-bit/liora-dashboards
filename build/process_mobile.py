@@ -80,6 +80,7 @@ EMAIL_NOME = {
  'rosangela.mendes@lioraenergia.com.br':'Rosangela Mendes','tiago.freitas@lioraenergia.com.br':'Tiago Freitas','tamires.costa@lioraenergia.com.br':'Tamires Costa',
  'ryan.trindade@lioraenergia.com.br':'Ryan Trindade','alberto.nascimento@lioraenergia.com.br':'Alberto Nascimento','marcel.sousa@lioraenergia.com.br':'Marcel Sousa','jefferson.fideli@lioraenergia.com.br':'Jefferson Fideli','phillip.faria@lioraenergia.com.br':'Phillip Faria','bruno.borges@lioraenergia.com.br':'Bruno Borges',
  'neilon.nascimento@lioraenergia.com.br':'Neilon Nascimento','sabrina.tomazeti@lioraenergia.com.br':'Sabrina Tomazeti','odirley.costa@lioraenergia.com.br':'Odirley Costa',
+ 'nailson.oliveira@lioraenergia.com.br':'Nailson Oliveira', 'samuel.santos@lioraenergia.com.br':'Samuel Santos', 'francisco.monteiro@lioraenergia.com.br':'Francisco Monteiro',  # novos CE 08/09
  'nubia.andrade@lioraenergia.com.br':'Núbia Andrade','marcio.galvao@lioraenergia.com.br':'Marcio Galvão',
  'bruno.andrade@lioraenergia.com.br':'Bruno Andrade','rodrigo.ribeiro@lioraenergia.com.br':'Rodrigo Ribeiro',
  'adroaldo.bonfim@lioraenergia.com.br':'Adroaldo Bonfim','ettore.rossi@lioraenergia.com.br':'Ettore Rossi','tatiane.correia@lioraenergia.com.br':'Tatiane Correia',
@@ -122,6 +123,7 @@ SELLER_PRACA = {  # canônico -> label praça
  'Bruno Andrade':'Natal','Marcio Galvão':'Natal','Rodrigo Ribeiro':'Natal','Ananias Neto':'Natal','Thiago Araujo França':'Natal','Camila Couto':'Feira de Santana',
  'Caio Lannes':'SPI','Monica Silveira':'SPI','Franciele Felix':'SPI','Ederson Silva':'SPI','Diego Faria':'SPI',
  'Bruno Borges':'CE','Neilon Nascimento':'CE','Sabrina Tomazeti':'CE','Odirley Costa':'CE','Núbia Andrade':'CE',
+ 'Nailson Oliveira':'CE', 'Samuel Santos':'CE', 'Francisco Monteiro':'CE',  # novos CE 08/09
  'Briel Barbosa':'SPI','Olímpio Filho':'Ribeirão Preto SPI','Fábio Rodrigues':'Ribeirão Preto SPI',
  'Karianine Sampaio':'Ribeirão Preto SPI',  # novos 10/08
  'Olavo Cavalcanti':'RN Interior','Doni Oliveira':'RN Interior',
