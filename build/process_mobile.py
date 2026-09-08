@@ -413,6 +413,7 @@ LOST_IGNORE = {  # ignora lost_at/lost_reason (falso 'nao aceito pela distribuid
 # no card, mas cliente reprovado e o motivo"). Prefixa o campo 'motivo' do rawData —
 # o card do desktop e a aba de detalhe do mobile imprimem esse campo. Chave = deal_id.
 FORCE_NOTE = {
+  'db6caa0b-9770-4ef2-8d60-e3e3f0bc8b7f': 'ℹ️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 08/09) — venda aprovada na base (risco + credito) mas registrada no INSIDE SALES (Jonas Alencar); o deal do Field aberto pelo Daniel Junior 35 min antes travou em GENERATING CONTRACT. Atribuida ao Daniel ate o Ops corrigir o dono na origem.',
   'b3caa8ce-9553-4bd6-ab3f-9559420cb24e': 'ℹ️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 04/09) — titularidade agendada e contrato assinado em 03/09; o risco ainda esta em analise MANUAL na base (carimbo 04/09 11:25), sem carimbo de aprovacao.',
   'fe00362b-896b-40f7-86cc-7a24d444de58': '⚠️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 01/09) — cliente REPROVADO na analise de risco em 31/08: faturas vencidas 29/07 e 26/08, e antes o analista devolveu 3x pedindo fatura legivel.',
   '8ba12fdb-f575-4bff-a843-cd29175536b2': '⚠️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 01/09) — Antecipa com PAGAMENTO REJEITADO na base; o risco aprovou pendente de credito em 26/08.',
@@ -428,7 +429,40 @@ def force_note(did, txt):
     return (n + ' | ' + t) if t else n
 
 # INJECT_DEALS: deals ausentes da base viva, adicionados manualmente (Felipe).
-INJECT_DEALS = []  # 25/08: Marli Merces (f8ba2c6d) e Chesser 2a UC (e607c712) ja estao na gold
+INJECT_DEALS = [
+ {  # ANA PAULA DA SILVA ADAO (CPF 39801485809) - Antecipa PF 0,274 MWh, Sertaozinho/SP.
+    # A venda foi APROVADA (risco APPROVED_PENDING_CREDIT + credito approved + WAITING_PAYMENT_APPROVAL,
+    # 04/09 14:53 BRT) mas caiu no INSIDE SALES (Jonas Alencar, canal 'Performance Antecipa PF'),
+    # entao NAO entra no recorte Field e o FORCE_APPROVED ficaria inerte - por isso vai como INJECT.
+    # Daniel Junior abriu o deal Field da mesma cliente 35 min ANTES (03c8a5e4, 04/09 12:57 BRT,
+    # travado em GENERATING CONTRACT sem risco) e tambem o do conjuge Fabiano (c05927af).
+    # Atribuido ao Daniel Junior (SPI) a pedido do Felipe 08/09. REMOVER quando o Ops corrigir o
+    # dono na origem - senao vira duplicata no dia em que o deal Field dele for aprovado.
+  'deal_id': 'db6caa0b-9770-4ef2-8d60-e3e3f0bc8b7f',
+  'proposal_id': 'be306a3c-f411-40dd-8228-5265fee5ec36',
+  'current_client_name': 'ANA PAULA DA SILVA ADAO',
+  'current_client_cpf': '39801485809', 'current_client_cnpj': '',
+  'client_phone_number': '+5516994373255',
+  'current_client_city': 'SERTAOZINHO', 'current_client_state': 'SP',
+  'distributor_short_name': 'CPFL',
+  'sales_person_email': 'daniel.junior@lioraenergia.com.br',
+  'sales_person_name': 'Daniel Junior',
+  'sales_team': 'Field Sales', 'sales_channel_name': '[FS] Liora Antecipa PF',
+  'internal_sales_classification': 'Outro',
+  'product_name': 'LIORA_ANTECIPA_PF',
+  'current_consumption_filled': '0.274', 'current_total_bill_cost (R$)': '285.06',
+  'deal_stage': 'BGC_PARCEIRO', 'deal_lost_at': '', 'deal_lost_reason': '',
+  'deal_created_at': '2026-09-04 16:32:57', 'proposal_created_at': '2026-09-04 16:32:57',
+  'latest_risk_analysis_result': 'APPROVED_PENDING_CREDIT',
+  'latest_risk_analysis_created_at': '2026-09-04 14:53:04',
+  'latest_risk_analysis_comments': 'Pix.',
+  'latest_credit_analysis_result': 'approved',
+  'deal_credit_stage': 'WAITING_PAYMENT_APPROVAL',
+  'latest_contract_id': 'eee88855-7a4b-47d6-9512-56d82688a541',
+  'ops_tt_status': 'N/A', 'idle_days': '0', 'accepted_proposal': 'true',
+  'signer_name': '', 'origin_campaign': '', 'origin_source': '',
+ },
+]  # 25/08: Marli Merces (f8ba2c6d) e Chesser 2a UC (e607c712) ja estao na gold
                    # viva com risco APPROVED -> o inject virava DUPLICATA no desktop
                    # (deals + INJECT_DEALS nao deduplica). Removidos conforme o proprio
                    # comentario original ("remover quando card818 refletir").
