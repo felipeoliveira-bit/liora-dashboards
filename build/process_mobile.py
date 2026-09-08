@@ -259,6 +259,12 @@ FORCE_DENIED = {
   '77a56fa5-9c4e-476c-b71d-ac08534d6745',  # DILEUDA CORINGA DA FONSECA DA SILVA (Antecipa PF, Thiago Macillo/Natal RN, 0.49 MWh) - desistiu; perdido 13/08 na base; era FORCE_APPROVED e o Felipe liberou considerar reprovada (25/08)
 }
 FORCE_APPROVED = {
+  # FABIANO JOSE BERNARDES NOGUEIRA (GD LIORA_B_, Briel Barbosa/Campinas SPI, 4.684 MWh, Bauru/SP).
+  # Risco APPROVED em 08/09 14:50 BRT; Felipe 08/09 pediu para exibir com a data de 07/09.
+  # SO NO MOBILE de proposito (nao replicar no process_lideranca): o dash de lideres segue
+  # com 08/09, que e a data real da base. Impacto na campanha 01-07/09: Briel 8.117 -> 12.800 MWh,
+  # mesma faixa (R$ 1.500), total pago inalterado (R$ 10.000).
+                  'bb62d8f5-eafa-4063-bb48-12d3b652670f': '2026-09-07',
                   'b3caa8ce-9553-4bd6-ab3f-9559420cb24e': '2026-09-04',  # AMANDA MARCONDES (Antecipa PJ, Briel Barbosa/Campinas SPI, 1.921 MWh) - SCHEDULED_TITULARIDADE + contrato assinado 03/09; risco MANUAL sem carimbo. Aprovado manual a pedido do Felipe 04/09. ATENCAO: existe deal GD irmao 6943dfcb (LIORA_B_, mesma cliente, mesmos 1.921 MWh) em SIGNING CONTRACT - se aquele aprovar, vira DUPLO COMPUTO; remover um dos dois.
                   '1e11931c-3e99-48f4-a338-47d734012625': '2026-08-20',  # FRANCISCO DAS CHAGAS CUNHA SILVA / 33050196000188 (Antecipa PJ, Olimpio Filho/Ribeirao, 0.916 MWh) - reaprovado 20/08 (lag de ingestao). ATENCAO: o risco RE-REPROVOU o deal em 21/08 14:04 ('Reprovado na analise de risco', lost + BGC_PARCEIRO) e o risk_real confirma DENIED; Felipe 21/08 mandou MANTER como aprovado mesmo assim. Nao remover sem falar com ele.
                   'cfb2500c-c323-4943-a7f8-e831a8f37b55': '2026-08-04',  # PP FERREIRA DE SALES COMER DE COSMETICOS - aprovado manual SOS 15:32 04/08 (Aurivando/CE); card818+risk_real ainda MANUAL; remover quando base refletir
@@ -413,6 +419,7 @@ LOST_IGNORE = {  # ignora lost_at/lost_reason (falso 'nao aceito pela distribuid
 # no card, mas cliente reprovado e o motivo"). Prefixa o campo 'motivo' do rawData —
 # o card do desktop e a aba de detalhe do mobile imprimem esse campo. Chave = deal_id.
 FORCE_NOTE = {
+  'bb62d8f5-eafa-4063-bb48-12d3b652670f': 'ℹ️ Data de aprovacao exibida como 07/09 a pedido do Felipe (08/09). O risco carimbou 08/09 14:50 na base.',
   'db6caa0b-9770-4ef2-8d60-e3e3f0bc8b7f': 'ℹ️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 08/09) — venda aprovada na base (risco + credito) mas registrada no INSIDE SALES (Jonas Alencar); o deal do Field aberto pelo Daniel Junior 35 min antes travou em GENERATING CONTRACT. Atribuida ao Daniel ate o Ops corrigir o dono na origem.',
   'b3caa8ce-9553-4bd6-ab3f-9559420cb24e': 'ℹ️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 04/09) — titularidade agendada e contrato assinado em 03/09; o risco ainda esta em analise MANUAL na base (carimbo 04/09 11:25), sem carimbo de aprovacao.',
   'fe00362b-896b-40f7-86cc-7a24d444de58': '⚠️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 01/09) — cliente REPROVADO na analise de risco em 31/08: faturas vencidas 29/07 e 26/08, e antes o analista devolveu 3x pedindo fatura legivel.',
