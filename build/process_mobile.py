@@ -259,6 +259,13 @@ FORCE_DENIED = {
   '77a56fa5-9c4e-476c-b71d-ac08534d6745',  # DILEUDA CORINGA DA FONSECA DA SILVA (Antecipa PF, Thiago Macillo/Natal RN, 0.49 MWh) - desistiu; perdido 13/08 na base; era FORCE_APPROVED e o Felipe liberou considerar reprovada (25/08)
 }
 FORCE_APPROVED = {
+  # Ederson Silva - as 3 vendas aprovadas em 08/09 exibidas com a data de 07/09
+  # (pedido do Felipe 08/09). SO NO MOBILE, igual ao lote do Daniel Junior.
+  # Todas Antecipa PF; na campanha 01-07/09 leva o Ederson de 6.955 para 8.202 MWh
+  # (com o bonus 1,5x) e CRUZA a faixa de 8 MWh: R$ 750 -> R$ 1.500.
+                  'd922644d-f758-48fc-91e8-ea20e20ee9de': '2026-09-07',  # ELIZANGELA FIORAVANTE SANT ANA (0.259 MWh, ARARAQUARA)
+                  '50374f94-81c7-4ba9-868c-358a5cd894c0': '2026-09-07',  # FRANCISCO VITOR MOURA GURGEL DIAS (0.319 MWh, FORTALEZA)
+                  '22d0c661-8a24-4ad0-8a6d-b98bef25b238': '2026-09-07',  # REBECA VITORIA DOMINGUES (0.253 MWh, IBATÉ)
   # Daniel Junior - as 7 vendas aprovadas em 08/09 exibidas com a data de 07/09
   # (pedido do Felipe 08/09). SO NO MOBILE: o dash de lideres segue com 08/09,
   # que e a data real do risco. Todas Antecipa PF; entram na campanha 01-07/09
