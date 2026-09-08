@@ -259,6 +259,11 @@ FORCE_DENIED = {
   '77a56fa5-9c4e-476c-b71d-ac08534d6745',  # DILEUDA CORINGA DA FONSECA DA SILVA (Antecipa PF, Thiago Macillo/Natal RN, 0.49 MWh) - desistiu; perdido 13/08 na base; era FORCE_APPROVED e o Felipe liberou considerar reprovada (25/08)
 }
 FORCE_APPROVED = {
+  # Paulo Lima - CO FRANCA CHURRASCARIA MINUANO LTDA exibida com a data de 07/09
+  # (pedido do Felipe 08/09). SO NO MOBILE, igual aos lotes do Daniel e do Ederson.
+  # Antecipa PJ 7.207 MWh -> com o bonus 1,5x vale 10.81 na campanha 01-07/09:
+  # Paulo Lima 12.229 -> 23.040 MWh e CRUZA a faixa de 15: R$ 1.500 -> R$ 2.500.
+                  '566580ea-1195-43e9-9f23-4073c10aefb7': '2026-09-07',  # CO FRANCA CHURRASCARIA MINUANO LTDA (7.207 MWh, FRANCA)
   # Ederson Silva - as 3 vendas aprovadas em 08/09 exibidas com a data de 07/09
   # (pedido do Felipe 08/09). SO NO MOBILE, igual ao lote do Daniel Junior.
   # Todas Antecipa PF; na campanha 01-07/09 leva o Ederson de 6.955 para 8.202 MWh
