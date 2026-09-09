@@ -435,6 +435,17 @@ LOST_IGNORE = {  # ignora lost_at/lost_reason (falso 'nao aceito pela distribuid
 # FORCE_NOTE: nota que aparece no card do cliente forcado (Felipe 01/09: "considerado
 # no card, mas cliente reprovado e o motivo"). Prefixa o campo 'motivo' do rawData —
 # o card do desktop e a aba de detalhe do mobile imprimem esse campo. Chave = deal_id.
+# NO_COUNT: venda que APARECE no card do vendedor mas NAO conta em nada -
+# nem no resultado do vendedor, nem da praca, nem no ranking, nem na campanha,
+# nem na meta (Felipe 09/09). Usado quando o cliente JA e da base da Liora:
+# os dois CNPJs abaixo foram fechados pelo Caio Lannes em abr-mai/26 e estao
+# em ACTIVE_MEMBER; o Antecipa vendido em cima nao e venda nova.
+# Vira a flag 'nc' no rawData e o isAprovado() do HTML retorna false.
+NO_COUNT = {
+  '9f9e42d3-5f8d-4ee8-b952-2ab6c2596aa2': 1,  # TMGF GOULART ALIMENTOS (CNPJ 37098595000250, 2.48 MWh)
+  'a58c570f-678c-4e08-b3e9-cc1618c9ceb8': 1,  # JLPG ALIMENTOS LTDA (CNPJ 47838416000147, 2.193 MWh)
+}
+
 FORCE_NOTE = {
   'db6caa0b-9770-4ef2-8d60-e3e3f0bc8b7f': 'ℹ️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 08/09) — venda aprovada na base (risco + credito) mas registrada no INSIDE SALES (Jonas Alencar); o deal do Field aberto pelo Daniel Junior 35 min antes travou em GENERATING CONTRACT. Atribuida ao Daniel ate o Ops corrigir o dono na origem.',
   'b3caa8ce-9553-4bd6-ab3f-9559420cb24e': 'ℹ️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 04/09) — titularidade agendada e contrato assinado em 03/09; o risco ainda esta em analise MANUAL na base (carimbo 04/09 11:25), sem carimbo de aprovacao.',
@@ -593,7 +604,8 @@ def build_rawData(deals_path, ag_path, prop_path=None, docs_map=None, uc_map=Non
             'motivo':force_note(r.get('deal_id'), (('CANCELADO — '+(r.get('deal_lost_reason') or '').strip()) if ((r.get('latest_risk_analysis_result') or '').strip()=='APPROVED' and (r.get('deal_lost_at') or '').strip() and r.get('deal_stage')=='BACKGROUND_CHECKING' and (r.get('deal_lost_reason') or '').strip().lower()!='troca de titularidade') else clean_obs(r.get('latest_risk_analysis_comments')))),
             'date':iso(created),'aprov_date':aprov,
             'docs':docs_map.get((r.get('latest_contract_id') or '').strip(),''),
-            'cid':(r.get('latest_contract_id') or '').strip(),   # cruza c/ a planilha de pagamentos do Antecipa (action pagAntecipa)
+            'cid':(r.get('latest_contract_id') or '').strip(),
+            'nc': (1 if (r.get('deal_id') or '').strip() in NO_COUNT else 0),  # Felipe 09/09: aparece no card, nao conta em nada   # cruza c/ a planilha de pagamentos do Antecipa (action pagAntecipa)
         })
     for r in rows(deals_path): emit(r)
     for r in INJECT_DEALS:

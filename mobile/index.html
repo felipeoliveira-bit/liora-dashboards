@@ -989,6 +989,7 @@ function isCoelba(x){ return distType(x) === 'coelba'; }
 const LOST_DESFAZ = ['cliente desistiu','reprovado na analise de credito','reprovado na análise de crédito'];
 function isAprovado(x){
   if(x.ant_bloq) return false;/*Felipe 01/09: Antecipa so conta com risco E credito aprovados*/ 
+  if(x.nc) return false; /* Felipe 09/09: NO_COUNT - cliente que ja e da base; aparece no card do vendedor mas nao conta em nada */
   if(x.lost_at && LOST_DESFAZ.indexOf((x.lost_reason||'').trim().toLowerCase()) >= 0) return false;
   if(x.credito_ok) return true; // Antecipa: crédito aprovado conta como aprovado (Felipe 06/08)
   if(x.stage === 'BGC_PARCEIRO') return false; // em validação Antecipa
@@ -2823,8 +2824,10 @@ function openRankSellerModal(el){
   const period = el.dataset.period;
 
   // aprovados no período
+  // Felipe 09/09: inclui os NO_COUNT (x.nc) so para EXIBICAO - eles nao entram
+  // em nenhuma soma porque o isAprovado() os rejeita; aqui o teste e explicito.
   const aprovBase = rawData
-    .filter(x => isAprovado(x) && x.s === name)
+    .filter(x => (isAprovado(x) || (x.nc && x.aprov_date)) && x.s === name)
     .map(x => ({ ...x, date: x.aprov_date }));
   const aprovFiltered = filterPropByPeriod(aprovBase, period);
 
@@ -2844,6 +2847,7 @@ function openRankSellerModal(el){
           <div class="agd-cli" style="cursor:pointer" onclick="openClientDetailModal('${x.deal_id}')">
             <div class="agd-cli-name">${escapeHtml(x.c || '—')} <span style="float:right;font-size:10px;color:var(--muted)">›</span></div>
             <div class="agd-cli-meta">⚡ ${(x.mwh||0).toFixed(2)} MWh · ${escapeHtml(x.dist||'—')}${x.city ? ` · 📍 ${escapeHtml(x.city)}` : ''}${x.aprov_date ? ` · ✅ ${x.aprov_date.split('-').reverse().slice(0,2).join('/')}` : ''}</div>
+            ${x.nc ? `<div style="margin-top:5px;display:inline-block;padding:3px 8px;background:#F1F2F7;border:1px solid #E2E4EE;border-radius:8px;font-size:9.5px;font-weight:800;color:#6B7280;letter-spacing:.02em">NÃO CONTABILIZADO · cliente já da base</div>` : ''}
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px">
               <button class="relatar-btn" style="margin-top:0" data-deal-id="${x.deal_id}" data-cliente-nome="${escapeHtml(x.c)}" onclick="event.stopPropagation();openRelatarSituacaoFromBtn(this)">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 11a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v3a4 4 0 0 1-4 4H8l-5 4z"/></svg>
