@@ -885,7 +885,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
   <div class="copa-modal" id="copa-modal" onclick="closeCopaFig()"></div>
 
   <div style="position:fixed;bottom:78px;right:8px;font-size:9px;color:#aaa;background:rgba(255,255,255,.85);padding:2px 6px;border-radius:8px;z-index:99;font-family:monospace;pointer-events:none">
-    v2.181 · 01/09
+    v2.182 · 09/09
   </div>
 
   <!-- BOTTOM NAV -->
@@ -6734,7 +6734,9 @@ function renderFunilKanban(el){
       if(isGestor_(me)){
         time = VENDEDORES.filter(v=>v.praca!=='Outros' && !isOculto_(v.nome));
       } else {
-        time = VENDEDORES.filter(v=>(SELLER_PRACA[v.nome]||'').toLowerCase() === praça && !isOculto_(v.nome));
+        // v2.182 — praçaLider virou ARRAY na v2.179 (Mirla acumula 2 praças); comparar
+        // string === array é sempre false e o seletor saia VAZIO p/ TODOS os líderes.
+        time = VENDEDORES.filter(v=>praça.indexOf((SELLER_PRACA[v.nome]||'').toLowerCase()) !== -1 && !isOculto_(v.nome));
       }
       const opts = time.map(v=>`<option value="${escapeHtml(v.nome)}" ${funilViewAs===v.nome?'selected':''}>${escapeHtml(v.nome)}</option>`).join('');
       const labelVendo = viewAs || 'Todo o time';
