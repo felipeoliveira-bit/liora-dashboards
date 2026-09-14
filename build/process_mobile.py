@@ -259,6 +259,7 @@ FORCE_DENIED = {
   '77a56fa5-9c4e-476c-b71d-ac08534d6745',  # DILEUDA CORINGA DA FONSECA DA SILVA (Antecipa PF, Thiago Macillo/Natal RN, 0.49 MWh) - desistiu; perdido 13/08 na base; era FORCE_APPROVED e o Felipe liberou considerar reprovada (25/08)
 }
 FORCE_APPROVED = {
+    '9b7ea565-4c5e-49b1-872d-1c72ad59ee91': '2026-09-10',  # ROSANGELA DE MELO (Antecipa PF, Lucas Santos/RN, 0.195 MWh, Mossoro/RN) - risco APPROVED 10/09 23:09 BRT + credit_stage PAYMENT_SUCCEDED (pago por Pix), sem registro em credit_analyses -> ant_ok barra; 3a ocorrencia do buraco do Pix. Forcado aprovado 14/09 (Felipe). Remover quando a base trouxer o credito ou a regra aceitar PAYMENT_SUCCEDED.
                   '75b2bd3b-b87c-4b3c-a705-bf1c205dadcf': '2026-09-10',  # CARIZA REIS DA SILVA CARNES / 18689549000109 (Antecipa PJ, Paulo Lima/Ribeirao, 1.536 MWh) - risco APPROVED 10/09 13:24 + credit_stage PAYMENT_SUCCEDED (pago por Pix), mas SEM registro em credit_analyses -> o gate ant_ok barrava. Aprovado manual (Felipe 11/09); Ops (Lucas) avisado. Remover quando a base trouxer o credito ou a regra passar a aceitar PAYMENT_SUCCEDED.
   # Paulo Lima - CO FRANCA CHURRASCARIA MINUANO LTDA exibida com a data de 07/09
   # (pedido do Felipe 08/09). SO NO MOBILE, igual aos lotes do Daniel e do Ederson.
@@ -448,6 +449,7 @@ NO_COUNT = {
 }
 
 FORCE_NOTE = {
+    '9b7ea565-4c5e-49b1-872d-1c72ad59ee91': 'ℹ️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 14/09) — Antecipa PF pago por Pix: risco APROVADO em 10/09 23:09 e pagamento confirmado na base, mas a analise de credito esta VAZIA (Pix nao gera analise de credito), entao a regra automatica nao contava.',
   '75b2bd3b-b87c-4b3c-a705-bf1c205dadcf': 'ℹ️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 11/09) — Antecipa PJ pago por Pix: risco APROVADO em 10/09 13:24 e pagamento confirmado na base, mas a analise de credito esta VAZIA (Pix nao gera analise de credito), entao a regra automatica nao contava.',
   'db6caa0b-9770-4ef2-8d60-e3e3f0bc8b7f': 'ℹ️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 08/09) — venda aprovada na base (risco + credito) mas registrada no INSIDE SALES (Jonas Alencar); o deal do Field aberto pelo Daniel Junior 35 min antes travou em GENERATING CONTRACT. Atribuida ao Daniel ate o Ops corrigir o dono na origem.',
   'b3caa8ce-9553-4bd6-ab3f-9559420cb24e': 'ℹ️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 04/09) — titularidade agendada e contrato assinado em 03/09; o risco ainda esta em analise MANUAL na base (carimbo 04/09 11:25), sem carimbo de aprovacao.',
