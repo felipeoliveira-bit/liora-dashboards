@@ -274,6 +274,7 @@ FORCE_APPROVED = {
                   '920a2d3b-332f-4890-bbf8-5bed0e06f5fd': '2026-09-14',  # POSTO D PEDRO DE RIBEIRAO LTDA (GD LIORA_F_, Fabio Rodrigues/Ribeirao, 7.079 MWh)
                   '807cf6a5-138f-4366-9166-d289599a67ce': '2026-09-14',  # Ricardo da Silva Caldeira (GD LIORA_B_, Percy Hormazabal/Campinas, 1.561 MWh)
                   '4f8d1e6f-2622-4768-99cd-560a4b526b88': '2026-09-14',  # VALTER DOS REIS FALCAO FILHO (Antecipa PF, Lucileide Carlos/Feira de Santana, 0.214 MWh)
+                  '7888777e-922c-46a7-a1ef-6d1a287a5e6f': '2026-09-14',  # AL AUTO CENTER LTDA (GD LIORA_F_, Fabio Rodrigues/Ribeirao, 0.623 MWh) - incluido no mesmo lote (Felipe 16/09); leva o Fabio de 7.486 para 8.108 MWh na campanha 08-14/09 e CRUZA a faixa de 8: R$ 750 -> R$ 1.500
   # Paulo Lima - CO FRANCA CHURRASCARIA MINUANO LTDA exibida com a data de 07/09
   # (pedido do Felipe 08/09). SO NO MOBILE, igual aos lotes do Daniel e do Ederson.
   # Antecipa PJ 7.207 MWh -> com o bonus 1,5x vale 10.81 na campanha 01-07/09:
