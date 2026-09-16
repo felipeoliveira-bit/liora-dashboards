@@ -412,6 +412,20 @@ RISK_APPR_DATE = {
 # semana da venda. Como o rebuild publica a cada ~2h, a aprovacao original (APPROVED_
 # PENDING_CREDIT) sempre e' capturada dias antes do pagamento. So anda para TRAS.
 # Fail-safe: sem arquivo/sem match -> {} e nada muda. Escape hatch: FORCE_APPROVED.
+# ---- DATAS FORCADAS SO NO MOBILE (Felipe 16/09) ---------------------------
+# O ledger abaixo le o rawData do mobile/index.html PUBLICADO. Entao toda data
+# que o FORCE_APPROVED do process_mobile.py carimba acaba VAZANDO para ca no
+# ciclo seguinte: a regra "nunca anda para frente" ve prev=14/09 < calc=15/09 e
+# puxa o desktop para tras tambem. Foi o que aconteceu com os 4 deals abaixo no
+# rebuild de 16/09 - o dash de lideres, que e a base do fechamento, mudou junto.
+# Estes deal_ids ficam FORA do ledger: o desktop recalcula a data real do risco.
+LEDGER_IGNORE = {
+    '920a2d3b-332f-4890-bbf8-5bed0e06f5fd',  # POSTO D PEDRO DE RIBEIRAO LTDA (Fabio Rodrigues, 7.079 MWh)
+    '7888777e-922c-46a7-a1ef-6d1a287a5e6f',  # AL AUTO CENTER LTDA (Fabio Rodrigues, 0.623 MWh)
+    '807cf6a5-138f-4366-9166-d289599a67ce',  # Ricardo da Silva Caldeira (Percy Hormazabal, 1.561 MWh)
+    '4f8d1e6f-2622-4768-99cd-560a4b526b88',  # VALTER DOS REIS FALCAO FILHO (Lucileide Carlos, 0.214 MWh)
+}
+
 def _load_prev_aprov():
     import os as _os, re as _re, json as _json, sys as _sys
     p = _os.environ.get('PREV_MOBILE') or _os.path.join(
@@ -425,7 +439,7 @@ def _load_prev_aprov():
         for r in _json.loads(m.group(1)):
             did = (r.get('deal_id') or '').strip()
             a = (r.get('aprov_date') or '').strip()
-            if did and a:
+            if did and a and did not in LEDGER_IGNORE:
                 out[did] = a[:10]
         print('ledger de datas: %d aprovado(s) no publicado (%s)'
               % (len(out), _os.path.basename(p)))
