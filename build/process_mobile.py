@@ -261,6 +261,19 @@ FORCE_DENIED = {
 FORCE_APPROVED = {
     '9b7ea565-4c5e-49b1-872d-1c72ad59ee91': '2026-09-10',  # ROSANGELA DE MELO (Antecipa PF, Lucas Santos/RN, 0.195 MWh, Mossoro/RN) - risco APPROVED 10/09 23:09 BRT + credit_stage PAYMENT_SUCCEDED (pago por Pix), sem registro em credit_analyses -> ant_ok barra; 3a ocorrencia do buraco do Pix. Forcado aprovado 14/09 (Felipe). Remover quando a base trouxer o credito ou a regra aceitar PAYMENT_SUCCEDED.
                   '75b2bd3b-b87c-4b3c-a705-bf1c205dadcf': '2026-09-10',  # CARIZA REIS DA SILVA CARNES / 18689549000109 (Antecipa PJ, Paulo Lima/Ribeirao, 1.536 MWh) - risco APPROVED 10/09 13:24 + credit_stage PAYMENT_SUCCEDED (pago por Pix), mas SEM registro em credit_analyses -> o gate ant_ok barrava. Aprovado manual (Felipe 11/09); Ops (Lucas) avisado. Remover quando a base trouxer o credito ou a regra passar a aceitar PAYMENT_SUCCEDED.
+  # Felipe 16/09: 3 vendas aprovadas em 15/09 exibidas com a data de 14/09.
+  # SO NO MOBILE - o process_lideranca.py fica intocado e o dash de lideres
+  # segue com 15/09 (data real do risco). Mesmo padrao dos lotes do Daniel,
+  # do Ederson e da CO FRANCA (08/09). Impacto medido antes de aplicar:
+  #   campanha 08-14/09 (paga 16/09): Fabio Rodrigues 0.407 -> 7.486 MWh (R$ 0 -> R$ 750)
+  #                                   Percy Hormazabal 6.683 -> 8.244 MWh (R$ 750 -> R$ 1.500)
+  #                                   Lucileide Carlos 8.179 -> 8.500 MWh (faixa igual)
+  #                                   total da campanha R$ 12.250 -> R$ 13.750
+  #   campanha 15-21/09 (vigente):    Fabio Rodrigues 7.702 -> 0.623 MWh (R$ 750 -> R$ 0)
+  # ATENCAO: a data forcada NAO expira - tirar estes 3 na virada de mes.
+                  '920a2d3b-332f-4890-bbf8-5bed0e06f5fd': '2026-09-14',  # POSTO D PEDRO DE RIBEIRAO LTDA (GD LIORA_F_, Fabio Rodrigues/Ribeirao, 7.079 MWh)
+                  '807cf6a5-138f-4366-9166-d289599a67ce': '2026-09-14',  # Ricardo da Silva Caldeira (GD LIORA_B_, Percy Hormazabal/Campinas, 1.561 MWh)
+                  '4f8d1e6f-2622-4768-99cd-560a4b526b88': '2026-09-14',  # VALTER DOS REIS FALCAO FILHO (Antecipa PF, Lucileide Carlos/Feira de Santana, 0.214 MWh)
   # Paulo Lima - CO FRANCA CHURRASCARIA MINUANO LTDA exibida com a data de 07/09
   # (pedido do Felipe 08/09). SO NO MOBILE, igual aos lotes do Daniel e do Ederson.
   # Antecipa PJ 7.207 MWh -> com o bonus 1,5x vale 10.81 na campanha 01-07/09:
