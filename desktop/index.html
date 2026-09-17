@@ -4756,6 +4756,10 @@ function isNegado(x) {
 const VENDEDORES_OCULTOS = ['Camila Couto','Silmara Gomes','Ryan Trindade','Franciele Felix','Rosangela Mendes','Antonio Mariano','Ana Ribeiro','Bruno Andrade']; // saíram do time: ocultar linha individual, mas resultado continua somando na praça
 const isAprovado = x => {
   if(x.ant_bloq) return false;/*Felipe 01/09: Antecipa so conta com risco E credito aprovados*/ 
+  /* 16/09: esta copia (arrow function) escapou dos greps por declaracao classica em 25/08 e ficou sem a trava de PERDIDO;
+     so tinha a versao aninhada em BACKGROUND_CHECKING, entao desistencia em REQUEST_TITULARIDADE seguia contando e a aba
+     Funil ficava ACIMA de BAU/Rankings/card do lider (Campinas SPI 71,1 x 70,6 em 16/09). Ver perdido-nunca-conta. */
+  if (x.lost_at && LOST_DESFAZ.indexOf((x.lost_reason||'').trim().toLowerCase()) >= 0) return false;
   if(x.credito_ok) return true;/*credito aprovado (Antecipa) conta mesmo em BGC_PARCEIRO - alinha CRM 06/08*/
   if (x.stage === 'BGC_PARCEIRO') return false;
   if (x.lost_at) { if (x.stage === 'BACKGROUND_CHECKING') { if (LOST_DESFAZ.indexOf((x.lost_reason||'').trim().toLowerCase()) >= 0) return false; } }
