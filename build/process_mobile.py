@@ -120,7 +120,8 @@ SELLER_PRACA = {  # canônico -> label praça
  'Thiago Firmo':'Natal',
  'Adroaldo Bonfim':'Salvador','Ettore Rossi':'Salvador',
  'Ronaldo Nogueira':'Salvador',
- 'Conceição Santos':'Ribeirão Preto SPI',  # novos 16/09 (Ronaldo Nogueira - lider Salvador; Conceicao Santos - Ribeirao; Felipe 16/09)'Tatiane Correia':'Salvador','Maria Lúcia':'Salvador','Tais Santos':'Salvador','Antonio Mariano':'Salvador','Silvia Dias':'Salvador',
+ 'Conceição Santos':'Ribeirão Preto SPI',  # novos 16/09 (Ronaldo Nogueira - lider Salvador; Conceicao Santos - Ribeirao; Felipe 16/09)
+ 'Tatiane Correia':'Salvador','Maria Lúcia':'Salvador','Tais Santos':'Salvador','Antonio Mariano':'Salvador','Silvia Dias':'Salvador',
  'Kelma Rangel':'Feira de Santana','Lucileide Carlos':'Feira de Santana','Rosangela Mendes':'Feira de Santana','Tiago Freitas':'Feira de Santana','Ryan Trindade':'Feira de Santana','Alberto Nascimento':'Feira de Santana','Tamires Costa':'Feira de Santana',
  'Bruno Andrade':'Natal','Marcio Galvão':'Natal','Rodrigo Ribeiro':'Natal','Ananias Neto':'Natal','Thiago Araujo França':'Natal','Camila Couto':'Feira de Santana',
  'Caio Lannes':'SPI','Monica Silveira':'SPI','Franciele Felix':'SPI','Ederson Silva':'SPI','Diego Faria':'SPI',
@@ -133,6 +134,20 @@ SELLER_PRACA = {  # canônico -> label praça
  'Paulo Alexandre Jorge':'Ribeirão Preto SPI',  # novo 16/09 (Ribeirao Preto; Felipe 16/09)
  'Felipe Oliveira':'Outros',
 }
+# ---- PLANILHA "Time": praca por E-MAIL para quem o SELLER_PRACA (por NOME) nao
+# conhece ainda. O mapa por nome GANHA SEMPRE; isto so cobre buraco, e falha de
+# leitura e' no-op. Ver time_sheet.py (caso Paulo Alexandre Jorge, 15/09).
+import time_sheet as _ts
+_PRACA2MOBILE = {'Salvador':'Salvador','Feira':'Feira de Santana','Natal':'Natal',
+                 'RN Interior':'RN Interior','SPI':'SPI','Ribeirao':'Ribeirão Preto SPI','CE':'CE'}
+PRACA_POR_EMAIL = {}
+for _em, _d in _ts.carregar_time().items():
+    _lab = _PRACA2MOBILE.get(_d['praca'])
+    if _lab: PRACA_POR_EMAIL[_em] = _lab
+_ja = {e.strip().lower() for e in EMAIL_NOME}
+_novos = sorted(e for e in PRACA_POR_EMAIL if e not in _ja)
+if _novos: print('[time] praca por e-mail (fora do EMAIL_NOME): %s' % _novos)
+
 DIST_MAP = {'NEOENERGIA COELBA':'Coelba','NEOENERGIA COSERN':'Cosern','CPFL PAULISTA':'CPFL','ENEL CE':'Enel'}
 # Antecipa / credito (Felipe 06/08): crédito aprovado conta como aprovado no Field;
 # deal_credit_stage traduzido p/ português p/ dar contexto da situação do cliente.
@@ -646,7 +661,7 @@ def build_RAW_PROP(prop_path):
         d=pdate(r['proposal_created_at']) or pdate(r['deal_created_at'])
         cli=r['current_client_name'].strip()
         seller=canon_seller(r['sales_person_email'], r['sales_person_name'])
-        praca=SELLER_PRACA.get(seller,'Outros')
+        praca=SELLER_PRACA.get(seller) or PRACA_POR_EMAIL.get((r.get('sales_person_email') or '').strip().lower()) or 'Outros'
         ov=CLIENT_OVERRIDE.get((cli or '').strip().upper())
         if ov: seller, praca = ov[0], ov[1]
         out.append({

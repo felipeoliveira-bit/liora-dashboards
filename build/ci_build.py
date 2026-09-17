@@ -104,6 +104,22 @@ run(['python3', os.path.join(BUILD,'validate_html.py'), os.path.join(WORK,'out_m
 shutil.copy(os.path.join(WORK,'out_mobile.html'), MOB)
 print('   mobile carimbado ->', STAMP_TS)
 
+# 5) GUARDA-COSTAS DOS MAPAS: nenhum vendedor pode ter sumido de um mapa.
+#    Pega edicao manual em que um comentario engoliu o resto da linha - nem
+#    py_compile, nem node --check, nem validate_html enxergam isso.
+#    Remocao legitima (desligamento) entra no MAPAS_REMOCAO_OK, separado por ';'.
+_ok = [x for x in os.environ.get('MAPAS_REMOCAO_OK', '').split(';') if x.strip()]
+_cmd = ['python3', os.path.join(BUILD, 'validate_mapas.py')]
+for _o in _ok: _cmd += ['--ok', _o.strip()]
+_vm = subprocess.run(_cmd, cwd=ROOT, capture_output=True, text=True)
+print(_vm.stdout.strip() or _vm.stderr.strip())
+if _vm.returncode == 1:
+    sys.exit('VALIDATE mapas: um mapa perdeu chave (veja acima).')
+elif _vm.returncode != 0:
+    # erro do proprio script (argparse, git ausente...): avisa e segue. O guarda
+    # nao pode ser o motivo de o dashboard parar de publicar.
+    print('[mapas] checagem nao rodou (rc=%s) - seguindo.' % _vm.returncode)
+
 print('BUILD OK @ %s (data %s)' % (TS, STAMP_TS))
 _dp=DESK; _dh=open(_dp,encoding='utf-8').read(); _dh=_dh.replace("const pct = metaToDate>0 ? Math.min((mwh/metaToDate)*100, 100) : 0;","const pct = metaMes>0 ? (mwh/metaMes)*100 : 0;"); open(_dp,'w',encoding='utf-8').write(_dh); print('patch op-card aplicado')
 _mp=MOB; _mh=open(_mp,encoding='utf-8').read(); _mh=_mh.replace(">ver comprovante ", ">ver comprovante (UC ${escapeHtml(String(p.uc||''))}) "); open(_mp,'w',encoding='utf-8').write(_mh); print('patch comprovante-uc aplicado')

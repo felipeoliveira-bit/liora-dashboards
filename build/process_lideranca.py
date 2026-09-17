@@ -274,13 +274,41 @@ CLIENT_OVERRIDE = {
  norm('ANA JULIA DA CONCEIÇÃO FREIRE'): ('Ettore Rossi','salvador','Salvador'),  # venda do Rossi lancada na Silvia (Salvador); base ja corrigida mas o card818 ainda mostra Silvia (Felipe 14/08); remover qdo refletir  # aprovado 06/08 do Anderson; base trocou p/ Lucas 07/08 -> volta p/ Anderson (Felipe 07/08); remover qdo base corrigir
 }
 
+# ---- PLANILHA "Time": preenche quem entrou e o codigo ainda nao conhece -----
+# O codigo GANHA SEMPRE; a planilha so cobre buraco. Falha de leitura = no-op.
+# Ver time_sheet.py para o porque (caso Paulo Alexandre Jorge, 15/09).
+import time_sheet as _ts
+TIME_SHEET = _ts.carregar_time()
+_ts_novos = []
+for _em, _d in sorted(TIME_SHEET.items()):
+    if _em not in PRACA_TITLE:
+        PRACA_TITLE[_em] = _d['praca']
+        _ts_novos.append((_em, _d['praca']))
+if _ts_novos:
+    print('[time] praca vinda da planilha para %d pessoa(s): %s' % (len(_ts_novos), _ts_novos))
+
+# NOME_DA_BASE: o `sales_person_name` mais frequente por e-mail. A planilha nao tem
+# coluna de nome, e o mobile indexa praca/meta POR NOME - entao sem isto um vendedor
+# novo apareceria como o e-mail cru no desktop e em "Outros" no mobile.
+# O EMAIL2NAME continua ganhando: e' onde moram os nomes que divergem da base
+# (Doni Oliveira, Rodrigo Lima, Anderson no nha.negocios...).
+from collections import Counter as _C
+_nm = {}
+for _r in prop:
+    _e = (_r.get('sales_person_email') or '').strip().lower()
+    _n = (_r.get('sales_person_name') or '').strip()
+    if _e and _n:
+        _nm.setdefault(_e, _C())[_n] += 1
+NOME_DA_BASE = {_e: re.sub(r'\s+', ' ', _c.most_common(1)[0][0]).strip() for _e, _c in _nm.items()}
+
 unknown = set()
 def seller_of(email, client):
     ov = CLIENT_OVERRIDE.get(norm(client))
     if ov: return ov[0]
     em = (email or '').strip().lower()
     if em and em not in EMAIL2NAME: unknown.add(em)
-    return EMAIL2NAME.get(em, (email or '').strip())
+    # fallback: nome que a propria base manda; so entao o e-mail cru
+    return EMAIL2NAME.get(em) or NOME_DA_BASE.get(em) or (email or '').strip()
 def op_of(email, client):
     ov = CLIENT_OVERRIDE.get(norm(client))
     if ov: return ov[1]
@@ -1042,6 +1070,22 @@ print('historico:', len(HIST), 'linhas vendedor x mes |',
 
 # ---- HC_PROP = [[date, seller]] (1:1 com RAW) ----------------------------
 HC_PROP = [[r['date'], r['seller']] for r in RAW]
+
+# ---- planilha "Time" x mapas: preenche o roster e relata as diferencas ------
+_HOJE_ISO = __import__('datetime').date.today().isoformat()
+_ros_novos = []
+for _em, _d in sorted(TIME_SHEET.items()):
+    if _em not in ROSTER_ATIVO:
+        ROSTER_ATIVO[_em] = (_d['papel'], _HOJE_ISO)
+        _ros_novos.append((_em, _d['papel']))
+if _ros_novos:
+    print('[time] ROSTER_ATIVO recebeu %d pessoa(s) da planilha: %s' % (len(_ros_novos), _ros_novos))
+if TIME_SHEET:
+    _ts.conferir(TIME_SHEET, PRACA_TITLE, ROSTER_ATIVO)
+    # quem esta vendendo, nao esta na planilha E nao esta nos mapas: ninguem sabe dele
+    _orfaos = sorted(e for e in unknown if e and e not in TIME_SHEET)
+    if _orfaos:
+        print('!!! VENDENDO E FORA DA PLANILHA TAMBEM:', _orfaos, file=sys.stderr)
 
 if unknown:
     print('!!! EMAILS DESCONHECIDOS (adicione aos mapas):', unknown, file=sys.stderr)
