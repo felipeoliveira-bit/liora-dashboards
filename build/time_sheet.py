@@ -103,12 +103,45 @@ def _linhas():
         return resp.get('values', [])
     except Exception as e:
         msg = str(e)
-        log('nao consegui ler a aba "%s": %s' % (ABA, msg[:200]))
+        log('Sheets API nao respondeu: %s' % msg[:160])
+        if 'has not been used in project' in msg or 'SERVICE_DISABLED' in msg:
+            log('  (a Sheets API esta desativada no projeto do service account - '
+                'tentando pelo gviz, que so precisa do Drive)')
         if '403' in msg or 'permission' in msg.lower():
             # client_email e' identificador publico do service account (a chave
-            # privada continua no secret). Sem ele o Felipe nao sabe com quem
+            # privada continua no secret). Sem ele nao da p/ saber com quem
             # compartilhar a planilha.
             log('COMPARTILHE a planilha (leitor) com: %s' % info.get('client_email', '?'))
+        return _linhas_gviz(info)
+
+
+def _linhas_gviz(info):
+    """Plano B: gviz com Bearer do service account.
+
+    Vantagem sobre a Sheets API: usa o escopo do DRIVE, que ja esta ligado no
+    projeto por causa do sync de fotos, e aceita a aba pelo NOME (nao precisa do
+    gid). Exige apenas que a planilha esteja compartilhada com o service account.
+    """
+    import csv as _csv, io as _io
+    try:
+        from google.oauth2 import service_account
+        import google.auth.transport.requests as _gr
+        creds = service_account.Credentials.from_service_account_info(
+            info, scopes=['https://www.googleapis.com/auth/drive.readonly'])
+        creds.refresh(_gr.Request())
+        import urllib.request, urllib.parse
+        url = ('https://docs.google.com/spreadsheets/d/%s/gviz/tq?tqx=out:csv&sheet=%s'
+               % (SHEET_ID, urllib.parse.quote(ABA)))
+        req = urllib.request.Request(url, headers={'Authorization': 'Bearer ' + creds.token})
+        txt = urllib.request.urlopen(req, timeout=40).read().decode('utf-8')
+        if txt.lstrip().startswith('<'):   # veio HTML de login/erro, nao CSV
+            log('gviz devolveu HTML (sem permissao?) - seguindo so com os mapas do codigo.')
+            return None
+        linhas = list(_csv.reader(_io.StringIO(txt)))
+        log('lido pelo gviz: %d linhas' % len(linhas))
+        return linhas[1:] if linhas else []       # descarta o cabecalho
+    except Exception as e:
+        log('gviz tambem nao deu: %s' % str(e)[:160])
         return None
 
 
