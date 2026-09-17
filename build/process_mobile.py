@@ -90,7 +90,7 @@ EMAIL_NOME = {
  'ederson.silva@lioraenergia.com.br':'Ederson Silva','diego.faria@lioraenergia.com.br':'Diego Faria',
  'briel.barbosa@lioraenergia.com.br':'Briel Barbosa','olimpio.filho@lioraenergia.com.br':'Olímpio Filho','fabio.rodrigues@lioraenergia.com.br':'Fábio Rodrigues', # novos 10/08
  'karianine.sampaio@lioraenergia.com.br':'Karianine Sampaio', # nova 18/08
- 'olavocavalcanti@lioraenergia.com.br':'Olavo Cavalcanti','olavo.cavaldanti@lioraenergia.com.br':'Olavo Cavalcanti','francisco.oliveira@lioraenergia.com.br':'Doni Oliveira','paulo.lima@lioraenergia.com.br':'Paulo Lima','paulo.jorge@lioraenergia.com.br':'Paulo Alexandre Jorge',  # novos 24/08 (Olavo Cavalcanti - Mossoro/RN Interior; Paulo Lima - Ribeirao)
+ 'olavocavalcanti@lioraenergia.com.br':'Olavo Cavalcanti','olavo.cavaldanti@lioraenergia.com.br':'Olavo Cavalcanti','francisco.oliveira@lioraenergia.com.br':'Doni Oliveira','paulo.lima@lioraenergia.com.br':'Paulo Lima','paulo.jorge@lioraenergia.com.br':'Paulo Alexandre Jorge','ronaldo.nogueira@lioraenergia.com.br':'Ronaldo Nogueira','conceicao.santos@lioraenergia.com.br':'Conceição Santos',  # novos 24/08 (Olavo Cavalcanti - Mossoro/RN Interior; Paulo Lima - Ribeirao)
  'felipe.oliveira@lioraenergia.com.br':'Felipe Oliveira',
  'mirla.albuquerque@lioraenergia.com.br':'Mirla Albuquerque',
  'lucas.santos@lioraenergia.com.br':'Lucas Santos',
@@ -118,7 +118,9 @@ SELLER_PRACA = {  # canônico -> label praça
  'Mecenas Junior':'Natal',
  'Daniel Magnus':'Natal',
  'Thiago Firmo':'Natal',
- 'Adroaldo Bonfim':'Salvador','Ettore Rossi':'Salvador','Tatiane Correia':'Salvador','Maria Lúcia':'Salvador','Tais Santos':'Salvador','Antonio Mariano':'Salvador','Silvia Dias':'Salvador',
+ 'Adroaldo Bonfim':'Salvador','Ettore Rossi':'Salvador',
+ 'Ronaldo Nogueira':'Salvador',
+ 'Conceição Santos':'Ribeirão Preto SPI',  # novos 16/09 (Ronaldo Nogueira - lider Salvador; Conceicao Santos - Ribeirao; Felipe 16/09)'Tatiane Correia':'Salvador','Maria Lúcia':'Salvador','Tais Santos':'Salvador','Antonio Mariano':'Salvador','Silvia Dias':'Salvador',
  'Kelma Rangel':'Feira de Santana','Lucileide Carlos':'Feira de Santana','Rosangela Mendes':'Feira de Santana','Tiago Freitas':'Feira de Santana','Ryan Trindade':'Feira de Santana','Alberto Nascimento':'Feira de Santana','Tamires Costa':'Feira de Santana',
  'Bruno Andrade':'Natal','Marcio Galvão':'Natal','Rodrigo Ribeiro':'Natal','Ananias Neto':'Natal','Thiago Araujo França':'Natal','Camila Couto':'Feira de Santana',
  'Caio Lannes':'SPI','Monica Silveira':'SPI','Franciele Felix':'SPI','Ederson Silva':'SPI','Diego Faria':'SPI',

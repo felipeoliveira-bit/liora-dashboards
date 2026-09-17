@@ -1164,11 +1164,13 @@ let SELLER_PRACA = {
   'Jefferson Fideli':'rninterior',   'Olavo Cavalcanti':'rninterior',
   'Doni Oliveira':'rninterior',   'Paulo Lima':'ribeirao',
   'Paulo Alexandre Jorge':'ribeirao',
+  'Conceição Santos':'ribeirao',
   'Phillip Faria':'ribeirao',
   'Marcel Sousa':'feira',
   'Mecenas Junior':'natal',
   'Daniel Magnus':'natal','Thiago Firmo':'natal',
-  'Adroaldo Bonfim':'salvador','Antonio Mariano':'salvador','Ettore Rossi':'salvador','Tatiane Correia':'salvador','Silvia Dias':'salvador','Maria Lúcia':'salvador','Tais Santos':'salvador',
+  'Adroaldo Bonfim':'salvador','Antonio Mariano':'salvador','Ettore Rossi':'salvador',
+  'Ronaldo Nogueira':'salvador','Tatiane Correia':'salvador','Silvia Dias':'salvador','Maria Lúcia':'salvador','Tais Santos':'salvador',
   'Kelma Rangel':'feira','Lucileide Carlos':'feira','Rosangela Mendes':'feira','Tiago Freitas':'feira','Tamires Costa':'feira','Alberto Nascimento':'feira','Ryan Trindade':'feira',
   'Ananias Neto':'natal','Bruno Andrade':'natal','Marcio Galvão':'natal','Rodrigo Ribeiro':'natal','Thiago Araujo França':'natal',
   'Caio Lannes':'spi','Ederson Silva':'spi','Franciele Felix':'spi','Monica Silveira':'spi','Diego Faria':'spi',
@@ -1223,6 +1225,7 @@ let METAS = {
   'Lucas Santos':15,
   'Jefferson Fideli':15,   'Olavo Cavalcanti':15,   'Doni Oliveira':15,   'Paulo Lima':15,
   'Paulo Alexandre Jorge':15,
+  'Conceição Santos':15,
   'Phillip Faria':15,
   'Olímpio Filho':15,
   'Fábio Rodrigues':15,
@@ -1240,7 +1243,7 @@ let METAS = {
   'Mecenas Junior':19,
   'Daniel Magnus':19,'Thiago Firmo':19,
   // Salvador — 19 MWh
-  'Adroaldo Bonfim':19,'Antonio Mariano':19,'Ettore Rossi':19,'Tatiane Correia':19,'Silvia Dias':19,'Maria Lúcia':19,'Tais Santos':19,
+  'Adroaldo Bonfim':19,'Ronaldo Nogueira':19,'Antonio Mariano':19,'Ettore Rossi':19,'Tatiane Correia':19,'Silvia Dias':19,'Maria Lúcia':19,'Tais Santos':19,
   // Feira de Santana — 19 MWh
   'Kelma Rangel':19,'Lucileide Carlos':19,'Rosangela Mendes':19,'Tiago Freitas':19,'Tamires Costa':19,'Alberto Nascimento':19,'Ryan Trindade':19,
   // Natal — 19 MWh
@@ -3826,7 +3829,7 @@ const IDENTITY_KEY = 'liora.vendedor.v1';
 let LIDERES = {
   'Kelma Rangel':    'feira',
   'Bruno Borges':    'ce',
-  'Adroaldo Bonfim': 'salvador',
+  'Ronaldo Nogueira': 'salvador',  // 16/09: assumiu no lugar do Adroaldo (Felipe 13/09)
   'Caio Lannes':     'spi',
   'João Santos':     'ribeirao',
   'Mirla Albuquerque': ['rninterior','natal'],
@@ -3883,6 +3886,7 @@ let CREDENTIALS = {
   'olavo.cavaldanti@lioraenergia.com.br': { nome: 'Olavo Cavalcanti', senha: 'RN' }, // novo 24/08 - Mossoro
   'paulo.lima@lioraenergia.com.br': { nome: 'Paulo Lima', senha: 'SPI' }, // novo 24/08 - Ribeirao
   'paulo.jorge@lioraenergia.com.br': { nome: 'Paulo Alexandre Jorge', senha: 'SPI' }, // novo 16/09 - Ribeirao
+  'conceicao.santos@lioraenergia.com.br': { nome: 'Conceição Santos', senha: 'SPI' }, // nova 16/09 - Ribeirao
   's3agronegocios@gmail.com': { nome: 'Paulo Lima', senha: 'SPI' }, // 25/08 - e-mail real dele no CRM/base
   'mecenas.junior@lioraenergia.com.br': { nome: 'Mecenas Junior', senha: 'RN' },
   'daniel.magnus@lioraenergia.com.br': { nome: 'Daniel Magnus', senha: 'RN' },
@@ -3905,6 +3909,7 @@ let CREDENTIALS = {
   // 'bruno.andrade@lioraenergia.com.br' — desligado 25/08 (acesso removido; marcar inativo na aba Time da planilha)
   'rodrigo.ribeiro@lioraenergia.com.br':    { nome: 'Rodrigo Ribeiro',    senha: 'RN' },
   'adroaldo.bonfim@lioraenergia.com.br':    { nome: 'Adroaldo Bonfim',    senha: 'Salvador' },
+  'ronaldo.nogueira@lioraenergia.com.br':  { nome: 'Ronaldo Nogueira',  senha: 'Salvador' }, // lider de Salvador 16/09
   'ettore.rossi@lioraenergia.com.br':       { nome: 'Ettore Rossi',       senha: 'Salvador' }, 'tatiane.correia@lioraenergia.com.br': { nome: 'Tatiane Correia', senha: 'Salvador' },
   'silvia.dias@lioraenergia.com.br': { nome: 'Silvia Dias', senha: 'Salvador' },
   'maria.lucia@lioraenergia.com.br':        { nome: 'Maria Lúcia',        senha: 'Salvador' },
@@ -4201,6 +4206,7 @@ let VENDEDORES = [
   { nome: 'Thiago Firmo', praca: 'RN Capital' },
   // Salvador
   { nome: 'Adroaldo Bonfim',  praca: 'Salvador' },
+  { nome: 'Ronaldo Nogueira',  praca: 'Salvador' },  // lider 16/09
   { nome: 'Ettore Rossi',     praca: 'Salvador' },
    { nome: 'Tatiane Correia',  praca: 'Salvador' },
    { nome: 'Silvia Dias',  praca: 'Salvador' },
@@ -4236,6 +4242,7 @@ let VENDEDORES = [
   { nome: 'Doni Oliveira', praca: 'RN Interior' },  // agosto/26 — Mossoró
   { nome: 'Paulo Lima', praca: 'Ribeirão Preto SPI' },  // agosto/26
   { nome: 'Paulo Alexandre Jorge', praca: 'Ribeirão Preto SPI' },  // setembro/26
+  { nome: 'Conceição Santos', praca: 'Ribeirão Preto SPI' },  // setembro/26
   // CE
   { nome: 'Bruno Borges',     praca: 'CE' },
   { nome: 'Neilon Nascimento',praca: 'CE' },{ nome: 'Sabrina Tomazeti',praca: 'CE' },  // junho/26

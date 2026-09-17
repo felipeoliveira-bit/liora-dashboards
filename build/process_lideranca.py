@@ -209,7 +209,7 @@ PRACA_TITLE = {  # email -> praça (Title) usada no RAW
  'antonio.mariano@lioraenergia.com.br':'Salvador','bruno.andrade@lioraenergia.com.br':'Natal',
  'bruno.borges@lioraenergia.com.br':'CE','caio.lannes@lioraenergia.com.br':'SPI',
  'diego.faria@lioraenergia.com.br':'SPI','ederson.silva@lioraenergia.com.br':'SPI',
- 'ettore.rossi@lioraenergia.com.br':'Salvador','tatiane.correia@lioraenergia.com.br':'Salvador','felipe.oliveira@lioraenergia.com.br':'Outras',
+ 'ettore.rossi@lioraenergia.com.br':'Salvador','ronaldo.nogueira@lioraenergia.com.br':'Salvador','conceicao.santos@lioraenergia.com.br':'Ribeirao','tatiane.correia@lioraenergia.com.br':'Salvador','felipe.oliveira@lioraenergia.com.br':'Outras',
  'franciele.felix@lioraenergia.com.br':'SPI','kelma.rangel@lioraenergia.com.br':'Feira',
  'lucileide.carlos@lioraenergia.com.br':'Feira','marcio.galvao@lioraenergia.com.br':'Natal',
  'maria.lucia@lioraenergia.com.br':'Salvador','neilon.nascimento@lioraenergia.com.br':'CE','sabrina.tomazeti@lioraenergia.com.br':'CE',
@@ -248,7 +248,7 @@ EMAIL2NAME = {  # email -> nome canônico do vendedor (resolve nomes variáveis 
  'antonio.mariano@lioraenergia.com.br':'Antonio Mariano','bruno.andrade@lioraenergia.com.br':'Bruno Andrade',
  'bruno.borges@lioraenergia.com.br':'Bruno Borges','caio.lannes@lioraenergia.com.br':'Caio Lannes',
  'diego.faria@lioraenergia.com.br':'Diego Faria','ederson.silva@lioraenergia.com.br':'Ederson Silva',
- 'ettore.rossi@lioraenergia.com.br':'Ettore Rossi','tatiane.correia@lioraenergia.com.br':'Tatiane Correia','felipe.oliveira@lioraenergia.com.br':'Felipe Oliveira',
+ 'ettore.rossi@lioraenergia.com.br':'Ettore Rossi','ronaldo.nogueira@lioraenergia.com.br':'Ronaldo Nogueira','conceicao.santos@lioraenergia.com.br':'Conceição Santos','tatiane.correia@lioraenergia.com.br':'Tatiane Correia','felipe.oliveira@lioraenergia.com.br':'Felipe Oliveira',
  'franciele.felix@lioraenergia.com.br':'Franciele Felix','kelma.rangel@lioraenergia.com.br':'Kelma Rangel',
  'lucileide.carlos@lioraenergia.com.br':'Lucileide Carlos','marcio.galvao@lioraenergia.com.br':'Marcio Galvão',
  'maria.lucia@lioraenergia.com.br':'Maria Lúcia','neilon.nascimento@lioraenergia.com.br':'Neilon Nascimento','sabrina.tomazeti@lioraenergia.com.br':'Sabrina Tomazeti',
@@ -916,7 +916,9 @@ ROSTER_ATIVO = {
  'kelma.rangel@lioraenergia.com.br': ('lider','2025-09-01'),
  'lucileide.carlos@lioraenergia.com.br': ('consultor','2025-10-06'),
  'ettore.rossi@lioraenergia.com.br': ('consultor','2025-11-05'),
- 'adroaldo.bonfim@lioraenergia.com.br': ('lider','2025-12-02'),
+ 'adroaldo.bonfim@lioraenergia.com.br': ('consultor','2025-12-02'),  # 16/09: deixou a lideranca de Salvador p/ o Ronaldo (Felipe 13/09); hire date nao muda
+ 'ronaldo.nogueira@lioraenergia.com.br': ('lider','2026-09-16'),      # lider de Salvador desde 16/09
+ 'conceicao.santos@lioraenergia.com.br': ('consultor','2026-09-16'),  # novos 16/09 (Ronaldo Nogueira - lider Salvador; Conceicao Santos - Ribeirao; Felipe 16/09)
  'maria.lucia@lioraenergia.com.br': ('consultor','2026-01-08'),
  'marcio.galvao@lioraenergia.com.br': ('consultor','2026-02-02'),
  'caio.lannes@lioraenergia.com.br': ('lider','2026-02-25'),
