@@ -90,7 +90,7 @@ EMAIL_NOME = {
  'ederson.silva@lioraenergia.com.br':'Ederson Silva','diego.faria@lioraenergia.com.br':'Diego Faria',
  'briel.barbosa@lioraenergia.com.br':'Briel Barbosa','olimpio.filho@lioraenergia.com.br':'Olímpio Filho','fabio.rodrigues@lioraenergia.com.br':'Fábio Rodrigues', # novos 10/08
  'karianine.sampaio@lioraenergia.com.br':'Karianine Sampaio', # nova 18/08
- 'olavocavalcanti@lioraenergia.com.br':'Olavo Cavalcanti','olavo.cavaldanti@lioraenergia.com.br':'Olavo Cavalcanti','francisco.oliveira@lioraenergia.com.br':'Doni Oliveira','paulo.lima@lioraenergia.com.br':'Paulo Lima',  # novos 24/08 (Olavo Cavalcanti - Mossoro/RN Interior; Paulo Lima - Ribeirao)
+ 'olavocavalcanti@lioraenergia.com.br':'Olavo Cavalcanti','olavo.cavaldanti@lioraenergia.com.br':'Olavo Cavalcanti','francisco.oliveira@lioraenergia.com.br':'Doni Oliveira','paulo.lima@lioraenergia.com.br':'Paulo Lima','paulo.jorge@lioraenergia.com.br':'Paulo Alexandre Jorge',  # novos 24/08 (Olavo Cavalcanti - Mossoro/RN Interior; Paulo Lima - Ribeirao)
  'felipe.oliveira@lioraenergia.com.br':'Felipe Oliveira',
  'mirla.albuquerque@lioraenergia.com.br':'Mirla Albuquerque',
  'lucas.santos@lioraenergia.com.br':'Lucas Santos',
@@ -128,6 +128,7 @@ SELLER_PRACA = {  # canônico -> label praça
  'Karianine Sampaio':'Ribeirão Preto SPI',  # novos 10/08
  'Olavo Cavalcanti':'RN Interior','Doni Oliveira':'RN Interior',
  'Paulo Lima':'Ribeirão Preto SPI',  # novos 24/08 (Olavo Cavalcanti - Mossoro/RN Interior; Paulo Lima - Ribeirao)
+ 'Paulo Alexandre Jorge':'Ribeirão Preto SPI',  # novo 16/09 (Ribeirao Preto; Felipe 16/09)
  'Felipe Oliveira':'Outros',
 }
 DIST_MAP = {'NEOENERGIA COELBA':'Coelba','NEOENERGIA COSERN':'Cosern','CPFL PAULISTA':'CPFL','ENEL CE':'Enel'}
