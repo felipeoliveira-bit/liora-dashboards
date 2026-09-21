@@ -2137,12 +2137,26 @@ function setCampView(k){ CAMP_VIEW = k; renderCampanha(); }
 // Por isso aceita os NO_COUNT (x.nc) aqui; o isAprovado() segue rejeitando.
 function campAntElig(x){ return isAprovado(x) || !!(x.nc && x.aprov_date); }
 function isAntecipaDeal(x){ return /ANTECIPA/i.test(x.produto||'') && campAntElig(x); }  // Felipe 18/08: era !!credito_ok, o que escondia o Antecipa aprovado por risco (Pix nao gera analise de credito) do ranking/campanha
-function campParts(cfg, deals){
+// CAMP_FIX - ajuste MANUAL do total exibido na campanha (Felipe 21/09).
+// SO NO CRM MOBILE: o dash de lideres NAO leva esse ajuste - assimetria PROPOSITAL,
+// mesmo padrao do override do Traumasport. Forca o total exibido; a diferenca entra
+// no bonus roxo para a soma "normal + Antecipa" continuar batendo com o numero grande.
+// Chave: 'Nome do Vendedor|chave_da_campanha'. REMOVER na virada da campanha.
+const CAMP_FIX = {
+  'Neilon Nascimento|semana': 15,  // 14.98 -> 15.00: arredondamento pedido pelo Felipe 21/09; cruza a faixa de R$ 2.500
+};
+function campParts(cfg, deals, seller){
   deals = deals || [];
   if(!cfg || cfg.metric==='count'){ const n=deals.length; return {base:n,bonus:0,total:n,nAntecipa:n}; }
   const mult = (cfg.antecipaBonus||1);
   let base=0, bonus=0, nAnt=0;
   deals.forEach(d=>{ if(d.nc) return; /* venda p/ a base: fora do MWh e do bonus */ const m=d.mwh||0; base+=m; if(mult>1 && isAntecipaDeal(d)){ bonus += m*(mult-1); nAnt++; } });
+  const _who = seller || (deals[0] && deals[0].s) || '';
+  const _fix = CAMP_FIX[_who + '|' + ((cfg && cfg.key) || '')];
+  if(typeof _fix === 'number' && (base + bonus) > 0){
+    bonus = Math.round((_fix - base) * 100) / 100;
+    return {base:base, bonus:bonus, total:_fix, nAntecipa:nAnt};
+  }
   return {base:base, bonus:bonus, total:base+bonus, nAntecipa:nAnt};
 }
 function campVal(cfg, deals){ return campParts(cfg, deals).total; }
