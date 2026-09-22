@@ -953,15 +953,12 @@ ROSTER_ATIVO = {
  'kelma.rangel@lioraenergia.com.br': ('lider','2025-09-01'),
  'lucileide.carlos@lioraenergia.com.br': ('consultor','2025-10-06'),
  'ettore.rossi@lioraenergia.com.br': ('consultor','2025-11-05'),
- 'adroaldo.bonfim@lioraenergia.com.br': ('consultor','2025-12-02'),  # 16/09: deixou a lideranca de Salvador p/ o Ronaldo (Felipe 13/09); hire date nao muda
  'ronaldo.nogueira@lioraenergia.com.br': ('lider','2026-09-16'),      # lider de Salvador desde 16/09
  'conceicao.santos@lioraenergia.com.br': ('consultor','2026-09-16'),  # novos 16/09 (Ronaldo Nogueira - lider Salvador; Conceicao Santos - Ribeirao; Felipe 16/09)
  'maria.lucia@lioraenergia.com.br': ('consultor','2026-01-08'),
  'marcio.galvao@lioraenergia.com.br': ('consultor','2026-02-02'),
  'caio.lannes@lioraenergia.com.br': ('lider','2026-02-25'),
  'tais.santos@lioraenergia.com.br': ('consultor','2026-03-16'),
- 'monica.silveira@lioraenergia.com.br': ('consultor','2026-04-15'),
- 'tiago.freitas@lioraenergia.com.br': ('consultor','2026-04-15'),
  'bruno.borges@lioraenergia.com.br': ('lider','2026-04-15'),
  'ederson.silva@lioraenergia.com.br': ('consultor','2026-05-27'),
  'diego.faria@lioraenergia.com.br': ('consultor','2026-06-01'),
@@ -971,14 +968,11 @@ ROSTER_ATIVO = {
  'nailson.oliveira@lioraenergia.com.br': ('consultor','2026-09-08'),
  'samuel.santos@lioraenergia.com.br': ('consultor','2026-09-08'),
  'francisco.monteiro@lioraenergia.com.br': ('consultor','2026-09-08'),
- 'nubia.andrade@lioraenergia.com.br': ('consultor','2026-06-15'),
  'mecenas.junior@lioraenergia.com.br': ('consultor','2026-06-24'),
  'luciana.campos@lioraenergia.com.br': ('consultor','2026-06-25'),
  'nicola.popovic@lioraenergia.com.br': ('consultor','2026-06-29'),
  'joao.santos@lioraenergia.com.br': ('lider','2026-07-01'),
- 'sabrina.tomazeti@lioraenergia.com.br': ('consultor','2026-07-06'),
  'tatiane.correia@lioraenergia.com.br': ('consultor','2026-07-13'),
- 'daniel.magnus@lioraenergia.com.br': ('consultor','2026-07-13'),
  'anderson.correia@lioraenergia.com.br': ('consultor','2026-07-13'),
  'nha.negocios@gmail.com': ('consultor','2026-07-13'),  # e-mail alternativo do Anderson
  'mirla.albuquerque@lioraenergia.com.br': ('lider','2026-07-13'),
@@ -987,11 +981,8 @@ ROSTER_ATIVO = {
  'thiago.firmo@lioraenergia.com.br': ('consultor','2026-07-23'),
  'thymacillo@hotmail.com': ('consultor','2026-07-23'),  # e-mail alternativo do Thiago Firmo
  'alberto.nascimento@lioraenergia.com.br': ('consultor','2026-07-28'),
- 'jefferson.fideli@lioraenergia.com.br': ('consultor','2026-08-03'),
  'marcel.sousa@lioraenergia.com.br': ('consultor','2026-08-03'),
- 'phillip.faria@lioraenergia.com.br': ('consultor','2026-08-03'),
  'jose.monteiro@lioraenergia.com.br': ('consultor','2026-08-05'),  # Rodrigo Lima (corp_email da planilha)
- 'jose.lima@lioraenergia.com.br': ('consultor','2026-08-05'),      # Rodrigo Lima (e-mail usado no CRM/dashboard)
  'daniel.junior@lioraenergia.com.br': ('consultor','2026-08-05'),
  'percy.hormazabal@lioraenergia.com.br': ('consultor','2026-08-06'),
  'tamires.costa@lioraenergia.com.br': ('consultor','2026-08-06'),
@@ -1000,7 +991,6 @@ ROSTER_ATIVO = {
  'karianine.sampaio@lioraenergia.com.br': ('consultor','2026-08-18'),
  'olavocavalcanti@lioraenergia.com.br': ('consultor','2026-08-24'),
  'olavo.cavaldanti@lioraenergia.com.br': ('consultor','2026-08-24'),  # Mossoro / RN Interior
- 'francisco.oliveira@lioraenergia.com.br': ('consultor','2026-08-31'),  # Doni Oliveira (Francisco/Mossoro - RN Interior) cadastrado 03/09, admissao 31/08
  'paulo.lima@lioraenergia.com.br': ('consultor','2026-08-24'),        # Ribeirao Preto SPI
  'paulo.jorge@lioraenergia.com.br': ('consultor','2026-09-14'),  # novo 16/09 (Paulo Alexandre Jorge - Ribeirao Preto; Felipe 16/09)
  'fabio.rodrigues@lioraenergia.com.br': ('consultor','2026-08-10'),

@@ -2113,9 +2113,9 @@ renderCarteira();
 // Gestores com visão geral (veem tudo, todas as praças) — v2.140
 const GESTORES = ['Felipe Oliveira','Ana Ribeiro','Raynara Silva'];
 function isGestor_(n){ return GESTORES.indexOf(n) !== -1; }
-const OCULTOS_TIME = ['Ananias Neto','Rosangela Mendes','Franciele Felix','Ana Ribeiro','Ryan Trindade','Antonio Mariano','Camila Couto','Bruno Andrade'];
+const OCULTOS_TIME = ['Ananias Neto','Rosangela Mendes','Franciele Felix','Ana Ribeiro','Ryan Trindade','Antonio Mariano','Camila Couto','Bruno Andrade','Adroaldo Bonfim','Daniel Magnus','Doni Oliveira','Jefferson Fideli','Monica Silveira','Núbia Andrade','Phillip Faria','Sabrina Tomazeti','Tiago Freitas','Silmara Gomes','Thiago Araujo França']  // + desligados conferidos na planilha HC (22/09);
 // Ex-time (saíram da empresa, base HC) — removidos do seletor 'Visualizando vendedor'. Ryan/Ana continuam (ativos).
-const EX_TIME = ['Thiago Araujo França','Antonio Mariano','Rosangela Mendes','Franciele Felix','Ananias Neto','Bruno Andrade'];
+const EX_TIME = ['Thiago Araujo França','Antonio Mariano','Rosangela Mendes','Franciele Felix','Ananias Neto','Bruno Andrade','Adroaldo Bonfim','Daniel Magnus','Doni Oliveira','Jefferson Fideli','Monica Silveira','Núbia Andrade','Phillip Faria','Sabrina Tomazeti','Tiago Freitas','Silmara Gomes']  // + desligados conferidos na planilha HC (22/09);
 function isExTime_(n){ return EX_TIME.indexOf(n) !== -1; }
 function isOculto_(n){ return OCULTOS_TIME.indexOf(n) !== -1; }
 const CAMP_CFG = {
@@ -3890,49 +3890,39 @@ let CREDENTIALS = {
    'anderson.correia@lioraenergia.com.br': { nome: 'Anderson Correia', senha: 'SPI' },
    'percy.hormazabal@lioraenergia.com.br': { nome: 'Percy Hormazabal', senha: 'SPI' },
    'ana.ribeiro@lioraenergia.com.br': { nome: 'Ana Ribeiro', senha: 'SPI' },
-  'jose.lima@lioraenergia.com.br': { nome: 'Rodrigo Lima', senha: 'SPI' },
   'jose.monteiro@lioraenergia.com.br': { nome: 'Rodrigo Lima', senha: 'SPI' },
   'daniel.junior@lioraenergia.com.br': { nome: 'Daniel Junior', senha: 'SPI' },
   'joao.santos@lioraenergia.com.br': { nome: 'João Santos', senha: 'SPI' },
-  'phillip.faria@lioraenergia.com.br': { nome: 'Phillip Faria', senha: 'SPI' },
   'mirla.albuquerque@lioraenergia.com.br': { nome: 'Mirla Albuquerque', senha: 'RN' },
   'lucas.santos@lioraenergia.com.br': { nome: 'Lucas Santos', senha: 'RN' },
-  'jefferson.fideli@lioraenergia.com.br': { nome: 'Jefferson Fideli', senha: 'RN' },
   'olavocavalcanti@lioraenergia.com.br': { nome: 'Olavo Cavalcanti', senha: 'RN' },
-  'francisco.oliveira@lioraenergia.com.br': { nome: 'Doni Oliveira', senha: 'RN' }, // Mossoro/RN Interior - cadastrado 03/09
   'olavo.cavaldanti@lioraenergia.com.br': { nome: 'Olavo Cavalcanti', senha: 'RN' }, // novo 24/08 - Mossoro
   'paulo.lima@lioraenergia.com.br': { nome: 'Paulo Lima', senha: 'SPI' }, // novo 24/08 - Ribeirao
   'paulo.jorge@lioraenergia.com.br': { nome: 'Paulo Alexandre Jorge', senha: 'SPI' }, // novo 16/09 - Ribeirao
   'conceicao.santos@lioraenergia.com.br': { nome: 'Conceição Santos', senha: 'SPI' }, // nova 16/09 - Ribeirao
   's3agronegocios@gmail.com': { nome: 'Paulo Lima', senha: 'SPI' }, // 25/08 - e-mail real dele no CRM/base
   'mecenas.junior@lioraenergia.com.br': { nome: 'Mecenas Junior', senha: 'RN' },
-  'daniel.magnus@lioraenergia.com.br': { nome: 'Daniel Magnus', senha: 'RN' },
   'thiago.firmo@lioraenergia.com.br': { nome: 'Thiago Firmo', senha: 'RN' },
   'kelma.rangel@lioraenergia.com.br':       { nome: 'Kelma Rangel',       senha: 'Feira' },
   'lucileide.carlos@lioraenergia.com.br':   { nome: 'Lucileide Carlos',   senha: 'Feira' },
-  'tiago.freitas@lioraenergia.com.br':      { nome: 'Tiago Freitas',      senha: 'Feira' },
   'tamires.costa@lioraenergia.com.br':      { nome: 'Tamires Costa',       senha: 'Feira' },
   'alberto.nascimento@lioraenergia.com.br': { nome: 'Alberto Nascimento', senha: 'Feira' },
   'marcel.sousa@lioraenergia.com.br':       { nome: 'Marcel Sousa',       senha: 'Feira' },
   'bruno.borges@lioraenergia.com.br':       { nome: 'Bruno Borges',       senha: 'CE' },
   'neilon.nascimento@lioraenergia.com.br':  { nome: 'Neilon Nascimento',  senha: 'CE' },
-  'sabrina.tomazeti@lioraenergia.com.br':  { nome: 'Sabrina Tomazeti',  senha: 'CE' },
   'odirley.costa@lioraenergia.com.br':      { nome: 'Odirley Costa',      senha: 'CE' },
   'nailson.oliveira@lioraenergia.com.br':      { nome: 'Nailson Oliveira',      senha: 'CE' }, // novo 08/09 (Fortaleza CE)
   'samuel.santos@lioraenergia.com.br':         { nome: 'Samuel Santos',         senha: 'CE' }, // novo 08/09 (Fortaleza CE)
   'francisco.monteiro@lioraenergia.com.br':    { nome: 'Francisco Monteiro',    senha: 'CE' }, // novo 08/09 (Fortaleza CE)
-  'nubia.andrade@lioraenergia.com.br':      { nome: 'Núbia Andrade',      senha: 'CE' },
   'marcio.galvao@lioraenergia.com.br':      { nome: 'Marcio Galvão',      senha: 'RN' },
   // 'bruno.andrade@lioraenergia.com.br' — desligado 25/08 (acesso removido; marcar inativo na aba Time da planilha)
   'rodrigo.ribeiro@lioraenergia.com.br':    { nome: 'Rodrigo Ribeiro',    senha: 'RN' },
-  'adroaldo.bonfim@lioraenergia.com.br':    { nome: 'Adroaldo Bonfim',    senha: 'Salvador' },
   'ronaldo.nogueira@lioraenergia.com.br':  { nome: 'Ronaldo Nogueira',  senha: 'Salvador' }, // lider de Salvador 16/09
   'ettore.rossi@lioraenergia.com.br':       { nome: 'Ettore Rossi',       senha: 'Salvador' }, 'tatiane.correia@lioraenergia.com.br': { nome: 'Tatiane Correia', senha: 'Salvador' },
   'silvia.dias@lioraenergia.com.br': { nome: 'Silvia Dias', senha: 'Salvador' },
   'maria.lucia@lioraenergia.com.br':        { nome: 'Maria Lúcia',        senha: 'Salvador' },
   'tais.santos@lioraenergia.com.br':        { nome: 'Tais Santos',        senha: 'Salvador' },
   'caio.lannes@lioraenergia.com.br':        { nome: 'Caio Lannes',        senha: 'SPI' },
-  'monica.silveira@lioraenergia.com.br':    { nome: 'Monica Silveira',    senha: 'SPI' },
   'ederson.silva@lioraenergia.com.br':      { nome: 'Ederson Silva',      senha: 'SPI' },
   'diego.faria@lioraenergia.com.br':        { nome: 'Diego Faria',        senha: 'SPI' },
   'briel.barbosa@lioraenergia.com.br':      { nome: 'Briel Barbosa',      senha: 'SPI' }, // novo 10/08 (Campinas SPI)
