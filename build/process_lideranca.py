@@ -455,6 +455,10 @@ LEDGER_IGNORE = {
     '7888777e-922c-46a7-a1ef-6d1a287a5e6f',  # AL AUTO CENTER LTDA (Fabio Rodrigues, 0.623 MWh)
     '807cf6a5-138f-4366-9166-d289599a67ce',  # Ricardo da Silva Caldeira (Percy Hormazabal, 1.561 MWh)
     '4f8d1e6f-2622-4768-99cd-560a4b526b88',  # VALTER DOS REIS FALCAO FILHO (Lucileide Carlos, 0.214 MWh)
+    # Felipe 22/09 - lote 22/09 -> 21/09 (mesmo commit do FORCE_APPROVED):
+    '26f124d7-6662-4acd-9d19-79696e814d3d',  # ASSOC. BRASILEIRA DE PLANEJ. EM EFICIENCIA ENERGETICA LUZ DI (Conceicao Santos, 13.84 MWh)
+    '057471e4-dfe2-4c4b-87db-a525e57b6404',  # ASSOC. BRASILEIRA DE PLANEJ. EM EFICIENCIA ENERGETICA (Conceicao Santos, 1.755 MWh)
+    '4ba9faf6-827f-4b17-98c4-8bdde13e9bba',  # DEIA MINIMERCADO LTDA (Paulo Alexandre Jorge, 1.883 MWh)
 }
 
 def _load_prev_aprov():

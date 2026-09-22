@@ -279,6 +279,18 @@ FORCE_DENIED = {
   '77a56fa5-9c4e-476c-b71d-ac08534d6745',  # DILEUDA CORINGA DA FONSECA DA SILVA (Antecipa PF, Thiago Macillo/Natal RN, 0.49 MWh) - desistiu; perdido 13/08 na base; era FORCE_APPROVED e o Felipe liberou considerar reprovada (25/08)
 }
 FORCE_APPROVED = {
+  # Felipe 22/09: 3 vendas aprovadas em 22/09 exibidas com a data de 21/09,
+  # ultimo dia da campanha 15-21/09 (paga 24/09). SO NO MOBILE - os deal_ids vao
+  # tambem no LEDGER_IGNORE do process_lideranca.py, senao a data vaza para o
+  # dash de lideres no ciclo seguinte (ver commit b2aa794). Impacto medido antes:
+  #   Conceicao Santos      0 -> 16.47 MWh camp. (R$ 0 -> R$ 2.500, cruza a faixa de 15)
+  #   Paulo Alexandre Jorge 3.70 -> 6.53 MWh camp. (R$ 0 -> R$ 750, cruza a faixa de 5)
+  #   total da campanha 15-21/09: R$ 15.000 -> R$ 18.250
+  # Os dois Antecipa PJ tambem resolvem o pre-requisito de 1 Antecipa na semana.
+  # ATENCAO: a data forcada NAO expira - tirar estes 3 na virada de mes.
+                  '26f124d7-6662-4acd-9d19-79696e814d3d': '2026-09-21',  # ASSOC. BRASILEIRA DE PLANEJ. EM EFICIENCIA ENERGETICA LUZ DI (GD LIORA_B_, Conceicao Santos/Ribeirao, 13.84 MWh)
+                  '057471e4-dfe2-4c4b-87db-a525e57b6404': '2026-09-21',  # ASSOC. BRASILEIRA DE PLANEJ. EM EFICIENCIA ENERGETICA (Antecipa PJ, Conceicao Santos/Ribeirao, 1.755 MWh)
+                  '4ba9faf6-827f-4b17-98c4-8bdde13e9bba': '2026-09-21',  # DEIA MINIMERCADO LTDA (Antecipa PJ, Paulo Alexandre Jorge/Ribeirao, 1.883 MWh)
     'c347afca-2a48-4111-b7c9-d5f85970f3db': '2026-09-17',  # MAXFAB COMERCIO E MANUTENCAO DE PECAS E MAQUINA INDUSTRIAIS / 08193056000111 (GD LIORA_F_, Anderson Correia/Campinas SPI, 1.635 MWh) - SCHEDULED_TITULARIDADE + contrato assinado 17/09 08:49; a analista Laudiceia aprovou no Retool 17/09 13:03 mas o risco ficou carimbado MANUAL, nao APPROVED. Mesmo padrao de AMANDA MARCONDES / MG E CB / FAB. Aprovado manual (Felipe 17/09). Remover quando a base carimbar APPROVED.
                   '9b7ea565-4c5e-49b1-872d-1c72ad59ee91': '2026-09-10',  # ROSANGELA DE MELO (Antecipa PF, Lucas Santos/RN, 0.195 MWh, Mossoro/RN) - risco APPROVED 10/09 23:09 BRT + credit_stage PAYMENT_SUCCEDED (pago por Pix), sem registro em credit_analyses -> ant_ok barra; 3a ocorrencia do buraco do Pix. Forcado aprovado 14/09 (Felipe). Remover quando a base trouxer o credito ou a regra aceitar PAYMENT_SUCCEDED.
                   '75b2bd3b-b87c-4b3c-a705-bf1c205dadcf': '2026-09-10',  # CARIZA REIS DA SILVA CARNES / 18689549000109 (Antecipa PJ, Paulo Lima/Ribeirao, 1.536 MWh) - risco APPROVED 10/09 13:24 + credit_stage PAYMENT_SUCCEDED (pago por Pix), mas SEM registro em credit_analyses -> o gate ant_ok barrava. Aprovado manual (Felipe 11/09); Ops (Lucas) avisado. Remover quando a base trouxer o credito ou a regra passar a aceitar PAYMENT_SUCCEDED.
