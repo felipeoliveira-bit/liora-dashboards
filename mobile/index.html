@@ -1177,6 +1177,7 @@ let SELLER_PRACA = {
   'Bruno Borges':'ce','Neilon Nascimento':'ce','Sabrina Tomazeti':'ce','Núbia Andrade':'ce','Odirley Costa':'ce',
   'Nailson Oliveira':'ce', 'Samuel Santos':'ce', 'Francisco Monteiro':'ce',  // novos CE 08/09
   'Briel Barbosa':'spi','Olímpio Filho':'ribeirao','Fábio Rodrigues':'ribeirao','Karianine Sampaio':'ribeirao', // novos 10/08 + 18/08
+  'Bruna Dias':'ribeirao','Tiago Silva':'ribeirao','Jamson Santos':'feira', // novos 22/09
 };
 // Felipe 04/09: meta de Antecipa por praca = 45% da meta de GD da praca.
 // Derivada de PRACA_DEF[k].meta de proposito — quando a meta da praca mudar,
@@ -1252,7 +1253,9 @@ let METAS = {
   'Caio Lannes':15,'Ederson Silva':15,'Franciele Felix':15,'Monica Silveira':15,'Diego Faria':15,
   // CE — 15 MWh
   'Bruno Borges':15,'Neilon Nascimento':15,'Sabrina Tomazeti':15,'Núbia Andrade':15,'Odirley Costa':15,
-  'Nailson Oliveira':15, 'Samuel Santos':15, 'Francisco Monteiro':15  // novos CE 08/09
+  'Nailson Oliveira':15, 'Samuel Santos':15, 'Francisco Monteiro':15,  // novos CE 08/09
+  'Bruna Dias':15,'Tiago Silva':15,  // novos 22/09 (Ribeirao Preto SPI)
+  'Jamson Santos':19  // novo 22/09 (Feira de Santana)
 };
 
 // ── NAV ───────────────────────────────────────────────────
@@ -3937,6 +3940,9 @@ let CREDENTIALS = {
   'fabio.rodrigues@lioraenergia.com.br':    { nome: 'Fábio Rodrigues',    senha: 'SPI' }, // novo 10/08 (Ribeirão Preto SPI)
   'karianine.sampaio@lioraenergia.com.br':  { nome: 'Karianine Sampaio',  senha: 'SPI' }, // nova 18/08 (Ribeirão Preto SPI)
   'felipe.oliveira@lioraenergia.com.br':    { nome: 'Felipe Oliveira',    senha: 'Liora' },
+  'bruna.dias@lioraenergia.com.br':         { nome: 'Bruna Dias',         senha: 'SPI' },   // nova 22/09 (Ribeirao Preto SPI)
+  'tiago.silva@lioraenergia.com.br':        { nome: 'Tiago Silva',        senha: 'SPI' },   // novo 22/09 (Ribeirao Preto SPI)
+  'jamson.santos@lioraenergia.com.br':      { nome: 'Jamson Santos',      senha: 'Feira' }, // novo 22/09 (Feira de Santana)
 };
 
 // Mapa fixo e-mail → nome canônico (com acentos). Só muda quando alguém entra/sai do time
@@ -4266,6 +4272,9 @@ let VENDEDORES = [
   { nome: 'Samuel Santos',     praca: 'CE' },  // novo 08/09
   { nome: 'Francisco Monteiro', praca: 'CE' },  // novo 08/09
   // Outros (admin)
+  { nome: 'Bruna Dias', praca: 'Ribeirão Preto SPI' },  // nova 22/09
+  { nome: 'Tiago Silva', praca: 'Ribeirão Preto SPI' },  // novo 22/09
+  { nome: 'Jamson Santos', praca: 'Feira de Santana' },  // novo 22/09
   { nome: 'Felipe Oliveira',  praca: 'Outros' },
 ];
 

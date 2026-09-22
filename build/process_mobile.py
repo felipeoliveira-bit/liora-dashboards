@@ -90,6 +90,7 @@ EMAIL_NOME = {
  'ederson.silva@lioraenergia.com.br':'Ederson Silva','diego.faria@lioraenergia.com.br':'Diego Faria',
  'briel.barbosa@lioraenergia.com.br':'Briel Barbosa','olimpio.filho@lioraenergia.com.br':'Olímpio Filho','fabio.rodrigues@lioraenergia.com.br':'Fábio Rodrigues', # novos 10/08
  'karianine.sampaio@lioraenergia.com.br':'Karianine Sampaio', # nova 18/08
+ 'bruna.dias@lioraenergia.com.br':'Bruna Dias','tiago.silva@lioraenergia.com.br':'Tiago Silva','jamson.santos@lioraenergia.com.br':'Jamson Santos', # novos 22/09
  'olavocavalcanti@lioraenergia.com.br':'Olavo Cavalcanti','olavo.cavaldanti@lioraenergia.com.br':'Olavo Cavalcanti','francisco.oliveira@lioraenergia.com.br':'Doni Oliveira','paulo.lima@lioraenergia.com.br':'Paulo Lima','paulo.jorge@lioraenergia.com.br':'Paulo Alexandre Jorge','ronaldo.nogueira@lioraenergia.com.br':'Ronaldo Nogueira','conceicao.santos@lioraenergia.com.br':'Conceição Santos',  # novos 24/08 (Olavo Cavalcanti - Mossoro/RN Interior; Paulo Lima - Ribeirao)
  'felipe.oliveira@lioraenergia.com.br':'Felipe Oliveira',
  'mirla.albuquerque@lioraenergia.com.br':'Mirla Albuquerque',
@@ -132,6 +133,7 @@ SELLER_PRACA = {  # canônico -> label praça
  'Olavo Cavalcanti':'RN Interior','Doni Oliveira':'RN Interior',
  'Paulo Lima':'Ribeirão Preto SPI',  # novos 24/08 (Olavo Cavalcanti - Mossoro/RN Interior; Paulo Lima - Ribeirao)
  'Paulo Alexandre Jorge':'Ribeirão Preto SPI',  # novo 16/09 (Ribeirao Preto; Felipe 16/09)
+ 'Bruna Dias':'Ribeirão Preto SPI','Tiago Silva':'Ribeirão Preto SPI','Jamson Santos':'Feira de Santana',  # novos 22/09 (Felipe 22/09)
  'Felipe Oliveira':'Outros',
 }
 # ---- PLANILHA "Time": praca por E-MAIL para quem o SELLER_PRACA (por NOME) nao
