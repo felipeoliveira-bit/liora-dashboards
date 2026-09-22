@@ -739,7 +739,10 @@ function renderPropostas() {
   }
   
   // Filtrar pelo período selecionado (mês corrente como base + período)
-  const monthRaw = RAW.filter(d => (d.month === 6 || d.month === 5) &amp;&amp; dateInBauPeriod(d.date));
+  // Felipe 22/09: o filtro de mes estava HARDCODED em maio/junho (d.month===6||5) e
+  // zerava a tabela inteira desde julho. O dateInBauPeriod ja recorta hoje/ontem/
+  // semana/mes corrente - o clause de mes era redundante E errado.
+  const monthRaw = RAW.filter(d => dateInBauPeriod(d.date));
   
   const byP = {};
   PRACAS.forEach(p => byP[p] = {
