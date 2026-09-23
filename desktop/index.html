@@ -23,24 +23,29 @@ window.__getLeadsShared = function(){
     return Promise.resolve(window.__LEADS_CACHE);
   }
   if (window.__LEADS_INFLIGHT) return window.__LEADS_INFLIGHT;
+  // Uma chamada leva ~25s ate falhar, entao backoff sequencial demorava minutos.
+  // Como 4 em paralelo acertaram 1, cada rodada dispara 3 em paralelo e fica com
+  // a primeira que responder JSON valido. 1 rodada ~49% de acerto, 3 rodadas ~87%.
   window.__LEADS_INFLIGHT = (async function(){
-    var esperas = [700, 1500, 2500, 4000, 6000, 8000, 10000];
-    for (var i = 0; i <= esperas.length; i++) {
+    function uma(){
+      return fetch(window.__LEADS_URL, {
+        method: 'POST', mode: 'cors', redirect: 'follow',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({action:'list'})
+      }).then(function(r){ return r.text(); }).then(function(t){
+        var d = JSON.parse(t);
+        if (d && d.leads) return d;
+        throw new Error('sem leads');
+      });
+    }
+    for (var rodada = 0; rodada < 3; rodada++) {
       try {
-        var resp = await fetch(window.__LEADS_URL, {
-          method: 'POST', mode: 'cors', redirect: 'follow',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({action:'list'})
-        });
-        var txt = await resp.text();
-        var d = JSON.parse(txt);
-        if (d && d.leads) {
-          window.__LEADS_CACHE = d; window.__LEADS_AT = Date.now();
-          window.__LEADS_INFLIGHT = null;
-          return d;
-        }
+        var d = await Promise.any([uma(), uma(), uma()]);
+        window.__LEADS_CACHE = d; window.__LEADS_AT = Date.now();
+        window.__LEADS_INFLIGHT = null;
+        return d;
       } catch(e) {}
-      if (i < esperas.length) await new Promise(function(res){ setTimeout(res, esperas[i]); });
+      await new Promise(function(res){ setTimeout(res, 1500); });
     }
     window.__LEADS_INFLIGHT = null;
     throw new Error('Base de leads indisponivel');
