@@ -609,11 +609,17 @@ def is_antecipa(r):
 ANT_GATE_INICIO = '2026-09-23'
 
 def ant_gate_vale(r):
-    """True quando o gate estrito se aplica a este deal (risco aprovado no corte ou depois)."""
+    """True quando o gate estrito se aplica a este deal (risco aprovado no corte ou depois).
+
+    ATENCAO: pdate() NAO devolve o mesmo tipo nos dois arquivos - no
+    process_lideranca.py e' string 'YYYY-MM-DD' e no process_mobile.py e'
+    datetime.date. Normalizar aqui; foi isso que derrubou o rebuild #486.
+    """
     _d = pdate(r.get('latest_risk_analysis_created_at'))
     if not _d:
         return True          # sem data de risco -> trata como novo (exige as duas)
-    return _d.isoformat() >= ANT_GATE_INICIO
+    _s = _d if isinstance(_d, str) else _d.isoformat()
+    return _s[:10] >= ANT_GATE_INICIO
 
 def ant_ok(r, credito_ok=None):
     """Antecipa aprovado = risco APROVADO **E** credito CONCLUIDO (Felipe 22/09).
