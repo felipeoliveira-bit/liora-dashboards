@@ -271,7 +271,8 @@ CLIENT_OVERRIDE = {
  norm('MARIA SOARES RODRIGUES'): ('Rodrigo Ribeiro','natal','Natal'),  # deal do Bruno -> Rodrigo (Felipe 03/07)
  norm('VALDEMARINA ALVES NABUCO'): ('Ettore Rossi','salvador','Salvador'),  # deal caiu no Adroaldo -> e do Rossi (Felipe 25/07)
  norm('NICHOLAS PIETRO RODRIGUES REGINALDO'): ('Lucas Santos','rninterior','RN Interior'),  # dono -> Lucas (Felipe 27/07)
- norm('NATANAEL SILVA DOS SANTOS'): ('Lucas Santos','rninterior','RN Interior'),  # dono -> Lucas (Felipe 27/07)
+ norm('NATANAEL SILVA DOS SANTOS'): ('Lucas Santos','rninterior','RN Interior'),
+ norm('CICERO EVALDO LEITE'): ('Lucas Santos','rninterior','RN Interior'),  # venda caiu na conta do felipe.oliveira@ (ia p/ 'Outras'); e' do Lucas (Felipe 23/09)  # dono -> Lucas (Felipe 27/07)
  norm('MARIA FRAUZINA CAMILO'): ('Anderson Correia','spi','SPI'),
  norm('ANA JULIA DA CONCEIÇÃO FREIRE'): ('Ettore Rossi','salvador','Salvador'),  # venda do Rossi lancada na Silvia (Salvador); base ja corrigida mas o card818 ainda mostra Silvia (Felipe 14/08); remover qdo refletir  # aprovado 06/08 do Anderson; base trocou p/ Lucas 07/08 -> volta p/ Anderson (Felipe 07/08); remover qdo base corrigir
 }

@@ -191,7 +191,8 @@ CLIENT_OVERRIDE = {  # cliente (upper/strip) -> (seller canônico, praça label)
  'MARIA SOARES RODRIGUES':('Rodrigo Ribeiro','Natal'),  # deal do Bruno -> Rodrigo (Felipe 03/07); base ainda nao atualizou
  'VALDEMARINA ALVES NABUCO':('Ettore Rossi','Salvador'),  # deal caiu no Adroaldo -> e do Rossi (Felipe 25/07)
  'NICHOLAS PIETRO RODRIGUES REGINALDO':('Lucas Santos','RN Interior'),  # dono -> Lucas (Felipe 27/07)
- 'NATANAEL SILVA DOS SANTOS':('Lucas Santos','RN Interior'),  # dono -> Lucas (Felipe 27/07)
+ 'NATANAEL SILVA DOS SANTOS':('Lucas Santos','RN Interior'),
+ 'CICERO EVALDO LEITE':('Lucas Santos','RN Interior'),  # venda caiu na conta do felipe.oliveira@ (ia p/ 'Outras'); e' do Lucas (Felipe 23/09)  # dono -> Lucas (Felipe 27/07)
  'MARIA FRAUZINA CAMILO':('Anderson Correia','SPI'),
  'ANA JULIA DA CONCEIÇÃO FREIRE':('Ettore Rossi','Salvador'),  # venda do Rossi lancada na Silvia (Salvador); base ja corrigida mas o card818 ainda mostra Silvia (Felipe 14/08); remover qdo refletir  # aprovado 06/08 do Anderson; base trocou p/ Lucas 07/08 -> volta p/ Anderson (Felipe 07/08); remover qdo base corrigir
 }
