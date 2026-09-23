@@ -4,6 +4,50 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Liora Energia — Central de Gestão</title>
+<script>
+// ===== LEADS COMPARTILHADOS (Felipe 23/09) =====================================
+// O Apps Script dos leads falha em ~4 de 5 chamadas (medido: 1 sozinha = 404;
+// sem cookies = 404; 4 em paralelo = 1 acerto). Antes, BAU, Rankings e Tarefas
+// baixavam a lista CADA UM por conta, com 3 tentativas -> ate 9 downloads de
+// ~2,8 MB por abertura e ~40% de chance de um frame travar no 'Sincronizando...'.
+// Agora a pagina busca UMA vez, com backoff maior, e os 3 frames consomem o
+// mesmo resultado. Cache de 3 min para o botao Atualizar voltar a buscar.
+window.__LEADS_URL = 'https://script.google.com/macros/s/AKfycbyk_rqDKe49ZOCtLJkXYNvITqF5wQBjs5Uu1-9-U5HadPsP_tyzulBaCpyeuLpaqokL1w/exec';
+window.__LEADS_CACHE = null;
+window.__LEADS_AT = 0;
+window.__LEADS_INFLIGHT = null;
+window.__LEADS_TTL = 180000;
+window.__getLeadsShared = function(){
+  var agora = Date.now();
+  if (window.__LEADS_CACHE && (agora - window.__LEADS_AT) < window.__LEADS_TTL) {
+    return Promise.resolve(window.__LEADS_CACHE);
+  }
+  if (window.__LEADS_INFLIGHT) return window.__LEADS_INFLIGHT;
+  window.__LEADS_INFLIGHT = (async function(){
+    var esperas = [700, 1500, 2500, 4000, 6000, 8000, 10000];
+    for (var i = 0; i <= esperas.length; i++) {
+      try {
+        var resp = await fetch(window.__LEADS_URL, {
+          method: 'POST', mode: 'cors', redirect: 'follow',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({action:'list'})
+        });
+        var txt = await resp.text();
+        var d = JSON.parse(txt);
+        if (d && d.leads) {
+          window.__LEADS_CACHE = d; window.__LEADS_AT = Date.now();
+          window.__LEADS_INFLIGHT = null;
+          return d;
+        }
+      } catch(e) {}
+      if (i < esperas.length) await new Promise(function(res){ setTimeout(res, esperas[i]); });
+    }
+    window.__LEADS_INFLIGHT = null;
+    throw new Error('Base de leads indisponivel');
+  })();
+  return window.__LEADS_INFLIGHT;
+};
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -7954,48 +7998,6 @@ render();
 </div>
 
 <script>
-// ===== LEADS COMPARTILHADOS (Felipe 23/09) =====================================
-// O Apps Script dos leads falha em ~4 de 5 chamadas (medido: 1 sozinha = 404;
-// sem cookies = 404; 4 em paralelo = 1 acerto). Antes, BAU, Rankings e Tarefas
-// baixavam a lista CADA UM por conta, com 3 tentativas -> ate 9 downloads de
-// ~2,8 MB por abertura e ~40% de chance de um frame travar no 'Sincronizando...'.
-// Agora a pagina busca UMA vez, com backoff maior, e os 3 frames consomem o
-// mesmo resultado. Cache de 3 min para o botao Atualizar voltar a buscar.
-window.__LEADS_URL = 'https://script.google.com/macros/s/AKfycbyk_rqDKe49ZOCtLJkXYNvITqF5wQBjs5Uu1-9-U5HadPsP_tyzulBaCpyeuLpaqokL1w/exec';
-window.__LEADS_CACHE = null;
-window.__LEADS_AT = 0;
-window.__LEADS_INFLIGHT = null;
-window.__LEADS_TTL = 180000;
-window.__getLeadsShared = function(){
-  var agora = Date.now();
-  if (window.__LEADS_CACHE && (agora - window.__LEADS_AT) < window.__LEADS_TTL) {
-    return Promise.resolve(window.__LEADS_CACHE);
-  }
-  if (window.__LEADS_INFLIGHT) return window.__LEADS_INFLIGHT;
-  window.__LEADS_INFLIGHT = (async function(){
-    var esperas = [700, 1500, 2500, 4000, 6000, 8000, 10000];
-    for (var i = 0; i <= esperas.length; i++) {
-      try {
-        var resp = await fetch(window.__LEADS_URL, {
-          method: 'POST', mode: 'cors', redirect: 'follow',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({action:'list'})
-        });
-        var txt = await resp.text();
-        var d = JSON.parse(txt);
-        if (d && d.leads) {
-          window.__LEADS_CACHE = d; window.__LEADS_AT = Date.now();
-          window.__LEADS_INFLIGHT = null;
-          return d;
-        }
-      } catch(e) {}
-      if (i < esperas.length) await new Promise(function(res){ setTimeout(res, esperas[i]); });
-    }
-    window.__LEADS_INFLIGHT = null;
-    throw new Error('Base de leads indisponivel');
-  })();
-  return window.__LEADS_INFLIGHT;
-};
 function switchFrame(name) {
   document.querySelectorAll('.frames iframe').forEach(f => f.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
