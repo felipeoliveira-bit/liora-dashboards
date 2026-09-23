@@ -535,14 +535,12 @@ async function loadLeads() {
   const status = document.getElementById('sync-status');
   status.innerHTML = '<span class=&quot;spinner&quot;></span> Sincronizando…';
   try {
-    const r = await fetch(LEADS_API_URL, {
-      method: 'POST',
-      mode: 'cors',
-      redirect: 'follow',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({action:'list'}),
-    });
-    let data, _t='', _ok=false; for(let _i=0; _i<3; _i++){ try { const _r = (_i===0) ? r : await fetch(LEADS_API_URL,{method:'POST',mode:'cors',redirect:'follow',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'list'})}); _t = await _r.text(); data = JSON.parse(_t); _ok = true; break; } catch(_e){ if(_i < 2) await new Promise(function(s){ setTimeout(s,1200); }); } } if(!_ok) throw new Error(String(_t).trim().charAt(0)==='<' ? 'Sincronizando… clique Atualizar' : 'Base de leads indisponivel');
+    let data, _t='', _ok=false;
+    // Felipe 23/09: primeiro tenta o resultado COMPARTILHADO da pagina (uma busca
+    // so para os 3 frames). O fetch proprio vira fallback.
+    try { var _sh = window.parent && window.parent.__getLeadsShared; if (_sh) { data = await _sh(); _ok = !!(data && data.leads); } } catch(_e){}
+    if(!_ok){ for(let _i=0; _i<3; _i++){ try { const _r = await fetch(LEADS_API_URL,{method:'POST',mode:'cors',redirect:'follow',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'list'})}); _t = await _r.text(); data = JSON.parse(_t); _ok = true; break; } catch(_e){ if(_i < 2) await new Promise(function(sx){ setTimeout(sx,1500); }); } } }
+    if(!_ok) throw new Error(String(_t).trim().charAt(0)==='<' ? 'Sincronizando… clique Atualizar' : 'Base de leads indisponivel');
     if (data &amp;&amp; data.leads) {
       leads = _dedupLeadsById(data.leads).filter(l => String((l&amp;&amp;l.stage)||'').trim().toLowerCase() !== 'excluido').map(l => ({
         ...l,
@@ -1455,12 +1453,12 @@ async function loadLeads() {
   const status = document.getElementById('sync-status');
   status.innerHTML = '<span class=&quot;spinner&quot;></span> Sincronizando…';
   try {
-    const r = await fetch(LEADS_API_URL, {
-      method: 'POST', mode: 'cors', redirect: 'follow',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({action:'list'}),
-    });
-    let data, _t='', _ok=false; for(let _i=0; _i<3; _i++){ try { const _r = (_i===0) ? r : await fetch(LEADS_API_URL,{method:'POST',mode:'cors',redirect:'follow',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'list'})}); _t = await _r.text(); data = JSON.parse(_t); _ok = true; break; } catch(_e){ if(_i < 2) await new Promise(function(s){ setTimeout(s,1200); }); } } if(!_ok) throw new Error(String(_t).trim().charAt(0)==='<' ? 'Sincronizando… clique Atualizar' : 'Base de leads indisponivel');
+    let data, _t='', _ok=false;
+    // Felipe 23/09: primeiro tenta o resultado COMPARTILHADO da pagina (uma busca
+    // so para os 3 frames). O fetch proprio vira fallback.
+    try { var _sh = window.parent && window.parent.__getLeadsShared; if (_sh) { data = await _sh(); _ok = !!(data && data.leads); } } catch(_e){}
+    if(!_ok){ for(let _i=0; _i<3; _i++){ try { const _r = await fetch(LEADS_API_URL,{method:'POST',mode:'cors',redirect:'follow',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'list'})}); _t = await _r.text(); data = JSON.parse(_t); _ok = true; break; } catch(_e){ if(_i < 2) await new Promise(function(sx){ setTimeout(sx,1500); }); } } }
+    if(!_ok) throw new Error(String(_t).trim().charAt(0)==='<' ? 'Sincronizando… clique Atualizar' : 'Base de leads indisponivel');
     if (data &amp;&amp; data.leads) {
       leads = _dedupLeadsById(data.leads).filter(l => String((l&amp;&amp;l.stage)||'').trim().toLowerCase() !== 'excluido').map(l => ({ ...l, vendedor: canonName( (l.vendedor||'').trim()), stage: normalizeStage(l.stage), fatura: parseFloat(l.fatura||0)||0 }));
       const time = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
@@ -2252,14 +2250,12 @@ async function loadLeads() {
   const status = document.getElementById('sync-status');
   status.innerHTML = '<span class=&quot;spinner&quot;></span> Sincronizando…';
   try {
-    const r = await fetch(LEADS_API_URL, {
-      method: 'POST',
-      mode: 'cors',
-      redirect: 'follow',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({action:'list'}),
-    });
-    let data, _t='', _ok=false; for(let _i=0; _i<3; _i++){ try { const _r = (_i===0) ? r : await fetch(LEADS_API_URL,{method:'POST',mode:'cors',redirect:'follow',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'list'})}); _t = await _r.text(); data = JSON.parse(_t); _ok = true; break; } catch(_e){ if(_i < 2) await new Promise(function(s){ setTimeout(s,1200); }); } } if(!_ok) throw new Error(String(_t).trim().charAt(0)==='<' ? 'Sincronizando… clique Atualizar' : 'Base de leads indisponivel');
+    let data, _t='', _ok=false;
+    // Felipe 23/09: primeiro tenta o resultado COMPARTILHADO da pagina (uma busca
+    // so para os 3 frames). O fetch proprio vira fallback.
+    try { var _sh = window.parent && window.parent.__getLeadsShared; if (_sh) { data = await _sh(); _ok = !!(data && data.leads); } } catch(_e){}
+    if(!_ok){ for(let _i=0; _i<3; _i++){ try { const _r = await fetch(LEADS_API_URL,{method:'POST',mode:'cors',redirect:'follow',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'list'})}); _t = await _r.text(); data = JSON.parse(_t); _ok = true; break; } catch(_e){ if(_i < 2) await new Promise(function(sx){ setTimeout(sx,1500); }); } } }
+    if(!_ok) throw new Error(String(_t).trim().charAt(0)==='<' ? 'Sincronizando… clique Atualizar' : 'Base de leads indisponivel');
     if (data &amp;&amp; data.leads) {
       leads = _dedupLeadsById(data.leads).filter(l => String((l&amp;&amp;l.stage)||'').trim().toLowerCase() !== 'excluido').map(normalizeLead);
       const time = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
@@ -7958,6 +7954,48 @@ render();
 </div>
 
 <script>
+// ===== LEADS COMPARTILHADOS (Felipe 23/09) =====================================
+// O Apps Script dos leads falha em ~4 de 5 chamadas (medido: 1 sozinha = 404;
+// sem cookies = 404; 4 em paralelo = 1 acerto). Antes, BAU, Rankings e Tarefas
+// baixavam a lista CADA UM por conta, com 3 tentativas -> ate 9 downloads de
+// ~2,8 MB por abertura e ~40% de chance de um frame travar no 'Sincronizando...'.
+// Agora a pagina busca UMA vez, com backoff maior, e os 3 frames consomem o
+// mesmo resultado. Cache de 3 min para o botao Atualizar voltar a buscar.
+window.__LEADS_URL = 'https://script.google.com/macros/s/AKfycbyk_rqDKe49ZOCtLJkXYNvITqF5wQBjs5Uu1-9-U5HadPsP_tyzulBaCpyeuLpaqokL1w/exec';
+window.__LEADS_CACHE = null;
+window.__LEADS_AT = 0;
+window.__LEADS_INFLIGHT = null;
+window.__LEADS_TTL = 180000;
+window.__getLeadsShared = function(){
+  var agora = Date.now();
+  if (window.__LEADS_CACHE && (agora - window.__LEADS_AT) < window.__LEADS_TTL) {
+    return Promise.resolve(window.__LEADS_CACHE);
+  }
+  if (window.__LEADS_INFLIGHT) return window.__LEADS_INFLIGHT;
+  window.__LEADS_INFLIGHT = (async function(){
+    var esperas = [700, 1500, 2500, 4000, 6000, 8000, 10000];
+    for (var i = 0; i <= esperas.length; i++) {
+      try {
+        var resp = await fetch(window.__LEADS_URL, {
+          method: 'POST', mode: 'cors', redirect: 'follow',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({action:'list'})
+        });
+        var txt = await resp.text();
+        var d = JSON.parse(txt);
+        if (d && d.leads) {
+          window.__LEADS_CACHE = d; window.__LEADS_AT = Date.now();
+          window.__LEADS_INFLIGHT = null;
+          return d;
+        }
+      } catch(e) {}
+      if (i < esperas.length) await new Promise(function(res){ setTimeout(res, esperas[i]); });
+    }
+    window.__LEADS_INFLIGHT = null;
+    throw new Error('Base de leads indisponivel');
+  })();
+  return window.__LEADS_INFLIGHT;
+};
 function switchFrame(name) {
   document.querySelectorAll('.frames iframe').forEach(f => f.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
