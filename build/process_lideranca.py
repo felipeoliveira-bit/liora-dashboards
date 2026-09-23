@@ -461,6 +461,7 @@ LEDGER_IGNORE = {
     '4ba9faf6-827f-4b17-98c4-8bdde13e9bba',  # DEIA MINIMERCADO LTDA (Paulo Alexandre Jorge, 1.883 MWh)
     'ecae8e1b-25cf-4268-b61d-da32950bb1f7',  # ERIKA GOMES PEREIRA (Anderson Correia, 3.915 MWh)
     '800f8619-e760-4711-91b8-d5959e429858',  # JOSE TARCISE DUARTE JUNIOR (Ederson Silva, 0.42 MWh)
+    'b3da467b-445f-4545-a958-c8a24ca76c2f',  # ADRIANO CESAR SOARES (Ederson Silva, 0.306 MWh)
 }
 
 def _load_prev_aprov():
