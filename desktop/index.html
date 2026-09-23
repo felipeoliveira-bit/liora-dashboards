@@ -17,7 +17,7 @@ window.__LEADS_CACHE = null;
 window.__LEADS_AT = 0;
 window.__LEADS_INFLIGHT = null;
 window.__LEADS_TTL = 180000;
-window.__LEADS_SEEDED = false;
+window.__LEADS_SEEDED = false;  // snapshot v1 (23/09)
 window.__getLeadsShared = function(){
   var agora = Date.now();
   if (window.__LEADS_CACHE && (agora - window.__LEADS_AT) < window.__LEADS_TTL) {
