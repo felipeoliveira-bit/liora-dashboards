@@ -120,6 +120,16 @@ elif _vm.returncode != 0:
     # nao pode ser o motivo de o dashboard parar de publicar.
     print('[mapas] checagem nao rodou (rc=%s) - seguindo.' % _vm.returncode)
 
+# 6) SNAPSHOT DOS LEADS para o dash de lideres (Felipe 23/09).
+#    O Apps Script tem janelas de indisponibilidade e deixava a aba Tarefas
+#    presa em "Sincronizando...". Agora o CI grava desktop/leads.json e a tela
+#    abre com dado local. NUNCA derruba o build: o script sai 0 mesmo falhando
+#    e o snapshot anterior continua valendo.
+_ls = subprocess.run(['python3', os.path.join(BUILD,'leads_seed.py'),
+                      os.path.join(ROOT,'desktop','leads.json')],
+                     cwd=ROOT, capture_output=True, text=True)
+print((_ls.stdout or '').strip() or (_ls.stderr or '').strip())
+
 print('BUILD OK @ %s (data %s)' % (TS, STAMP_TS))
 _dp=DESK; _dh=open(_dp,encoding='utf-8').read(); _dh=_dh.replace("const pct = metaToDate>0 ? Math.min((mwh/metaToDate)*100, 100) : 0;","const pct = metaMes>0 ? (mwh/metaMes)*100 : 0;"); open(_dp,'w',encoding='utf-8').write(_dh); print('patch op-card aplicado')
 _mp=MOB; _mh=open(_mp,encoding='utf-8').read(); _mh=_mh.replace(">ver comprovante ", ">ver comprovante (UC ${escapeHtml(String(p.uc||''))}) "); open(_mp,'w',encoding='utf-8').write(_mh); print('patch comprovante-uc aplicado')
