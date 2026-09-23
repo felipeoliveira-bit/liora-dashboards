@@ -232,34 +232,58 @@ def is_antecipa(r):
     prod = _ov.get('produto') or (r.get('product_name') or '')
     return 'ANTECIPA' in prod.strip().upper()
 
+# ---- GATE ANTECIPA: as DUAS analises (Felipe 22/09) -----------------------
+# Data de corte. Venda com risco aprovado a partir daqui so conta como aprovada
+# com risco E credito concluidos. Antes disso vale a regra de 03/09 (APPROVED_
+# PENDING_CREDIT contava sozinho) - o corte existe para nao recalcular campanha
+# ja paga. Para tornar a regra retroativa, basta baixar esta data.
+ANT_GATE_INICIO = '2026-09-23'
+
+def ant_gate_vale(r):
+    """True quando o gate estrito se aplica a este deal (risco aprovado no corte ou depois)."""
+    _d = pdate(r.get('latest_risk_analysis_created_at'))
+    if not _d:
+        return True          # sem data de risco -> trata como novo (exige as duas)
+    return _d.isoformat() >= ANT_GATE_INICIO
+
 def ant_ok(r, credito_ok=None):
-    """Antecipa aprovado. Risco APPROVED exige credito 'approved'; APPROVED_PENDING_
-    CREDIT conta a partir da aprovacao no RISCO (Felipe 03/09)."""
+    """Antecipa aprovado = risco APROVADO **E** credito CONCLUIDO (Felipe 22/09).
+
+    A partir de ANT_GATE_INICIO o Antecipa so conta com as DUAS analises fechadas.
+    Fecha o atalho de 03/09, em que APPROVED_PENDING_CREDIT contava sozinho, na
+    aprovacao do risco, sem esperar o credito - foi por ai que passaram os 2 deals
+    da GP SOLAR II SPE (Nailson, 13,99 MWh) e o DEIA MINIMERCADO (Paulo Alexandre,
+    1,88 MWh), todos em BGC_PARCEIRO com ZERO analise de credito.
+
+    Credito CONCLUIDO = latest_credit_analysis_result 'approved' OU
+    deal_credit_stage 'PAYMENT_SUCCEDED'. O PAYMENT_SUCCEDED existe porque o
+    Antecipa pago por **Pix** nunca gera registro em credit_analyses: o pagamento
+    confirmado E' a conclusao do credito naquele caminho. Sem isso todo Pix viraria
+    FORCE_APPROVED na mao (ja aconteceu 3x: Jonas Emer, CARIZA, Rosangela de Melo).
+
+    CORTE POR DATA (Felipe 22/09: "a partir de hoje"): venda cujo risco foi aprovado
+    ANTES de ANT_GATE_INICIO segue na regra antiga. Sem isso a campanha 15-21/09, ja
+    paga, cairia de R$ 19.750 para R$ 16.500 depois do pagamento ter saido.
+    """
     _risk = (r.get('latest_risk_analysis_result') or '').strip()
     if _risk not in ANT_RISK_OK:
         return False
-    # APPROVED_PENDING_CREDIT: conta ja na aprovacao do risco, sem esperar a analise
-    # de credito (Felipe 03/09). Motivo: a venda que o risco aprova as 17h so
-    # aparecia no dia seguinte, quando o credito era analisado. Credito NEGADO (ou
-    # etapa de credito/pagamento rejeitada) continua barrando - e' o apc_ok.
-    # Caso que delimita a regra: Rodrigo Henrique da Silva (Ederson, 0,245 MWh) -
-    # risco APPROVED_PENDING_CREDIT 01/09 17:05, credito DENIED 02/09 10:35
-    # (score 208, 'historico crescente de debitos') -> NAO conta.
-    # Os 3 furos fechados em 01/09 seguem fechados: risco DENIED + credito approved
-    # cai no ANT_RISK_OK; risco APPROVED sem nenhuma analise de credito continua
-    # exigindo credito 'approved' logo abaixo.
-    if _risk == 'APPROVED_PENDING_CREDIT':
+    _cs = (r.get('deal_credit_stage') or '').strip()
+    if _cs in CREDIT_STAGE_NEG:
+        return False
+    if credito_ok is None:
+        credito_ok = (r.get('latest_credit_analysis_result') or '').strip().lower() == 'approved'
+    if credito_ok:
+        return True
+    if _cs == 'PAYMENT_SUCCEDED':      # Pix: pagamento confirmado = credito concluido
+        return True
+    # --- grandfathering: risco aprovado antes do corte segue na regra de 03/09 ---
+    if _risk == 'APPROVED_PENDING_CREDIT' and not ant_gate_vale(r):
         _ov = PRODUCT_OVERRIDE.get((r.get('deal_id') or '').strip(), {})
         if _ov.get('credito_ok') is False:
             return False
         return apc_ok(r)
-    if credito_ok is None:
-        credito_ok = (r.get('latest_credit_analysis_result') or '').strip().lower() == 'approved'
-    if not credito_ok:
-        return False
-    if (r.get('deal_credit_stage') or '').strip() in CREDIT_STAGE_NEG:
-        return False
-    return True
+    return False
 CONSUMPTION_OVERRIDE = {  # cliente (upper/strip) -> MWh; temp ate base corrigir
  'FRANCISCO ALDECI DE QUEIROZ FERNANDES': 5.86,  # base mostra 0.59 (Felipe 03/07)
  'GABRIEL LUCHIARI ALBERTO': 0.567,  # base mostra 0.13; fatura R$526/615 SP CPFL (Felipe 08/07)
