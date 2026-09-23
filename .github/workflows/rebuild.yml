@@ -47,8 +47,8 @@ jobs:
           git config user.name  "liora-rebuild-bot"
           git config user.email "actions@github.com"
           rm -rf build/_work
-          if [ -n "$(git status --porcelain desktop/index.html mobile/index.html)" ]; then
-            git add desktop/index.html mobile/index.html
+          if [ -n "$(git status --porcelain desktop/index.html mobile/index.html desktop/leads.json)" ]; then
+            git add desktop/index.html mobile/index.html desktop/leads.json
             git commit -m "Rebuild CI $(date -u +%Y-%m-%dT%H:%MZ)"
             git push
             echo "PUBLICADO."
