@@ -662,6 +662,46 @@ def ant_ok(r, credito_ok=None):
     return False
 
 
+# ---- FASE DO ANTECIPA (Felipe 24/09, pedido do Joao/Ribeirao) --------------
+# Os lideres nao conseguiam ver quando o Antecipa sai da analise de RISCO e entra
+# na de CREDITO. Campo 'af' no rawData (so Antecipa; '' no resto), usado pelo
+# stepper Contrato > Risco > Credito > Aprovado nas Pendencias (mobile) e na lista
+# de clientes (desktop). 'OK' usa EXATAMENTE a mesma regra da contagem (_ant_bloq),
+# entao o stepper verde nunca diverge do numero de aprovados.
+#   ASS  aguardando assinatura      RSK  em analise de risco     RNEG reprovado no risco
+#   CRD  risco ok, credito em curso CNEG reprovado no credito    PNEG pagamento rejeitado
+#   OK   risco e credito concluidos (conta como aprovado)
+def ant_fase(r, ant_bloq, force_denied=False):
+    if not is_antecipa(r):
+        return ''
+    if force_denied:
+        return 'RNEG'
+    if not ant_bloq:
+        return 'OK'
+    _risk = (r.get('latest_risk_analysis_result') or '').strip()
+    _cs = (r.get('deal_credit_stage') or '').strip()
+    _cr = (r.get('latest_credit_analysis_result') or '').strip().lower()
+    if _cs == 'CREDIT_ANALISYS_REJECTED' or _cr in CREDIT_NEG:
+        return 'CNEG'   # vem antes do DENIED: o credito negado lanca um risco DENIED por cima
+    if _cs == 'PAYMENT_REJECTED':
+        return 'PNEG'
+    if _risk == 'DENIED':
+        return 'RNEG'
+    if _risk in ANT_RISK_OK:
+        return 'CRD'
+    if _risk or (r.get('latest_contract_signature_signed_at') or '').strip():
+        return 'RSK'
+    return 'ASS'
+
+def ant_fase_data(r, fase):
+    """Quando o risco aprovou (so para CRD/CNEG/PNEG/OK). card818 ja vem em horario BR."""
+    if fase not in ('CRD', 'CNEG', 'PNEG', 'OK'):
+        return ''
+    if (r.get('latest_risk_analysis_result') or '').strip() not in ANT_RISK_OK:
+        return ''
+    return (r.get('latest_risk_analysis_created_at') or '').strip()[:16]
+
+
 # FORCE_NOTE: nota que aparece no card do cliente forcado (Felipe 01/09: "considerado
 # no card, mas cliente reprovado e o motivo"). Prefixa o campo 'motivo' do rawData —
 # o card do desktop e a aba de detalhe do mobile imprimem esse campo. Chave = deal_id.
@@ -702,6 +742,7 @@ def mk_deal(r):
         if risk == 'APPROVED': risk = ''  # risco aprovado sem credito approved nao conta
     if _apc: risk='APPROVED'  # Felipe 18/08: APPROVED_PENDING_CREDIT = aprovado (falta só o pagamento)
     if credito_ok: risk='APPROVED'  # Felipe 06/08: crédito aprovado (Antecipa) conta como aprovado no Field
+    _af = ant_fase(r, _ant_bloq, r['deal_id'] in FORCE_DENIED)  # antes dos overrides de risk abaixo
     if r['deal_id'] in FORCE_APPROVED: risk='APPROVED'  # aprovado manual
     if r['deal_id'] in FORCE_DENIED: risk='DENIED'  # reprovado manual (Felipe): ganha de tudo
     # aprovado conta pela DATA DA ANÁLISE DE RISCO; sem risco (WAITING) usa criação
@@ -730,6 +771,8 @@ def mk_deal(r):
       'produto': _prod_ov.get('produto', (r.get('product_name') or '').strip()),
       'credito_ok': (False if _ant_bloq else _prod_ov.get('credito_ok', credito_ok)),  # Antecipa: análise de crédito aprovada (Felipe 06/08)
       'ant_bloq': bool(_ant_bloq),  # Antecipa sem as DUAS análises aprovadas: nunca conta (Felipe 01/09)
+      'af': _af,  # fase do Antecipa: ASS/RSK/RNEG/CRD/CNEG/PNEG/OK ('' fora do Antecipa) - Felipe 24/09
+      'ard': ant_fase_data(r, _af),  # quando o risco aprovou (stepper)
       'apc': bool(_apc),  # aprovado no risco, pendente de crédito/pagamento (Felipe 18/08)
       'fapr': bool(forced),  # aprovado manual (FORCE_APPROVED) - alimenta a quebra do card
       'rapr': (r['latest_risk_analysis_result'] or '').strip()=='APPROVED',  # risco APPROVED na base (quebra do card)

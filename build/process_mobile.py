@@ -291,6 +291,46 @@ def ant_ok(r, credito_ok=None):
             return False
         return apc_ok(r)
     return False
+
+
+# ---- FASE DO ANTECIPA (Felipe 24/09, pedido do Joao/Ribeirao) --------------
+# Os lideres nao conseguiam ver quando o Antecipa sai da analise de RISCO e entra
+# na de CREDITO. Campo 'af' no rawData (so Antecipa; '' no resto), usado pelo
+# stepper Contrato > Risco > Credito > Aprovado nas Pendencias (mobile) e na lista
+# de clientes (desktop). 'OK' usa EXATAMENTE a mesma regra da contagem (_ant_bloq),
+# entao o stepper verde nunca diverge do numero de aprovados.
+#   ASS  aguardando assinatura      RSK  em analise de risco     RNEG reprovado no risco
+#   CRD  risco ok, credito em curso CNEG reprovado no credito    PNEG pagamento rejeitado
+#   OK   risco e credito concluidos (conta como aprovado)
+def ant_fase(r, ant_bloq, force_denied=False):
+    if not is_antecipa(r):
+        return ''
+    if force_denied:
+        return 'RNEG'
+    if not ant_bloq:
+        return 'OK'
+    _risk = (r.get('latest_risk_analysis_result') or '').strip()
+    _cs = (r.get('deal_credit_stage') or '').strip()
+    _cr = (r.get('latest_credit_analysis_result') or '').strip().lower()
+    if _cs == 'CREDIT_ANALISYS_REJECTED' or _cr in CREDIT_NEG:
+        return 'CNEG'   # vem antes do DENIED: o credito negado lanca um risco DENIED por cima
+    if _cs == 'PAYMENT_REJECTED':
+        return 'PNEG'
+    if _risk == 'DENIED':
+        return 'RNEG'
+    if _risk in ANT_RISK_OK:
+        return 'CRD'
+    if _risk or (r.get('latest_contract_signature_signed_at') or '').strip():
+        return 'RSK'
+    return 'ASS'
+
+def ant_fase_data(r, fase):
+    """Quando o risco aprovou (so para CRD/CNEG/PNEG/OK). card818 ja vem em horario BR."""
+    if fase not in ('CRD', 'CNEG', 'PNEG', 'OK'):
+        return ''
+    if (r.get('latest_risk_analysis_result') or '').strip() not in ANT_RISK_OK:
+        return ''
+    return (r.get('latest_risk_analysis_created_at') or '').strip()[:16]
 CONSUMPTION_OVERRIDE = {  # cliente (upper/strip) -> MWh; temp ate base corrigir
  'FRANCISCO ALDECI DE QUEIROZ FERNANDES': 5.86,  # base mostra 0.59 (Felipe 03/07)
  'GABRIEL LUCHIARI ALBERTO': 0.567,  # base mostra 0.13; fatura R$526/615 SP CPFL (Felipe 08/07)
@@ -683,7 +723,7 @@ def build_rawData(deals_path, ag_path, prop_path=None, docs_map=None, uc_map=Non
             'city':r['current_client_city'],'state':r['current_client_state'],
             'dist':DIST_MAP.get(r['distributor_short_name'], r['distributor_short_name']),
             'produto':_prod_ov.get('produto', (r.get('product_name') or '').strip()),
-            'credito_ok':(False if _ant_bloq else credito_ok),'ant_bloq':bool(_ant_bloq),'credito':credit_pt(r.get('deal_credit_stage')),'apc':bool(_apc),'fapr':bool(forced),'rapr':(_risk=='APPROVED'),
+            'credito_ok':(False if _ant_bloq else credito_ok),'ant_bloq':bool(_ant_bloq),'af':ant_fase(r, _ant_bloq, did in FORCE_DENIED),'ard':ant_fase_data(r, ant_fase(r, _ant_bloq, did in FORCE_DENIED)),'credito':credit_pt(r.get('deal_credit_stage')),'apc':bool(_apc),'fapr':bool(forced),'rapr':(_risk=='APPROVED'),
             'deal_id':did,'uc':uc_map.get(did,''),'tel':r['client_phone_number'],'cnpj':r['current_client_cnpj'],'cpf':r['current_client_cpf'],
             'fatura':pfloat(r['current_total_bill_cost (R$)']),'semana':semana(basis),
             'lost_at':('' if (forced or (cli or '').strip().upper() in LOST_IGNORE) else r['deal_lost_at']),'lost_reason':('' if (forced or (cli or '').strip().upper() in LOST_IGNORE) else r['deal_lost_reason']),

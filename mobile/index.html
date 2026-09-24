@@ -885,7 +885,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
   <div class="copa-modal" id="copa-modal" onclick="closeCopaFig()"></div>
 
   <div style="position:fixed;bottom:78px;right:8px;font-size:9px;color:#aaa;background:rgba(255,255,255,.85);padding:2px 6px;border-radius:8px;z-index:99;font-family:monospace;pointer-events:none">
-    v2.184 · 23/09
+    v2.185 · 24/09
   </div>
 
   <!-- BOTTOM NAV -->
@@ -1094,6 +1094,50 @@ function pendAntecipa(x){
   const label = info ? info[0] : (c.charAt(0) + c.slice(1).toLowerCase().replace(/_/g,' '));
   const desc  = info ? info[1] : '';
   return 'Antecipa · ' + label + (desc ? ' — ' + desc : '');
+}
+// v2.185 — Fase do Antecipa em stepper (Felipe 24/09, pedido do Joao/Ribeirao:
+// "dificuldade de identificar quando passa da analise de risco pra de credito").
+// x.af vem do build (ant_fase): ASS RSK RNEG CRD CNEG PNEG OK; '' fora do Antecipa.
+// OK usa a MESMA regra da contagem, entao stepper verde = conta como aprovado.
+// x.ard = quando o risco aprovou (YYYY-MM-DDTHH:MM, horario BR).
+var AF_ETAPAS = ['Contrato', 'Risco', 'Crédito', 'Aprovado'];
+var AF_POS = {ASS:[0,'now'], RSK:[1,'now'], RNEG:[1,'no'], CRD:[2,'now'], CNEG:[2,'no'], PNEG:[2,'no'], OK:[4,'ok']};
+function afData(s){
+  s = String(s || '');
+  if(s.length < 16) return '';
+  return s.slice(8,10) + '/' + s.slice(5,7) + ' ' + s.slice(11,16);
+}
+function afTitulo(x){
+  var f = (x ? x.af : '') || '';
+  var d = afData(x ? x.ard : '');
+  if(f === 'ASS')  return 'Aguardando assinatura do contrato';
+  if(f === 'RSK')  return 'Em análise de risco';
+  if(f === 'RNEG') return 'Reprovado na análise de risco';
+  if(f === 'CRD')  return 'Risco aprovado' + (d ? ' em ' + d : '') + ' · em análise de crédito';
+  if(f === 'CNEG') return 'Reprovado na análise de crédito' + (d ? ' (risco aprovado em ' + d + ')' : '');
+  if(f === 'PNEG') return 'Pagamento rejeitado — precisa refazer';
+  if(f === 'OK')   return 'Risco e crédito aprovados';
+  return '';
+}
+function afStepper(x){
+  var f = (x ? x.af : '') || '';
+  var P = AF_POS[f];
+  if(!P) return '';
+  var h = '<div style=\'margin-top:6px;padding:7px 8px;border-radius:10px;background:#F7F7FB;border:1px solid #E4E4EE\'>'
+    + '<div style=\'display:flex;align-items:center;gap:3px\'>';
+  for(var i = 0; i < AF_ETAPAS.length; i++){
+    var st = (i < P[0]) ? 'ok' : (i === P[0] ? P[1] : '');
+    var bg = st === 'ok' ? '#1D9E75' : st === 'now' ? '#0201F3' : st === 'no' ? '#C0392B' : '#D5D5DF';
+    var ic = st === 'ok' ? '✓' : st === 'now' ? '●' : st === 'no' ? '✕' : '';
+    var fg = st ? '#1a1a1a' : '#9a9aab';
+    if(i > 0) h += '<span style=\'flex:1;height:2px;min-width:6px;background:' + ((i <= P[0]) ? '#1D9E75' : '#D5D5DF') + '\'></span>';
+    h += '<span style=\'display:inline-flex;align-items:center;gap:3px;white-space:nowrap;font-size:10.5px;font-weight:' + (st === 'now' || st === 'no' ? '800' : '600') + ';color:' + fg + '\'>'
+      + '<span style=\'display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:' + bg + ';color:#fff;font-size:9px;line-height:1\'>' + ic + '</span>'
+      + AF_ETAPAS[i] + '</span>';
+  }
+  var cor = (P[1] === 'no') ? '#A32D2D' : (P[1] === 'ok') ? '#1D6B4F' : '#0201F3';
+  h += '</div><div style=\'font-size:11px;font-weight:700;margin-top:5px;color:' + cor + '\'>Antecipa · ' + escapeHtml(afTitulo(x)) + '</div></div>';
+  return h;
 }
 function obsAnaliseHtml(x){
   let h = '';
@@ -2423,6 +2467,9 @@ function pendDe(x){
   }
   const ant = (typeof pendAntecipa==='function') ? pendAntecipa(x) : '';
   if(ant) out.push({k:'antecipa', ico:'⏳', txt: ant});
+  // Felipe 24/09 (Joao): risco aprovado e credito em curso SEM deal_credit_stage ainda
+  // ficava invisivel na aba. Agora entra no chip Antecipa; o stepper mostra a fase.
+  else if(x.af === 'CRD') out.push({k:'antecipa', ico:'⏳', txt: 'Antecipa · Crédito em análise — aguardando o resultado, sem ação do vendedor por enquanto'});
   const obs = (typeof obsAnalise==='function') ? obsAnalise(x) : '';
   if(obs) out.push({k:'risco', ico:'🔎', txt: obs});
   return out;
@@ -2469,6 +2516,7 @@ function pendCard(r){
     + '<div class="client-name">' + escapeHtml(x.c || '(sem nome)') + '</div>'
     + '<div class="client-city">' + escapeHtml(x.city || '—') + (x.dist ? ' · ' + escapeHtml(x.dist) : '') + '</div>'
     + sigLine(x)
+    + afStepper(x)
     + '<div class="client-meta">'
       + '<span class="status-badge" style="background:' + si.bg + ';color:' + si.color + '">' + si.label + '</span>'
       + '<span class="mwh-badge">' + (x.mwh||0).toFixed(2) + ' MWh</span>'
@@ -2573,7 +2621,7 @@ function renderPendencias(){
     + '<div class="camp-header" style="background:linear-gradient(135deg,#F59E0B 0%,#B45309 100%)">'
     + '<div class="camp-title">Pendências · ' + escapeHtml(alvo) + '</div>'
     + '<div class="camp-period">' + rows.length + ' cliente' + (rows.length===1?'':'s') + '</div>'
-    + '<div class="camp-sub">' + mwh.toFixed(1) + (pendFiltro==='antecipa' ? ' MWh com Antecipa a receber' : ' MWh travados') + ' · toque no cliente pra ver o detalhe</div>'
+    + '<div class="camp-sub">' + mwh.toFixed(1) + (pendFiltro==='antecipa' ? ' MWh de Antecipa em andamento' : ' MWh travados') + ' · toque no cliente pra ver o detalhe</div>'
     + '</div>';
 
   h += '<div style="display:flex;gap:6px;margin-bottom:10px">'
