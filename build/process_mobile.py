@@ -350,6 +350,7 @@ FORCE_DENIED = {
   '77a56fa5-9c4e-476c-b71d-ac08534d6745',  # DILEUDA CORINGA DA FONSECA DA SILVA (Antecipa PF, Thiago Macillo/Natal RN, 0.49 MWh) - desistiu; perdido 13/08 na base; era FORCE_APPROVED e o Felipe liberou considerar reprovada (25/08)
 }
 FORCE_APPROVED = {
+    'f84f8bdb-e910-4901-9738-30f6e1921b15': '2026-09-22',  # ROBSON JOSE DE LIMA (GD LIORA_F_, Olavo Cavalcanti/RN Interior, 0.371 MWh, Barauna/RN) - TITULARIDADE_ONGOING com risco MANUAL (18/09 DENIED por 2 faturas vencidas, 22/09 13:09 MANUAL = aprovacao manual no Retool sem carimbo APPROVED). Felipe 28/09: considerar aprovado em 22/09. NAO muda faixa do Olavo.
   # Felipe 22/09: 3 vendas aprovadas em 22/09 exibidas com a data de 21/09,
   # ultimo dia da campanha 15-21/09 (paga 24/09). SO NO MOBILE - os deal_ids vao
   # tambem no LEDGER_IGNORE do process_lideranca.py, senao a data vaza para o
@@ -569,6 +570,7 @@ NO_COUNT = {
 }
 
 FORCE_NOTE = {
+  'f84f8bdb-e910-4901-9738-30f6e1921b15': 'ℹ️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 28/09) — titularidade em andamento; a analise de risco foi liberada manualmente em 22/09 13:09 mas ficou como MANUAL, sem carimbo de aprovado na base.',
   'c347afca-2a48-4111-b7c9-d5f85970f3db': 'ℹ️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 17/09) — titularidade agendada e contrato assinado em 17/09; a analise de risco foi aprovada no Retool as 13:03 mas ficou registrada como MANUAL, sem carimbo de aprovacao na base.',
     '9b7ea565-4c5e-49b1-872d-1c72ad59ee91': 'ℹ️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 14/09) — Antecipa PF pago por Pix: risco APROVADO em 10/09 23:09 e pagamento confirmado na base, mas a analise de credito esta VAZIA (Pix nao gera analise de credito), entao a regra automatica nao contava.',
   '75b2bd3b-b87c-4b3c-a705-bf1c205dadcf': 'ℹ️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 11/09) — Antecipa PJ pago por Pix: risco APROVADO em 10/09 13:24 e pagamento confirmado na base, mas a analise de credito esta VAZIA (Pix nao gera analise de credito), entao a regra automatica nao contava.',
