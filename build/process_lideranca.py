@@ -357,6 +357,7 @@ FORCE_DENIED = {
   '77a56fa5-9c4e-476c-b71d-ac08534d6745',  # DILEUDA CORINGA DA FONSECA DA SILVA (Antecipa PF, Thiago Macillo/Natal RN, 0.49 MWh) - desistiu; perdido 13/08 na base; era FORCE_APPROVED e o Felipe liberou considerar reprovada (25/08)
 }
 FORCE_APPROVED = {
+    'd94d0a9e-a874-4a09-85d9-0510184d7bb7': '2026-09-29',  # IRLANDA BARRETO SILVA MACHADO (GD LIORA_F_, Jamson Santos/Feira de Santana, 2.305 MWh, proposta 65446db4) - DENIED 25/09 (2 faturas vencidas) e perdido; cliente pagou e em 29/09 09:28 o risco foi para MANUAL, stage BGC_PARCEIRO. Felipe 30/09: considerar aprovado.
     'f84f8bdb-e910-4901-9738-30f6e1921b15': '2026-09-22',  # ROBSON JOSE DE LIMA (GD LIORA_F_, Olavo Cavalcanti/RN Interior, 0.371 MWh, Barauna/RN) - TITULARIDADE_ONGOING com risco MANUAL (18/09 DENIED por 2 faturas vencidas, 22/09 13:09 MANUAL = aprovacao manual no Retool sem carimbo APPROVED). Felipe 28/09: considerar aprovado em 22/09. NAO muda faixa do Olavo.
     'a22b0475-5308-40bb-8f9a-4c2f843117b3': '2026-09-24',  # REFERENCE REPARACAO AUTOMOTIVA (GD LIORA_F_, Conceicao Santos/Ribeirao, 4.538 MWh, S.J. Rio Preto/SP, proposta 1c50fa54) - SCHEDULED_TITULARIDADE; risco 24/09 16:12 APPROVED, 28/09 09:01 virou MANUAL ('Cliente quer trocar a titularidade em 28-12'). Felipe 28/09: considerar aprovado em 24/09.
     'c347afca-2a48-4111-b7c9-d5f85970f3db': '2026-09-17',  # MAXFAB COMERCIO E MANUTENCAO DE PECAS E MAQUINA INDUSTRIAIS / 08193056000111 (GD LIORA_F_, Anderson Correia/Campinas SPI, 1.635 MWh) - SCHEDULED_TITULARIDADE + contrato assinado 17/09 08:49; a analista Laudiceia aprovou no Retool 17/09 13:03 mas o risco ficou carimbado MANUAL, nao APPROVED. Mesmo padrao de AMANDA MARCONDES / MG E CB / FAB. Aprovado manual (Felipe 17/09). Remover quando a base carimbar APPROVED.
@@ -708,6 +709,7 @@ def ant_fase_data(r, fase):
 # no card, mas cliente reprovado e o motivo"). Prefixa o campo 'motivo' do rawData —
 # o card do desktop e a aba de detalhe do mobile imprimem esse campo. Chave = deal_id.
 FORCE_NOTE = {
+  'd94d0a9e-a874-4a09-85d9-0510184d7bb7': 'ℹ️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 30/09) — reprovada em 25/09 por faturas vencidas; cliente regularizou e em 29/09 a analise foi para MANUAL.',
   'f84f8bdb-e910-4901-9738-30f6e1921b15': 'ℹ️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 28/09) — titularidade em andamento; a analise de risco foi liberada manualmente em 22/09 13:09 mas ficou como MANUAL, sem carimbo de aprovado na base.',
   'a22b0475-5308-40bb-8f9a-4c2f843117b3': 'ℹ️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 28/09) — aprovado no risco em 24/09; em 28/09 a analise voltou para MANUAL (troca de titularidade prevista para 28/12).',
   'c347afca-2a48-4111-b7c9-d5f85970f3db': 'ℹ️ CONSIDERADO APROVADO NO CARD (decisao do Felipe 17/09) — titularidade agendada e contrato assinado em 17/09; a analise de risco foi aprovada no Retool as 13:03 mas ficou registrada como MANUAL, sem carimbo de aprovacao na base.',
