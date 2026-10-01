@@ -885,7 +885,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
   <div class="copa-modal" id="copa-modal" onclick="closeCopaFig()"></div>
 
   <div style="position:fixed;bottom:78px;right:8px;font-size:9px;color:#aaa;background:rgba(255,255,255,.85);padding:2px 6px;border-radius:8px;z-index:99;font-family:monospace;pointer-events:none">
-    v2.188 · 01/10
+    v2.189 · 01/10
   </div>
 
   <!-- BOTTOM NAV -->
@@ -1264,6 +1264,7 @@ function getMetaToDateInfo(){
 function metaToDate(metaMes){ return metaMes * getMetaToDateInfo().fraction; }
 
 // ── METAS VENDEDOR ────────────────────────────────────────
+// out/26 (Felipe 01/10, aba Time): meta individual = 15 MWh para TODOS
 let METAS = {
   'João Santos':15,
   'Mirla Albuquerque':15,
@@ -1276,30 +1277,30 @@ let METAS = {
   'Fábio Rodrigues':15,
   'Karianine Sampaio':15,
   'Briel Barbosa':15,
-  'Marcel Sousa':19,
+  'Marcel Sousa':15,
   'Silmara Gomes':15,
-  'Luciana Campos':19,
+  'Luciana Campos':15,
   'Nicola Popovic':15,
   'Anderson Correia':15,
   'Percy Hormazabal':15,
   'Ana Ribeiro':15,
   'Rodrigo Lima':15,
   'Daniel Junior':15,
-  'Mecenas Junior':19,
-  'Daniel Magnus':19,'Thiago Firmo':19,
-  // Salvador — 19 MWh
-  'Adroaldo Bonfim':19,'Ronaldo Nogueira':19,'Antonio Mariano':19,'Ettore Rossi':19,'Tatiane Correia':19,'Silvia Dias':19,'Maria Lúcia':19,'Tais Santos':19,
-  // Feira de Santana — 19 MWh
-  'Kelma Rangel':19,'Lucileide Carlos':19,'Rosangela Mendes':19,'Tiago Freitas':19,'Tamires Costa':19,'Alberto Nascimento':19,'Ryan Trindade':19,
-  // Natal — 19 MWh
-  'Bruno Andrade':19,'Marcio Galvão':19,'Rodrigo Ribeiro':19,
+  'Mecenas Junior':15,
+  'Daniel Magnus':15,'Thiago Firmo':15,
+  // Salvador — 15 MWh
+  'Adroaldo Bonfim':15,'Ronaldo Nogueira':15,'Antonio Mariano':15,'Ettore Rossi':15,'Tatiane Correia':15,'Silvia Dias':15,'Maria Lúcia':15,'Tais Santos':15,
+  // Feira de Santana — 15 MWh
+  'Kelma Rangel':15,'Lucileide Carlos':15,'Rosangela Mendes':15,'Tiago Freitas':15,'Tamires Costa':15,'Alberto Nascimento':15,'Ryan Trindade':15,
+  // Natal — 15 MWh
+  'Bruno Andrade':15,'Marcio Galvão':15,'Rodrigo Ribeiro':15,
   // SPI — 15 MWh
   'Caio Lannes':15,'Ederson Silva':15,'Franciele Felix':15,'Monica Silveira':15,'Diego Faria':15,
   // CE — 15 MWh
   'Bruno Borges':15,'Neilon Nascimento':15,'Sabrina Tomazeti':15,'Núbia Andrade':15,'Odirley Costa':15,
   'Nailson Oliveira':15, 'Samuel Santos':15, 'Francisco Monteiro':15,  // novos CE 08/09
   'Bruna Dias':15,'Tiago Silva':15,  // novos 22/09 (Ribeirao Preto SPI)
-  'Jamson Santos':19  // novo 22/09 (Feira de Santana)
+  'Jamson Santos':15  // novo 22/09 (Feira de Santana)
 };
 
 // ── NAV ───────────────────────────────────────────────────
@@ -2175,9 +2176,9 @@ renderCarteira();
 // Gestores com visão geral (veem tudo, todas as praças) — v2.140
 const GESTORES = ['Felipe Oliveira','Ana Ribeiro','Raynara Silva'];
 function isGestor_(n){ return GESTORES.indexOf(n) !== -1; }
-const OCULTOS_TIME = ['Ananias Neto','Rosangela Mendes','Franciele Felix','Ana Ribeiro','Ryan Trindade','Antonio Mariano','Camila Couto','Bruno Andrade','Adroaldo Bonfim','Daniel Magnus','Doni Oliveira','Jefferson Fideli','Monica Silveira','Núbia Andrade','Phillip Faria','Sabrina Tomazeti','Tiago Freitas','Silmara Gomes','Thiago Araujo França']  // + desligados conferidos na planilha HC (22/09);
+const OCULTOS_TIME = ['Ananias Neto','Rosangela Mendes','Franciele Felix','Ana Ribeiro','Ryan Trindade','Antonio Mariano','Camila Couto','Bruno Andrade','Adroaldo Bonfim','Daniel Magnus','Doni Oliveira','Jefferson Fideli','Monica Silveira','Núbia Andrade','Phillip Faria','Sabrina Tomazeti','Tiago Freitas','Silmara Gomes','Thiago Araujo França','Marcio Galvão']  // + desligados conferidos na planilha HC (22/09); Marcio Galvao desligado 30/09 (HC, Felipe 01/10);
 // Ex-time (saíram da empresa, base HC) — removidos do seletor 'Visualizando vendedor'. Ryan/Ana continuam (ativos).
-const EX_TIME = ['Thiago Araujo França','Antonio Mariano','Rosangela Mendes','Franciele Felix','Ananias Neto','Bruno Andrade','Adroaldo Bonfim','Daniel Magnus','Doni Oliveira','Jefferson Fideli','Monica Silveira','Núbia Andrade','Phillip Faria','Sabrina Tomazeti','Tiago Freitas','Silmara Gomes']  // + desligados conferidos na planilha HC (22/09);
+const EX_TIME = ['Thiago Araujo França','Antonio Mariano','Rosangela Mendes','Franciele Felix','Ananias Neto','Bruno Andrade','Adroaldo Bonfim','Daniel Magnus','Doni Oliveira','Jefferson Fideli','Monica Silveira','Núbia Andrade','Phillip Faria','Sabrina Tomazeti','Tiago Freitas','Silmara Gomes','Marcio Galvão']  // + desligados conferidos na planilha HC (22/09); Marcio Galvao 30/09;
 function isExTime_(n){ return EX_TIME.indexOf(n) !== -1; }
 function isOculto_(n){ return OCULTOS_TIME.indexOf(n) !== -1; }
 // v2.186 — Alinhamento Out26 (deck de 29/09): escada de 6 semanas, terca->segunda.
@@ -4036,7 +4037,7 @@ let CREDENTIALS = {
   'nailson.oliveira@lioraenergia.com.br':      { nome: 'Nailson Oliveira',      senha: 'CE' }, // novo 08/09 (Fortaleza CE)
   'samuel.santos@lioraenergia.com.br':         { nome: 'Samuel Santos',         senha: 'CE' }, // novo 08/09 (Fortaleza CE)
   'francisco.monteiro@lioraenergia.com.br':    { nome: 'Francisco Monteiro',    senha: 'CE' }, // novo 08/09 (Fortaleza CE)
-  'marcio.galvao@lioraenergia.com.br':      { nome: 'Marcio Galvão',      senha: 'RN' },
+  // marcio.galvao@ removido 01/10: desligado em 30/09 (planilha HC)
   // 'bruno.andrade@lioraenergia.com.br' — desligado 25/08 (acesso removido; marcar inativo na aba Time da planilha)
   'rodrigo.ribeiro@lioraenergia.com.br':    { nome: 'Rodrigo Ribeiro',    senha: 'RN' },
   'ronaldo.nogueira@lioraenergia.com.br':  { nome: 'Ronaldo Nogueira',  senha: 'Salvador' }, // lider de Salvador 16/09
@@ -4090,6 +4091,7 @@ function applyTeam(rows){
     if(!email) return;
     const nome = EMAIL_NOME[email];
     if(!nome) return; // e-mail desconhecido: ignora (precisa entrar no EMAIL_NOME + foto)
+    if(isExTime_(nome)) return; // v2.189: desligado (EX_TIME) nao recebe login nem volta ao time, mesmo listado na aba Time
 
     const key   = normPracaKey(r.praca);
     const label = PRACA_LABEL[key] || 'Outros';

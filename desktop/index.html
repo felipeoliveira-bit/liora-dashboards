@@ -303,7 +303,7 @@ table.bau tbody tr.field-row td:first-child { color: #fff; }
 const LEADS_API_URL = 'https://script.google.com/macros/s/AKfycbyk_rqDKe49ZOCtLJkXYNvITqF5wQBjs5Uu1-9-U5HadPsP_tyzulBaCpyeuLpaqokL1w/exec';
 
 // Vendedores ativos agosto 2026
-const VENDEDORES_OCULTOS = ['Camila Couto','Silmara Gomes','Ryan Trindade','Franciele Felix','Rosangela Mendes','Antonio Mariano','Ana Ribeiro','Bruno Andrade','Adroaldo Bonfim','Daniel Magnus','Doni Oliveira','Jefferson Fideli','Monica Silveira','Núbia Andrade','Phillip Faria','Sabrina Tomazeti','Tiago Freitas','Thiago Araujo França']; // saíram do time
+const VENDEDORES_OCULTOS = ['Camila Couto','Silmara Gomes','Ryan Trindade','Franciele Felix','Rosangela Mendes','Antonio Mariano','Ana Ribeiro','Bruno Andrade','Adroaldo Bonfim','Daniel Magnus','Doni Oliveira','Jefferson Fideli','Monica Silveira','Núbia Andrade','Phillip Faria','Sabrina Tomazeti','Tiago Freitas','Thiago Araujo França','Marcio Galvão']; // saíram do time
 const VENDEDORES = [
   {nome:'Silmara Gomes',praca:'CE'},
   {nome:'Luciana Campos',praca:'Salvador'},
@@ -346,7 +346,7 @@ const PRACAS = ['Salvador','Feira','Natal','SPI','Ribeirao','CE','RNInterior'];
 // Metas Safra agosto 2026
 const METAS_SAFRA = { Salvador: 0, Feira: 0, Natal: 0, SPI: 0, Ribeirao: 0, CE: 0, RNInterior: 0 };  /* out/26: meta em validacao (Felipe 01/10) */
 // Meta INDIVIDUAL por vendedor (da planilha de metas, mensal MWh)
-const META_IND = { Salvador: 19.0, Feira: 19.0, Natal: 19.0, SPI: 15.0, Ribeirao: 15.0, CE: 15.0, RNInterior: 15.0 };
+const META_IND = { Salvador: 15.0, Feira: 15.0, Natal: 15.0, SPI: 15.0, Ribeirao: 15.0, CE: 15.0, RNInterior: 15.0 };  /* out/26: 15 para todos (Felipe 01/10) */
 // Exceções de meta individual que diferem da praça (nome do vendedor → meta mensal MWh)
 const META_VEND_OVERRIDE = {};
 function metaVendMensal(nome, praca) {
@@ -1299,7 +1299,7 @@ td.rk-clk:hover{ text-decoration:underline; }
 <script>
 const LEADS_API_URL = 'https://script.google.com/macros/s/AKfycbyk_rqDKe49ZOCtLJkXYNvITqF5wQBjs5Uu1-9-U5HadPsP_tyzulBaCpyeuLpaqokL1w/exec';
 
-const VENDEDORES_OCULTOS = ['Camila Couto','Silmara Gomes','Ryan Trindade','Franciele Felix','Rosangela Mendes','Antonio Mariano','Ana Ribeiro','Bruno Andrade','Adroaldo Bonfim','Daniel Magnus','Doni Oliveira','Jefferson Fideli','Monica Silveira','Núbia Andrade','Phillip Faria','Sabrina Tomazeti','Tiago Freitas','Thiago Araujo França']; // saiu do time: conta no total/FIELD da praça, mas não renderiza linha individual
+const VENDEDORES_OCULTOS = ['Camila Couto','Silmara Gomes','Ryan Trindade','Franciele Felix','Rosangela Mendes','Antonio Mariano','Ana Ribeiro','Bruno Andrade','Adroaldo Bonfim','Daniel Magnus','Doni Oliveira','Jefferson Fideli','Monica Silveira','Núbia Andrade','Phillip Faria','Sabrina Tomazeti','Tiago Freitas','Thiago Araujo França','Marcio Galvão']; // saiu do time: conta no total/FIELD da praça, mas não renderiza linha individual
 const VENDEDORES = [
   {nome:'Silmara Gomes',praca:'CE'},
   {nome:'Luciana Campos',praca:'Salvador'},
@@ -1328,7 +1328,7 @@ PRACA_OF['Tais Santos'] = 'Salvador';
 
 const PRACAS = ['Salvador','Feira','Natal','SPI','Ribeirao','CE','RNInterior'];
 const METAS_SAFRA = { Salvador: 0, Feira: 0, Natal: 0, SPI: 0, Ribeirao: 0, CE: 0, RNInterior: 0 };  /* out/26: meta em validacao (Felipe 01/10) */
-const META_IND = { Salvador: 19.0, Feira: 19.0, Natal: 19.0, SPI: 15.0, Ribeirao: 15.0, CE: 15.0, RNInterior: 15.0 };
+const META_IND = { Salvador: 15.0, Feira: 15.0, Natal: 15.0, SPI: 15.0, Ribeirao: 15.0, CE: 15.0, RNInterior: 15.0 };  /* out/26: 15 para todos (Felipe 01/10) */
 // Exceções de meta individual que diferem da praça (nome do vendedor → meta mensal MWh)
 const META_VEND_OVERRIDE = {};
 function metaVendMensal(nome, praca) {
@@ -2052,7 +2052,7 @@ tbody tr:hover { background: #fafbff; }
 const LEADS_API_URL = 'https://script.google.com/macros/s/AKfycbyk_rqDKe49ZOCtLJkXYNvITqF5wQBjs5Uu1-9-U5HadPsP_tyzulBaCpyeuLpaqokL1w/exec';
 
 // ===== VENDEDORES (com novos de junho + aliases) =====
-const VENDEDORES_OCULTOS = ['Camila Couto','Silmara Gomes','Ryan Trindade','Franciele Felix','Rosangela Mendes','Antonio Mariano','Ana Ribeiro','Bruno Andrade','Adroaldo Bonfim','Daniel Magnus','Doni Oliveira','Jefferson Fideli','Monica Silveira','Núbia Andrade','Phillip Faria','Sabrina Tomazeti','Tiago Freitas','Thiago Araujo França']; // saíram do time: ocultar linha individual, total da praça mantém
+const VENDEDORES_OCULTOS = ['Camila Couto','Silmara Gomes','Ryan Trindade','Franciele Felix','Rosangela Mendes','Antonio Mariano','Ana Ribeiro','Bruno Andrade','Adroaldo Bonfim','Daniel Magnus','Doni Oliveira','Jefferson Fideli','Monica Silveira','Núbia Andrade','Phillip Faria','Sabrina Tomazeti','Tiago Freitas','Thiago Araujo França','Marcio Galvão']; // saíram do time: ocultar linha individual, total da praça mantém
 function vExib(l){ return VENDEDORES_OCULTOS.includes(l.vendedor) ? 'Natal' : (l.vendedor||'—'); }
 const VENDEDORES = [
   {nome:'Silmara Gomes',praca:'CE'},
@@ -4818,7 +4818,7 @@ function isNegado(x) {
   return false;
 }
 
-const VENDEDORES_OCULTOS = ['Camila Couto','Silmara Gomes','Ryan Trindade','Franciele Felix','Rosangela Mendes','Antonio Mariano','Ana Ribeiro','Bruno Andrade','Adroaldo Bonfim','Daniel Magnus','Doni Oliveira','Jefferson Fideli','Monica Silveira','Núbia Andrade','Phillip Faria','Sabrina Tomazeti','Tiago Freitas','Thiago Araujo França']; // saíram do time: ocultar linha individual, mas resultado continua somando na praça
+const VENDEDORES_OCULTOS = ['Camila Couto','Silmara Gomes','Ryan Trindade','Franciele Felix','Rosangela Mendes','Antonio Mariano','Ana Ribeiro','Bruno Andrade','Adroaldo Bonfim','Daniel Magnus','Doni Oliveira','Jefferson Fideli','Monica Silveira','Núbia Andrade','Phillip Faria','Sabrina Tomazeti','Tiago Freitas','Thiago Araujo França','Marcio Galvão']; // saíram do time: ocultar linha individual, mas resultado continua somando na praça
 const isAprovado = x => {
   if(x.ant_bloq) return false;/*Felipe 01/09: Antecipa so conta com risco E credito aprovados*/ 
   /* 16/09: esta copia (arrow function) escapou dos greps por declaracao classica em 25/08 e ficou sem a trava de PERDIDO;
@@ -5201,7 +5201,7 @@ function fmtMwh(v) {
   return `<span class=&quot;has-val&quot;>${v.toFixed(1)}</span>`;
 }
 
-const META_IND = { salvador:19, feira:19, natal:19, spi:15, ribeirao:15, ce:15, rninterior:15 };
+const META_IND = { salvador:15, feira:15, natal:15, spi:15, ribeirao:15, ce:15, rninterior:15 };  /* out/26 */
 function wdFactor() {
   const parts = BP_TODAY.split('-').map(Number);
   const yr = parts[0], mo = parts[1], dy = parts[2];
@@ -5821,7 +5821,7 @@ table.matrix tbody tr.praca-header td { background: #f0f1f5; font-size: 10px; fo
 const LEADS_API_URL = 'https://script.google.com/macros/s/AKfycbyk_rqDKe49ZOCtLJkXYNvITqF5wQBjs5Uu1-9-U5HadPsP_tyzulBaCpyeuLpaqokL1w/exec';
 
 // 20 vendedores ativos em junho 2026 (Camila Couto removida em 29/05)
-const VENDEDORES_OCULTOS = ['Camila Couto','Silmara Gomes','Ryan Trindade','Franciele Felix','Rosangela Mendes','Antonio Mariano','Ana Ribeiro','Bruno Andrade','Adroaldo Bonfim','Daniel Magnus','Doni Oliveira','Jefferson Fideli','Monica Silveira','Núbia Andrade','Phillip Faria','Sabrina Tomazeti','Tiago Freitas','Thiago Araujo França']; // saíram do time
+const VENDEDORES_OCULTOS = ['Camila Couto','Silmara Gomes','Ryan Trindade','Franciele Felix','Rosangela Mendes','Antonio Mariano','Ana Ribeiro','Bruno Andrade','Adroaldo Bonfim','Daniel Magnus','Doni Oliveira','Jefferson Fideli','Monica Silveira','Núbia Andrade','Phillip Faria','Sabrina Tomazeti','Tiago Freitas','Thiago Araujo França','Marcio Galvão']; // saíram do time
 const VENDEDORES = [
   {nome:'Silmara Gomes',praca:'CE'},
   {nome:'Luciana Campos',praca:'Salvador'},
@@ -7808,7 +7808,7 @@ const HIST = [{&quot;s&quot;:&quot;Francisco Monteiro&quot;,&quot;praca&quot;:&q
 const PR_LABEL = {Salvador:'Salvador', Feira:'Feira de Santana', Natal:'Natal', RNInterior:'RN Interior', SPI:'SPI', Ribeirao:'Ribeirão', CE:'Ceará', Outras:'Outras'};
 const PR_ORDEM = ['Salvador','Feira','Natal','RNInterior','SPI','Ribeirao','CE','Outras'];
 // Meta INDIVIDUAL mensal de MWh por praça — mesma régua do BAU (META_IND).
-const META_IND = {Salvador:19.0, Feira:19.0, Natal:19.0, SPI:15.0, Ribeirao:15.0, CE:15.0, RNInterior:15.0, Outras:15.0};
+const META_IND = {Salvador:15.0, Feira:15.0, Natal:15.0, SPI:15.0, Ribeirao:15.0, CE:15.0, RNInterior:15.0, Outras:15.0};  /* out/26 */
 // Régua do Field (Felipe 14/08): 50 propostas/mês e conversões 25/90/80.
 const EXP = {prop:50, cg:25, ca:90, cap:80};
 const MES_ABR = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];

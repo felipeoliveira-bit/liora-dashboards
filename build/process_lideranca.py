@@ -988,7 +988,8 @@ MISSAO_FORA = {'Felipe Oliveira','Ana Ribeiro','Raynara Silva','Camila Couto',
                # Felipe 14/08: LIDER nao entra no pre-requisito (nao precisa vender 1 Antecipa);
                # o que ele vender continua somando no MWh do time.
                'Adroaldo Bonfim','Kelma Rangel','Mirla Albuquerque','Caio Lannes','João Santos','Bruno Borges',
-               'Bruno Andrade'}  # desligado 25/08 (Mirla assumiu RN Capital)
+               'Bruno Andrade',  # desligado 25/08 (Mirla assumiu RN Capital)
+               'Marcio Galvão'}  # desligado 30/09 (HC, Felipe 01/10)
 _ros = set()
 for _em, _pr in PRACA_TITLE.items():
     if _pr == 'Outras': continue
