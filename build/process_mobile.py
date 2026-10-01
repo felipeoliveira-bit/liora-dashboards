@@ -350,6 +350,8 @@ FORCE_DENIED = {
   '77a56fa5-9c4e-476c-b71d-ac08534d6745',  # DILEUDA CORINGA DA FONSECA DA SILVA (Antecipa PF, Thiago Macillo/Natal RN, 0.49 MWh) - desistiu; perdido 13/08 na base; era FORCE_APPROVED e o Felipe liberou considerar reprovada (25/08)
 }
 FORCE_APPROVED = {
+    'c08fee44-1820-4cff-a14a-d9d96a86d6bb': '2026-09-28',  # MARIA LEONICE ALMEIDA SOUSA (Antecipa PF, Olimpio Filho/Ribeirao, 0.274 MWh) - credito aprovado 29/09; Felipe 30/09: exibir em 28/09. SO NO MOBILE. Tirar na virada.
+    'f56d802a-5ef2-4e4f-a0ca-c3160d83d891': '2026-09-28',  # GERALDA CARDOSO PEREIRA (Antecipa PJ, Olimpio Filho/Ribeirao, 1.892 MWh) - credito aprovado 29/09; Felipe 30/09: exibir em 28/09. SO NO MOBILE. Tirar na virada.
     '24386a10-17e4-4546-953c-6d219d8923a2': '2026-09-28',  # LEANDRO IACOVACCI TRISTAO (GD LIORA_B_, Caio Lannes/Campinas SPI, 8.086 MWh) - risco aprovado 29/09; Felipe 30/09 pediu exibir em 28/09. SO NO MOBILE (+ LEDGER_IGNORE no process_lideranca). Tirar na virada de mes.
     'd94d0a9e-a874-4a09-85d9-0510184d7bb7': '2026-09-29',  # IRLANDA BARRETO SILVA MACHADO (GD LIORA_F_, Jamson Santos/Feira de Santana, 2.305 MWh, proposta 65446db4) - DENIED 25/09 (2 faturas vencidas) e perdido; cliente pagou e em 29/09 09:28 o risco foi para MANUAL, stage BGC_PARCEIRO. Felipe 30/09: considerar aprovado.
     'f84f8bdb-e910-4901-9738-30f6e1921b15': '2026-09-22',  # ROBSON JOSE DE LIMA (GD LIORA_F_, Olavo Cavalcanti/RN Interior, 0.371 MWh, Barauna/RN) - TITULARIDADE_ONGOING com risco MANUAL (18/09 DENIED por 2 faturas vencidas, 22/09 13:09 MANUAL = aprovacao manual no Retool sem carimbo APPROVED). Felipe 28/09: considerar aprovado em 22/09. NAO muda faixa do Olavo.

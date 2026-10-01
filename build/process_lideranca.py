@@ -455,6 +455,8 @@ RISK_APPR_DATE = {
 # rebuild de 16/09 - o dash de lideres, que e a base do fechamento, mudou junto.
 # Estes deal_ids ficam FORA do ledger: o desktop recalcula a data real do risco.
 LEDGER_IGNORE = {
+    'c08fee44-1820-4cff-a14a-d9d96a86d6bb',  # MARIA LEONICE ALMEIDA SOUSA (Olimpio Filho, 0.274 MWh) - Felipe 30/09: 29/09 -> 28/09 so no mobile
+    'f56d802a-5ef2-4e4f-a0ca-c3160d83d891',  # GERALDA CARDOSO PEREIRA (Olimpio Filho, 1.892 MWh) - Felipe 30/09: 29/09 -> 28/09 so no mobile
     '24386a10-17e4-4546-953c-6d219d8923a2',  # LEANDRO IACOVACCI TRISTAO (Caio Lannes, 8.086 MWh) - Felipe 30/09: 29/09 -> 28/09 so no mobile
     '920a2d3b-332f-4890-bbf8-5bed0e06f5fd',  # POSTO D PEDRO DE RIBEIRAO LTDA (Fabio Rodrigues, 7.079 MWh)
     '7888777e-922c-46a7-a1ef-6d1a287a5e6f',  # AL AUTO CENTER LTDA (Fabio Rodrigues, 0.623 MWh)
