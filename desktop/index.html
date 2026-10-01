@@ -6467,6 +6467,7 @@ window.addEventListener('message', (e) => {
   }
 });
 
+function ant15(d) { return /ANTECIPA/i.test(d.produto || '') ? (((d.date || '') >= '2026-10-01') ? 1.5 : 1) : 1; }
 function aggPorPraca() {
   const byP = {};
   PRACAS.forEach(p => byP[p] = { praca:p, mwh:0, aprovados:0 });
@@ -6475,7 +6476,7 @@ function aggPorPraca() {
     const p = opMap[d.op];
     if (!p || !byP[p]) return;
     if (!isAprovado(d) &amp;&amp; !isPendenteOPS(d)) return;
-    byP[p].mwh += d.mwh || 0;
+    byP[p].mwh += (d.mwh || 0) * ant15(d);  /* v2.186 (Felipe 30/09): Antecipa vale 1,5x no resultado do mes a partir de 01/10 */
     byP[p].aprovados++;
   });
   PRACAS.forEach(p => {

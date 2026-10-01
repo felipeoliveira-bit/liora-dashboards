@@ -885,7 +885,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
   <div class="copa-modal" id="copa-modal" onclick="closeCopaFig()"></div>
 
   <div style="position:fixed;bottom:78px;right:8px;font-size:9px;color:#aaa;background:rgba(255,255,255,.85);padding:2px 6px;border-radius:8px;z-index:99;font-family:monospace;pointer-events:none">
-    v2.185 · 24/09
+    v2.186 · 30/09
   </div>
 
   <!-- BOTTOM NAV -->
@@ -1832,7 +1832,7 @@ function liderProxMarco(pct){ return [60,105,120,150,200].find(m => pct < m) || 
 function teamMwhAprovado(praca){
   return rawData
     .filter(x => (SELLER_PRACA[x.s]||'').toLowerCase() === praca && noMes(x) && isAprovado(x))
-    .reduce((a,x)=>a+x.mwh, 0);
+    .reduce((a,x)=>a+mwhMes15(x), 0);  // v2.186: Antecipa 1,5x no mes a partir de 01/10
 }
 function renderRemProgressLider(seller, teamMwh, meta){
   const pct = meta>0 ? (teamMwh/meta*100) : 0;
@@ -2055,8 +2055,10 @@ function renderCarteira(){
   // Felipe 26/08: perdido nao e' pendencia. O par !isAprovado&&!isNegado deixava
   // passar 13 clientes / 4,47 MWh perdidos por motivo comercial.
   const myPend = myDeals.filter(x=>!isAprovado(x)&&!isNegado(x)&&!isPerdido(x)).reduce((a,x)=>a+x.mwh,0);
-  const campPartsSemana = campParts(CAMP_CFG.semana, myDeals.filter(x=>noPeriodo(x,CAMP_CFG.semana.ini,CAMP_CFG.semana.end)&&isAprovado(x)));
+  const campResSemana = campResult(CAMP_CFG.semana, myDeals.filter(x=>noPeriodo(x,CAMP_CFG.semana.ini,CAMP_CFG.semana.end)&&isAprovado(x)), seller);
+  const campPartsSemana = campResSemana.parts;
   const campValSemana = campPartsSemana.total;
+  const myAprov15 = myDeals.filter(x => noMes(x) && isAprovado(x)).reduce((a,x)=>a+mwhMes15(x),0);
   const campValAntecipa = campVal(CAMP_CFG.antecipa, myDeals.filter(x=>noPeriodo(x,CAMP_CFG.antecipa.ini,CAMP_CFG.antecipa.end)&&campAntElig(x)&&campMatch(CAMP_CFG.antecipa,x)));
   const VIS_PREREQ = 15;
   let visitasBlock;
@@ -2090,12 +2092,14 @@ function renderCarteira(){
         </div>
       </div>
       <div class="bar-bg"><div class="bar-fill" style="width:${pct.toFixed(0)}%;background:var(--blue)"></div></div>
-      ${renderRemProgress(seller, myAprov)}
+      ${myAprov15 > myAprov + 0.0005 ? `<div style="font-size:11px;color:var(--purple);margin-top:8px;font-weight:700">⚡ Conta como ${myAprov15.toFixed(1)} MWh no mês (Antecipa vale 1,5×)</div>` : ''}
+      ${renderRemProgress(seller, myAprov15)}
     </div>
     <div class="summary-bar">
       <div class="summary-row"><span class="summary-key">🏆 Campanha da Semana</span><span class="summary-val" style="color:var(--blue)">${campFmt(CAMP_CFG.semana,campValSemana)} MWh</span></div>
       ${campBreakdownLine(CAMP_CFG.semana, campPartsSemana)}
-      ${renderCampProgress(CAMP_CFG.semana, campValSemana)}
+      ${campShareLine(CAMP_CFG.semana, campResSemana)}
+      ${renderCampProgress(CAMP_CFG.semana, campValSemana, campResSemana)}
     </div>
     <div class="summary-bar">
       <div class="summary-row"><span class="summary-key">⚡ Bateu Levou Antecipa</span><span class="summary-val" style="color:var(--purple)">${campValAntecipa} antecipa</span></div>
@@ -2162,19 +2166,41 @@ const OCULTOS_TIME = ['Ananias Neto','Rosangela Mendes','Franciele Felix','Ana R
 const EX_TIME = ['Thiago Araujo França','Antonio Mariano','Rosangela Mendes','Franciele Felix','Ananias Neto','Bruno Andrade','Adroaldo Bonfim','Daniel Magnus','Doni Oliveira','Jefferson Fideli','Monica Silveira','Núbia Andrade','Phillip Faria','Sabrina Tomazeti','Tiago Freitas','Silmara Gomes']  // + desligados conferidos na planilha HC (22/09);
 function isExTime_(n){ return EX_TIME.indexOf(n) !== -1; }
 function isOculto_(n){ return OCULTOS_TIME.indexOf(n) !== -1; }
+// v2.186 — Alinhamento Out26 (deck de 29/09): escada de 6 semanas, terca->segunda.
+// O percentual minimo de Antecipa (sobre o MWh aprovado da semana) sobe a cada 2 semanas.
+// A semana corrente e' escolhida pela data de hoje (Brasilia); depois de 09/11 fica na semana 6.
+const CAMP_ESCADA = [
+  {n:1, ini:'2026-09-29', end:'2026-10-05', pct:25},
+  {n:2, ini:'2026-10-06', end:'2026-10-12', pct:25},
+  {n:3, ini:'2026-10-13', end:'2026-10-19', pct:35},
+  {n:4, ini:'2026-10-20', end:'2026-10-26', pct:35},
+  {n:5, ini:'2026-10-27', end:'2026-11-02', pct:45},
+  {n:6, ini:'2026-11-03', end:'2026-11-09', pct:45},
+];
+const CAMP_HOJE = (function(){ try { return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date()); } catch(e){ return new Date(Date.now()-3*3600000).toISOString().slice(0,10); } })();
+const CAMP_SEM = CAMP_ESCADA.find(function(w){ return CAMP_HOJE <= w.end; }) || CAMP_ESCADA[CAMP_ESCADA.length-1];
+function _campDBr(s){ return s.slice(8,10)+'/'+s.slice(5,7); }
+const _CAMP_PER = _campDBr(CAMP_SEM.ini)+' a '+_campDBr(CAMP_SEM.end)+'/'+CAMP_SEM.end.slice(0,4)+' · 23h59';
 const CAMP_CFG = {
-  semana: { key:'semana', btn:'MWh', title:'Campanha da Semana',
-    ini:'2026-09-22', end:'2026-09-28', period:'22 a 28/09/2026 \u00b7 23h59 \u00b7 pgto 05/10',
-    desc:'Remunera\u00e7\u00e3o vari\u00e1vel <b>individual</b> pelos MWh <b>aprovados</b> no per\u00edodo de 22/09 a 28/09. Pagamento no dia 05/10, junto com a RV mensal. <b>Pr\u00e9-requisito:</b> 1 venda de Antecipa aprovada na semana.',
-    metric:'mwh', unit:'MWh camp.', tierUnit:'MWh', totalWord:'Total acumulado',
-    antecipaBonus:1.5,
-    tiers:[ {v:15,label:'R$ 2.500',tier:3},{v:8,label:'R$ 1.500',tier:2},{v:5,label:'R$ 750',tier:1} ] },
-  antecipa: { key:'antecipa', btn:'\u26a1 Antecipa', title:'\u26a1 Bateu Levou Antecipa',
-    ini:'2026-09-22', end:'2026-09-28', period:'22 a 28/09/2026 \u00b7 23h59 \u00b7 pgto 05/10',
-    desc:'Campanha rel\u00e2mpago <b>individual</b> por <b>clientes com produto Antecipa vigente</b> (aprovado) no per\u00edodo de 22/09 a 28/09. Pagamento no dia 05/10, junto com a RV mensal. Venda para cliente da base conta aqui (n\u00e3o conta MWh).',
+  semana: { key:'semana', btn:'MWh', title:'Campanha da Semana · Semana '+CAMP_SEM.n,
+    ini:CAMP_SEM.ini, end:CAMP_SEM.end, period:_CAMP_PER+' · '+CAMP_SEM.pct+'% de Antecipa',
+    desc:'Remuneração <b>individual</b> pelo MWh <b>aprovado</b> na semana ('+_campDBr(CAMP_SEM.ini)+' a '+_campDBr(CAMP_SEM.end)+'). Na semana, <b>MWh é MWh</b>: o 1,5× do Antecipa agora vale só no resultado do mês.<br><br>'
+      + '<b>Batendo '+CAMP_SEM.pct+'% do seu volume em Antecipa</b>: 5 / 8 / 15 MWh pagam <b>R$ 750 / 1.500 / 2.500</b>.<br>'
+      + '<b>Sem bater o percentual</b>: R$ 300 / 700 / 1.200 — só para quem tem <b>pelo menos 1 venda de Antecipa</b> na semana.<br><br>'
+      + 'Régua: 25% (semanas 1–2) · 35% (semanas 3–4) · 45% (semanas 5–6). Cada semana paga no ciclo seguinte.',
+    metric:'mwh', unit:'MWh', tierUnit:'MWh', totalWord:'Total acumulado',
+    antecipaBonus:1, pctAnt:CAMP_SEM.pct,
+    tiers:[ {v:15,label:'R$ 2.500',lo:'R$ 1.200',tier:3},{v:8,label:'R$ 1.500',lo:'R$ 700',tier:2},{v:5,label:'R$ 750',lo:'R$ 300',tier:1} ] },
+  antecipa: { key:'antecipa', btn:'⚡ Antecipa', title:'⚡ Bateu Levou Antecipa',
+    ini:CAMP_SEM.ini, end:CAMP_SEM.end, period:_CAMP_PER,
+    desc:'Campanha <b>individual</b> por <b>clientes com produto Antecipa vigente</b> (aprovado) na semana ('+_campDBr(CAMP_SEM.ini)+' a '+_campDBr(CAMP_SEM.end)+'). Venda para cliente da base conta aqui (não conta MWh). Paga no ciclo seguinte.',
     metric:'count', unit:'antecipa', tierUnit:'clientes', totalWord:'Total',
     tiers:[ {v:10,label:'R$ 750',tier:3},{v:8,label:'R$ 500',tier:2},{v:5,label:'R$ 250',tier:1} ] }
 };
+// v2.186 — 1,5x do Antecipa sai da semana e entra no RESULTADO DO MES (vendedor e lider),
+// so para vendas aprovadas a partir de 01/10. Setembro fecha no valor real.
+const ANT15_DESDE = '2026-10-01';
+function mwhMes15(x){ const m = x.mwh||0; return (/ANTECIPA/i.test(x.produto||'') && (x.aprov_date||x.date||'') >= ANT15_DESDE) ? m*1.5 : m; }
 let CAMP_VIEW = 'semana';
 function setCampView(k){ CAMP_VIEW = k; renderCampanha(); }
 // v2.181 \u2014 Semana 24-31/08 (Felipe 01/09: esticada ate 31/08): o MWh do Antecipa vale 1,5x SO na Campanha da Semana.
@@ -2208,6 +2234,33 @@ function campParts(cfg, deals, seller){
   return {base:base, bonus:bonus, total:base+bonus, nAntecipa:nAnt};
 }
 function campVal(cfg, deals){ return campParts(cfg, deals).total; }
+// v2.186 — premio da semana com 2 patamares: batendo o % de Antecipa (label) ou nao (lo, exige >=1 Antecipa).
+// Venda de Antecipa para a base (nc) nao entra no MWh, mas conta como a venda que destrava o patamar de baixo.
+function campResult(cfg, deals, seller){
+  deals = deals || [];
+  const p = campParts(cfg, deals, seller);
+  const t = campTier(cfg, p.total);
+  if(!cfg || !cfg.pctAnt) return {total:p.total, parts:p, tier:t, label:t?t.label:null, hit:true, elig:true, antMwh:0, share:0, nAnt:0, faltaAnt:0};
+  let antMwh=0, nAnt=0;
+  deals.forEach(function(d){ if(isAntecipaDeal(d)){ nAnt++; if(!d.nc) antMwh += (d.mwh||0); } });
+  const who = seller || (deals[0] && deals[0].s) || '';
+  if(who){ rawData.forEach(function(x){ if(x.s===who && x.nc && noPeriodo(x,cfg.ini,cfg.end) && isAntecipaDeal(x) && deals.indexOf(x)===-1) nAnt++; }); }
+  const share = p.total>0 ? antMwh/p.total*100 : 0;
+  const elig = nAnt>0;
+  const hit = elig && antMwh>0 && share >= cfg.pctAnt - 1e-9;
+  const q = cfg.pctAnt/100;
+  const faltaAnt = hit ? 0 : Math.max((q*p.total - antMwh)/(1-q), 0);
+  const label = t ? (hit ? t.label : (elig ? t.lo : null)) : null;
+  return {total:p.total, parts:p, tier:t, label:label, hit:hit, elig:elig, antMwh:antMwh, share:share, nAnt:nAnt, faltaAnt:faltaAnt};
+}
+function campShareLine(cfg, r){
+  if(!cfg || !cfg.pctAnt) return '';
+  const c = r.hit ? 'var(--green)' : 'var(--orange)';
+  let txt = '<b style="color:'+c+'">'+r.share.toFixed(0)+'% Antecipa</b> <span style="color:var(--muted)">('+campNum(r.antMwh)+' de '+campNum(r.total)+' MWh · mínimo '+cfg.pctAnt+'%)</span>';
+  if(!r.hit && r.total>0) txt += '<br><span style="color:var(--muted)">Faltam <b>'+(Math.ceil(r.faltaAnt*100)/100).toFixed(2)+' MWh de Antecipa</b> para bater os '+cfg.pctAnt+'%</span>';
+  if(!r.elig && r.total>0) txt += '<br><span style="color:var(--red);font-weight:700">Sem venda de Antecipa na semana — sem prêmio</span>';
+  return '<div style="font-size:11px;margin-top:3px;line-height:1.45">'+txt+'</div>';
+}
 function campMatch(cfg, x){ if(cfg && cfg.key==='antecipa'){ return isAntecipaDeal(x); } return true; }
 function campNum(v){ return (Math.floor(v*100)/100).toFixed(2); }
 // Quebra visivel: MWh normal (azul) x bonus Antecipa (roxo)
@@ -2230,11 +2283,13 @@ function campFaltaTxt(cfg, falta){ return cfg.metric==='count' ? (falta===1?'1 c
 
 // v2.104 — calcula prêmio atual e quanto falta pro próximo tier da campanha.
 
-function renderCampProgress(cfg, val){
+function renderCampProgress(cfg, val, res){
   const tier = campTier(cfg, val);
   const next = campNext(cfg, val);
-  const premioTxt = tier
-    ? `<span style="color:var(--green);font-weight:800">${tier.label}</span> garantido`
+  const _lbl = res ? res.label : (tier ? tier.label : null);
+  const _cor = (res && !res.hit) ? 'var(--orange)' : 'var(--green)';
+  const premioTxt = _lbl
+    ? `<span style="color:${_cor};font-weight:800">${_lbl}</span> garantido${(res && !res.hit && tier) ? ` <span style="color:var(--muted);font-size:11px">(${tier.label} batendo o %)</span>` : ''}`
     : `<span style="color:var(--muted)">Sem prêmio ainda</span>`;
   const faltaTxt = next
     ? `Faltam <b>${campFaltaTxt(cfg, next.v - val)}</b> para ${next.label}`
@@ -2255,10 +2310,10 @@ function openCampDetails(vendedor, type){
   const cfg = CAMP_CFG[type] || CAMP_CFG[CAMP_VIEW];
   const deals = rawData.filter(x => x.s === vendedor && noPeriodo(x, cfg.ini, cfg.end) && (cfg.key==='antecipa' ? campAntElig(x) : isAprovado(x)) && campMatch(cfg, x));
   const periodLabel = cfg.period.split(' · ')[0];
-  const val = campVal(cfg, deals);
-  const tier = campTier(cfg, val);
-  const prizeLabel = tier ? `🏆 ${tier.label}` : null;
-  const parts = campParts(cfg, deals);
+  const _res = campResult(cfg, deals, vendedor);
+  const val = _res.total;
+  const prizeLabel = _res.label ? `🏆 ${_res.label}` : null;
+  const parts = _res.parts;
   const totalLabel = cfg.metric==='count' ? `${deals.length} aprovado${deals.length===1?'':'s'} no período` : `${val.toFixed(2)} MWh em ${deals.length} aprovado${deals.length===1?'':'s'}`;
   const breakdownLabel = (cfg.antecipaBonus>1)
     ? `<br><span style="font-size:11px"><span style="color:var(--blue);font-weight:700">${campNum(parts.base)} MWh normal</span>${parts.bonus>0?` <span style="color:var(--purple);font-weight:800">+ ${campNum(parts.bonus)} bônus Antecipa</span>`:` · <span style="color:var(--purple);font-weight:700">sem Antecipa (vale 1,5×)</span>`}</span>`
@@ -2294,7 +2349,7 @@ function openCampDetails(vendedor, type){
       <button class="modal-close" onclick="closeCampDetailsModal()">✕</button>
       <div class="modal-title">${escapeHtml(vendedor)}</div>
       <div class="modal-sub">
-        ${totalLabel} · ${periodLabel}${breakdownLabel}
+        ${totalLabel} · ${periodLabel}${breakdownLabel}${campShareLine(cfg, _res)}
         ${prizeLabel ? `<br><span style="display:inline-block;margin-top:6px;font-weight:700;font-size:13px;color:var(--blue)">${prizeLabel}</span>` : ''}
       </div>
       <div style="margin-top:14px">
@@ -3563,7 +3618,7 @@ function renderCampaignView(cfg){
   const byS = {};
   campData.forEach(x=>{ (byS[x.s] = byS[x.s] || []).push(x); });
   const allCampSellers = [...new Set([...Object.keys(byS), ...Object.keys(METAS)])];
-  const full = allCampSellers.map(name=>{ const p = campParts(cfg, byS[name]||[]); return {name:name, val:p.total, parts:p, meta:METAS[name]||15}; }).sort((a,b)=>b.val-a.val);
+  const full = allCampSellers.map(name=>{ const r = campResult(cfg, byS[name]||[], name); return {name:name, val:r.total, parts:r.parts, res:r, meta:METAS[name]||15}; }).sort((a,b)=>b.val-a.val);
   const totalCamp = full.reduce((a,s)=>a+s.val,0);
   const totalBase  = full.reduce((a,s)=>a+(s.parts.base||0),0);
   const totalBonus = full.reduce((a,s)=>a+(s.parts.bonus||0),0);
@@ -3592,7 +3647,7 @@ function renderCampaignView(cfg){
         </div>
       </div>` : ''}
       <div class="tiers-grid${cfg.tiers.length===3?' three-col':''}">
-        ${[...cfg.tiers].sort((a,b)=>a.v-b.v).map(t=>`<div class="tier tier-${t.tier}"><div class="tier-mwh">${t.v} ${cfg.tierUnit}</div><div class="tier-prize">${t.label}</div></div>`).join('')}
+        ${[...cfg.tiers].sort((a,b)=>a.v-b.v).map(t=>`<div class="tier tier-${t.tier}"><div class="tier-mwh">${t.v} ${cfg.tierUnit}</div><div class="tier-prize">${t.label}</div>${t.lo?`<div style="font-size:10px;opacity:.75;margin-top:2px">sem o %: ${t.lo}</div>`:''}</div>`).join('')}
       </div>
     </div>`;
 
@@ -3604,7 +3659,7 @@ function renderCampaignView(cfg){
     const pc = pct>=70?'var(--green)':pct>=40?'var(--blue)':'var(--red)';
     const tier = campTier(cfg, s.val);
     const next = campNext(cfg, s.val);
-    const prizeInfo = tier ? `<span class="prize-badge b${tier.tier}">🏆 ${tier.label}</span>` : '';
+    const prizeInfo = (tier && s.res.label) ? `<span class="prize-badge b${tier.tier}"${s.res.hit?'':' style="opacity:.75"'}>🏆 ${s.res.label}</span>` : '';
     let nextInfo = '';
     if (next) nextInfo = `<div class="prize-empty">Faltam ${campFaltaTxt(cfg, next.v - s.val)} para ${next.label}</div>`;
     const safeName = s.name.replace(/'/g, "\\'");
@@ -3618,6 +3673,7 @@ function renderCampaignView(cfg){
           <div class="rank-name">${s.name}${prizeInfo}</div>
           <div class="rank-praca" style="color:${isLider(s.name)?'var(--muted)':pc}">Mês: ${mes.toFixed(1)} MWh${isLider(s.name)?'':` · ${pct.toFixed(0)}% da meta`}</div>
           ${temBonus && has ? `<div style="font-size:11px;margin-top:2px;line-height:1.4"><span style="color:var(--blue);font-weight:700">${campNum(s.parts.base)}</span> <span style="color:var(--muted)">normal</span>${s.parts.bonus>0?` <span style="color:var(--purple);font-weight:800">+ ${campNum(s.parts.bonus)} Antecipa</span>`:''}</div>` : ''}
+          ${has && cfg.pctAnt ? campShareLine(cfg, s.res) : ''}
           ${nextInfo}
         </div>
         <div class="rank-right">
