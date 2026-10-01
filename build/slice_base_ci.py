@@ -423,6 +423,24 @@ def main():
             seen.add(r['deal_id']); out.append(r)
         return out
     deals=dedup([r for r in fs_field if in_cur_month(r['latest_risk_analysis_created_at'])])
+    # Felipe 01/10: na virada de mes, quem ainda esta EM ANALISE (ou aguardando
+    # documento) com a ultima analise no mes anterior sumia do CRM ate ter uma
+    # analise nova (ex.: Joniel Teles Brito, MANUAL 30/09). Mantem esses deals no
+    # recorte. So estagios PRE-aprovacao, nao perdidos, sem risco APPROVED e sem
+    # credito aprovado -> nenhum deles passa no isAprovado, entao nao mexe em
+    # MWh aprovado de nenhum mes (a TRAVA DE MES FECHADO continua valendo).
+    OPEN_STAGES={'BACKGROUND_CHECKING','BGC_PENDING_BILLS','BGC_PARCEIRO','WAITING_DOCUMENTS'}
+    def in_prev_month(s):
+        t=ymd(s); return t is not None and (t[0],t[1])==(PREV[0],PREV[1])
+    _ids={r['deal_id'] for r in deals}
+    carry=dedup([r for r in fs_field if r['deal_id'] not in _ids
+                 and in_prev_month(r['latest_risk_analysis_created_at'])
+                 and (r.get('deal_stage') or '').strip() in OPEN_STAGES
+                 and not (r.get('deal_lost_at') or '').strip()
+                 and (r.get('latest_risk_analysis_result') or '').strip().upper()!='APPROVED'
+                 and (r.get('latest_credit_analysis_result') or '').strip().lower()!='approved'])
+    deals+=carry
+    print('em analise do mes anterior mantidos no recorte: %d' % len(carry))
     prop =[r for r in fs if in_cur_month(r['proposal_created_at'])]
     agu  =dedup([r for r in fs if r['deal_stage']=='WAITING_DOCUMENTS'
                  and not (r['deal_lost_at'] or '').strip()
