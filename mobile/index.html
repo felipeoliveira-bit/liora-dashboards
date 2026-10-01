@@ -885,7 +885,7 @@ img.agd-avatar.has-photo { object-fit:cover; background:#fff; display:block; }
   <div class="copa-modal" id="copa-modal" onclick="closeCopaFig()"></div>
 
   <div style="position:fixed;bottom:78px;right:8px;font-size:9px;color:#aaa;background:rgba(255,255,255,.85);padding:2px 6px;border-radius:8px;z-index:99;font-family:monospace;pointer-events:none">
-    v2.186 · 30/09
+    v2.187 · 01/10
   </div>
 
   <!-- BOTTOM NAV -->
@@ -3711,7 +3711,10 @@ const PROP_TODAY = (function(){
 const SUPORTE_WHATSAPP = '5511952136036'; // +55 11 95213-6036
 
 function filterPropByPeriod(data, period){
-  if(period === 'mes') return data; // todo o mês já filtrado
+  // v2.187 (Felipe 01/10): 'mes' devolvia TUDO - o ranking de aprovados somava venda de meses
+  // anteriores que ainda esta no rawData (ex.: Lucas 15,07 no ranking x 14,82 no card). Agora usa
+  // o mesmo corte do card (MES_INICIO); linha sem data passa, como no fallback do noMes.
+  if(period === 'mes') return data.filter(r => !r.date || r.date >= MES_INICIO);
   // Calcula data de referência (PROP_TODAY)
   const ref = new Date(PROP_TODAY + 'T00:00:00');
   if(period === 'd0'){
