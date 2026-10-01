@@ -272,7 +272,7 @@ table.bau tbody tr.field-row td:first-child { color: #fff; }
 <div class=&quot;section op-section&quot;>
   <div class=&quot;op-section-head&quot;>
     <span class=&quot;op-section-title&quot;>Operação</span>
-    <span style=&quot;font-size:11px;color:var(--text3)&quot;>Meta Safra: 398 MWh/mês</span>
+    <span style=&quot;font-size:11px;color:var(--text3)&quot;>Meta de outubro em validação</span>
   </div>
   <div class=&quot;op-cards&quot; id=&quot;bau-op-cards&quot;></div>
 </div>
@@ -344,7 +344,7 @@ PRACA_OF['Tais Santos'] = 'Salvador';
 const PRACAS = ['Salvador','Feira','Natal','SPI','Ribeirao','CE','RNInterior'];
 
 // Metas Safra agosto 2026
-const METAS_SAFRA = { Salvador: 60, Feira: 60, Natal: 60, SPI: 72, Ribeirao: 72, CE: 84, RNInterior: 50 };
+const METAS_SAFRA = { Salvador: 0, Feira: 0, Natal: 0, SPI: 0, Ribeirao: 0, CE: 0, RNInterior: 0 };  /* out/26: meta em validacao (Felipe 01/10) */
 // Meta INDIVIDUAL por vendedor (da planilha de metas, mensal MWh)
 const META_IND = { Salvador: 19.0, Feira: 19.0, Natal: 19.0, SPI: 15.0, Ribeirao: 15.0, CE: 15.0, RNInterior: 15.0 };
 // Exceções de meta individual que diferem da praça (nome do vendedor → meta mensal MWh)
@@ -668,14 +668,14 @@ function bauColVal(x, col) {
 }
 
 const OP_LIST = [
-  {key:'todas', label:'Todas', color:'#0201F3', meta:398},
-  {key:'salvador', label:'Salvador', color:'#1D9E75', meta:60},
-  {key:'natal', label:'RN Capital', color:'#378ADD', meta:60},
-  {key:'rninterior', label:'RN Interior', color:'#0EA5A5', meta:30},
-  {key:'feira', label:'Feira', color:'#EF9F27', meta:60},
-  {key:'spi', label:'Campinas SPI', color:'#7F77DD', meta:72},
-  {key:'ribeirao', label:'Ribeirão Preto SPI', color:'#A78BFA', meta:48},
-  {key:'ce', label:'CE (Fortaleza)', color:'#D4537E', meta:68},
+  {key:'todas', label:'Todas', color:'#0201F3', meta:0},
+  {key:'salvador', label:'Salvador', color:'#1D9E75', meta:0},
+  {key:'natal', label:'RN Capital', color:'#378ADD', meta:0},
+  {key:'rninterior', label:'RN Interior', color:'#0EA5A5', meta:0},
+  {key:'feira', label:'Feira', color:'#EF9F27', meta:0},
+  {key:'spi', label:'Campinas SPI', color:'#7F77DD', meta:0},
+  {key:'ribeirao', label:'Ribeirão Preto SPI', color:'#A78BFA', meta:0},
+  {key:'ce', label:'CE (Fortaleza)', color:'#D4537E', meta:0},
 ];
 const OP_TO_PRACA = {salvador:'Salvador', feira:'Feira', natal:'Natal', spi:'SPI', ribeirao:'Ribeirao', ce:'CE', rninterior:'RNInterior'};
 
@@ -1327,7 +1327,7 @@ PRACA_OF['Camila Couto'] = 'Feira';
 PRACA_OF['Tais Santos'] = 'Salvador';
 
 const PRACAS = ['Salvador','Feira','Natal','SPI','Ribeirao','CE','RNInterior'];
-const METAS_SAFRA = { Salvador: 60, Feira: 60, Natal: 60, SPI: 72, Ribeirao: 72, CE: 84, RNInterior: 50 };
+const METAS_SAFRA = { Salvador: 0, Feira: 0, Natal: 0, SPI: 0, Ribeirao: 0, CE: 0, RNInterior: 0 };  /* out/26: meta em validacao (Felipe 01/10) */
 const META_IND = { Salvador: 19.0, Feira: 19.0, Natal: 19.0, SPI: 15.0, Ribeirao: 15.0, CE: 15.0, RNInterior: 15.0 };
 // Exceções de meta individual que diferem da praça (nome do vendedor → meta mensal MWh)
 const META_VEND_OVERRIDE = {};
@@ -4576,7 +4576,7 @@ td.fn-clk:hover{ text-decoration:underline; }
     onmouseover=&quot;this.style.background='#e0e8ff'&quot;
     onmouseout=&quot;this.style.background='#f0f4ff'&quot;>
     <span class=&quot;tmm-label&quot; style=&quot;font-size:11px;font-weight:700;color:#0201F3&quot;>Ver BP</span>
-    <span class=&quot;tmm-sub&quot; style=&quot;font-size:9px;color:#888;margin-top:1px&quot;>Meta: 398 MWh</span>
+    <span class=&quot;tmm-sub&quot; style=&quot;font-size:9px;color:#888;margin-top:1px&quot;>Meta em validação</span>
   </button>
 </div>
 <div class=&quot;op-cards&quot; id=&quot;op-cards&quot;></div>
@@ -4641,19 +4641,19 @@ td.fn-clk:hover{ text-decoration:underline; }
 
 <script>
 const OPS_SAFRA = [
-  { key:'todas',    label:'Todas',          meta:398, color:'#0201F3' },
-  { key:'salvador', label:'Salvador',       meta:60,  color:'#1D9E75',
+  { key:'todas',    label:'Todas',          meta:0, color:'#0201F3' },
+  { key:'salvador', label:'Salvador',       meta:0,  color:'#1D9E75',
     cities:['SALVADOR','DIAS DAVILA',&quot;DIAS D'ÁVILA&quot;,'CAMAÇARI','CAMACAR','MATA DE SÃO JOÃO','MATA DE SAD JOAO','MATA DE SAO OAO','DIAS DAVIL','SIMÕES FILHO','SIMOES FILHO','SANTO AMARO'] },
-  { key:'natal',    label:'RN Capital',     meta:60,  color:'#378ADD',
+  { key:'natal',    label:'RN Capital',     meta:0,  color:'#378ADD',
     cities:['PARNAMIRIM','NATAL','EXTREMOZ'] },
-  { key:'rninterior',label:'RN Interior',   meta:30,  color:'#0EA5A5',
+  { key:'rninterior',label:'RN Interior',   meta:0,  color:'#0EA5A5',
     cities:['MOSSORÓ'] },
-  { key:'feira',    label:'Feira',          meta:60,  color:'#EF9F27',
+  { key:'feira',    label:'Feira',          meta:0,  color:'#EF9F27',
     cities:['FEIRA DE SANTANA','SERRINHA','CONCEIÇÃO DA FEIRA','MURITIBA','SÃO FRANCISCO DO CONDE','FRANCISCO DO CONDE','CRUZ DAS ALMAS','CONCEIÇÃO DO COITÉ'] },
-  { key:'spi',      label:'Campinas SPI',     meta:72,  color:'#7F77DD',
+  { key:'spi',      label:'Campinas SPI',     meta:0,  color:'#7F77DD',
     cities:['CAMPINAS','SUMARÉ','RIBEIRÃO PRETO','SÃO PAULO','HORTOLÂNDIA','HORTOLANDIA','PAULÍNIA','PAULINIA','BAURU'] },
-  { key:'ribeirao', label:'Ribeirão Preto SPI', meta:48, color:'#A78BFA', cities:[] },
-  { key:'ce',       label:'CE (Fortaleza)', meta:68,  color:'#D4537E',
+  { key:'ribeirao', label:'Ribeirão Preto SPI', meta:0, color:'#A78BFA', cities:[] },
+  { key:'ce',       label:'CE (Fortaleza)', meta:0,  color:'#D4537E',
     cities:['FORTALEZA'] },
 ];
 const OPS_BP = [
@@ -4724,7 +4724,7 @@ function toggleMetaMode(btn) {
   META_MODE = META_MODE === 'safra' ? 'bp' : 'safra';
   OPS = META_MODE === 'safra' ? OPS_SAFRA : OPS_BP;
   const label = META_MODE === 'safra' ? 'Ver BP' : 'Ver Safra';
-  const sublabel = META_MODE === 'safra' ? 'Meta: 398 MWh' : 'Meta: 235 MWh';
+  const sublabel = META_MODE === 'safra' ? 'Meta em validação' : 'Meta: 235 MWh';
   btn.querySelector('.tmm-label').textContent = label;
   btn.querySelector('.tmm-sub').textContent = sublabel;
   buildOpCards(); refreshSummary();
@@ -5372,7 +5372,7 @@ function buildOpCards() {
                       (META_MODE === 'safra' &amp;&amp; safraToday !== null) ? safraToday : op.meta;
     const metaFullMes = op.meta;
     const isToDate = (META_MODE === 'bp' &amp;&amp; bpToday !== null) || (META_MODE === 'safra' &amp;&amp; safraToday !== null);
-    const pct = Math.min((mwhAprov/metaUsada)*100,100);
+    const pct = metaUsada>0 ? Math.min((mwhAprov/metaUsada)*100,100) : 0;  /* out/26: meta 0 = em validacao */
     const pc = pct>=100?'#1D9E57':pct>=90?'#E0A800':'#E24B4A';
     // Antecipa (Felipe 04/09): meta = 45% da meta de GD da praca, mesma regua to-date
     const ANT_META_PCT = 0.45;
@@ -5395,12 +5395,12 @@ function buildOpCards() {
       <div class=&quot;op-mwh&quot;>${mwhAprov.toFixed(1)} <span style=&quot;font-size:10px;color:#888;font-weight:400&quot;>MWh aprovado</span></div>
       ${filteredLabel}
       <div class=&quot;op-meta&quot;>
-        meta ${fmtMwh(metaUsada)} MWh${isToDate ? ' <span style=&quot;font-size:9px;color:#888&quot;>(hoje)</span>' : ''}
-        ${isToDate ? `<div style=&quot;font-size:9px;color:#aaa;margin-top:1px&quot;>de ${fmtMwh(metaFullMes)} MWh no mês</div>` : ''}
+        ${metaFullMes>0 ? `meta ${fmtMwh(metaUsada)} MWh` : 'meta em validação'}${(isToDate &amp;&amp; metaFullMes>0) ? ' <span style=&quot;font-size:9px;color:#888&quot;>(hoje)</span>' : ''}
+        ${(isToDate &amp;&amp; metaFullMes>0) ? `<div style=&quot;font-size:9px;color:#aaa;margin-top:1px&quot;>de ${fmtMwh(metaFullMes)} MWh no mês</div>` : ''}
       </div>
       <div class=&quot;op-bar-bg&quot;><div class=&quot;op-bar-fill&quot; style=&quot;width:${pct.toFixed(0)}%;background:${pc}&quot;></div></div>
       <div style=&quot;margin-top:7px;padding-top:6px;border-top:1px dashed #ECEBF7;font-size:10.5px;color:#666;line-height:1.45&quot;>⚡ Antecipa <b style=&quot;color:#7F77DD&quot;>${fmtMwh(antMwh)}</b> / ${fmtMwh(antMetaTD)} MWh <b style=&quot;color:${apc}&quot;>${antPct.toFixed(0)}%</b>${isToDate ? `<div style=&quot;font-size:9px;color:#aaa;margin-top:1px&quot;>de ${fmtMwh(antMetaM)} MWh no mês</div>` : ''}</div>
-      <div class=&quot;op-pct&quot; style=&quot;color:${pc}&quot;>${pct.toFixed(0)}% da meta</div>
+      <div class=&quot;op-pct&quot; style=&quot;color:${pc}&quot;>${metaFullMes>0 ? pct.toFixed(0)+'% da meta' : '—'}</div>
     </div>`;
   }).join('');
 }
@@ -6386,7 +6386,7 @@ body { font-family: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif; back
 
 <script>
 const PRACAS = ['Salvador','Feira','Natal','SPI','Ribeirao','CE','RNInterior'];
-const METAS_SAFRA = { Salvador: 60, Feira: 60, Natal: 60, SPI: 72, Ribeirao: 72, CE: 84, RNInterior: 50 };
+const METAS_SAFRA = { Salvador: 0, Feira: 0, Natal: 0, SPI: 0, Ribeirao: 0, CE: 0, RNInterior: 0 };  /* out/26: meta em validacao (Felipe 01/10) */
 const BP_TODAY = '2026-10-01';
 const DAY = 86400000;
 function localISO(d) {
