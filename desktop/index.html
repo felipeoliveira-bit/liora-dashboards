@@ -6470,13 +6470,14 @@ window.addEventListener('message', (e) => {
 function ant15(d) { return /ANTECIPA/i.test(d.produto || '') ? (((d.date || '') >= '2026-10-01') ? 1.5 : 1) : 1; }
 function aggPorPraca() {
   const byP = {};
-  PRACAS.forEach(p => byP[p] = { praca:p, mwh:0, aprovados:0 });
+  PRACAS.forEach(p => byP[p] = { praca:p, mwh:0, aprovados:0, bonus15:0 });
   rawData.filter(d => dateInPeriod(d.date)).forEach(d => {
     const opMap = {salvador:'Salvador',feira:'Feira',natal:'Natal',spi:'SPI',ribeirao:'Ribeirao',ce:'CE',rninterior:'RNInterior'};
     const p = opMap[d.op];
     if (!p || !byP[p]) return;
     if (!isAprovado(d) &amp;&amp; !isPendenteOPS(d)) return;
-    byP[p].mwh += (d.mwh || 0) * ant15(d);  /* v2.186 (Felipe 30/09): Antecipa vale 1,5x no resultado do mes a partir de 01/10 */
+    byP[p].mwh += (d.mwh || 0) * ant15(d);
+    byP[p].bonus15 += (d.mwh || 0) * (ant15(d) - 1);  /* v2.190: parte do bonus 1,5x (mostrada no card) */  /* v2.186 (Felipe 30/09): Antecipa vale 1,5x no resultado do mes a partir de 01/10 */
     byP[p].aprovados++;
   });
   PRACAS.forEach(p => {
@@ -6509,7 +6510,8 @@ function render() {
     '<div class=&quot;item&quot;><div class=&quot;v&quot;>'+mediaPctReal.toFixed(0)+'%</div><div class=&quot;l&quot;>Atingimento real FIELD</div></div>' +
     '<div class=&quot;item&quot;><div class=&quot;v&quot;>'+acima60+'/'+data.length+'</div><div class=&quot;l&quot;>Líderes acima de 60%</div></div>' +
     '<div class=&quot;item&quot;><div class=&quot;v&quot;>'+fmtMwh(totMwh)+' / '+fmtMwh(totMetaMes)+'</div><div class=&quot;l&quot;>MWh aprovado / meta mensal</div></div>' +
-    '</div>';
+    '</div>' +
+    '<div style=&quot;font-size:11.5px;color:#534AB7;background:#F3F1FF;border-radius:8px;padding:6px 10px;margin:8px 0&quot;>⚡ No resultado do mês (RV do líder e do vendedor), o Antecipa aprovado a partir de 01/10 conta <b>1,5×</b> o MWh. Na campanha da semana conta o MWh real.</div>';
   
   // Cards (ordenar por atingimento desc)
   const sorted = [...data].sort((a,b)=>b.pctReal-a.pctReal);
@@ -6556,6 +6558,9 @@ function render() {
       '<div class=&quot;lc-head&quot;><span class=&quot;badge-praca b-'+x.praca+'&quot;>'+(({Natal:'RN Capital',SPI:'Campinas SPI',Ribeirao:'Ribeirão SPI',RNInterior:'RN Interior'}[x.praca]||x.praca))+'</span>' +
         '<span class=&quot;lc-pct&quot; style=&quot;color:'+metaColor(x.pctReal)+'&quot;>'+x.pctReal.toFixed(0)+'%</span></div>' +
       '<div class=&quot;lc-metaline&quot;>'+fmtMwh(x.mwh)+' de '+fmtMwh(x.metaMes)+' MWh (meta mensal) · '+x.aprovados+' clientes</div>' +
+      (x.bonus15 > 0.0005
+        ? '<div style=&quot;font-size:11px;color:#534AB7;font-weight:700;margin:2px 0 4px&quot;>⚡ Inclui '+fmtMwh(x.bonus15)+' MWh de bônus do Antecipa (1,5×) — vale para o resultado do mês do líder (RV)</div>'
+        : '<div style=&quot;font-size:11px;color:#534AB7;margin:2px 0 4px&quot;>⚡ Antecipa aprovado conta 1,5× no resultado do mês do líder (RV)</div>') +
       patStrip +
       '<div class=&quot;lc-bar&quot;><div class=&quot;lc-bar-fill&quot; style=&quot;width:'+widthPct+'%;background:'+metaColor(x.pctReal)+'&quot;></div></div>' +
       '<div class=&quot;lc-bar-marks&quot;>' +

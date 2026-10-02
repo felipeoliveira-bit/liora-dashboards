@@ -1848,6 +1848,21 @@ function teamMwhAprovado(praca){
     .filter(x => (SELLER_PRACA[x.s]||'').toLowerCase() === praca && noMes(x) && isAprovado(x))
     .reduce((a,x)=>a+mwhMes15(x), 0);  // v2.186: Antecipa 1,5x no mes a partir de 01/10
 }
+// v2.190 (Felipe 02/10): deixar claro que o 1,5x do Antecipa conta para o RESULTADO DO MES
+// (RV do vendedor e do lider) e NAO para a campanha da semana.
+function teamMwhReal(praca){
+  return rawData
+    .filter(x => (SELLER_PRACA[x.s]||'').toLowerCase() === praca && noMes(x) && isAprovado(x))
+    .reduce((a,x)=>a+(x.mwh||0), 0);
+}
+function renderAnt15Mes(real, com15, quem){
+  const bonus = Math.max(com15 - real, 0);
+  const alvo = quem==='lider' ? 'resultado do mês do líder (RV do líder)' : 'seu resultado do mês (RV)';
+  const corpo = bonus > 0.0005
+    ? `<b>Resultado do mês: ${com15.toFixed(1)} MWh</b> = ${real.toFixed(1)} MWh aprovados + <b>${bonus.toFixed(1)} MWh de bônus</b> do Antecipa (1,5×).`
+    : `Antecipa aprovado ${quem==='lider' ? 'pelo time ' : ''}conta <b>1,5×</b> no ${alvo}.`;
+  return `<div style="margin-top:10px;padding:8px 10px;background:#F3F1FF;border-radius:10px;font-size:11.5px;line-height:1.45;color:var(--purple)">⚡ ${corpo}<br><span style="color:var(--muted)">O 1,5× vale para o ${alvo}. Na campanha da semana conta o MWh real.</span></div>`;
+}
 function renderRemProgressLider(seller, teamMwh, meta){
   if(!(meta > 0)) return `<div style="margin-top:10px;padding-top:10px;border-top:1px solid #F0F0F5;font-size:12px;color:var(--muted)">Meta do mês em validação — a RV aparece quando a meta subir.</div>`;
   const pct = meta>0 ? (teamMwh/meta*100) : 0;
@@ -1968,6 +1983,7 @@ function renderCarteiraLider(seller){
         </div>
       </div>
       <div class="bar-bg"><div class="bar-fill" style="width:${barW.toFixed(0)}%;background:var(--blue)"></div></div>
+      ${renderAnt15Mes(pracas.reduce(function(a,k){ return a + teamMwhReal(k); }, 0), teamMwh, 'lider')}
       ${renderRemProgressLider(seller, teamMwh, meta)}
     </div>
     ${cardPorPraca}
@@ -2107,7 +2123,7 @@ function renderCarteira(){
         </div>
       </div>
       <div class="bar-bg"><div class="bar-fill" style="width:${pct.toFixed(0)}%;background:var(--blue)"></div></div>
-      ${myAprov15 > myAprov + 0.0005 ? `<div style="font-size:11px;color:var(--purple);margin-top:8px;font-weight:700">⚡ Conta como ${myAprov15.toFixed(1)} MWh no mês (Antecipa vale 1,5×)</div>` : ''}
+      ${renderAnt15Mes(myAprov, myAprov15, 'vendedor')}
       ${renderRemProgress(seller, myAprov15)}
     </div>
     <div class="summary-bar">
@@ -2143,7 +2159,7 @@ function renderCarteira(){
         <div class="client-meta">
           <span class="status-badge" style="background:${si.bg};color:${si.color}">${badgeLabel}</span>
           <span class="mwh-badge">${x.mwh.toFixed(2)} MWh</span>
-          ${isAntecipaDeal(x) ? `<span class="mwh-badge" style="background:#F3F1FF;color:var(--purple);font-weight:800">⚡ 1,5× · ${campNum(x.mwh*1.5)} MWh</span>` : ''}
+          ${(isAntecipaDeal(x) && !isNegado(x) && !isPerdido(x) && (!isAprovado(x) || mwhMes15(x) > (x.mwh||0))) ? `<span class="mwh-badge" style="background:#F3F1FF;color:var(--purple);font-weight:800" title="O 1,5× do Antecipa conta no resultado do mês (RV), não na campanha da semana">⚡ 1,5× no mês · ${campNum(x.mwh*1.5)} MWh</span>` : ''}
           <span class="days-badge" style="color:${idleColor}">${x.idle}d</span>
         </div>
         ${naoAceito ? `<div class="acao-text" style="background:#FCEBEB;border:1px solid #F5C2C2;color:#A32D2D;font-weight:700;border-radius:10px;padding:8px 10px">⚠️ Não aceito pela distribuidora${x.lost_reason ? ` · ${escapeHtml(x.lost_reason)}` : ''}</div>` : `<div class="acao-text">${acao}</div>`}
