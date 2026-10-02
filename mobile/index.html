@@ -1861,7 +1861,7 @@ function renderAnt15Mes(real, com15, quem){
   const corpo = bonus > 0.0005
     ? `<b>Resultado do mês: ${com15.toFixed(1)} MWh</b> = ${real.toFixed(1)} MWh aprovados + <b>${bonus.toFixed(1)} MWh de bônus</b> do Antecipa (1,5×).`
     : `Antecipa aprovado ${quem==='lider' ? 'pelo time ' : ''}conta <b>1,5×</b> no ${alvo}.`;
-  return `<div style="margin-top:10px;padding:8px 10px;background:#F3F1FF;border-radius:10px;font-size:11.5px;line-height:1.45;color:var(--purple)">⚡ ${corpo}<br><span style="color:var(--muted)">O 1,5× vale para o ${alvo}. Na campanha da semana conta o MWh real.</span></div>`;
+  return `<div style="margin-top:10px;padding:8px 10px;background:#F3F1FF;border-radius:10px;font-size:11.5px;line-height:1.45;color:var(--purple)">⚡ ${corpo}<br><span style="color:var(--muted)">${bonus > 0.0005 ? `O 1,5× vale para o ${alvo}. ` : ''}Na campanha da semana conta o MWh real.</span></div>`;
 }
 function renderRemProgressLider(seller, teamMwh, meta){
   if(!(meta > 0)) return `<div style="margin-top:10px;padding-top:10px;border-top:1px solid #F0F0F5;font-size:12px;color:var(--muted)">Meta do mês em validação — a RV aparece quando a meta subir.</div>`;
