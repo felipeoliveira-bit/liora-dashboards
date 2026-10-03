@@ -6507,16 +6507,30 @@ function render() {
   const acima60 = data.filter(x=>x.pctReal>=60).length;
   document.getElementById('summary-box').innerHTML =
     '<div class=&quot;summary&quot;>' +
-    '<div class=&quot;item&quot;><div class=&quot;v&quot;>'+mediaPctReal.toFixed(0)+'%</div><div class=&quot;l&quot;>Atingimento real FIELD</div></div>' +
-    '<div class=&quot;item&quot;><div class=&quot;v&quot;>'+acima60+'/'+data.length+'</div><div class=&quot;l&quot;>Líderes acima de 60%</div></div>' +
-    '<div class=&quot;item&quot;><div class=&quot;v&quot;>'+fmtMwh(totMwh)+' / '+fmtMwh(totMetaMes)+'</div><div class=&quot;l&quot;>MWh aprovado / meta mensal</div></div>' +
+    (totMetaMes > 0
+      ? '<div class=&quot;item&quot;><div class=&quot;v&quot;>'+mediaPctReal.toFixed(0)+'%</div><div class=&quot;l&quot;>Atingimento real FIELD</div></div>' +
+        '<div class=&quot;item&quot;><div class=&quot;v&quot;>'+acima60+'/'+data.length+'</div><div class=&quot;l&quot;>Líderes acima de 60%</div></div>' +
+        '<div class=&quot;item&quot;><div class=&quot;v&quot;>'+fmtMwh(totMwh)+' / '+fmtMwh(totMetaMes)+'</div><div class=&quot;l&quot;>MWh aprovado / meta mensal</div></div>'
+      : '<div class=&quot;item&quot;><div class=&quot;v&quot;>'+fmtMwh(totMwh)+'</div><div class=&quot;l&quot;>MWh aprovado no mês FIELD (Antecipa 1,5×)</div></div>' +
+        '<div class=&quot;item&quot;><div class=&quot;v&quot;>—</div><div class=&quot;l&quot;>Meta do mês em validação</div></div>') +
     '</div>' +
     '<div style=&quot;font-size:11.5px;color:#534AB7;background:#F3F1FF;border-radius:8px;padding:6px 10px;margin:8px 0&quot;>⚡ No resultado do mês (RV do líder e do vendedor), o Antecipa aprovado a partir de 01/10 conta <b>1,5×</b> o MWh. Na campanha da semana conta o MWh real.</div>';
   
   // Cards (ordenar por atingimento desc)
-  const sorted = [...data].sort((a,b)=>b.pctReal-a.pctReal);
+  const sorted = [...data].sort((a,b)=>(b.pctReal-a.pctReal) || (b.mwh-a.mwh));
   let html = '';
   sorted.forEach(x => {
+    /* v2.191 (Felipe 03/10): sem meta, mostra so o REALIZADO (aprovado com 1,5x do Antecipa), sem atingimento/RV */
+    if (!(x.metaMes > 0)) {
+      html += '<div class=&quot;lider-card&quot;>' +
+        '<div class=&quot;lc-head&quot;><span class=&quot;badge-praca b-'+x.praca+'&quot;>'+(({Natal:'RN Capital',SPI:'Campinas SPI',Ribeirao:'Ribeirão SPI',RNInterior:'RN Interior'}[x.praca]||x.praca))+'</span>' +
+          '<span class=&quot;lc-pct&quot; style=&quot;color:var(--text1)&quot;>'+fmtMwh(x.mwh)+' <span style=&quot;font-size:12px;font-weight:600&quot;>MWh</span></span></div>' +
+        '<div class=&quot;lc-metaline&quot;>Aprovado no mês (Antecipa 1,5×) · '+x.aprovados+' clientes</div>' +
+        (x.bonus15 > 0.0005 ? '<div style=&quot;font-size:11px;color:#534AB7;font-weight:700;margin:2px 0 4px&quot;>⚡ Inclui '+fmtMwh(x.bonus15)+' MWh de bônus do Antecipa (1,5×)</div>' : '') +
+        '<div class=&quot;lc-next&quot;>🎯 Meta do mês em validação — o atingimento e a RV aparecem quando a meta subir.</div>' +
+      '</div>';
+      return;
+    }
     const clamp = Math.min(x.pctReal, 130);
     const widthPct = (clamp/130)*100; // escala até 130% pra caber aceleradores visualmente
     const isAccel = x.pctReal >= 105;

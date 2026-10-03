@@ -1951,9 +1951,9 @@ function renderCarteiraLider(seller){
         <div style="margin-bottom:14px">
           <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:5px">
             <span style="font-size:13px;font-weight:800;color:var(--ink)"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${p.cor};margin-right:6px"></span>${p.label}</span>
-            <span style="font-size:12px;color:var(--muted);white-space:nowrap"><b style="color:var(--ink);font-size:16px">${p.mwh.toFixed(1)}</b> / ${p.meta} MWh · <b style="color:${_c}">${p.pct.toFixed(0)}%</b></span>
+            <span style="font-size:12px;color:var(--muted);white-space:nowrap"><b style="color:var(--ink);font-size:16px">${p.mwh.toFixed(1)}</b>${p.meta>0 ? ` / ${p.meta} MWh · <b style="color:${_c}">${p.pct.toFixed(0)}%</b>` : ' MWh · meta em validação'}</span>
           </div>
-          <div class="bar-bg"><div class="bar-fill" style="width:${Math.min(p.pct,100).toFixed(0)}%;background:${p.cor}"></div></div>
+          ${p.meta>0 ? `<div class="bar-bg"><div class="bar-fill" style="width:${Math.min(p.pct,100).toFixed(0)}%;background:${p.cor}"></div></div>` : ''}
         </div>`;
       }).join('')}
     </div>`;
@@ -1964,7 +1964,7 @@ function renderCarteiraLider(seller){
     .filter(v => pracas.indexOf((SELLER_PRACA[v.nome]||'').toLowerCase()) !== -1 && v.nome !== seller && !isOculto_(v.nome))
     .map(v => ({
       nome: v.nome,
-      mwh:  rawData.filter(x=>x.s===v.nome && noMes(x) && isAprovado(x)).reduce((a,x)=>a+x.mwh,0),
+      mwh:  rawData.filter(x=>x.s===v.nome && noMes(x) && isAprovado(x)).reduce((a,x)=>a+mwhMes15(x),0),  // v2.191: com 1,5x do Antecipa
       mt:   METAS[v.nome]||0
     }))
     .sort((a,b)=>b.mwh-a.mwh);
@@ -1975,14 +1975,14 @@ function renderCarteiraLider(seller){
       <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px">
         <div>
           <div style="font-size:32px;font-weight:800;color:var(--blue);line-height:1">${teamMwh.toFixed(1)}</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:2px">MWh do time · ${meta>0 ? 'meta '+meta : 'meta em validação'}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">MWh aprovados do time no mês (Antecipa 1,5×) · ${meta>0 ? 'meta '+meta : 'meta em validação'}</div>
         </div>
-        <div style="text-align:right">
+        ${meta>0 ? `<div style="text-align:right">
           <div style="font-size:28px;font-weight:800;color:${pc}">${pct.toFixed(0)}%</div>
           <div style="font-size:11px;color:var(--muted)">de atingimento</div>
-        </div>
+        </div>` : ''}
       </div>
-      <div class="bar-bg"><div class="bar-fill" style="width:${barW.toFixed(0)}%;background:var(--blue)"></div></div>
+      ${meta>0 ? `<div class="bar-bg"><div class="bar-fill" style="width:${barW.toFixed(0)}%;background:var(--blue)"></div></div>` : ''}
       ${renderAnt15Mes(pracas.reduce(function(a,k){ return a + teamMwhReal(k); }, 0), teamMwh, 'lider')}
       ${renderRemProgressLider(seller, teamMwh, meta)}
     </div>
@@ -1996,7 +1996,7 @@ function renderCarteiraLider(seller){
         <div class="client-name">${escapeHtml(m.nome)}${m.nome===seller?' · você':''}</div>
         <div class="client-meta">
           <span class="mwh-badge">${m.mwh.toFixed(1)} MWh</span>
-          <span class="days-badge" style="color:${mc}">${mp.toFixed(0)}% · meta ${m.mt}</span>
+          ${m.mt>0 ? `<span class="days-badge" style="color:${mc}">${mp.toFixed(0)}% · meta ${m.mt}</span>` : `<span class="days-badge" style="color:var(--muted)">meta em validação</span>`}
         </div>
       </div>`;
   };
@@ -2081,7 +2081,9 @@ function renderCarteira(){
   const myDeals = rawData.filter(x=>x.s===seller);
   const myAprov = myDeals.filter(x => noMes(x) && isAprovado(x)).reduce((a,x)=>a+x.mwh,0);
   const meta = METAS[seller]||0;
-  const pct = meta>0?Math.min((myAprov/meta)*100,100):0;
+  // v2.191 (Felipe 03/10): numero do mes = aprovado COM o 1,5x do Antecipa, mesmo sem meta
+  const _ap15 = myDeals.filter(x => noMes(x) && isAprovado(x)).reduce((a,x)=>a+mwhMes15(x),0);
+  const pct = meta>0?Math.min((_ap15/meta)*100,100):0;
   const pc = pct>=70?'var(--green)':pct>=40?'var(--blue)':'var(--red)';
   // Felipe 26/08: perdido nao e' pendencia. O par !isAprovado&&!isNegado deixava
   // passar 13 clientes / 4,47 MWh perdidos por motivo comercial.
@@ -2114,13 +2116,13 @@ function renderCarteira(){
       <div class="card-title">Seu Resultado</div>
       <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px">
         <div>
-          <div style="font-size:32px;font-weight:800;color:var(--blue);line-height:1">${myAprov.toFixed(1)}</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:2px">MWh aprovados · meta ${meta}</div>
+          <div style="font-size:32px;font-weight:800;color:var(--blue);line-height:1">${_ap15.toFixed(1)}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">MWh aprovados no mês (Antecipa 1,5×) · ${meta>0 ? 'meta '+meta : 'meta em validação'}</div>
         </div>
-        <div style="text-align:right">
+        ${meta>0 ? `<div style="text-align:right">
           <div style="font-size:28px;font-weight:800;color:${pc}">${pct.toFixed(0)}%</div>
           <div style="font-size:11px;color:var(--muted)">da meta</div>
-        </div>
+        </div>` : ''}
       </div>
       <div class="bar-bg"><div class="bar-fill" style="width:${pct.toFixed(0)}%;background:var(--blue)"></div></div>
       ${renderAnt15Mes(myAprov, myAprov15, 'vendedor')}
